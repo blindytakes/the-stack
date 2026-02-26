@@ -1,6 +1,4 @@
-import type { Config } from 'tailwindcss';
-
-export default {
+module.exports = {
   content: ['./src/**/*.{ts,tsx}', './content/**/*.mdx'],
   darkMode: 'class',
   theme: {
@@ -43,4 +41,4 @@ export default {
     }
   },
   plugins: []
-} satisfies Config;
+};

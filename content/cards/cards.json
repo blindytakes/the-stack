@@ -1,0 +1,102 @@
+[
+  {
+    "slug": "apex-cash-plus",
+    "name": "Apex Cash Plus",
+    "issuer": "Apex Bank",
+    "rewardType": "cashback",
+    "topCategories": ["all"],
+    "annualFee": 0,
+    "creditTierMin": "good",
+    "headline": "2.5% cash back on everything"
+  },
+  {
+    "slug": "cityline-rewards",
+    "name": "CityLine Rewards",
+    "issuer": "CityLine",
+    "rewardType": "cashback",
+    "topCategories": ["dining", "groceries"],
+    "annualFee": 0,
+    "creditTierMin": "good",
+    "headline": "4% dining, 3% groceries"
+  },
+  {
+    "slug": "summit-travel-prime",
+    "name": "Summit Travel Prime",
+    "issuer": "Summit",
+    "rewardType": "points",
+    "topCategories": ["travel"],
+    "annualFee": 95,
+    "creditTierMin": "excellent",
+    "headline": "3x points on travel + lounge credits"
+  },
+  {
+    "slug": "northstar-voyager",
+    "name": "Northstar Voyager",
+    "issuer": "Northstar",
+    "rewardType": "miles",
+    "topCategories": ["travel", "dining"],
+    "annualFee": 150,
+    "creditTierMin": "excellent",
+    "headline": "2x miles on travel and dining"
+  },
+  {
+    "slug": "grove-gold",
+    "name": "Grove Gold",
+    "issuer": "Grove",
+    "rewardType": "cashback",
+    "topCategories": ["groceries"],
+    "annualFee": 0,
+    "creditTierMin": "fair",
+    "headline": "5% groceries, no annual fee"
+  },
+  {
+    "slug": "nova-flex",
+    "name": "Nova Flex",
+    "issuer": "Nova",
+    "rewardType": "cashback",
+    "topCategories": ["all"],
+    "annualFee": 0,
+    "creditTierMin": "fair",
+    "headline": "1.8% cash back with 0% intro APR"
+  },
+  {
+    "slug": "aero-elite",
+    "name": "Aero Elite",
+    "issuer": "Aero",
+    "rewardType": "points",
+    "topCategories": ["travel", "everything"],
+    "annualFee": 250,
+    "creditTierMin": "excellent",
+    "headline": "5x points on flights + premium credits"
+  },
+  {
+    "slug": "commonwealth-starter",
+    "name": "Commonwealth Starter",
+    "issuer": "Commonwealth",
+    "rewardType": "cashback",
+    "topCategories": ["all"],
+    "annualFee": 0,
+    "creditTierMin": "building",
+    "headline": "1.5% cash back for building credit"
+  },
+  {
+    "slug": "mesa-dining",
+    "name": "Mesa Dining",
+    "issuer": "Mesa",
+    "rewardType": "cashback",
+    "topCategories": ["dining"],
+    "annualFee": 95,
+    "creditTierMin": "good",
+    "headline": "4% dining, 2% groceries"
+  },
+  {
+    "slug": "harbor-travel",
+    "name": "Harbor Travel",
+    "issuer": "Harbor",
+    "rewardType": "points",
+    "topCategories": ["travel", "groceries"],
+    "annualFee": 95,
+    "creditTierMin": "good",
+    "headline": "2x points on travel + groceries"
+  }
+]
