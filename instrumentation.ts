@@ -1,4 +1,6 @@
 import { registerOTel } from '@vercel/otel';
+import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-http';
+import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
 
 export function register() {
   const hasOtlpEndpoint = Boolean(process.env.OTEL_EXPORTER_OTLP_ENDPOINT);
@@ -11,6 +13,7 @@ export function register() {
   }
 
   registerOTel({
-    serviceName: 'the-stack'
+    serviceName: 'the-stack',
+    logRecordProcessor: new BatchLogRecordProcessor(new OTLPLogExporter())
   });
 }
