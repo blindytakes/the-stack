@@ -3,6 +3,7 @@ import { DM_Sans, DM_Serif_Display } from 'next/font/google';
 import './globals.css';
 import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteNav } from '@/components/layout/site-nav';
+import { WebVitalsReporter } from '@/components/analytics/web-vitals';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -28,6 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${dmSans.variable} ${dmSerif.variable} dark`}>
       <body className="min-h-screen bg-bg text-text-primary">
+        <WebVitalsReporter />
         <div className="glow min-h-screen">
           <SiteNav />
           <main className="pb-24">{children}</main>

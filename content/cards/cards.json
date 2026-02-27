@@ -3,11 +3,36 @@
     "slug": "apex-cash-plus",
     "name": "Apex Cash Plus",
     "issuer": "Apex Bank",
+    "network": "visa",
     "rewardType": "cashback",
     "topCategories": ["all"],
     "annualFee": 0,
+    "foreignTxFee": 3,
     "creditTierMin": "good",
-    "headline": "2.5% cash back on everything"
+    "headline": "2.5% cash back on everything",
+    "rewards": [
+      {
+        "category": "all",
+        "rate": 2.5,
+        "rateType": "cashback"
+      }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 200,
+        "bonusType": "statement_credit",
+        "spendRequired": 1000,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
+      }
+    ],
+    "benefits": [
+      {
+        "category": "purchase_protection",
+        "name": "Purchase Protection",
+        "description": "Covers eligible purchases against damage and theft for a limited time."
+      }
+    ]
   },
   {
     "slug": "cityline-rewards",
@@ -23,11 +48,32 @@
     "slug": "summit-travel-prime",
     "name": "Summit Travel Prime",
     "issuer": "Summit",
+    "network": "visa",
     "rewardType": "points",
     "topCategories": ["travel"],
     "annualFee": 95,
     "creditTierMin": "excellent",
-    "headline": "3x points on travel + lounge credits"
+    "headline": "3x points on travel + lounge credits",
+    "foreignTxFee": 0,
+    "rewards": [
+      {
+        "category": "travel",
+        "rate": 3,
+        "rateType": "points"
+      }
+    ],
+    "transferPartners": [
+      {
+        "partnerName": "SkyWays",
+        "partnerType": "airline",
+        "transferRatio": 1
+      },
+      {
+        "partnerName": "Hotel Arc",
+        "partnerType": "hotel",
+        "transferRatio": 1
+      }
+    ]
   },
   {
     "slug": "northstar-voyager",

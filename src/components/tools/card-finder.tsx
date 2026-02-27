@@ -33,15 +33,16 @@ const steps = [
       { label: 'Over $95 is ok', value: 'over_95_ok' }
     ]
   },
-  {
-    id: 'credit',
-    title: 'Credit tier',
-    options: [
-      { label: 'Excellent', value: 'excellent' },
-      { label: 'Good', value: 'good' },
-      { label: 'Fair / Building', value: 'fair' }
-    ]
-  }
+      {
+        id: 'credit',
+        title: 'Credit tier',
+        options: [
+          { label: 'Excellent', value: 'excellent' },
+          { label: 'Good', value: 'good' },
+          { label: 'Fair', value: 'fair' },
+          { label: 'Building', value: 'building' }
+        ]
+      }
 ];
 
 type QuizAnswers = {

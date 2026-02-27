@@ -1,0 +1,151 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Card {
+  id               String            @id @default(cuid())
+  slug             String            @unique
+  issuer           String
+  name             String
+  network          Network?
+  annualFee        Decimal           @default(0)
+  introApr         String?
+  regularAprMin    Decimal?
+  regularAprMax    Decimal?
+  creditScoreMin   CreditTier
+  foreignTxFee     Decimal           @default(0)
+  imageUrl         String?
+  applyUrl         String?
+  affiliateUrl     String?
+  isActive         Boolean           @default(true)
+  lastVerified     DateTime          @default(now())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  rewards          RewardStructure[]
+  signUpBonuses    SignUpBonus[]
+  benefits         Benefit[]
+  transferPartners TransferPartner[]
+
+  @@index([issuer])
+  @@index([isActive])
+}
+
+enum Network {
+  VISA
+  MASTERCARD
+  AMEX
+  DISCOVER
+}
+
+enum CreditTier {
+  EXCELLENT
+  GOOD
+  FAIR
+  BUILDING
+}
+
+model RewardStructure {
+  id              String   @id @default(cuid())
+  cardId          String
+  card            Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  category        String
+  rate            Decimal
+  rateType        RateType
+  capAmount       Decimal?
+  capPeriod       String?
+  isRotating      Boolean  @default(false)
+  rotationQuarter Int?
+  notes           String?
+
+  @@index([cardId])
+  @@index([category])
+}
+
+enum RateType {
+  CASHBACK
+  POINTS
+  MILES
+}
+
+model SignUpBonus {
+  id              String   @id @default(cuid())
+  cardId          String
+  card            Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  bonusValue      Decimal
+  bonusType       String
+  bonusPoints     Int?
+  spendRequired   Decimal
+  spendPeriodDays Int
+  isCurrentOffer  Boolean  @default(true)
+  expiresAt       DateTime?
+  createdAt       DateTime @default(now())
+
+  @@index([cardId])
+}
+
+model Benefit {
+  id               String          @id @default(cuid())
+  cardId           String
+  card             Card            @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  category         BenefitCategory
+  name             String
+  description      String
+  estimatedValue   Decimal?
+  activationMethod String?
+  finePrint        String?
+
+  @@index([cardId])
+  @@index([category])
+}
+
+enum BenefitCategory {
+  PURCHASE_PROTECTION
+  EXTENDED_WARRANTY
+  CELL_PHONE
+  RENTAL_CAR
+  TRAVEL_INSURANCE
+  LOUNGE_ACCESS
+  PRICE_PROTECTION
+  RETURN_PROTECTION
+  CONCIERGE
+  TSA_GLOBAL_ENTRY
+  STREAMING_CREDITS
+  DINING_CREDITS
+  TRAVEL_CREDITS
+  OTHER
+}
+
+model TransferPartner {
+  id              String      @id @default(cuid())
+  cardId          String
+  card            Card        @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  partnerName     String
+  partnerType     PartnerType
+  transferRatio   Decimal     @default(1.0)
+  bonusMultiplier Decimal?
+  bonusExpiresAt  DateTime?
+
+  @@index([cardId])
+}
+
+enum PartnerType {
+  AIRLINE
+  HOTEL
+  OTHER
+}
+
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String   @default("homepage")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([isActive])
+}
