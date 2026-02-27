@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'About',
+  description: 'How The Stack ranks credit cards and why transparency matters.'
+};
+
 export default function AboutPage() {
   return (
     <div className="container-page pt-12">

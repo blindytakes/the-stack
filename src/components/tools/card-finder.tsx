@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import type { QuizRequest } from '@/lib/quiz-engine';
+import type { QuizResult } from '@/lib/quiz-engine';
 
 const steps = [
   {
@@ -33,36 +35,19 @@ const steps = [
       { label: 'Over $95 is ok', value: 'over_95_ok' }
     ]
   },
-      {
-        id: 'credit',
-        title: 'Credit tier',
-        options: [
-          { label: 'Excellent', value: 'excellent' },
-          { label: 'Good', value: 'good' },
-          { label: 'Fair', value: 'fair' },
-          { label: 'Building', value: 'building' }
-        ]
-      }
+  {
+    id: 'credit',
+    title: 'Credit tier',
+    options: [
+      { label: 'Excellent', value: 'excellent' },
+      { label: 'Good', value: 'good' },
+      { label: 'Fair', value: 'fair' },
+      { label: 'Building', value: 'building' }
+    ]
+  }
 ];
 
-type QuizAnswers = {
-  goal?: 'cashback' | 'travel' | 'flexibility';
-  spend?: 'groceries' | 'dining' | 'travel' | 'everything';
-  fee?: 'no_fee' | 'up_to_95' | 'over_95_ok';
-  credit?: 'excellent' | 'good' | 'fair' | 'building';
-};
-
-type QuizResult = {
-  slug: string;
-  name: string;
-  issuer: string;
-  rewardType: 'cashback' | 'points' | 'miles';
-  topCategories: string[];
-  annualFee: number;
-  creditTierMin: 'excellent' | 'good' | 'fair' | 'building';
-  headline: string;
-  score: number;
-};
+type QuizAnswers = Partial<QuizRequest>;
 
 export function CardFinderTool() {
   const [stepIndex, setStepIndex] = useState(0);
@@ -79,26 +64,30 @@ export function CardFinderTool() {
   const progress = useMemo(() => ((stepIndex + 1) / steps.length) * 100, [stepIndex]);
   const isComplete = steps.every((step) => answers[step.id as keyof QuizAnswers]);
 
-  useEffect(() => {
-    if (!isComplete || !isLastStep) return;
+  async function handleSubmit() {
     setLoading(true);
     setError('');
+    setResults(null);
 
-    fetch('/api/quiz', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(answers)
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error('Failed to fetch results');
-        }
-        const data = (await res.json()) as { results: QuizResult[] };
-        setResults(data.results);
-      })
-      .catch(() => setError('Could not load recommendations.'))
-      .finally(() => setLoading(false));
-  }, [answers, isComplete, isLastStep]);
+    try {
+      const res = await fetch('/api/quiz', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(answers)
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to fetch results');
+      }
+
+      const data = (await res.json()) as { results: QuizResult[] };
+      setResults(data.results);
+    } catch {
+      setError('Could not load recommendations.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <section className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
@@ -149,42 +138,45 @@ export function CardFinderTool() {
         >
           Back
         </Button>
-        <Button
-          onClick={() => setStepIndex((prev) => Math.min(steps.length - 1, prev + 1))}
-          disabled={!canContinue || isLastStep}
-        >
-          Continue
-        </Button>
+        {isLastStep && isComplete ? (
+          <Button onClick={handleSubmit} disabled={loading}>
+            {loading ? 'Scoring…' : 'See my results'}
+          </Button>
+        ) : (
+          <Button
+            onClick={() => setStepIndex((prev) => Math.min(steps.length - 1, prev + 1))}
+            disabled={!canContinue || isLastStep}
+          >
+            Continue
+          </Button>
+        )}
       </div>
 
-      {isLastStep && isComplete && (
+      {results && (
         <div className="mt-10 space-y-4">
           <div className="rounded-2xl border border-brand-teal/40 bg-brand-teal/10 p-4">
             <p className="text-sm text-text-secondary">Top matches based on your inputs</p>
           </div>
-          {loading && <p className="text-sm text-text-secondary">Scoring your results…</p>}
           {error && <p className="text-sm text-brand-coral">{error}</p>}
-          {results && (
-            <div className="grid gap-4 md:grid-cols-3">
-              {results.map((card) => (
-                <div key={card.slug} className="rounded-2xl border border-white/10 bg-bg-surface p-4">
-                  <p className="text-xs uppercase tracking-[0.25em] text-text-muted">{card.issuer}</p>
-                  <h3 className="mt-3 text-lg font-semibold text-text-primary">{card.name}</h3>
-                  <p className="mt-2 text-sm text-text-secondary">{card.headline}</p>
-                  <div className="mt-3 text-xs text-text-muted">
-                    Annual fee: {card.annualFee === 0 ? '$0' : `$${card.annualFee}`}
-                  </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {results.map((card) => (
+              <div key={card.slug} className="rounded-2xl border border-white/10 bg-bg-surface p-4">
+                <p className="text-xs uppercase tracking-[0.25em] text-text-muted">{card.issuer}</p>
+                <h3 className="mt-3 text-lg font-semibold text-text-primary">{card.name}</h3>
+                <p className="mt-2 text-sm text-text-secondary">{card.headline}</p>
+                <div className="mt-3 text-xs text-text-muted">
+                  Annual fee: {card.annualFee === 0 ? '$0' : `$${card.annualFee}`}
                 </div>
-              ))}
-            </div>
-          )}
+              </div>
+            ))}
+          </div>
           <div className="flex flex-wrap gap-4">
-            <Button>View full details</Button>
             <Button
               variant="ghost"
               onClick={() => {
                 setAnswers({});
                 setResults(null);
+                setError('');
                 setStepIndex(0);
               }}
             >

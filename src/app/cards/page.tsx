@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Card Directory',
+  description: 'Browse and compare credit cards by rewards, fees, and benefits.'
+};
+
 export default function CardsPage() {
   return (
     <div className="container-page pt-12">

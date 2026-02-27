@@ -19,7 +19,10 @@ const dmSerif = DM_Serif_Display({
 });
 
 export const metadata: Metadata = {
-  title: 'The Stack',
+  title: {
+    default: 'The Stack',
+    template: '%s | The Stack'
+  },
   description: 'Find credit cards by priorities, not hype.'
 };
 

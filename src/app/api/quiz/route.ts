@@ -1,18 +1,20 @@
 import { NextResponse } from 'next/server';
-import {
-  quizRequestSchema,
-  rankQuizResults
-} from '@/lib/quiz-engine';
+import { quizRequestSchema, rankQuizResults } from '@/lib/quiz-engine';
 import { instrumentedApi } from '@/lib/api-route';
 import { getCardsDataWithDbFallback } from '@/lib/cards';
+import { badRequest, parseJsonBody, serverError } from '@/lib/api-helpers';
 
 export async function POST(req: Request) {
   return instrumentedApi('/api/quiz', 'POST', async () => {
     try {
-      const body = await req.json();
+      const body = await parseJsonBody(req);
+      if (body === null) {
+        return badRequest('Invalid JSON');
+      }
+
       const parsed = quizRequestSchema.safeParse(body);
       if (!parsed.success) {
-        return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+        return badRequest('Invalid payload');
       }
 
       const { cards } = await getCardsDataWithDbFallback();
@@ -20,7 +22,7 @@ export async function POST(req: Request) {
 
       return NextResponse.json({ results: ranked });
     } catch {
-      return NextResponse.json({ error: 'Server error' }, { status: 500 });
+      return serverError();
     }
   });
 }

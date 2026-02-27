@@ -15,6 +15,19 @@ export type CardRecord = Pick<
   | 'headline'
 >;
 
+function seedToCardRecord(seed: CardSeedRecord): CardRecord {
+  return {
+    slug: seed.slug,
+    name: seed.name,
+    issuer: seed.issuer,
+    rewardType: seed.rewardType,
+    topCategories: seed.topCategories,
+    annualFee: seed.annualFee,
+    creditTierMin: seed.creditTierMin,
+    headline: seed.headline
+  };
+}
+
 export function getCardsSeedData(): CardSeedRecord[] {
   return cardsSeedDatasetSchema.parse(cardsJson);
 }
@@ -26,19 +39,6 @@ function getCardsSeedDataSafe(): CardSeedRecord[] | null {
     return null;
   }
   return parsed.data;
-}
-
-export function getCardsData(): CardRecord[] {
-  return getCardsSeedData().map((card) => ({
-    slug: card.slug,
-    name: card.name,
-    issuer: card.issuer,
-    rewardType: card.rewardType,
-    topCategories: card.topCategories,
-    annualFee: card.annualFee,
-    creditTierMin: card.creditTierMin,
-    headline: card.headline
-  }));
 }
 
 export const cardsQuerySchema = z.object({
@@ -127,19 +127,7 @@ export async function getCardsDataWithDbFallback(): Promise<{
     if (!seedCards) {
       throw new Error('Card seed JSON is invalid and no database is configured');
     }
-    return {
-      cards: seedCards.map((card) => ({
-        slug: card.slug,
-        name: card.name,
-        issuer: card.issuer,
-        rewardType: card.rewardType,
-        topCategories: card.topCategories,
-        annualFee: card.annualFee,
-        creditTierMin: card.creditTierMin,
-        headline: card.headline
-      })),
-      source: 'json'
-    };
+    return { cards: seedCards.map(seedToCardRecord), source: 'json' };
   }
 
   try {
@@ -165,17 +153,5 @@ export async function getCardsDataWithDbFallback(): Promise<{
     throw new Error('Card data unavailable: database read failed and seed JSON is invalid');
   }
 
-  return {
-    cards: seedCards.map((card) => ({
-      slug: card.slug,
-      name: card.name,
-      issuer: card.issuer,
-      rewardType: card.rewardType,
-      topCategories: card.topCategories,
-      annualFee: card.annualFee,
-      creditTierMin: card.creditTierMin,
-      headline: card.headline
-    })),
-    source: 'json'
-  };
+  return { cards: seedCards.map(seedToCardRecord), source: 'json' };
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { filterCards, getCardsDataWithDbFallback, paginateCards, cardsQuerySchema } from '@/lib/cards';
 import { instrumentedApi } from '@/lib/api-route';
+import { badRequest, serverError } from '@/lib/api-helpers';
 
 export async function GET(req: Request) {
   return instrumentedApi('/api/cards', 'GET', async () => {
@@ -16,15 +17,12 @@ export async function GET(req: Request) {
 
       const parsed = cardsQuerySchema.safeParse(rawQuery);
       if (!parsed.success) {
-        return NextResponse.json({ error: 'Invalid query params' }, { status: 400 });
+        return badRequest('Invalid query params');
       }
 
-      const { cards: allCards, source } = await getCardsDataWithDbFallback();
+      const { cards: allCards } = await getCardsDataWithDbFallback();
       const filtered = filterCards(allCards, parsed.data);
       const results = paginateCards(filtered, parsed.data);
-      if (source === 'json') {
-        console.warn('[api:/api/cards] using JSON fallback source');
-      }
 
       return NextResponse.json({
         results,
@@ -35,7 +33,7 @@ export async function GET(req: Request) {
         }
       });
     } catch {
-      return NextResponse.json({ error: 'Server error' }, { status: 500 });
+      return serverError();
     }
   });
 }

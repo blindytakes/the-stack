@@ -1,4 +1,10 @@
+import type { Metadata } from 'next';
 import { CardFinderTool } from '@/components/tools/card-finder';
+
+export const metadata: Metadata = {
+  title: 'Card Finder',
+  description: 'Answer a few questions to get personalized credit card recommendations based on your spending and goals.'
+};
 
 export default function CardFinderPage() {
   return (

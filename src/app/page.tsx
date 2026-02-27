@@ -16,6 +16,33 @@ const highlights = [
   }
 ];
 
+const tools = [
+  {
+    tag: 'Tool',
+    title: 'Card Finder',
+    description: 'A five-step quiz that surfaces the top three cards for your profile.',
+    href: '/tools/card-finder',
+    color: 'text-brand-teal',
+    soon: false
+  },
+  {
+    tag: 'Toolkit',
+    title: 'Hidden Benefits',
+    description: 'See which protections and credits are worth real money.',
+    href: '/cards',
+    color: 'text-brand-gold',
+    soon: true
+  },
+  {
+    tag: 'Compare',
+    title: 'Card vs Card',
+    description: 'Head-to-head breakdowns on fees, rewards, and bonuses.',
+    href: '/cards',
+    color: 'text-brand-coral',
+    soon: true
+  }
+];
+
 export default function HomePage() {
   return (
     <div className="container-page pt-12">
@@ -54,27 +81,22 @@ export default function HomePage() {
       </section>
 
       <section className="mt-16 grid gap-6 md:grid-cols-3">
-        <div className="rounded-2xl border border-white/10 bg-bg-surface p-6">
-          <p className="text-xs uppercase tracking-[0.25em] text-brand-teal">Tool</p>
-          <h3 className="mt-4 text-xl font-semibold">Card Finder</h3>
-          <p className="mt-2 text-sm text-text-secondary">
-            A five-step quiz that surfaces the top three cards for your profile.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-bg-surface p-6">
-          <p className="text-xs uppercase tracking-[0.25em] text-brand-gold">Toolkit</p>
-          <h3 className="mt-4 text-xl font-semibold">Hidden Benefits</h3>
-          <p className="mt-2 text-sm text-text-secondary">
-            See which protections and credits are worth real money.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-white/10 bg-bg-surface p-6">
-          <p className="text-xs uppercase tracking-[0.25em] text-brand-coral">Compare</p>
-          <h3 className="mt-4 text-xl font-semibold">Card vs Card</h3>
-          <p className="mt-2 text-sm text-text-secondary">
-            Head-to-head breakdowns on fees, rewards, and bonuses.
-          </p>
-        </div>
+        {tools.map((tool) => (
+          <Link
+            key={tool.title}
+            href={tool.href}
+            className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-white/20"
+          >
+            <p className={`text-xs uppercase tracking-[0.25em] ${tool.color}`}>{tool.tag}</p>
+            <h3 className="mt-4 text-xl font-semibold">{tool.title}</h3>
+            <p className="mt-2 text-sm text-text-secondary">{tool.description}</p>
+            {tool.soon && (
+              <span className="mt-3 inline-block rounded-full border border-white/10 px-3 py-1 text-xs text-text-muted">
+                Coming soon
+              </span>
+            )}
+          </Link>
+        ))}
       </section>
     </div>
   );

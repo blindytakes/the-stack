@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { instrumentedApi } from '@/lib/api-route';
 import { recordWebVital } from '@/lib/metrics';
+import { badRequest, parseJsonBody, serverError } from '@/lib/api-helpers';
 
 const webVitalSchema = z.object({
   name: z.enum(['LCP', 'FID', 'CLS', 'INP', 'TTFB']),
@@ -13,12 +14,14 @@ const webVitalSchema = z.object({
 export async function POST(req: Request) {
   return instrumentedApi('/api/vitals', 'POST', async () => {
     try {
-      const raw = await req.text();
-      const parsedJson = JSON.parse(raw);
-      const parsed = webVitalSchema.safeParse(parsedJson);
+      const body = await parseJsonBody(req);
+      if (body === null) {
+        return badRequest('Invalid JSON');
+      }
 
+      const parsed = webVitalSchema.safeParse(body);
       if (!parsed.success) {
-        return NextResponse.json({ error: 'Invalid payload' }, { status: 400 });
+        return badRequest('Invalid payload');
       }
 
       recordWebVital(parsed.data.name, parsed.data.value, {
@@ -28,7 +31,7 @@ export async function POST(req: Request) {
 
       return new NextResponse(null, { status: 204 });
     } catch {
-      return NextResponse.json({ error: 'Server error' }, { status: 500 });
+      return serverError();
     }
   });
 }

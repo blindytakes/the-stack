@@ -22,10 +22,7 @@ export async function instrumentedApi<T>(
 
   try {
     const result = await handler();
-    const statusCode =
-      typeof result === 'object' && result !== null && 'status' in result
-        ? Number((result as { status?: number }).status ?? 200)
-        : 200;
+    const statusCode = result instanceof Response ? result.status : 200;
 
     if (statusCode >= 500) {
       recordApiError(route, 'Http5xxResponse');

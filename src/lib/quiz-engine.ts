@@ -47,7 +47,9 @@ function scoreCard(card: CardRecord, input: QuizRequest) {
   return score;
 }
 
-export function rankQuizResults(cards: CardRecord[], input: QuizRequest) {
+export type QuizResult = CardRecord & { score: number };
+
+export function rankQuizResults(cards: CardRecord[], input: QuizRequest): QuizResult[] {
   const eligible = cards.filter((card) => creditRank[card.creditTierMin] <= creditRank[input.credit]);
 
   return eligible
