@@ -10,12 +10,18 @@
     "foreignTxFee": 3,
     "creditTierMin": "good",
     "headline": "2.5% cash back on everything",
+    "description": "A flat-rate cashback card with no annual fee and a solid sign-up bonus. Great for people who want simplicity without category tracking.",
+    "pros": [
+      "High flat rate at 2.5% on all purchases",
+      "No annual fee",
+      "$200 sign-up bonus with low spend requirement"
+    ],
+    "cons": [
+      "3% foreign transaction fee",
+      "No bonus categories for higher earning"
+    ],
     "rewards": [
-      {
-        "category": "all",
-        "rate": 2.5,
-        "rateType": "cashback"
-      }
+      { "category": "all", "rate": 2.5, "rateType": "cashback" }
     ],
     "signUpBonuses": [
       {
@@ -30,7 +36,8 @@
       {
         "category": "purchase_protection",
         "name": "Purchase Protection",
-        "description": "Covers eligible purchases against damage and theft for a limited time."
+        "description": "Covers eligible purchases against damage and theft for up to 90 days.",
+        "estimatedValue": 50
       }
     ]
   },
@@ -38,11 +45,27 @@
     "slug": "cityline-rewards",
     "name": "CityLine Rewards",
     "issuer": "CityLine",
+    "network": "mastercard",
     "rewardType": "cashback",
     "topCategories": ["dining", "groceries"],
     "annualFee": 0,
     "creditTierMin": "good",
-    "headline": "4% dining, 3% groceries"
+    "headline": "4% dining, 3% groceries",
+    "description": "A no-fee card built for everyday spending on food. Earns 4% at restaurants and 3% on groceries with 1% on everything else.",
+    "pros": [
+      "4% back on dining is among the highest no-fee options",
+      "3% back on groceries",
+      "No annual fee"
+    ],
+    "cons": [
+      "1% base rate on non-bonus categories",
+      "No sign-up bonus"
+    ],
+    "rewards": [
+      { "category": "dining", "rate": 4, "rateType": "cashback" },
+      { "category": "groceries", "rate": 3, "rateType": "cashback" },
+      { "category": "all", "rate": 1, "rateType": "cashback" }
+    ]
   },
   {
     "slug": "summit-travel-prime",
@@ -54,24 +77,57 @@
     "annualFee": 95,
     "creditTierMin": "excellent",
     "headline": "3x points on travel + lounge credits",
+    "description": "A mid-tier travel card with 3x points on travel, airport lounge access, and no foreign transaction fees. The $95 fee is offset by the annual travel credit.",
     "foreignTxFee": 0,
+    "pros": [
+      "3x points on all travel purchases",
+      "Airport lounge access included",
+      "No foreign transaction fees",
+      "$50 annual travel credit"
+    ],
+    "cons": [
+      "$95 annual fee",
+      "Requires excellent credit"
+    ],
     "rewards": [
+      { "category": "travel", "rate": 3, "rateType": "points" },
+      { "category": "dining", "rate": 2, "rateType": "points" },
+      { "category": "all", "rate": 1, "rateType": "points" }
+    ],
+    "signUpBonuses": [
       {
-        "category": "travel",
-        "rate": 3,
-        "rateType": "points"
+        "bonusValue": 500,
+        "bonusType": "points",
+        "bonusPoints": 50000,
+        "spendRequired": 4000,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
       }
     ],
     "transferPartners": [
+      { "partnerName": "SkyWays", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Hotel Arc", "partnerType": "hotel", "transferRatio": 1 }
+    ],
+    "benefits": [
       {
-        "partnerName": "SkyWays",
-        "partnerType": "airline",
-        "transferRatio": 1
+        "category": "lounge_access",
+        "name": "Airport Lounge Access",
+        "description": "Unlimited visits to the Summit Lounge network at major airports.",
+        "estimatedValue": 200,
+        "activationMethod": "Present card at lounge entrance"
       },
       {
-        "partnerName": "Hotel Arc",
-        "partnerType": "hotel",
-        "transferRatio": 1
+        "category": "travel_credits",
+        "name": "Annual Travel Credit",
+        "description": "$50 statement credit for travel purchases each cardmember year.",
+        "estimatedValue": 50,
+        "activationMethod": "Automatic on eligible travel purchases"
+      },
+      {
+        "category": "travel_insurance",
+        "name": "Trip Cancellation Insurance",
+        "description": "Up to $5,000 per trip for prepaid, non-refundable expenses.",
+        "estimatedValue": 75
       }
     ]
   },
@@ -79,70 +135,889 @@
     "slug": "northstar-voyager",
     "name": "Northstar Voyager",
     "issuer": "Northstar",
+    "network": "visa",
     "rewardType": "miles",
     "topCategories": ["travel", "dining"],
     "annualFee": 150,
     "creditTierMin": "excellent",
-    "headline": "2x miles on travel and dining"
+    "headline": "2x miles on travel and dining",
+    "description": "A premium miles card with strong travel and dining earn rates. Miles transfer 1:1 to partner airlines and hotels.",
+    "foreignTxFee": 0,
+    "pros": [
+      "2x miles on travel and dining",
+      "1:1 transfer to airline and hotel partners",
+      "No foreign transaction fees"
+    ],
+    "cons": [
+      "$150 annual fee with no travel credit to offset",
+      "Only 1x on non-bonus categories"
+    ],
+    "rewards": [
+      { "category": "travel", "rate": 2, "rateType": "miles" },
+      { "category": "dining", "rate": 2, "rateType": "miles" },
+      { "category": "all", "rate": 1, "rateType": "miles" }
+    ],
+    "transferPartners": [
+      { "partnerName": "Northstar Air", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Grand Stays", "partnerType": "hotel", "transferRatio": 1 }
+    ]
   },
   {
     "slug": "grove-gold",
     "name": "Grove Gold",
     "issuer": "Grove",
+    "network": "amex",
     "rewardType": "cashback",
     "topCategories": ["groceries"],
     "annualFee": 0,
     "creditTierMin": "fair",
-    "headline": "5% groceries, no annual fee"
+    "headline": "5% groceries, no annual fee",
+    "description": "The highest grocery earn rate available with no annual fee. Ideal for families with large grocery budgets who want straightforward cash back.",
+    "pros": [
+      "5% back on groceries is best-in-class for a no-fee card",
+      "Available to fair credit",
+      "No annual fee"
+    ],
+    "cons": [
+      "Only 1% on non-grocery purchases",
+      "Amex not accepted everywhere"
+    ],
+    "rewards": [
+      { "category": "groceries", "rate": 5, "rateType": "cashback" },
+      { "category": "all", "rate": 1, "rateType": "cashback" }
+    ]
   },
   {
     "slug": "nova-flex",
     "name": "Nova Flex",
     "issuer": "Nova",
+    "network": "mastercard",
     "rewardType": "cashback",
     "topCategories": ["all"],
     "annualFee": 0,
     "creditTierMin": "fair",
-    "headline": "1.8% cash back with 0% intro APR"
+    "headline": "1.8% cash back with 0% intro APR",
+    "description": "A solid flat-rate card with an introductory 0% APR period. Good for large purchases you want to pay off over time while still earning rewards.",
+    "introApr": "0% for 15 months",
+    "regularAprMin": 18.99,
+    "regularAprMax": 27.99,
+    "pros": [
+      "0% intro APR for 15 months",
+      "1.8% flat rate on everything",
+      "No annual fee"
+    ],
+    "cons": [
+      "Lower earn rate than category-specific cards",
+      "No sign-up bonus"
+    ],
+    "rewards": [
+      { "category": "all", "rate": 1.8, "rateType": "cashback" }
+    ]
   },
   {
     "slug": "aero-elite",
     "name": "Aero Elite",
     "issuer": "Aero",
+    "network": "visa",
     "rewardType": "points",
-    "topCategories": ["travel", "everything"],
+    "topCategories": ["travel", "all"],
     "annualFee": 250,
     "creditTierMin": "excellent",
-    "headline": "5x points on flights + premium credits"
+    "headline": "5x points on flights + premium credits",
+    "description": "A premium travel card with industry-leading 5x on flights and a generous credits package that offsets much of the annual fee.",
+    "foreignTxFee": 0,
+    "pros": [
+      "5x points on flights is best-in-class",
+      "$200 annual travel credit",
+      "Priority boarding on partner airlines",
+      "No foreign transaction fees"
+    ],
+    "cons": [
+      "$250 annual fee",
+      "Only 1x on non-travel purchases",
+      "Requires excellent credit"
+    ],
+    "rewards": [
+      { "category": "travel", "rate": 5, "rateType": "points" },
+      { "category": "dining", "rate": 2, "rateType": "points" },
+      { "category": "all", "rate": 1, "rateType": "points" }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 750,
+        "bonusType": "points",
+        "bonusPoints": 75000,
+        "spendRequired": 5000,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
+      }
+    ],
+    "benefits": [
+      {
+        "category": "travel_credits",
+        "name": "Annual Travel Credit",
+        "description": "$200 statement credit for travel purchases each cardmember year.",
+        "estimatedValue": 200,
+        "activationMethod": "Automatic on eligible travel purchases"
+      },
+      {
+        "category": "lounge_access",
+        "name": "Premium Lounge Access",
+        "description": "Unlimited visits to Aero Lounges and partner airport lounges worldwide.",
+        "estimatedValue": 350,
+        "activationMethod": "Present card at lounge entrance"
+      },
+      {
+        "category": "tsa_global_entry",
+        "name": "Global Entry / TSA PreCheck Credit",
+        "description": "Statement credit for Global Entry or TSA PreCheck application fee every 4 years.",
+        "estimatedValue": 25,
+        "activationMethod": "Apply and charge fee to card"
+      }
+    ],
+    "transferPartners": [
+      { "partnerName": "AeroJet", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "SkyWays", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Hotel Arc", "partnerType": "hotel", "transferRatio": 1 }
+    ]
   },
   {
     "slug": "commonwealth-starter",
     "name": "Commonwealth Starter",
     "issuer": "Commonwealth",
+    "network": "visa",
     "rewardType": "cashback",
     "topCategories": ["all"],
     "annualFee": 0,
     "creditTierMin": "building",
-    "headline": "1.5% cash back for building credit"
+    "headline": "1.5% cash back for building credit",
+    "description": "A starter card for people building or rebuilding credit. No annual fee, no deposit required, and still earns 1.5% cash back on everything.",
+    "pros": [
+      "No deposit required unlike most credit-building cards",
+      "1.5% flat rate is strong for a building-credit card",
+      "Reports to all three bureaus",
+      "No annual fee"
+    ],
+    "cons": [
+      "Lower credit limit initially",
+      "No sign-up bonus",
+      "3% foreign transaction fee"
+    ],
+    "foreignTxFee": 3,
+    "rewards": [
+      { "category": "all", "rate": 1.5, "rateType": "cashback" }
+    ]
   },
   {
     "slug": "mesa-dining",
     "name": "Mesa Dining",
     "issuer": "Mesa",
+    "network": "visa",
     "rewardType": "cashback",
     "topCategories": ["dining"],
     "annualFee": 95,
     "creditTierMin": "good",
-    "headline": "4% dining, 2% groceries"
+    "headline": "4% dining, 2% groceries",
+    "description": "A dining-focused card with a generous sign-up bonus. The $95 fee is justified for anyone spending $250+/month on restaurants.",
+    "pros": [
+      "4% back on dining with no cap",
+      "2% on groceries",
+      "$150 sign-up bonus"
+    ],
+    "cons": [
+      "$95 annual fee",
+      "1% on non-food categories"
+    ],
+    "rewards": [
+      { "category": "dining", "rate": 4, "rateType": "cashback" },
+      { "category": "groceries", "rate": 2, "rateType": "cashback" },
+      { "category": "all", "rate": 1, "rateType": "cashback" }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 150,
+        "bonusType": "statement_credit",
+        "spendRequired": 2000,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
+      }
+    ],
+    "benefits": [
+      {
+        "category": "dining_credits",
+        "name": "Monthly Dining Credit",
+        "description": "$10 monthly statement credit at select restaurant partners.",
+        "estimatedValue": 120,
+        "activationMethod": "Dine at participating restaurants and pay with card"
+      }
+    ]
   },
   {
     "slug": "harbor-travel",
     "name": "Harbor Travel",
     "issuer": "Harbor",
+    "network": "mastercard",
     "rewardType": "points",
     "topCategories": ["travel", "groceries"],
     "annualFee": 95,
     "creditTierMin": "good",
-    "headline": "2x points on travel + groceries"
+    "headline": "2x points on travel + groceries",
+    "description": "A versatile mid-tier card that earns bonus points on both travel and groceries. Good for families who travel a few times a year.",
+    "foreignTxFee": 0,
+    "pros": [
+      "2x on both travel and groceries",
+      "No foreign transaction fees",
+      "Points transfer to airline partners"
+    ],
+    "cons": [
+      "$95 annual fee",
+      "Lower earn rate than dedicated travel cards"
+    ],
+    "rewards": [
+      { "category": "travel", "rate": 2, "rateType": "points" },
+      { "category": "groceries", "rate": 2, "rateType": "points" },
+      { "category": "all", "rate": 1, "rateType": "points" }
+    ],
+    "transferPartners": [
+      { "partnerName": "Harbor Air", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Coastal Hotels", "partnerType": "hotel", "transferRatio": 1 }
+    ]
+  },
+  {
+    "slug": "crest-gas-rewards",
+    "name": "Crest Gas Rewards",
+    "issuer": "Crest",
+    "network": "visa",
+    "rewardType": "cashback",
+    "topCategories": ["gas"],
+    "annualFee": 0,
+    "creditTierMin": "good",
+    "headline": "5% gas, 2% groceries",
+    "description": "The best no-fee card for drivers. Earns 5% at gas stations and EV charging, plus 2% at grocery stores.",
+    "pros": [
+      "5% at gas stations and EV charging",
+      "2% on groceries",
+      "No annual fee"
+    ],
+    "cons": [
+      "Only 1% on non-bonus spending",
+      "Gas cap of $1,500 per quarter"
+    ],
+    "rewards": [
+      { "category": "gas", "rate": 5, "rateType": "cashback", "capAmount": 1500, "capPeriod": "quarter" },
+      { "category": "groceries", "rate": 2, "rateType": "cashback" },
+      { "category": "all", "rate": 1, "rateType": "cashback" }
+    ]
+  },
+  {
+    "slug": "pixel-streaming",
+    "name": "Pixel Streaming",
+    "issuer": "Pixel",
+    "network": "mastercard",
+    "rewardType": "cashback",
+    "topCategories": ["streaming", "entertainment"],
+    "annualFee": 0,
+    "creditTierMin": "fair",
+    "headline": "5% streaming, 3% entertainment",
+    "description": "Built for digital lifestyles. Earns 5% on streaming services and 3% on entertainment subscriptions and purchases.",
+    "pros": [
+      "5% on streaming (Netflix, Spotify, etc.)",
+      "3% on entertainment purchases",
+      "No annual fee",
+      "Available to fair credit"
+    ],
+    "cons": [
+      "Narrow bonus categories",
+      "1% base rate on everything else"
+    ],
+    "rewards": [
+      { "category": "streaming", "rate": 5, "rateType": "cashback" },
+      { "category": "entertainment", "rate": 3, "rateType": "cashback" },
+      { "category": "all", "rate": 1, "rateType": "cashback" }
+    ]
+  },
+  {
+    "slug": "meridian-business",
+    "name": "Meridian Business",
+    "issuer": "Meridian",
+    "cardType": "business",
+    "network": "visa",
+    "rewardType": "points",
+    "topCategories": ["travel", "dining"],
+    "annualFee": 95,
+    "creditTierMin": "excellent",
+    "headline": "3x travel, 2x dining for business owners",
+    "description": "A business travel card with strong earning and expense management tools. Points transfer 1:1 to airline partners.",
+    "foreignTxFee": 0,
+    "pros": [
+      "3x on travel bookings",
+      "2x on dining and business meals",
+      "Employee cards at no extra cost",
+      "Quarterly expense reports"
+    ],
+    "cons": [
+      "$95 annual fee",
+      "Requires excellent personal credit",
+      "1x on non-bonus spending"
+    ],
+    "rewards": [
+      { "category": "travel", "rate": 3, "rateType": "points" },
+      { "category": "dining", "rate": 2, "rateType": "points" },
+      { "category": "all", "rate": 1, "rateType": "points" }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 600,
+        "bonusType": "points",
+        "bonusPoints": 60000,
+        "spendRequired": 4000,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
+      }
+    ],
+    "transferPartners": [
+      { "partnerName": "SkyWays", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Grand Stays", "partnerType": "hotel", "transferRatio": 1 }
+    ]
+  },
+  {
+    "slug": "scholar-student",
+    "name": "Scholar Student",
+    "issuer": "Scholar",
+    "cardType": "student",
+    "network": "discover",
+    "rewardType": "cashback",
+    "topCategories": ["dining", "online_shopping"],
+    "annualFee": 0,
+    "creditTierMin": "fair",
+    "headline": "3% dining and online for students",
+    "description": "Designed for college students building credit. Earns 3% on dining and online shopping with a GPA bonus reward each semester.",
+    "pros": [
+      "3% on dining and online shopping",
+      "GPA bonus: $20 per semester for 3.0+",
+      "No annual fee",
+      "No co-signer required"
+    ],
+    "cons": [
+      "Lower credit limits",
+      "1% base rate on other purchases",
+      "Must be enrolled in school"
+    ],
+    "rewards": [
+      { "category": "dining", "rate": 3, "rateType": "cashback" },
+      { "category": "online_shopping", "rate": 3, "rateType": "cashback" },
+      { "category": "all", "rate": 1, "rateType": "cashback" }
+    ]
+  },
+  {
+    "slug": "foundry-secured",
+    "name": "Foundry Secured",
+    "issuer": "Foundry",
+    "cardType": "secured",
+    "network": "visa",
+    "rewardType": "cashback",
+    "topCategories": ["all"],
+    "annualFee": 0,
+    "creditTierMin": "building",
+    "headline": "1% cash back, secured, no annual fee",
+    "description": "A secured card for building or rebuilding credit. Requires a refundable $200 deposit. Reports to all three credit bureaus monthly.",
+    "pros": [
+      "No annual fee (rare for secured cards)",
+      "Still earns 1% cash back",
+      "Reports to all three bureaus",
+      "Automatic upgrade review after 6 months"
+    ],
+    "cons": [
+      "Requires $200 refundable deposit",
+      "1% earn rate is low",
+      "No sign-up bonus"
+    ],
+    "rewards": [
+      { "category": "all", "rate": 1, "rateType": "cashback" }
+    ]
+  },
+  {
+    "slug": "atlas-premier",
+    "name": "Atlas Premier",
+    "issuer": "Atlas",
+    "network": "amex",
+    "rewardType": "points",
+    "topCategories": ["travel", "dining"],
+    "annualFee": 550,
+    "creditTierMin": "excellent",
+    "headline": "5x dining, 5x travel, premium everything",
+    "description": "The top-tier premium card. 5x on dining and travel, $300 annual travel credit, lounge access, and up to $200 in annual lifestyle credits.",
+    "foreignTxFee": 0,
+    "editorRating": 4.8,
+    "pros": [
+      "5x on dining and travel worldwide",
+      "$300 annual travel credit",
+      "Premium lounge access for cardholder + 2 guests",
+      "$200 in lifestyle credits (streaming, dining, wellness)"
+    ],
+    "cons": [
+      "$550 annual fee is steep",
+      "Need to use all credits to justify fee",
+      "Amex not accepted everywhere"
+    ],
+    "rewards": [
+      { "category": "dining", "rate": 5, "rateType": "points" },
+      { "category": "travel", "rate": 5, "rateType": "points" },
+      { "category": "groceries", "rate": 3, "rateType": "points" },
+      { "category": "all", "rate": 1, "rateType": "points" }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 1000,
+        "bonusType": "points",
+        "bonusPoints": 100000,
+        "spendRequired": 6000,
+        "spendPeriodDays": 180,
+        "isCurrentOffer": true
+      }
+    ],
+    "benefits": [
+      {
+        "category": "travel_credits",
+        "name": "Annual Travel Credit",
+        "description": "$300 statement credit for travel purchases each year.",
+        "estimatedValue": 300,
+        "activationMethod": "Automatic on eligible travel purchases"
+      },
+      {
+        "category": "lounge_access",
+        "name": "Atlas Lounge Access",
+        "description": "Unlimited access to Atlas Lounges worldwide, plus 2 guests per visit.",
+        "estimatedValue": 500,
+        "activationMethod": "Present card at lounge entrance"
+      },
+      {
+        "category": "streaming_credits",
+        "name": "Monthly Streaming Credit",
+        "description": "Up to $15/month in statement credits for eligible streaming services.",
+        "estimatedValue": 180,
+        "activationMethod": "Enroll eligible services in account portal"
+      },
+      {
+        "category": "dining_credits",
+        "name": "Monthly Dining Credit",
+        "description": "Up to $10/month in statement credits at select dining partners.",
+        "estimatedValue": 120,
+        "activationMethod": "Dine at participating restaurants"
+      },
+      {
+        "category": "tsa_global_entry",
+        "name": "Global Entry / TSA PreCheck Credit",
+        "description": "Statement credit for Global Entry or TSA PreCheck application fee.",
+        "estimatedValue": 25,
+        "activationMethod": "Apply and charge fee to card"
+      },
+      {
+        "category": "cell_phone",
+        "name": "Cell Phone Protection",
+        "description": "Up to $800 per claim for cell phone damage or theft when you pay your bill with the card.",
+        "estimatedValue": 100,
+        "activationMethod": "Pay monthly cell phone bill with card"
+      }
+    ],
+    "transferPartners": [
+      { "partnerName": "AeroJet", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "SkyWays", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Northstar Air", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Grand Stays", "partnerType": "hotel", "transferRatio": 1 },
+      { "partnerName": "Hotel Arc", "partnerType": "hotel", "transferRatio": 1 }
+    ]
+  },
+  {
+    "slug": "ember-online",
+    "name": "Ember Online",
+    "issuer": "Ember",
+    "network": "mastercard",
+    "rewardType": "cashback",
+    "topCategories": ["online_shopping"],
+    "annualFee": 0,
+    "creditTierMin": "good",
+    "headline": "5% online shopping, 2% everything else",
+    "description": "A cashback card designed for online shoppers. Earns 5% on online retail purchases and a strong 2% flat rate on everything else.",
+    "pros": [
+      "5% back on online shopping",
+      "2% flat rate on non-bonus spending is above average",
+      "No annual fee",
+      "Virtual card numbers for secure online checkout"
+    ],
+    "cons": [
+      "Online purchases only — in-store doesn't qualify for 5%",
+      "No travel benefits"
+    ],
+    "rewards": [
+      { "category": "online_shopping", "rate": 5, "rateType": "cashback" },
+      { "category": "all", "rate": 2, "rateType": "cashback" }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 100,
+        "bonusType": "statement_credit",
+        "spendRequired": 500,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
+      }
+    ],
+    "benefits": [
+      {
+        "category": "purchase_protection",
+        "name": "Online Purchase Protection",
+        "description": "Extended return window and damage protection on online purchases for 120 days.",
+        "estimatedValue": 75,
+        "activationMethod": "Automatic on eligible purchases"
+      }
+    ]
+  },
+  {
+    "slug": "coastal-miles",
+    "name": "Coastal Miles",
+    "issuer": "Coastal",
+    "network": "visa",
+    "rewardType": "miles",
+    "topCategories": ["travel"],
+    "annualFee": 0,
+    "creditTierMin": "good",
+    "headline": "1.5x miles on everything, no annual fee",
+    "description": "An entry-level miles card with no annual fee. Earns 1.5 miles per dollar on all purchases with no category restrictions.",
+    "foreignTxFee": 0,
+    "pros": [
+      "1.5x miles on everything",
+      "No annual fee",
+      "No foreign transaction fees",
+      "Miles don't expire"
+    ],
+    "cons": [
+      "No bonus categories for accelerated earning",
+      "Limited transfer partner network"
+    ],
+    "rewards": [
+      { "category": "all", "rate": 1.5, "rateType": "miles" }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 200,
+        "bonusType": "miles",
+        "bonusPoints": 20000,
+        "spendRequired": 1000,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
+      }
+    ],
+    "transferPartners": [
+      { "partnerName": "Coastal Air", "partnerType": "airline", "transferRatio": 1 }
+    ]
+  },
+  {
+    "slug": "pinnacle-rewards",
+    "name": "Pinnacle Rewards",
+    "issuer": "Pinnacle",
+    "network": "visa",
+    "rewardType": "points",
+    "topCategories": ["all"],
+    "annualFee": 95,
+    "creditTierMin": "excellent",
+    "headline": "2x points on everything",
+    "description": "A flat-rate points card that earns 2x on every purchase. No category tracking required. Points transfer to a wide network of airline and hotel partners.",
+    "foreignTxFee": 0,
+    "pros": [
+      "2x points on every purchase with no caps",
+      "Wide transfer partner network",
+      "No foreign transaction fees",
+      "Points are worth more when transferred"
+    ],
+    "cons": [
+      "$95 annual fee",
+      "No bonus categories for higher earning"
+    ],
+    "rewards": [
+      { "category": "all", "rate": 2, "rateType": "points" }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 500,
+        "bonusType": "points",
+        "bonusPoints": 50000,
+        "spendRequired": 4000,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
+      }
+    ],
+    "transferPartners": [
+      { "partnerName": "SkyWays", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "AeroJet", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Hotel Arc", "partnerType": "hotel", "transferRatio": 1 },
+      { "partnerName": "Grand Stays", "partnerType": "hotel", "transferRatio": 1 }
+    ]
+  },
+  {
+    "slug": "greenway-utilities",
+    "name": "Greenway Utilities",
+    "issuer": "Greenway",
+    "network": "mastercard",
+    "rewardType": "cashback",
+    "topCategories": ["utilities", "gas"],
+    "annualFee": 0,
+    "creditTierMin": "fair",
+    "headline": "3% utilities, 3% gas",
+    "description": "Earns cash back on the bills you already pay. 3% on utilities and gas, plus 1% on everything else. No annual fee.",
+    "pros": [
+      "3% on utilities and gas — pays you for necessities",
+      "No annual fee",
+      "Available to fair credit"
+    ],
+    "cons": [
+      "1% base rate on non-bonus spending",
+      "No sign-up bonus"
+    ],
+    "rewards": [
+      { "category": "utilities", "rate": 3, "rateType": "cashback" },
+      { "category": "gas", "rate": 3, "rateType": "cashback" },
+      { "category": "all", "rate": 1, "rateType": "cashback" }
+    ]
+  },
+  {
+    "slug": "ridgeline-dining",
+    "name": "Ridgeline Dining",
+    "issuer": "Ridgeline",
+    "network": "visa",
+    "rewardType": "cashback",
+    "topCategories": ["dining", "entertainment"],
+    "annualFee": 0,
+    "creditTierMin": "good",
+    "headline": "3% dining, 3% entertainment",
+    "description": "A no-fee card for people who spend on going out. 3% on dining and entertainment, 1% on everything else.",
+    "pros": [
+      "3% on both dining and entertainment",
+      "No annual fee",
+      "Entertainment includes concerts, movies, and sports events"
+    ],
+    "cons": [
+      "Lower earn rates than cards with annual fees",
+      "1% base rate"
+    ],
+    "rewards": [
+      { "category": "dining", "rate": 3, "rateType": "cashback" },
+      { "category": "entertainment", "rate": 3, "rateType": "cashback" },
+      { "category": "all", "rate": 1, "rateType": "cashback" }
+    ]
+  },
+  {
+    "slug": "swift-miles-plus",
+    "name": "Swift Miles Plus",
+    "issuer": "Swift",
+    "network": "amex",
+    "rewardType": "miles",
+    "topCategories": ["travel", "dining"],
+    "annualFee": 250,
+    "creditTierMin": "excellent",
+    "headline": "3x miles on travel and dining + lounge access",
+    "description": "A premium miles card with strong earn rates and a comprehensive benefits package. Best for frequent travelers who value lounge access and transfer flexibility.",
+    "foreignTxFee": 0,
+    "editorRating": 4.5,
+    "pros": [
+      "3x miles on travel and dining",
+      "Lounge access included",
+      "$100 annual travel credit",
+      "Wide airline transfer network"
+    ],
+    "cons": [
+      "$250 annual fee",
+      "Amex acceptance limitations",
+      "1x on non-bonus categories"
+    ],
+    "rewards": [
+      { "category": "travel", "rate": 3, "rateType": "miles" },
+      { "category": "dining", "rate": 3, "rateType": "miles" },
+      { "category": "all", "rate": 1, "rateType": "miles" }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 700,
+        "bonusType": "miles",
+        "bonusPoints": 70000,
+        "spendRequired": 5000,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
+      }
+    ],
+    "benefits": [
+      {
+        "category": "lounge_access",
+        "name": "Swift Lounge Access",
+        "description": "Unlimited access to Swift Lounges and partner lounges at major airports.",
+        "estimatedValue": 300,
+        "activationMethod": "Present card at lounge entrance"
+      },
+      {
+        "category": "travel_credits",
+        "name": "Annual Travel Credit",
+        "description": "$100 statement credit for travel purchases each cardmember year.",
+        "estimatedValue": 100,
+        "activationMethod": "Automatic on eligible travel purchases"
+      },
+      {
+        "category": "travel_insurance",
+        "name": "Travel Insurance Bundle",
+        "description": "Trip cancellation, delay protection, and lost luggage coverage.",
+        "estimatedValue": 100
+      }
+    ],
+    "transferPartners": [
+      { "partnerName": "Swift Air", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Northstar Air", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Grand Stays", "partnerType": "hotel", "transferRatio": 1 }
+    ]
+  },
+  {
+    "slug": "daybreak-flex",
+    "name": "Daybreak Flex",
+    "issuer": "Daybreak",
+    "network": "visa",
+    "rewardType": "cashback",
+    "topCategories": ["all"],
+    "annualFee": 95,
+    "creditTierMin": "good",
+    "headline": "2.5% cash back on everything + cell phone protection",
+    "description": "The highest flat-rate cashback card available. 2.5% on every purchase with no caps, plus cell phone protection when you pay your bill with the card.",
+    "pros": [
+      "2.5% flat rate on all purchases",
+      "Cell phone protection up to $600",
+      "No category tracking needed"
+    ],
+    "cons": [
+      "$95 annual fee",
+      "No bonus categories for higher earning",
+      "3% foreign transaction fee"
+    ],
+    "foreignTxFee": 3,
+    "rewards": [
+      { "category": "all", "rate": 2.5, "rateType": "cashback" }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 200,
+        "bonusType": "statement_credit",
+        "spendRequired": 1500,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
+      }
+    ],
+    "benefits": [
+      {
+        "category": "cell_phone",
+        "name": "Cell Phone Protection",
+        "description": "Up to $600 per claim for cell phone damage or theft when you pay your bill with the card.",
+        "estimatedValue": 80,
+        "activationMethod": "Pay monthly cell phone bill with card"
+      },
+      {
+        "category": "extended_warranty",
+        "name": "Extended Warranty",
+        "description": "Extends manufacturer warranties by 1 year on eligible purchases.",
+        "estimatedValue": 40
+      }
+    ]
+  },
+  {
+    "slug": "copper-build",
+    "name": "Copper Build",
+    "issuer": "Copper",
+    "network": "mastercard",
+    "rewardType": "cashback",
+    "topCategories": ["groceries", "gas"],
+    "annualFee": 0,
+    "creditTierMin": "building",
+    "headline": "2% groceries, 2% gas for building credit",
+    "description": "A credit-building card that earns more than most in its class. 2% on groceries and gas, 1% on everything else. No deposit required.",
+    "pros": [
+      "2% on groceries and gas — higher than most building-credit cards",
+      "No deposit required",
+      "No annual fee",
+      "Reports to all three bureaus"
+    ],
+    "cons": [
+      "Low starting credit limit",
+      "No sign-up bonus",
+      "3% foreign transaction fee"
+    ],
+    "foreignTxFee": 3,
+    "rewards": [
+      { "category": "groceries", "rate": 2, "rateType": "cashback" },
+      { "category": "gas", "rate": 2, "rateType": "cashback" },
+      { "category": "all", "rate": 1, "rateType": "cashback" }
+    ]
+  },
+  {
+    "slug": "vantage-business-elite",
+    "name": "Vantage Business Elite",
+    "issuer": "Vantage",
+    "cardType": "business",
+    "network": "visa",
+    "rewardType": "points",
+    "topCategories": ["travel", "dining", "entertainment"],
+    "annualFee": 195,
+    "creditTierMin": "excellent",
+    "headline": "4x travel, 3x dining, lounge access for business",
+    "description": "A premium business card with top-tier travel earning, lounge access, and expense management tools. The annual fee is offset by the travel credit.",
+    "foreignTxFee": 0,
+    "editorRating": 4.3,
+    "pros": [
+      "4x on travel, 3x on dining and entertainment",
+      "Airport lounge access",
+      "$150 annual travel credit",
+      "Employee cards with spend controls"
+    ],
+    "cons": [
+      "$195 annual fee",
+      "1x on non-bonus categories",
+      "Requires excellent personal credit"
+    ],
+    "rewards": [
+      { "category": "travel", "rate": 4, "rateType": "points" },
+      { "category": "dining", "rate": 3, "rateType": "points" },
+      { "category": "entertainment", "rate": 3, "rateType": "points" },
+      { "category": "all", "rate": 1, "rateType": "points" }
+    ],
+    "signUpBonuses": [
+      {
+        "bonusValue": 800,
+        "bonusType": "points",
+        "bonusPoints": 80000,
+        "spendRequired": 5000,
+        "spendPeriodDays": 90,
+        "isCurrentOffer": true
+      }
+    ],
+    "benefits": [
+      {
+        "category": "lounge_access",
+        "name": "Business Lounge Access",
+        "description": "Unlimited access to Vantage Business Lounges at major airports.",
+        "estimatedValue": 250,
+        "activationMethod": "Present card at lounge entrance"
+      },
+      {
+        "category": "travel_credits",
+        "name": "Annual Travel Credit",
+        "description": "$150 statement credit for business travel purchases each year.",
+        "estimatedValue": 150,
+        "activationMethod": "Automatic on eligible travel purchases"
+      },
+      {
+        "category": "purchase_protection",
+        "name": "Purchase Protection",
+        "description": "Covers eligible business purchases against damage and theft for 120 days.",
+        "estimatedValue": 75
+      }
+    ],
+    "transferPartners": [
+      { "partnerName": "SkyWays", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "AeroJet", "partnerType": "airline", "transferRatio": 1 },
+      { "partnerName": "Grand Stays", "partnerType": "hotel", "transferRatio": 1 }
+    ]
   }
 ]

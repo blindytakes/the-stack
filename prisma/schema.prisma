@@ -8,18 +8,28 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// ---------------------------------------------------------------------------
+// Card
+// ---------------------------------------------------------------------------
+
 model Card {
   id               String            @id @default(cuid())
   slug             String            @unique
   issuer           String
   name             String
+  cardType         CardType          @default(PERSONAL)
   network          Network?
+  description      String?
+  longDescription  String?
   annualFee        Decimal           @default(0)
   introApr         String?
   regularAprMin    Decimal?
   regularAprMax    Decimal?
   creditScoreMin   CreditTier
   foreignTxFee     Decimal           @default(0)
+  editorRating     Decimal?
+  pros             String[]
+  cons             String[]
   imageUrl         String?
   applyUrl         String?
   affiliateUrl     String?
@@ -34,6 +44,14 @@ model Card {
 
   @@index([issuer])
   @@index([isActive])
+  @@index([cardType])
+}
+
+enum CardType {
+  PERSONAL
+  BUSINESS
+  STUDENT
+  SECURED
 }
 
 enum Network {
@@ -50,21 +68,38 @@ enum CreditTier {
   BUILDING
 }
 
+// ---------------------------------------------------------------------------
+// Reward Structure
+// ---------------------------------------------------------------------------
+
 model RewardStructure {
-  id              String   @id @default(cuid())
+  id              String           @id @default(cuid())
   cardId          String
-  card            Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  category        String
+  card            Card             @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  category        SpendingCategory
   rate            Decimal
   rateType        RateType
   capAmount       Decimal?
   capPeriod       String?
-  isRotating      Boolean  @default(false)
+  isRotating      Boolean          @default(false)
   rotationQuarter Int?
   notes           String?
 
   @@index([cardId])
   @@index([category])
+}
+
+enum SpendingCategory {
+  DINING
+  GROCERIES
+  TRAVEL
+  GAS
+  STREAMING
+  ONLINE_SHOPPING
+  ENTERTAINMENT
+  UTILITIES
+  ALL
+  OTHER
 }
 
 enum RateType {
@@ -73,21 +108,29 @@ enum RateType {
   MILES
 }
 
+// ---------------------------------------------------------------------------
+// Sign-Up Bonus
+// ---------------------------------------------------------------------------
+
 model SignUpBonus {
-  id              String   @id @default(cuid())
+  id              String    @id @default(cuid())
   cardId          String
-  card            Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  card            Card      @relation(fields: [cardId], references: [id], onDelete: Cascade)
   bonusValue      Decimal
   bonusType       String
   bonusPoints     Int?
   spendRequired   Decimal
   spendPeriodDays Int
-  isCurrentOffer  Boolean  @default(true)
+  isCurrentOffer  Boolean   @default(true)
   expiresAt       DateTime?
-  createdAt       DateTime @default(now())
+  createdAt       DateTime  @default(now())
 
   @@index([cardId])
 }
+
+// ---------------------------------------------------------------------------
+// Benefit
+// ---------------------------------------------------------------------------
 
 model Benefit {
   id               String          @id @default(cuid())
@@ -121,6 +164,10 @@ enum BenefitCategory {
   OTHER
 }
 
+// ---------------------------------------------------------------------------
+// Transfer Partner
+// ---------------------------------------------------------------------------
+
 model TransferPartner {
   id              String      @id @default(cuid())
   cardId          String
@@ -139,6 +186,10 @@ enum PartnerType {
   HOTEL
   OTHER
 }
+
+// ---------------------------------------------------------------------------
+// Newsletter
+// ---------------------------------------------------------------------------
 
 model Subscriber {
   id        String   @id @default(cuid())

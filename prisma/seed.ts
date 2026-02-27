@@ -1,8 +1,10 @@
 import {
   PrismaClient,
+  CardType,
   CreditTier,
   Network,
   RateType,
+  SpendingCategory,
   BenefitCategory,
   PartnerType
 } from '@prisma/client';
@@ -23,6 +25,26 @@ const networkMap: Record<NonNullable<CardSeedRecord['network']>, Network> = {
   mastercard: Network.MASTERCARD,
   amex: Network.AMEX,
   discover: Network.DISCOVER
+};
+
+const cardTypeMap: Record<NonNullable<CardSeedRecord['cardType']>, CardType> = {
+  personal: CardType.PERSONAL,
+  business: CardType.BUSINESS,
+  student: CardType.STUDENT,
+  secured: CardType.SECURED
+};
+
+const spendingCategoryMap: Record<string, SpendingCategory> = {
+  dining: SpendingCategory.DINING,
+  groceries: SpendingCategory.GROCERIES,
+  travel: SpendingCategory.TRAVEL,
+  gas: SpendingCategory.GAS,
+  streaming: SpendingCategory.STREAMING,
+  online_shopping: SpendingCategory.ONLINE_SHOPPING,
+  entertainment: SpendingCategory.ENTERTAINMENT,
+  utilities: SpendingCategory.UTILITIES,
+  all: SpendingCategory.ALL,
+  other: SpendingCategory.OTHER
 };
 
 const rateTypeMap: Record<'cashback' | 'points' | 'miles', RateType> = {
@@ -61,106 +83,100 @@ function toDate(value?: string) {
 async function main() {
   const cards = cardsSeedDatasetSchema.parse(cardsJson);
 
-  for (const card of cards) {
-    const upserted = await prisma.card.upsert({
-      where: { slug: card.slug },
-      update: {
+  await prisma.$transaction(async (tx) => {
+    for (const card of cards) {
+      const cardData = {
         issuer: card.issuer,
         name: card.name,
-        annualFee: card.annualFee,
+        cardType: card.cardType ? cardTypeMap[card.cardType] : CardType.PERSONAL,
         network: card.network ? networkMap[card.network] : null,
+        description: card.description ?? null,
+        longDescription: card.longDescription ?? null,
+        annualFee: card.annualFee,
         introApr: card.introApr ?? null,
         regularAprMin: card.regularAprMin ?? null,
         regularAprMax: card.regularAprMax ?? null,
         creditScoreMin: creditTierMap[card.creditTierMin],
         foreignTxFee: card.foreignTxFee ?? 0,
+        editorRating: card.editorRating ?? null,
+        pros: card.pros ?? [],
+        cons: card.cons ?? [],
         imageUrl: card.imageUrl ?? null,
         applyUrl: card.applyUrl ?? null,
         affiliateUrl: card.affiliateUrl ?? null,
         isActive: card.isActive ?? true,
         lastVerified: toDate(card.lastVerified) ?? new Date()
-      },
-      create: {
-        slug: card.slug,
-        issuer: card.issuer,
-        name: card.name,
-        annualFee: card.annualFee,
-        network: card.network ? networkMap[card.network] : null,
-        introApr: card.introApr ?? null,
-        regularAprMin: card.regularAprMin ?? null,
-        regularAprMax: card.regularAprMax ?? null,
-        creditScoreMin: creditTierMap[card.creditTierMin],
-        foreignTxFee: card.foreignTxFee ?? 0,
-        imageUrl: card.imageUrl ?? null,
-        applyUrl: card.applyUrl ?? null,
-        affiliateUrl: card.affiliateUrl ?? null,
-        isActive: card.isActive ?? true,
-        lastVerified: toDate(card.lastVerified) ?? new Date()
+      };
+
+      const upserted = await tx.card.upsert({
+        where: { slug: card.slug },
+        update: cardData,
+        create: { slug: card.slug, ...cardData }
+      });
+
+      await tx.rewardStructure.deleteMany({ where: { cardId: upserted.id } });
+      if (card.rewards?.length) {
+        await tx.rewardStructure.createMany({
+          data: card.rewards.map((reward) => ({
+            cardId: upserted.id,
+            category: spendingCategoryMap[reward.category] ?? SpendingCategory.OTHER,
+            rate: reward.rate,
+            rateType: rateTypeMap[reward.rateType],
+            capAmount: reward.capAmount ?? null,
+            capPeriod: reward.capPeriod ?? null,
+            isRotating: reward.isRotating ?? false,
+            rotationQuarter: reward.rotationQuarter ?? null,
+            notes: reward.notes ?? null
+          }))
+        });
       }
-    });
 
-    await prisma.rewardStructure.deleteMany({ where: { cardId: upserted.id } });
-    if (card.rewards?.length) {
-      await prisma.rewardStructure.createMany({
-        data: card.rewards.map((reward) => ({
-          cardId: upserted.id,
-          category: reward.category,
-          rate: reward.rate,
-          rateType: rateTypeMap[reward.rateType],
-          capAmount: reward.capAmount ?? null,
-          capPeriod: reward.capPeriod ?? null,
-          isRotating: reward.isRotating ?? false,
-          rotationQuarter: reward.rotationQuarter ?? null,
-          notes: reward.notes ?? null
-        }))
-      });
-    }
+      await tx.signUpBonus.deleteMany({ where: { cardId: upserted.id } });
+      if (card.signUpBonuses?.length) {
+        await tx.signUpBonus.createMany({
+          data: card.signUpBonuses.map((bonus) => ({
+            cardId: upserted.id,
+            bonusValue: bonus.bonusValue,
+            bonusType: bonus.bonusType,
+            bonusPoints: bonus.bonusPoints ?? null,
+            spendRequired: bonus.spendRequired,
+            spendPeriodDays: bonus.spendPeriodDays,
+            isCurrentOffer: bonus.isCurrentOffer ?? true,
+            expiresAt: toDate(bonus.expiresAt) ?? null
+          }))
+        });
+      }
 
-    await prisma.signUpBonus.deleteMany({ where: { cardId: upserted.id } });
-    if (card.signUpBonuses?.length) {
-      await prisma.signUpBonus.createMany({
-        data: card.signUpBonuses.map((bonus) => ({
-          cardId: upserted.id,
-          bonusValue: bonus.bonusValue,
-          bonusType: bonus.bonusType,
-          bonusPoints: bonus.bonusPoints ?? null,
-          spendRequired: bonus.spendRequired,
-          spendPeriodDays: bonus.spendPeriodDays,
-          isCurrentOffer: bonus.isCurrentOffer ?? true,
-          expiresAt: toDate(bonus.expiresAt) ?? null
-        }))
-      });
-    }
+      await tx.benefit.deleteMany({ where: { cardId: upserted.id } });
+      if (card.benefits?.length) {
+        await tx.benefit.createMany({
+          data: card.benefits.map((benefit) => ({
+            cardId: upserted.id,
+            category: benefitCategoryMap[benefit.category.toLowerCase()] ?? BenefitCategory.OTHER,
+            name: benefit.name,
+            description: benefit.description,
+            estimatedValue: benefit.estimatedValue ?? null,
+            activationMethod: benefit.activationMethod ?? null,
+            finePrint: benefit.finePrint ?? null
+          }))
+        });
+      }
 
-    await prisma.benefit.deleteMany({ where: { cardId: upserted.id } });
-    if (card.benefits?.length) {
-      await prisma.benefit.createMany({
-        data: card.benefits.map((benefit) => ({
-          cardId: upserted.id,
-          category: benefitCategoryMap[benefit.category.toLowerCase()] ?? BenefitCategory.OTHER,
-          name: benefit.name,
-          description: benefit.description,
-          estimatedValue: benefit.estimatedValue ?? null,
-          activationMethod: benefit.activationMethod ?? null,
-          finePrint: benefit.finePrint ?? null
-        }))
-      });
+      await tx.transferPartner.deleteMany({ where: { cardId: upserted.id } });
+      if (card.transferPartners?.length) {
+        await tx.transferPartner.createMany({
+          data: card.transferPartners.map((partner) => ({
+            cardId: upserted.id,
+            partnerName: partner.partnerName,
+            partnerType: partnerTypeMap[partner.partnerType.toLowerCase()] ?? PartnerType.OTHER,
+            transferRatio: partner.transferRatio ?? 1,
+            bonusMultiplier: partner.bonusMultiplier ?? null,
+            bonusExpiresAt: toDate(partner.bonusExpiresAt) ?? null
+          }))
+        });
+      }
     }
-
-    await prisma.transferPartner.deleteMany({ where: { cardId: upserted.id } });
-    if (card.transferPartners?.length) {
-      await prisma.transferPartner.createMany({
-        data: card.transferPartners.map((partner) => ({
-          cardId: upserted.id,
-          partnerName: partner.partnerName,
-          partnerType: partnerTypeMap[partner.partnerType.toLowerCase()] ?? PartnerType.OTHER,
-          transferRatio: partner.transferRatio ?? 1,
-          bonusMultiplier: partner.bonusMultiplier ?? null,
-          bonusExpiresAt: toDate(partner.bonusExpiresAt) ?? null
-        }))
-      });
-    }
-  }
+  }, { timeout: 30000 });
 }
 
 main()

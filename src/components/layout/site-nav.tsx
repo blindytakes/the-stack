@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -14,9 +14,33 @@ const navItems = [
 export function SiteNav() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const headerRef = useRef<HTMLElement>(null);
+
+  const close = useCallback(() => setOpen(false), []);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') close();
+    }
+
+    function onClickOutside(e: MouseEvent) {
+      if (headerRef.current && !headerRef.current.contains(e.target as Node)) {
+        close();
+      }
+    }
+
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('mousedown', onClickOutside);
+    return () => {
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('mousedown', onClickOutside);
+    };
+  }, [open, close]);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/5 bg-bg/70 backdrop-blur">
+    <header ref={headerRef} className="sticky top-0 z-40 border-b border-white/5 bg-bg/70 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between">
         <Link href="/" className="text-lg font-semibold tracking-wide text-text-primary">
           <span className="font-[var(--font-heading)] text-2xl">The Stack</span>
@@ -29,7 +53,7 @@ export function SiteNav() {
               key={item.href}
               href={item.href}
               className={`transition hover:text-text-primary ${
-                pathname === item.href ? 'text-text-primary' : ''
+                pathname.startsWith(item.href) ? 'text-text-primary' : ''
               }`}
             >
               {item.label}
@@ -77,7 +101,7 @@ export function SiteNav() {
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={`rounded-xl px-4 py-3 text-sm transition hover:bg-bg-surface ${
-                  pathname === item.href ? 'text-text-primary bg-bg-surface' : 'text-text-secondary'
+                  pathname.startsWith(item.href) ? 'text-text-primary bg-bg-surface' : 'text-text-secondary'
                 }`}
               >
                 {item.label}

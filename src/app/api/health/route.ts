@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { instrumentedApi } from '@/lib/api-route';
 import { db } from '@/lib/db';
+import { jsonError } from '@/lib/api-helpers';
 
 export async function GET() {
   return instrumentedApi('/api/health', 'GET', async () => {
@@ -19,16 +20,8 @@ export async function GET() {
         db: 'ok',
         timestamp: new Date().toISOString()
       });
-    } catch (error) {
-      console.error('[api:/api/health] db check failed', error);
-      return NextResponse.json(
-        {
-          status: 'degraded',
-          db: 'error',
-          timestamp: new Date().toISOString()
-        },
-        { status: 503 }
-      );
+    } catch {
+      return jsonError('Database health check failed', 503);
     }
   });
 }

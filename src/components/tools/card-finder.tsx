@@ -1,10 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import type { QuizRequest } from '@/lib/quiz-engine';
-import type { QuizResult } from '@/lib/quiz-engine';
+import type { QuizRequest, QuizResult } from '@/lib/quiz-engine';
 
 const steps = [
   {
@@ -23,7 +23,7 @@ const steps = [
       { label: 'Groceries', value: 'groceries' },
       { label: 'Dining', value: 'dining' },
       { label: 'Travel', value: 'travel' },
-      { label: 'Everything', value: 'everything' }
+      { label: 'Everything', value: 'all' }
     ]
   },
   {
@@ -152,22 +152,31 @@ export function CardFinderTool() {
         )}
       </div>
 
+      {error && (
+        <div className="mt-10">
+          <p className="text-sm text-brand-coral">{error}</p>
+        </div>
+      )}
+
       {results && (
         <div className="mt-10 space-y-4">
           <div className="rounded-2xl border border-brand-teal/40 bg-brand-teal/10 p-4">
             <p className="text-sm text-text-secondary">Top matches based on your inputs</p>
           </div>
-          {error && <p className="text-sm text-brand-coral">{error}</p>}
           <div className="grid gap-4 md:grid-cols-3">
             {results.map((card) => (
-              <div key={card.slug} className="rounded-2xl border border-white/10 bg-bg-surface p-4">
+              <Link
+                key={card.slug}
+                href={`/cards/${card.slug}`}
+                className="group rounded-2xl border border-white/10 bg-bg-surface p-4 transition hover:-translate-y-1 hover:border-white/20"
+              >
                 <p className="text-xs uppercase tracking-[0.25em] text-text-muted">{card.issuer}</p>
-                <h3 className="mt-3 text-lg font-semibold text-text-primary">{card.name}</h3>
+                <h3 className="mt-3 text-lg font-semibold text-text-primary group-hover:text-brand-teal transition">{card.name}</h3>
                 <p className="mt-2 text-sm text-text-secondary">{card.headline}</p>
                 <div className="mt-3 text-xs text-text-muted">
                   Annual fee: {card.annualFee === 0 ? '$0' : `$${card.annualFee}`}
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
           <div className="flex flex-wrap gap-4">

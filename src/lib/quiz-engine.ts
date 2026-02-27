@@ -1,9 +1,10 @@
 import { z } from 'zod';
 import type { CardRecord } from '@/lib/cards';
+import { spendingCategoryValues } from '@/lib/card-seed-schema';
 
 export const quizRequestSchema = z.object({
   goal: z.enum(['cashback', 'travel', 'flexibility']),
-  spend: z.enum(['groceries', 'dining', 'travel', 'everything']),
+  spend: z.enum(spendingCategoryValues),
   fee: z.enum(['no_fee', 'up_to_95', 'over_95_ok']),
   credit: z.enum(['excellent', 'good', 'fair', 'building'])
 });

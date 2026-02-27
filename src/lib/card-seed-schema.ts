@@ -1,7 +1,24 @@
 import { z } from 'zod';
 
+export const spendingCategoryValues = [
+  'dining',
+  'groceries',
+  'travel',
+  'gas',
+  'streaming',
+  'online_shopping',
+  'entertainment',
+  'utilities',
+  'all',
+  'other'
+] as const;
+
+export const spendingCategorySchema = z.enum(spendingCategoryValues);
+
+export type SpendingCategoryValue = z.infer<typeof spendingCategorySchema>;
+
 const rewardStructureSchema = z.object({
-  category: z.string(),
+  category: spendingCategorySchema,
   rate: z.number(),
   rateType: z.enum(['cashback', 'points', 'miles']),
   capAmount: z.number().optional(),
@@ -42,11 +59,17 @@ export const cardSeedRecordSchema = z.object({
   slug: z.string(),
   name: z.string(),
   issuer: z.string(),
+  cardType: z.enum(['personal', 'business', 'student', 'secured']).optional(),
   rewardType: z.enum(['cashback', 'points', 'miles']),
-  topCategories: z.array(z.string()),
+  topCategories: z.array(spendingCategorySchema),
   annualFee: z.number(),
   creditTierMin: z.enum(['excellent', 'good', 'fair', 'building']),
   headline: z.string(),
+  description: z.string().optional(),
+  longDescription: z.string().optional(),
+  editorRating: z.number().min(0).max(5).optional(),
+  pros: z.array(z.string()).optional(),
+  cons: z.array(z.string()).optional(),
   network: z.enum(['visa', 'mastercard', 'amex', 'discover']).optional(),
   introApr: z.string().optional(),
   regularAprMin: z.number().optional(),
