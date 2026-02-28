@@ -30,7 +30,8 @@ export async function POST(req: Request) {
       });
 
       return new NextResponse(null, { status: 204 });
-    } catch {
+    } catch (err) {
+      console.error('[/api/vitals] Unhandled error:', err);
       return serverError();
     }
   });

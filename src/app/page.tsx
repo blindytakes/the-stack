@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { NewsletterSignup } from '@/components/newsletter-signup';
 
 const highlights = [
   {
@@ -29,17 +30,17 @@ const tools = [
     tag: 'Toolkit',
     title: 'Hidden Benefits',
     description: 'See which protections and credits are worth real money.',
-    href: '/cards',
+    href: '/tools/hidden-benefits',
     color: 'text-brand-gold',
-    soon: true
+    soon: false
   },
   {
     tag: 'Compare',
     title: 'Card vs Card',
     description: 'Head-to-head breakdowns on fees, rewards, and bonuses.',
-    href: '/cards',
+    href: '/tools/card-vs-card',
     color: 'text-brand-coral',
-    soon: true
+    soon: false
   }
 ];
 
@@ -97,6 +98,12 @@ export default function HomePage() {
             )}
           </Link>
         ))}
+      </section>
+
+      <section className="mt-16">
+        <div className="rounded-3xl border border-white/10 bg-bg-elevated p-8 md:p-10">
+          <NewsletterSignup source="homepage" />
+        </div>
       </section>
     </div>
   );

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { NewsletterSignup } from '@/components/newsletter-signup';
 
 const footerLinks = [
   { href: '/about', label: 'About' },
@@ -9,6 +10,20 @@ const footerLinks = [
 export function SiteFooter() {
   return (
     <footer className="border-t border-white/5">
+      {/* Newsletter */}
+      <div className="container-page border-b border-white/5 py-10">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="max-w-sm">
+            <p className="text-sm font-semibold text-text-primary">Get weekly card intel</p>
+            <p className="mt-1 text-xs text-text-muted">No spam. Unsubscribe anytime.</p>
+          </div>
+          <div className="w-full md:max-w-md">
+            <NewsletterSignup source="footer" compact />
+          </div>
+        </div>
+      </div>
+
+      {/* Links */}
       <div className="container-page flex flex-col gap-4 py-10 text-sm text-text-muted md:flex-row md:items-center md:justify-between">
         <div>
           <div className="font-[var(--font-heading)] text-lg text-text-primary">The Stack</div>

@@ -20,7 +20,8 @@ export async function GET() {
         db: 'ok',
         timestamp: new Date().toISOString()
       });
-    } catch {
+    } catch (err) {
+      console.error('[/api/health] DB health check failed:', err);
       return jsonError('Database health check failed', 503);
     }
   });

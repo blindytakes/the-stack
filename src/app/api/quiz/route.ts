@@ -21,7 +21,8 @@ export async function POST(req: Request) {
       const ranked = rankQuizResults(cards, parsed.data);
 
       return NextResponse.json({ results: ranked });
-    } catch {
+    } catch (err) {
+      console.error('[/api/quiz] Unhandled error:', err);
       return serverError();
     }
   });

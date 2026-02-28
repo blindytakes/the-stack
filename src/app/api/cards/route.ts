@@ -32,7 +32,8 @@ export async function GET(req: Request) {
           offset: parsed.data.offset
         }
       });
-    } catch {
+    } catch (err) {
+      console.error('[/api/cards] Unhandled error:', err);
       return serverError();
     }
   });
