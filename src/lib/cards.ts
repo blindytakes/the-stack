@@ -130,7 +130,7 @@ export function paginateCards(cards: CardRecord[], query: Pick<CardsQuery, 'limi
   return cards.slice(query.offset, query.offset + query.limit);
 }
 
-type DbCardRow = Prisma.CardGetPayload<{
+export type DbCardRow = Prisma.CardGetPayload<{
   include: {
     rewards: true;
   };
@@ -163,7 +163,7 @@ const spendingCategoryFromDb: Record<string, SpendingCategoryValue> = {
   OTHER: 'other'
 };
 
-function toCardRecordFromDb(row: DbCardRow, seedBySlug: Map<string, CardSeedRecord>): CardRecord | null {
+export function toCardRecordFromDb(row: DbCardRow, seedBySlug: Map<string, CardSeedRecord>): CardRecord | null {
   const seed = seedBySlug.get(row.slug);
   const derivedRewardType: CardRecord['rewardType'] =
     row.rewards[0]?.rateType === 'POINTS'
@@ -191,7 +191,7 @@ function toCardRecordFromDb(row: DbCardRow, seedBySlug: Map<string, CardSeedReco
       `${row.name} by ${row.issuer}${Number(row.annualFee) === 0 ? ' with no annual fee' : ''}`.trim(),
     description: row.description ?? undefined,
     longDescription: row.longDescription ?? undefined,
-    editorRating: row.editorRating ? Number(row.editorRating) : undefined,
+    editorRating: row.editorRating != null ? Number(row.editorRating) : undefined,
     pros: row.pros.length > 0 ? row.pros : undefined,
     cons: row.cons.length > 0 ? row.cons : undefined
   };
@@ -249,7 +249,7 @@ const rateTypeFromDb: Record<string, RewardDetail['rateType']> = {
   MILES: 'miles'
 };
 
-type DbCardDetailRow = Prisma.CardGetPayload<{
+export type DbCardDetailRow = Prisma.CardGetPayload<{
   include: {
     rewards: true;
     signUpBonuses: true;
@@ -299,7 +299,7 @@ function seedToCardDetail(seed: CardSeedRecord): CardDetail {
   };
 }
 
-function toCardDetailFromDb(row: DbCardDetailRow, seedBySlug: Map<string, CardSeedRecord>): CardDetail | null {
+export function toCardDetailFromDb(row: DbCardDetailRow, seedBySlug: Map<string, CardSeedRecord>): CardDetail | null {
   const seed = seedBySlug.get(row.slug);
   const base = toCardRecordFromDb(
     row as DbCardRow,
@@ -313,17 +313,17 @@ function toCardDetailFromDb(row: DbCardDetailRow, seedBySlug: Map<string, CardSe
     ...base,
     network: row.network ? networkFromDb[row.network] : undefined,
     introApr: row.introApr ?? undefined,
-    regularAprMin: row.regularAprMin ? Number(row.regularAprMin) : undefined,
-    regularAprMax: row.regularAprMax ? Number(row.regularAprMax) : undefined,
+    regularAprMin: row.regularAprMin != null ? Number(row.regularAprMin) : undefined,
+    regularAprMax: row.regularAprMax != null ? Number(row.regularAprMax) : undefined,
     foreignTxFee: Number(row.foreignTxFee),
     applyUrl: row.applyUrl ?? undefined,
     rewards: row.rewards.map((r) => ({
       category: spendingCategoryFromDb[r.category] ?? 'other',
       rate: Number(r.rate),
       rateType: rateTypeFromDb[r.rateType] ?? 'cashback',
-      capAmount: r.capAmount ? Number(r.capAmount) : undefined,
+      capAmount: r.capAmount != null ? Number(r.capAmount) : undefined,
       capPeriod: r.capPeriod ?? undefined,
-      isRotating: r.isRotating || undefined,
+      isRotating: r.isRotating ?? undefined,
       notes: r.notes ?? undefined
     })),
     signUpBonuses: row.signUpBonuses.map((b) => ({
@@ -338,7 +338,7 @@ function toCardDetailFromDb(row: DbCardDetailRow, seedBySlug: Map<string, CardSe
       category: b.category.toLowerCase().replace(/_/g, ' '),
       name: b.name,
       description: b.description,
-      estimatedValue: b.estimatedValue ? Number(b.estimatedValue) : undefined,
+      estimatedValue: b.estimatedValue != null ? Number(b.estimatedValue) : undefined,
       activationMethod: b.activationMethod ?? undefined
     })),
     transferPartners: row.transferPartners.map((p) => ({

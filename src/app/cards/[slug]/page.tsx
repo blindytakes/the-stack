@@ -75,7 +75,7 @@ function RewardsSection({ rewards, rewardType }: { rewards: RewardDetail[]; rewa
               <span className="text-sm font-medium text-text-primary">
                 {formatCategory(r.category)}
               </span>
-              {r.capAmount && (
+              {r.capAmount != null && (
                 <span className="ml-2 text-xs text-text-muted">
                   up to ${r.capAmount.toLocaleString()}{r.capPeriod ? `/${r.capPeriod}` : ''}
                 </span>
@@ -141,7 +141,7 @@ function BenefitsSection({ benefits }: { benefits: BenefitDetail[] }) {
                 <p className="text-sm font-medium text-text-primary">{b.name}</p>
                 <p className="mt-0.5 text-xs text-text-secondary">{b.description}</p>
               </div>
-              {b.estimatedValue && (
+              {b.estimatedValue != null && (
                 <span className="shrink-0 text-sm font-semibold text-brand-teal">
                   ~${b.estimatedValue}/yr
                 </span>
@@ -253,7 +253,7 @@ export default async function CardDetailPage({ params }: Props) {
           {card.longDescription && (
             <p className="mt-4 text-sm leading-relaxed text-text-secondary">{card.longDescription}</p>
           )}
-          {card.editorRating && (
+          {card.editorRating != null && (
             <div className="mt-4">
               <RatingStars rating={card.editorRating} />
             </div>
@@ -300,7 +300,7 @@ export default async function CardDetailPage({ params }: Props) {
                 <dd className="text-sm font-semibold text-text-primary">{card.introApr}</dd>
               </div>
             )}
-            {card.regularAprMin && card.regularAprMax && (
+            {card.regularAprMin != null && card.regularAprMax != null && (
               <div className="flex justify-between">
                 <dt className="text-sm text-text-secondary">Regular APR</dt>
                 <dd className="text-sm font-semibold text-text-primary">

@@ -18,15 +18,10 @@ export async function GET(
       return badRequest('Invalid slug');
     }
 
-    try {
-      const card = await getCardBySlug(parsed.data);
-      if (!card) {
-        return jsonError('Card not found', 404);
-      }
-      return NextResponse.json({ card });
-    } catch (err) {
-      console.error('[/api/cards/[slug]] Unhandled error:', err);
-      return jsonError('Server error', 500);
+    const card = await getCardBySlug(parsed.data);
+    if (!card) {
+      return jsonError('Card not found', 404);
     }
+    return NextResponse.json({ card });
   });
 }

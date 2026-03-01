@@ -32,7 +32,16 @@ export function NewsletterSignup({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, source })
       });
-      const data = await res.json();
+
+      let data: { error?: string; message?: string };
+      try {
+        data = await res.json();
+      } catch {
+        // Response wasn't valid JSON (e.g. framework error page)
+        setStatus('error');
+        setMessage('Something went wrong. Please try again.');
+        return;
+      }
 
       if (!res.ok) {
         setStatus('error');
@@ -41,7 +50,7 @@ export function NewsletterSignup({
       }
 
       setStatus('success');
-      setMessage(data.message);
+      setMessage(data.message ?? 'Successfully subscribed!');
       setEmail('');
     } catch {
       setStatus('error');

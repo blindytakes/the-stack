@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server';
 import { recordApiDuration, recordApiError } from '@/lib/metrics';
 import { logs, SeverityNumber } from '@opentelemetry/api-logs';
 
@@ -13,16 +14,16 @@ function toSeverity(level: 'info' | 'warn' | 'error') {
   return { severityText: 'INFO', severityNumber: SeverityNumber.INFO };
 }
 
-export async function instrumentedApi<T>(
+export async function instrumentedApi(
   route: string,
   method: string,
-  handler: () => Promise<T>
-): Promise<T> {
+  handler: () => Promise<Response>
+): Promise<Response> {
   const start = performance.now();
 
   try {
     const result = await handler();
-    const statusCode = result instanceof Response ? result.status : 200;
+    const statusCode = result.status;
 
     if (statusCode >= 500) {
       recordApiError(route, 'Http5xxResponse');
@@ -56,6 +57,6 @@ export async function instrumentedApi<T>(
       severityText: 'ERROR',
       severityNumber: SeverityNumber.ERROR
     });
-    throw error;
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
