@@ -3,11 +3,16 @@ import { NewsletterSignup } from '@/components/newsletter-signup';
 
 const footerLinks = [
   { href: '/about', label: 'About' },
-  { href: '/about', label: 'Transparency' },
-  { href: '/about', label: 'Contact' }
+  { href: '/privacy', label: 'Privacy' },
+  { href: '/terms', label: 'Terms' },
+  { href: '/affiliate-disclosure', label: 'Affiliate Disclosure' },
+  { href: '/contact', label: 'Contact' },
+  { href: '/methodology', label: 'Methodology' }
 ];
 
 export function SiteFooter() {
+  const year = new Date().getFullYear();
+
   return (
     <footer className="border-t border-white/5">
       {/* Newsletter */}
@@ -28,6 +33,7 @@ export function SiteFooter() {
         <div>
           <div className="font-[var(--font-heading)] text-lg text-text-primary">The Stack</div>
           <p>Independent card intelligence. No hype, just signal.</p>
+          <p className="mt-1 text-xs text-text-muted">© {year} The Stack. All rights reserved.</p>
         </div>
         <nav className="flex flex-wrap gap-6">
           {footerLinks.map((link) => (

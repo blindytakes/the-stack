@@ -8,6 +8,7 @@ const navItems = [
   { href: '/tools/card-finder', label: 'Card Finder' },
   { href: '/cards', label: 'Cards' },
   { href: '/learn', label: 'Learn' },
+  { href: '/methodology', label: 'Methodology' },
   { href: '/about', label: 'About' }
 ];
 
