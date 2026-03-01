@@ -1,28 +1,35 @@
 import { NextResponse } from 'next/server';
 import { instrumentedApi } from '@/lib/api-route';
 import { db } from '@/lib/db';
-import { jsonError } from '@/lib/api-helpers';
+import { getNewsletterProviderStatus } from '@/lib/newsletter/provider';
 
 export async function GET() {
   return instrumentedApi('/api/health', 'GET', async () => {
+    const newsletter = getNewsletterProviderStatus();
+    const timestamp = new Date().toISOString();
+
     if (!process.env.DATABASE_URL) {
       return NextResponse.json({
-        status: 'ok',
-        db: 'not_configured',
-        timestamp: new Date().toISOString()
+        status: newsletter.ok ? 'ok' : 'degraded',
+        timestamp
       });
     }
 
     try {
       await db.$queryRaw`SELECT 1`;
       return NextResponse.json({
-        status: 'ok',
-        db: 'ok',
-        timestamp: new Date().toISOString()
+        status: newsletter.ok ? 'ok' : 'degraded',
+        timestamp
       });
     } catch (err) {
       console.error('[/api/health] DB health check failed:', err);
-      return jsonError('Database health check failed', 503);
+      return NextResponse.json(
+        {
+          status: 'degraded',
+          timestamp
+        },
+        { status: 503 }
+      );
     }
   });
 }
