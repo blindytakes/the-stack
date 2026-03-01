@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 
 type NewsletterSignupProps = {
   source?: string;
@@ -51,6 +52,7 @@ export function NewsletterSignup({
 
       setStatus('success');
       setMessage(data.message ?? 'Successfully subscribed!');
+      trackFunnelEvent('newsletter_subscribed', { source });
       setEmail('');
     } catch {
       setStatus('error');

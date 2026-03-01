@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { NewsletterSignup } from '@/components/newsletter-signup';
+import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 
 const highlights = [
   {
@@ -47,6 +48,10 @@ const tools = [
 export default function HomePage() {
   return (
     <div className="container-page pt-12">
+      <TrackFunnelEventOnView
+        event="landing_view"
+        properties={{ source: 'homepage', path: '/' }}
+      />
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-6">
           <p className="text-sm uppercase tracking-[0.2em] text-brand-gold">The Stack</p>

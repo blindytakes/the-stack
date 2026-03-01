@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { CardVsCardTool } from '@/components/tools/card-vs-card';
+import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 
 export const metadata: Metadata = {
   title: 'Card vs Card',
@@ -10,6 +11,10 @@ export const metadata: Metadata = {
 export default function CardVsCardPage() {
   return (
     <div className="container-page pt-12">
+      <TrackFunnelEventOnView
+        event="tool_started"
+        properties={{ source: 'page_view', tool: 'card_vs_card', path: '/tools/card-vs-card' }}
+      />
       <div className="mb-10 max-w-2xl">
         <p className="text-xs uppercase tracking-[0.3em] text-brand-coral">Tool 03</p>
         <h1 className="mt-3 font-[var(--font-heading)] text-4xl text-text-primary">

@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import type { QuizRequest, QuizResult } from '@/lib/quiz-engine';
+import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 
 const steps = [
   {
@@ -82,6 +83,10 @@ export function CardFinderTool() {
 
       const data = (await res.json()) as { results: QuizResult[] };
       setResults(data.results);
+      trackFunnelEvent('quiz_completed', {
+        source: 'card_finder',
+        tool: 'card_finder'
+      });
     } catch {
       setError('Could not load recommendations.');
     } finally {
@@ -167,7 +172,7 @@ export function CardFinderTool() {
             {results.map((card) => (
               <Link
                 key={card.slug}
-                href={`/cards/${card.slug}`}
+                href={`/cards/${card.slug}?src=card_finder`}
                 className="group rounded-2xl border border-white/10 bg-bg-surface p-4 transition hover:-translate-y-1 hover:border-white/20"
               >
                 <p className="text-xs uppercase tracking-[0.25em] text-text-muted">{card.issuer}</p>
