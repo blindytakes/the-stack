@@ -34,7 +34,7 @@ export default async function CardsPage() {
         {sorted.map((card) => (
           <Link
             key={card.slug}
-            href={`/cards/${card.slug}`}
+            href={`/cards/${card.slug}?src=cards_directory`}
             className="group rounded-2xl border border-white/10 bg-bg-surface p-5 transition hover:-translate-y-1 hover:border-white/20"
           >
             <p className="text-xs text-text-muted">{card.issuer}</p>

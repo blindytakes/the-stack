@@ -61,6 +61,7 @@ export type CardDetail = CardRecord & {
   regularAprMax?: number;
   foreignTxFee: number;
   applyUrl?: string;
+  affiliateUrl?: string;
   rewards: RewardDetail[];
   signUpBonuses: SignUpBonusDetail[];
   benefits: BenefitDetail[];
@@ -267,6 +268,7 @@ function seedToCardDetail(seed: CardSeedRecord): CardDetail {
     regularAprMax: seed.regularAprMax,
     foreignTxFee: seed.foreignTxFee ?? 0,
     applyUrl: seed.applyUrl,
+    affiliateUrl: seed.affiliateUrl,
     rewards: (seed.rewards ?? []).map((r) => ({
       category: r.category,
       rate: r.rate,
@@ -317,6 +319,7 @@ export function toCardDetailFromDb(row: DbCardDetailRow, seedBySlug: Map<string,
     regularAprMax: row.regularAprMax != null ? Number(row.regularAprMax) : undefined,
     foreignTxFee: Number(row.foreignTxFee),
     applyUrl: row.applyUrl ?? undefined,
+    affiliateUrl: row.affiliateUrl ?? undefined,
     rewards: row.rewards.map((r) => ({
       category: spendingCategoryFromDb[r.category] ?? 'other',
       rate: Number(r.rate),

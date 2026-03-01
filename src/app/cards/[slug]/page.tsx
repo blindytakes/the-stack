@@ -4,8 +4,14 @@ import { notFound } from 'next/navigation';
 import { getCardBySlug, getAllCardSlugs } from '@/lib/cards';
 import type { RewardDetail, BenefitDetail, SignUpBonusDetail, TransferPartnerDetail } from '@/lib/cards';
 import { formatCategory } from '@/lib/format';
+import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
+import { AffiliateLink } from '@/components/analytics/affiliate-link';
+import { trackedSourceSchema } from '@/lib/tracking';
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = {
+  params: Promise<{ slug: string }>;
+  searchParams: Promise<{ src?: string | string[] }>;
+};
 
 export async function generateStaticParams() {
   const slugs = await getAllCardSlugs();
@@ -230,13 +236,35 @@ function ProsConsSection({ pros, cons }: { pros?: string[]; cons?: string[] }) {
   );
 }
 
-export default async function CardDetailPage({ params }: Props) {
+function firstParam(value: string | string[] | undefined) {
+  if (Array.isArray(value)) return value[0];
+  return value;
+}
+
+export default async function CardDetailPage({ params, searchParams }: Props) {
   const { slug } = await params;
+  const search = await searchParams;
   const card = await getCardBySlug(slug);
   if (!card) notFound();
+  const sourceInput = firstParam(search.src) ?? 'card_detail';
+  const source = trackedSourceSchema.safeParse(sourceInput).success
+    ? sourceInput
+    : 'card_detail';
+  const outboundApplyUrl = card.affiliateUrl ?? card.applyUrl;
+  const applyClickHref = outboundApplyUrl
+    ? `/api/affiliate/click?${new URLSearchParams({
+        card_slug: card.slug,
+        source,
+        target: outboundApplyUrl
+      }).toString()}`
+    : null;
 
   return (
     <div className="container-page pt-12 pb-16">
+      <TrackFunnelEventOnView
+        event="card_detail_view"
+        properties={{ source, card_slug: card.slug, path: `/cards/${card.slug}` }}
+      />
       {/* Breadcrumb */}
       <nav className="mb-8 text-sm text-text-muted">
         <Link href="/cards" className="hover:text-text-secondary transition">Cards</Link>
@@ -325,6 +353,16 @@ export default async function CardDetailPage({ params }: Props) {
               </span>
             ))}
           </div>
+          {applyClickHref && (
+            <AffiliateLink
+              href={applyClickHref}
+              cardSlug={card.slug}
+              source={source}
+              className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
+            >
+              Apply Now
+            </AffiliateLink>
+          )}
         </div>
       </div>
 
