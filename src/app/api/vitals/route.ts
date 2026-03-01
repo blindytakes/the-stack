@@ -5,7 +5,7 @@ import { recordWebVital } from '@/lib/metrics';
 import { badRequest, parseJsonBody } from '@/lib/api-helpers';
 
 const webVitalSchema = z.object({
-  name: z.enum(['LCP', 'FID', 'CLS', 'INP', 'TTFB']),
+  name: z.enum(['LCP', 'CLS', 'INP', 'TTFB']),
   value: z.number().finite().nonnegative(),
   path: z.string().min(1).max(2048),
   device: z.enum(['mobile', 'desktop'])

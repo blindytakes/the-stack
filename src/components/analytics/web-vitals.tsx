@@ -3,7 +3,7 @@
 import { useReportWebVitals } from 'next/web-vitals';
 
 type WebVitalPayload = {
-  name: 'LCP' | 'FID' | 'CLS' | 'INP' | 'TTFB';
+  name: 'LCP' | 'CLS' | 'INP' | 'TTFB';
   value: number;
   path: string;
   device: 'mobile' | 'desktop';
@@ -23,7 +23,7 @@ function normalizePathToRoute(pathname: string): string {
 
 export function WebVitalsReporter() {
   useReportWebVitals((metric) => {
-    const supported = ['LCP', 'FID', 'CLS', 'INP', 'TTFB'] as const;
+    const supported = ['LCP', 'CLS', 'INP', 'TTFB'] as const;
     if (!supported.includes(metric.name as (typeof supported)[number])) {
       return;
     }
