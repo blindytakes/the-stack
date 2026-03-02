@@ -6,6 +6,16 @@ import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import { Turnstile, type TurnstileHandle } from '@/components/turnstile';
 
+/**
+ * Newsletter signup form UI.
+ *
+ * Flow:
+ * - Collect email + source metadata.
+ * - Collect Turnstile token when widget is available.
+ * - POST to `/api/newsletter/subscribe`.
+ * - Reset Turnstile in `finally` so each submit uses a fresh token.
+ */
+
 type NewsletterSignupProps = {
   source?: string;
   heading?: string;

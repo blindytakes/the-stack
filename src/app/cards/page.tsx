@@ -3,6 +3,13 @@ import Link from 'next/link';
 import { getCardsData } from '@/lib/cards';
 import { formatCategory } from '@/lib/format';
 
+/**
+ * Card directory page.
+ *
+ * `force-dynamic` ensures this page is rendered at request time so deploy/build
+ * does not depend on live DB availability.
+ */
+
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {

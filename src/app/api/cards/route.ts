@@ -3,6 +3,14 @@ import { filterCards, getCardsData, paginateCards, cardsQuerySchema } from '@/li
 import { instrumentedApi } from '@/lib/api-route';
 import { badRequest } from '@/lib/api-helpers';
 
+/**
+ * Card listing API endpoint.
+ *
+ * Responsibilities:
+ * - Parse and validate query-string filters (issuer, category, fee, pagination).
+ * - Load active card records from the canonical card data service.
+ * - Apply filtering + pagination in-process and return metadata for clients.
+ */
 export async function GET(req: Request) {
   return instrumentedApi('/api/cards', 'GET', async () => {
     const url = new URL(req.url);

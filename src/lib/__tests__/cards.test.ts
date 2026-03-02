@@ -5,6 +5,15 @@ import type { CardRecord, DbCardRow, DbCardDetailRow } from '../cards';
 import { cardSeedRecordSchema } from '../card-seed-schema';
 import type { CardSeedRecord } from '../card-seed-schema';
 
+/**
+ * Card domain test suite.
+ *
+ * Covers:
+ * - filter/pagination/query parsing behavior
+ * - DB row -> app model mapping logic
+ * - schema validation and regression cases (especially numeric zero values)
+ */
+
 /* ── Helpers ──────────────────────────────────────────────── */
 
 function makeCard(overrides: Partial<CardRecord> = {}): CardRecord {

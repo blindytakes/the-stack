@@ -1,6 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { applyIpRateLimit, getClientIp } from '../rate-limit';
 
+/**
+ * Rate-limit unit coverage.
+ *
+ * Focus:
+ * - in-memory fallback enforcement semantics
+ * - namespace isolation
+ * - custom 429 messaging
+ * - IP header precedence used by limiter keys
+ */
+
 describe('applyIpRateLimit (in-memory fallback)', () => {
   it('allows requests up to the configured limit', async () => {
     const config = {

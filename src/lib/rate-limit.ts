@@ -2,6 +2,17 @@ import { NextResponse } from 'next/server';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 
+/**
+ * Shared per-IP rate-limiting utilities for API routes.
+ *
+ * Runtime behavior:
+ * - Primary path: Upstash Redis (`@upstash/ratelimit`) for shared limits across instances.
+ * - Local/dev path: in-memory counter fallback when Redis env vars are not present.
+ * - Failure mode: fail-open if Redis is configured but temporarily unreachable, so user traffic is not blocked.
+ *
+ * All endpoints pass a `namespace` so limits are isolated per API use-case.
+ */
+
 // ---------------------------------------------------------------------------
 // IP extraction
 // ---------------------------------------------------------------------------
@@ -47,6 +58,7 @@ export type RateLimitConfig = {
 // ---------------------------------------------------------------------------
 
 function isUpstashConfigured(): boolean {
+  // Accept either native Upstash var names or Vercel integration KV aliases.
   const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
   const token =
     process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
@@ -58,6 +70,7 @@ const _limiters = new Map<string, Ratelimit>();
 let _warnedMissingUpstashInProd = false;
 
 function getLimiter(config: RateLimitConfig): Ratelimit {
+  // Cache one limiter per unique config so every request doesn't re-create SDK objects.
   const cacheKey = `${config.namespace}:${config.limit}:${config.window}:${config.algorithm ?? 'sliding'}`;
   let limiter = _limiters.get(cacheKey);
   if (!limiter) {
@@ -112,6 +125,7 @@ function applyInMemoryLimit(
   ip: string,
   config: RateLimitConfig
 ): NextResponse | null {
+  // This is a simple fixed-window counter used only as a non-shared fallback.
   const key = `${config.namespace}:${ip}`;
   const windowMs = parseWindowMs(config.window);
   const now = Date.now();
@@ -152,6 +166,7 @@ export async function applyIpRateLimit(
   req: Request,
   config: RateLimitConfig
 ): Promise<NextResponse | null> {
+  // Every endpoint uses a shared IP extraction strategy before enforcing limits.
   const ip = getClientIp(req);
 
   if (isUpstashConfigured()) {
@@ -159,7 +174,7 @@ export async function applyIpRateLimit(
       const limiter = getLimiter(config);
       const result = await limiter.limit(ip);
 
-      if (result.success) return null;
+      if (result.success) return null; // Allowed, route handler continues.
 
       const retryAfter = Math.max(
         1,
@@ -170,7 +185,7 @@ export async function applyIpRateLimit(
         { status: 429, headers: { 'Retry-After': String(retryAfter) } }
       );
     } catch (error) {
-      // Fail open — don't block real users if Redis is unreachable
+      // Fail open: preserve availability if upstream Redis is degraded.
       console.error('[rate-limit] Upstash error, failing open', {
         namespace: config.namespace,
         error: error instanceof Error ? error.message : String(error)

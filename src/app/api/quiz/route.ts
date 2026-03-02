@@ -4,6 +4,15 @@ import { instrumentedApi } from '@/lib/api-route';
 import { getCardsData } from '@/lib/cards';
 import { badRequest, parseJsonBody } from '@/lib/api-helpers';
 
+/**
+ * Quiz scoring endpoint.
+ *
+ * Flow:
+ * - Validate JSON body against quiz schema.
+ * - Load current active cards.
+ * - Score and rank matches with quiz-engine heuristics.
+ * - Return ranked recommendations for client rendering.
+ */
 export async function POST(req: Request) {
   return instrumentedApi('/api/quiz', 'POST', async () => {
     const body = await parseJsonBody(req);

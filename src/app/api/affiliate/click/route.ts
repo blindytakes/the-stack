@@ -7,6 +7,16 @@ import { getAffiliateEnv } from '@/lib/env';
 import { trackedSourceSchema } from '@/lib/tracking';
 import { applyIpRateLimit } from '@/lib/rate-limit';
 
+/**
+ * Affiliate click redirect endpoint.
+ *
+ * Responsibilities:
+ * - Validate query parameters and tracking metadata.
+ * - Enforce per-IP rate limiting to reduce automated abuse.
+ * - Enforce host allowlist before redirecting to an external URL.
+ * - Emit click tracking metrics before issuing a 307 redirect.
+ */
+
 const clickQuerySchema = z.object({
   card_slug: z.string().trim().min(1).max(120),
   source: trackedSourceSchema.default('card_detail'),

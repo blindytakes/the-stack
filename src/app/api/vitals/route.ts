@@ -6,6 +6,16 @@ import { badRequest, parseJsonBody } from '@/lib/api-helpers';
 import { normalizeVitalPathToRoute } from '@/lib/vitals-path';
 import { applyIpRateLimit } from '@/lib/rate-limit';
 
+/**
+ * Web Vitals ingestion endpoint.
+ *
+ * Responsibilities:
+ * - Apply per-IP throttling to protect ingestion volume.
+ * - Validate payload shape and acceptable vital names.
+ * - Normalize path values before recording metrics.
+ * - Return 204 on success for lightweight client beacons.
+ */
+
 const webVitalSchema = z.object({
   name: z.enum(['LCP', 'CLS', 'INP', 'TTFB']),
   value: z.number().finite().nonnegative(),

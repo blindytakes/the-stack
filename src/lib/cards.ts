@@ -2,6 +2,16 @@ import { z } from 'zod';
 import { CardType, CreditTier, Network, type Prisma } from '@prisma/client';
 import { db, isDatabaseConfigured } from '@/lib/db';
 
+/**
+ * Card data domain module.
+ *
+ * Provides:
+ * - Shared card-related types used across APIs/pages
+ * - Query parsing, filtering, and pagination helpers
+ * - Prisma-row -> app-model mappers for list and detail views
+ * - Database accessors for cards, card details, and slugs
+ */
+
 export const spendingCategoryValues = [
   'dining',
   'groceries',
@@ -94,6 +104,7 @@ export const cardsQuerySchema = z.object({
 
 export type CardsQuery = z.infer<typeof cardsQuerySchema>;
 
+// In-memory filtering for API/query flows after DB fetch.
 export function filterCards(cards: CardRecord[], query: CardsQuery) {
   return cards.filter((card) => {
     if (query.issuer && !card.issuer.toLowerCase().includes(query.issuer.toLowerCase())) {
@@ -172,6 +183,7 @@ function assertCardsDatabaseConfigured() {
   }
 }
 
+// Map Prisma list-query rows into the compact CardRecord used by directory/search views.
 export function toCardRecordFromDb(row: DbCardRow): CardRecord {
   return {
     slug: row.slug,
@@ -275,6 +287,7 @@ export function toCardDetailFromDb(row: DbCardDetailRow): CardDetail {
   };
 }
 
+// Fetch one active card by slug and map it to API/page detail shape.
 export async function getCardBySlug(slug: string): Promise<CardDetail | null> {
   assertCardsDatabaseConfigured();
 
@@ -291,6 +304,7 @@ export async function getCardBySlug(slug: string): Promise<CardDetail | null> {
   return row ? toCardDetailFromDb(row) : null;
 }
 
+// Used by static params and route generation to enumerate active card pages.
 export async function getAllCardSlugs(): Promise<string[]> {
   assertCardsDatabaseConfigured();
 

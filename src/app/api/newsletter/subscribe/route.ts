@@ -8,6 +8,19 @@ import { trackedSourceSchema } from '@/lib/tracking';
 import { applyIpRateLimit } from '@/lib/rate-limit';
 import { verifyTurnstileToken, isValidOrigin } from '@/lib/turnstile';
 
+/**
+ * Newsletter subscribe endpoint.
+ *
+ * Validation/enforcement order:
+ * 1) Origin check (cheap anti-CSRF guard)
+ * 2) Per-IP rate limit (abuse throttling)
+ * 3) JSON/schema validation
+ * 4) Turnstile verification (bot defense)
+ * 5) Database upsert + provider sync
+ *
+ * The order is intentional to reject bad requests before expensive operations.
+ */
+
 const subscribeSchema = z.object({
   email: z
     .string()
@@ -54,7 +67,7 @@ export async function POST(req: Request) {
       return badRequest('Please provide a valid email address');
     }
 
-    // 3. Turnstile verification (skipped when TURNSTILE_SECRET_KEY is unset)
+    // 3. Turnstile verification (non-production may skip when secret is unset)
     const turnstileOk = await verifyTurnstileToken(parsed.data.turnstileToken, req);
     if (!turnstileOk) {
       return badRequest('Challenge verification failed. Please try again.');

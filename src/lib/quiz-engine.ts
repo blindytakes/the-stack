@@ -2,6 +2,13 @@ import { z } from 'zod';
 import type { CardRecord } from '@/lib/cards';
 import { spendingCategoryValues } from '@/lib/cards';
 
+/**
+ * Quiz ranking logic for card recommendations.
+ *
+ * The model is heuristic and deterministic: each eligible card gets
+ * points/penalties for goal fit, spend-category fit, and fee tolerance.
+ */
+
 export const quizRequestSchema = z.object({
   goal: z.enum(['cashback', 'travel', 'flexibility']),
   spend: z.enum(spendingCategoryValues),
@@ -50,6 +57,7 @@ function scoreCard(card: CardRecord, input: QuizRequest) {
 
 export type QuizResult = CardRecord & { score: number };
 
+// Return highest scoring eligible cards first, trimmed to top 3 for the quiz UI.
 export function rankQuizResults(cards: CardRecord[], input: QuizRequest): QuizResult[] {
   const eligible = cards.filter((card) => creditRank[card.creditTierMin] <= creditRank[input.credit]);
 

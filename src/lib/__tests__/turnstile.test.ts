@@ -1,6 +1,15 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
 import { verifyTurnstileToken, isValidOrigin } from '../turnstile';
 
+/**
+ * Turnstile helper unit coverage.
+ *
+ * Focus:
+ * - production vs non-production behavior when secret is absent
+ * - success/failure/error outcomes from Cloudflare verification calls
+ * - Origin/Host matching behavior for request validation
+ */
+
 describe('verifyTurnstileToken', () => {
   beforeEach(() => {
     vi.stubEnv('TURNSTILE_SECRET_KEY', '');

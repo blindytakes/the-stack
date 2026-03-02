@@ -3,6 +3,13 @@ import { instrumentedApi } from '@/lib/api-route';
 import { db } from '@/lib/db';
 import { getNewsletterProviderStatus } from '@/lib/newsletter/provider';
 
+/**
+ * Health-check endpoint used by uptime checks and deploy diagnostics.
+ *
+ * Signals:
+ * - `ok`: database reachable and newsletter provider config healthy
+ * - `degraded`: missing DB config, failed DB ping, or newsletter provider misconfig
+ */
 export async function GET() {
   return instrumentedApi('/api/health', 'GET', async () => {
     const newsletter = getNewsletterProviderStatus();
