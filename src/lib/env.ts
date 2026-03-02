@@ -4,15 +4,22 @@ const resendApiKeySchema = z.string().trim().regex(/^re_[A-Za-z0-9_]+$/, {
   message: 'RESEND_API_KEY format is invalid'
 });
 
+const beehiivApiKeySchema = z.string().trim().min(20, {
+  message: 'BEEHIIV_API_KEY format is invalid'
+});
+
 const uuidSchema = z.string().trim().uuid({
-  message: 'RESEND_AUDIENCE_ID must be a UUID'
+  message: 'Value must be a UUID'
 });
 
 const newsletterEnvSchema = z
   .object({
-    NEWSLETTER_PROVIDER: z.enum(['none', 'resend']).default('none'),
+    NEWSLETTER_PROVIDER: z.enum(['none', 'resend', 'beehiiv']).default('none'),
     RESEND_API_KEY: resendApiKeySchema.optional(),
     RESEND_AUDIENCE_ID: uuidSchema.optional(),
+    BEEHIIV_API_KEY: beehiivApiKeySchema.optional(),
+    BEEHIIV_PUBLICATION_ID: uuidSchema.optional(),
+    BEEHIIV_SEND_WELCOME_EMAIL: z.coerce.boolean().default(true),
     NEWSLETTER_SYNC_MAX_RETRIES: z.coerce.number().int().min(0).max(5).default(2)
   })
   .superRefine((data, ctx) => {
@@ -30,6 +37,24 @@ const newsletterEnvSchema = z
           code: z.ZodIssueCode.custom,
           path: ['RESEND_AUDIENCE_ID'],
           message: 'RESEND_AUDIENCE_ID is required when NEWSLETTER_PROVIDER=resend'
+        });
+      }
+    }
+
+    if (data.NEWSLETTER_PROVIDER === 'beehiiv') {
+      if (!data.BEEHIIV_API_KEY) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['BEEHIIV_API_KEY'],
+          message: 'BEEHIIV_API_KEY is required when NEWSLETTER_PROVIDER=beehiiv'
+        });
+      }
+
+      if (!data.BEEHIIV_PUBLICATION_ID) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['BEEHIIV_PUBLICATION_ID'],
+          message: 'BEEHIIV_PUBLICATION_ID is required when NEWSLETTER_PROVIDER=beehiiv'
         });
       }
     }

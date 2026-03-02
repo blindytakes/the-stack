@@ -20,10 +20,18 @@ Minimum:
 
 Newsletter provider integration:
 
-- `NEWSLETTER_PROVIDER` (`none` or `resend`)
+- `NEWSLETTER_PROVIDER` (`none`, `resend`, or `beehiiv`)
+- `NEWSLETTER_SYNC_MAX_RETRIES` (default `2`)
+
+Resend:
 - `RESEND_API_KEY` (required when provider is `resend`)
 - `RESEND_AUDIENCE_ID` (required when provider is `resend`)
-- `NEWSLETTER_SYNC_MAX_RETRIES` (default `2`)
+
+Beehiiv:
+- `BEEHIIV_API_KEY` (required when provider is `beehiiv`)
+- `BEEHIIV_PUBLICATION_ID` (required when provider is `beehiiv`)
+- `BEEHIIV_SEND_WELCOME_EMAIL` (`true`/`false`, default `true`)
+
 - `SUPPORT_EMAIL` (used on the contact page)
 
 Affiliate tracking:

@@ -7,7 +7,7 @@ export type NewsletterSyncInput = {
 };
 
 export type NewsletterSyncResult = {
-  provider: 'none' | 'resend';
+  provider: 'none' | 'resend' | 'beehiiv';
   status: 'subscribed' | 'already_subscribed' | 'skipped';
   attempts: number;
 };
@@ -23,7 +23,7 @@ class NewsletterSyncError extends Error {
 }
 
 type NewsletterProvider = {
-  name: 'none' | 'resend';
+  name: 'none' | 'resend' | 'beehiiv';
   upsertSubscriber(input: NewsletterSyncInput): Promise<'subscribed' | 'already_subscribed'>;
 };
 
@@ -90,12 +90,75 @@ function createResendProvider(apiKey: string, audienceId: string): NewsletterPro
   };
 }
 
+function createBeehiivProvider(
+  apiKey: string,
+  publicationId: string,
+  sendWelcomeEmail: boolean
+): NewsletterProvider {
+  return {
+    name: 'beehiiv',
+    async upsertSubscriber(input) {
+      let response: Response;
+      try {
+        response = await fetch(
+          `https://api.beehiiv.com/v2/publications/${publicationId}/subscriptions`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${apiKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: input.email,
+              reactivate_existing: true,
+              send_welcome_email: sendWelcomeEmail,
+              utm_source: input.source
+            })
+          }
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown fetch error';
+        throw new NewsletterSyncError(`Beehiiv network error: ${message}`, true);
+      }
+
+      if (response.ok) {
+        return 'subscribed';
+      }
+
+      const rawBody = await response.json().catch(() => null);
+      const bodyMessage = extractProviderErrorMessage(rawBody).toLowerCase();
+      const responseSummary = `Beehiiv API ${response.status}${
+        bodyMessage ? `: ${bodyMessage}` : ''
+      }`;
+
+      const alreadyExists =
+        response.status === 409 ||
+        bodyMessage.includes('already') ||
+        bodyMessage.includes('exists') ||
+        bodyMessage.includes('subscribed');
+      if (alreadyExists) {
+        return 'already_subscribed';
+      }
+
+      throw new NewsletterSyncError(responseSummary, isRetryableStatus(response.status));
+    }
+  };
+}
+
 function resolveProvider(config: NewsletterEnv): NewsletterProvider {
   if (config.NEWSLETTER_PROVIDER === 'none') {
     return createNoopProvider();
   }
 
-  return createResendProvider(config.RESEND_API_KEY!, config.RESEND_AUDIENCE_ID!);
+  if (config.NEWSLETTER_PROVIDER === 'resend') {
+    return createResendProvider(config.RESEND_API_KEY!, config.RESEND_AUDIENCE_ID!);
+  }
+
+  return createBeehiivProvider(
+    config.BEEHIIV_API_KEY!,
+    config.BEEHIIV_PUBLICATION_ID!,
+    config.BEEHIIV_SEND_WELCOME_EMAIL
+  );
 }
 
 export function getNewsletterProviderStatus() {
@@ -113,6 +176,14 @@ export function getNewsletterProviderStatus() {
       ok: true as const,
       provider: 'none' as const,
       message: 'disabled'
+    };
+  }
+
+  if (env.config.NEWSLETTER_PROVIDER === 'beehiiv') {
+    return {
+      ok: true as const,
+      provider: 'beehiiv' as const,
+      message: 'configured'
     };
   }
 
