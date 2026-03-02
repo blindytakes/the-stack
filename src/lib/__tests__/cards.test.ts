@@ -125,6 +125,20 @@ describe('zero-value preservation in seed schema', () => {
   });
 });
 
+describe('seed URL safety', () => {
+  it('rejects applyUrl values with non-http protocols', () => {
+    const seed = makeSeed({ applyUrl: 'javascript:alert(1)' });
+    const parsed = cardSeedRecordSchema.safeParse(seed);
+    expect(parsed.success).toBe(false);
+  });
+
+  it('rejects affiliateUrl values with non-http protocols', () => {
+    const seed = makeSeed({ affiliateUrl: 'data:text/html,hello' });
+    const parsed = cardSeedRecordSchema.safeParse(seed);
+    expect(parsed.success).toBe(false);
+  });
+});
+
 /* ── filterCards ──────────────────────────────────────────── */
 
 describe('filterCards', () => {

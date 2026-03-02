@@ -17,6 +17,11 @@ export const spendingCategorySchema = z.enum(spendingCategoryValues);
 
 export type SpendingCategoryValue = z.infer<typeof spendingCategorySchema>;
 
+const httpUrlSchema = z.string().url().refine((value) => {
+  const parsed = new URL(value);
+  return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+}, 'URL must use http or https');
+
 const rewardStructureSchema = z.object({
   category: spendingCategorySchema,
   rate: z.number(),
@@ -75,9 +80,9 @@ export const cardSeedRecordSchema = z.object({
   regularAprMin: z.number().optional(),
   regularAprMax: z.number().optional(),
   foreignTxFee: z.number().optional(),
-  imageUrl: z.string().url().optional(),
-  applyUrl: z.string().url().optional(),
-  affiliateUrl: z.string().url().optional(),
+  imageUrl: httpUrlSchema.optional(),
+  applyUrl: httpUrlSchema.optional(),
+  affiliateUrl: httpUrlSchema.optional(),
   isActive: z.boolean().optional(),
   lastVerified: z.string().datetime().optional(),
   rewards: z.array(rewardStructureSchema).optional(),

@@ -185,12 +185,12 @@ export async function applyIpRateLimit(
         { status: 429, headers: { 'Retry-After': String(retryAfter) } }
       );
     } catch (error) {
-      // Fail open: preserve availability if upstream Redis is degraded.
-      console.error('[rate-limit] Upstash error, failing open', {
+      // Prefer a local fallback over fail-open so abuse controls still apply.
+      console.error('[rate-limit] Upstash error, falling back to in-memory limiter', {
         namespace: config.namespace,
         error: error instanceof Error ? error.message : String(error)
       });
-      return null;
+      return applyInMemoryLimit(ip, config);
     }
   }
 

@@ -1,4 +1,5 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi, afterEach } from 'vitest';
+import { Redis } from '@upstash/redis';
 import { applyIpRateLimit, getClientIp } from '../rate-limit';
 
 /**
@@ -10,6 +11,11 @@ import { applyIpRateLimit, getClientIp } from '../rate-limit';
  * - custom 429 messaging
  * - IP header precedence used by limiter keys
  */
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+});
 
 describe('applyIpRateLimit (in-memory fallback)', () => {
   it('allows requests up to the configured limit', async () => {
@@ -75,6 +81,30 @@ describe('applyIpRateLimit (in-memory fallback)', () => {
     const crossNs = await applyIpRateLimit(req, { namespace: 'ns-b', limit: 1, window: '1 m' });
 
     expect(crossNs).toBeNull();
+  });
+
+  it('falls back to in-memory limits when Upstash requests fail', async () => {
+    vi.stubEnv('UPSTASH_REDIS_REST_URL', 'https://example.com');
+    vi.stubEnv('UPSTASH_REDIS_REST_TOKEN', 'test-token');
+    vi.spyOn(Redis, 'fromEnv').mockImplementation(() => {
+      throw new Error('upstash down');
+    });
+
+    const req = new Request('http://localhost', {
+      headers: { 'x-forwarded-for': '10.0.0.5' }
+    });
+    const config = {
+      namespace: 'test-upstash-fallback',
+      limit: 1,
+      window: '1 m' as const
+    };
+
+    const first = await applyIpRateLimit(req, config);
+    const second = await applyIpRateLimit(req, config);
+
+    expect(first).toBeNull();
+    expect(second).not.toBeNull();
+    expect(second!.status).toBe(429);
   });
 });
 
