@@ -5,6 +5,7 @@ import { badRequest } from '@/lib/api-helpers';
 import { recordAffiliateClick } from '@/lib/metrics';
 import { getAffiliateEnv } from '@/lib/env';
 import { trackedSourceSchema } from '@/lib/tracking';
+import { applyIpRateLimit } from '@/lib/rate-limit';
 
 const clickQuerySchema = z.object({
   card_slug: z.string().trim().min(1).max(120),
@@ -31,6 +32,15 @@ function normalizeTarget(rawTarget: string, allowedHosts: string[]) {
 
 export async function GET(req: Request) {
   return instrumentedApi('/api/affiliate/click', 'GET', async () => {
+    const rateLimited = await applyIpRateLimit(req, {
+      namespace: 'affiliate_click',
+      limit: 60,
+      window: '1 m',
+      algorithm: 'fixed',
+      message: 'Too many affiliate click requests. Please try again shortly.'
+    });
+    if (rateLimited) return rateLimited;
+
     const affiliateEnv = getAffiliateEnv();
     if (!affiliateEnv.ok) {
       console.error('[affiliate] allowlist config invalid', {

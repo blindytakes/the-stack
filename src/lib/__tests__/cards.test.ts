@@ -269,56 +269,48 @@ function makeDbCardDetailRow(overrides: Partial<DbCardDetailRow> = {}): DbCardDe
   } as DbCardDetailRow;
 }
 
-const emptySeedMap = new Map<string, CardSeedRecord>();
-
 /* ── toCardRecordFromDb (DB mapper regression) ──────────────── */
 
 describe('toCardRecordFromDb', () => {
   it('maps basic fields correctly', () => {
     const row = makeDbCardRow();
-    const result = toCardRecordFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.slug).toBe('test-card');
-    expect(result!.name).toBe('Test Card');
-    expect(result!.issuer).toBe('TestBank');
-    expect(result!.cardType).toBe('personal');
-    expect(result!.creditTierMin).toBe('good');
+    const result = toCardRecordFromDb(row);
+    expect(result.slug).toBe('test-card');
+    expect(result.name).toBe('Test Card');
+    expect(result.issuer).toBe('TestBank');
+    expect(result.cardType).toBe('personal');
+    expect(result.creditTierMin).toBe('good');
   });
 
   it('preserves editorRating of 0 (not coerced to undefined)', () => {
     const row = makeDbCardRow({ editorRating: new Prisma.Decimal(0) });
-    const result = toCardRecordFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.editorRating).toBe(0);
+    const result = toCardRecordFromDb(row);
+    expect(result.editorRating).toBe(0);
   });
 
   it('preserves editorRating with positive value', () => {
     const row = makeDbCardRow({ editorRating: new Prisma.Decimal(4.5) });
-    const result = toCardRecordFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.editorRating).toBe(4.5);
+    const result = toCardRecordFromDb(row);
+    expect(result.editorRating).toBe(4.5);
   });
 
   it('returns undefined for null editorRating', () => {
     const row = makeDbCardRow({ editorRating: null });
-    const result = toCardRecordFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.editorRating).toBeUndefined();
+    const result = toCardRecordFromDb(row);
+    expect(result.editorRating).toBeUndefined();
   });
 
   it('converts annualFee of 0 to number 0', () => {
     const row = makeDbCardRow({ annualFee: new Prisma.Decimal(0) });
-    const result = toCardRecordFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.annualFee).toBe(0);
+    const result = toCardRecordFromDb(row);
+    expect(result.annualFee).toBe(0);
   });
 
   it('returns undefined for null description/longDescription', () => {
     const row = makeDbCardRow({ description: null, longDescription: null });
-    const result = toCardRecordFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.description).toBeUndefined();
-    expect(result!.longDescription).toBeUndefined();
+    const result = toCardRecordFromDb(row);
+    expect(result.description).toBeUndefined();
+    expect(result.longDescription).toBeUndefined();
   });
 
   it('derives rewardType from first reward rateType', () => {
@@ -331,19 +323,14 @@ describe('toCardRecordFromDb', () => {
         }
       ]
     });
-    const result = toCardRecordFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.rewardType).toBe('miles');
+    const result = toCardRecordFromDb(row);
+    expect(result.rewardType).toBe('miles');
   });
 
-  it('uses seed data for rewardType when available', () => {
-    const seedMap = new Map<string, CardSeedRecord>([
-      ['test-card', makeSeed({ slug: 'test-card', rewardType: 'points' })]
-    ]);
-    const row = makeDbCardRow();
-    const result = toCardRecordFromDb(row, seedMap);
-    expect(result).not.toBeNull();
-    expect(result!.rewardType).toBe('points');
+  it('defaults rewardType to cashback when no rewards exist', () => {
+    const row = makeDbCardRow({ rewards: [] });
+    const result = toCardRecordFromDb(row);
+    expect(result.rewardType).toBe('cashback');
   });
 });
 
@@ -355,18 +342,16 @@ describe('toCardDetailFromDb', () => {
       regularAprMin: new Prisma.Decimal(0),
       regularAprMax: new Prisma.Decimal(29.99)
     });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.regularAprMin).toBe(0);
-    expect(result!.regularAprMax).toBe(29.99);
+    const result = toCardDetailFromDb(row);
+    expect(result.regularAprMin).toBe(0);
+    expect(result.regularAprMax).toBe(29.99);
   });
 
   it('returns undefined for null regularAprMin/Max', () => {
     const row = makeDbCardDetailRow({ regularAprMin: null, regularAprMax: null });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.regularAprMin).toBeUndefined();
-    expect(result!.regularAprMax).toBeUndefined();
+    const result = toCardDetailFromDb(row);
+    expect(result.regularAprMin).toBeUndefined();
+    expect(result.regularAprMax).toBeUndefined();
   });
 
   it('preserves reward capAmount of 0 (not coerced to undefined)', () => {
@@ -379,9 +364,8 @@ describe('toCardDetailFromDb', () => {
         }
       ]
     });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.rewards[0].capAmount).toBe(0);
+    const result = toCardDetailFromDb(row);
+    expect(result.rewards[0].capAmount).toBe(0);
   });
 
   it('preserves reward capAmount with positive value', () => {
@@ -394,9 +378,8 @@ describe('toCardDetailFromDb', () => {
         }
       ]
     });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.rewards[0].capAmount).toBe(500);
+    const result = toCardDetailFromDb(row);
+    expect(result.rewards[0].capAmount).toBe(500);
   });
 
   it('returns undefined for null reward capAmount', () => {
@@ -409,9 +392,8 @@ describe('toCardDetailFromDb', () => {
         }
       ]
     });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.rewards[0].capAmount).toBeUndefined();
+    const result = toCardDetailFromDb(row);
+    expect(result.rewards[0].capAmount).toBeUndefined();
   });
 
   it('preserves isRotating: false (not coerced to undefined)', () => {
@@ -424,9 +406,8 @@ describe('toCardDetailFromDb', () => {
         }
       ]
     });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.rewards[0].isRotating).toBe(false);
+    const result = toCardDetailFromDb(row);
+    expect(result.rewards[0].isRotating).toBe(false);
   });
 
   it('preserves benefit estimatedValue of 0 (not coerced to undefined)', () => {
@@ -439,9 +420,8 @@ describe('toCardDetailFromDb', () => {
         }
       ]
     });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.benefits[0].estimatedValue).toBe(0);
+    const result = toCardDetailFromDb(row);
+    expect(result.benefits[0].estimatedValue).toBe(0);
   });
 
   it('returns undefined for null benefit estimatedValue', () => {
@@ -454,23 +434,20 @@ describe('toCardDetailFromDb', () => {
         }
       ]
     });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.benefits[0].estimatedValue).toBeUndefined();
+    const result = toCardDetailFromDb(row);
+    expect(result.benefits[0].estimatedValue).toBeUndefined();
   });
 
   it('maps foreignTxFee of 0 correctly', () => {
     const row = makeDbCardDetailRow({ foreignTxFee: new Prisma.Decimal(0) });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.foreignTxFee).toBe(0);
+    const result = toCardDetailFromDb(row);
+    expect(result.foreignTxFee).toBe(0);
   });
 
   it('maps network from DB enum', () => {
     const row = makeDbCardDetailRow({ network: 'VISA' });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.network).toBe('visa');
+    const result = toCardDetailFromDb(row);
+    expect(result.network).toBe('visa');
   });
 
   it('maps transfer partners correctly', () => {
@@ -483,11 +460,10 @@ describe('toCardDetailFromDb', () => {
         }
       ]
     });
-    const result = toCardDetailFromDb(row, emptySeedMap);
-    expect(result).not.toBeNull();
-    expect(result!.transferPartners).toHaveLength(1);
-    expect(result!.transferPartners[0].partnerName).toBe('United');
-    expect(result!.transferPartners[0].partnerType).toBe('airline');
-    expect(result!.transferPartners[0].transferRatio).toBe(1);
+    const result = toCardDetailFromDb(row);
+    expect(result.transferPartners).toHaveLength(1);
+    expect(result.transferPartners[0].partnerName).toBe('United');
+    expect(result.transferPartners[0].partnerType).toBe('airline');
+    expect(result.transferPartners[0].transferRatio).toBe(1);
   });
 });

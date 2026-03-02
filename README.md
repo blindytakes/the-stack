@@ -16,7 +16,7 @@ Open [http://localhost:3000](http://localhost:3000)
 
 Minimum:
 
-- `DATABASE_URL` (optional if you want JSON fallback only)
+- `DATABASE_URL` (required)
 
 Newsletter provider integration:
 
@@ -47,11 +47,8 @@ Analytics:
 
 ```bash
 npx prisma db push            # apply schema to your database
-npm run db:seed                # seed with sample card data
 npx prisma studio              # browse data in GUI
 ```
-
-The app works without a database — it falls back to the JSON seed data in `content/cards/`.
 
 ## Deliverability
 
@@ -68,7 +65,6 @@ See [docs/deliverability.md](docs/deliverability.md) for SPF/DKIM/DMARC and moni
 | `npm run test` | Run tests |
 | `npm run db:push` | Push Prisma schema to DB |
 | `npm run db:migrate` | Run Prisma migrations |
-| `npm run db:seed` | Seed database from JSON |
 | `npm run db:studio` | Open Prisma Studio |
 
 ## Stack

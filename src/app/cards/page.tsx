@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getCardsDataWithDbFallback } from '@/lib/cards';
+import { getCardsData } from '@/lib/cards';
 import { formatCategory } from '@/lib/format';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Card Directory',
@@ -9,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function CardsPage() {
-  const { cards } = await getCardsDataWithDbFallback();
+  const { cards } = await getCardsData();
 
   const sorted = [...cards].sort((a, b) => {
     if (a.issuer !== b.issuer) return a.issuer.localeCompare(b.issuer);

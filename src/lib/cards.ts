@@ -1,18 +1,34 @@
 import { z } from 'zod';
 import { CardType, CreditTier, Network, type Prisma } from '@prisma/client';
-import cardsJson from '../../content/cards/cards.json';
 import { db, isDatabaseConfigured } from '@/lib/db';
-import { cardsSeedDatasetSchema, type CardSeedRecord, type SpendingCategoryValue } from '@/lib/card-seed-schema';
+
+export const spendingCategoryValues = [
+  'dining',
+  'groceries',
+  'travel',
+  'gas',
+  'streaming',
+  'online_shopping',
+  'entertainment',
+  'utilities',
+  'all',
+  'other'
+] as const;
+
+export type SpendingCategoryValue = (typeof spendingCategoryValues)[number];
+export type CardTypeValue = 'personal' | 'business' | 'student' | 'secured';
+export type RewardTypeValue = 'cashback' | 'points' | 'miles';
+export type CreditTierValue = 'excellent' | 'good' | 'fair' | 'building';
 
 export type CardRecord = {
   slug: string;
   name: string;
   issuer: string;
-  cardType: CardSeedRecord['cardType'];
-  rewardType: CardSeedRecord['rewardType'];
+  cardType: CardTypeValue;
+  rewardType: RewardTypeValue;
   topCategories: SpendingCategoryValue[];
   annualFee: number;
-  creditTierMin: CardSeedRecord['creditTierMin'];
+  creditTierMin: CreditTierValue;
   headline: string;
   description?: string;
   longDescription?: string;
@@ -24,7 +40,7 @@ export type CardRecord = {
 export type RewardDetail = {
   category: SpendingCategoryValue;
   rate: number;
-  rateType: 'cashback' | 'points' | 'miles';
+  rateType: RewardTypeValue;
   capAmount?: number;
   capPeriod?: string;
   isRotating?: boolean;
@@ -68,34 +84,6 @@ export type CardDetail = CardRecord & {
   transferPartners: TransferPartnerDetail[];
 };
 
-function seedToCardRecord(seed: CardSeedRecord): CardRecord {
-  return {
-    slug: seed.slug,
-    name: seed.name,
-    issuer: seed.issuer,
-    cardType: seed.cardType,
-    rewardType: seed.rewardType,
-    topCategories: seed.topCategories,
-    annualFee: seed.annualFee,
-    creditTierMin: seed.creditTierMin,
-    headline: seed.headline,
-    description: seed.description,
-    longDescription: seed.longDescription,
-    editorRating: seed.editorRating,
-    pros: seed.pros,
-    cons: seed.cons
-  };
-}
-
-function getCardsSeedDataSafe(): CardSeedRecord[] | null {
-  const parsed = cardsSeedDatasetSchema.safeParse(cardsJson);
-  if (!parsed.success) {
-    console.error('[cards] seed json parse failed', parsed.error.flatten());
-    return null;
-  }
-  return parsed.data;
-}
-
 export const cardsQuerySchema = z.object({
   issuer: z.string().trim().min(1).optional(),
   category: z.string().trim().min(1).optional(),
@@ -137,14 +125,14 @@ export type DbCardRow = Prisma.CardGetPayload<{
   };
 }>;
 
-const creditTierFromDb: Record<CreditTier, CardRecord['creditTierMin']> = {
+const creditTierFromDb: Record<CreditTier, CreditTierValue> = {
   EXCELLENT: 'excellent',
   GOOD: 'good',
   FAIR: 'fair',
   BUILDING: 'building'
 };
 
-const cardTypeFromDb: Record<CardType, NonNullable<CardRecord['cardType']>> = {
+const cardTypeFromDb: Record<CardType, CardTypeValue> = {
   PERSONAL: 'personal',
   BUSINESS: 'business',
   STUDENT: 'student',
@@ -164,32 +152,37 @@ const spendingCategoryFromDb: Record<string, SpendingCategoryValue> = {
   OTHER: 'other'
 };
 
-export function toCardRecordFromDb(row: DbCardRow, seedBySlug: Map<string, CardSeedRecord>): CardRecord | null {
-  const seed = seedBySlug.get(row.slug);
-  const derivedRewardType: CardRecord['rewardType'] =
-    row.rewards[0]?.rateType === 'POINTS'
-      ? 'points'
-      : row.rewards[0]?.rateType === 'MILES'
-        ? 'miles'
-        : 'cashback';
+function deriveRewardType(rewards: DbCardRow['rewards']): RewardTypeValue {
+  const rateType = rewards[0]?.rateType;
+  if (rateType === 'POINTS') return 'points';
+  if (rateType === 'MILES') return 'miles';
+  return 'cashback';
+}
 
-  const derivedTopCategories: SpendingCategoryValue[] =
-    row.rewards.length > 0
-      ? row.rewards.map((reward) => spendingCategoryFromDb[reward.category] ?? 'other')
-      : ['all'];
+function deriveTopCategories(rewards: DbCardRow['rewards']): SpendingCategoryValue[] {
+  if (rewards.length === 0) return ['all'];
+  return Array.from(
+    new Set(rewards.map((reward) => spendingCategoryFromDb[reward.category] ?? 'other'))
+  );
+}
 
+function assertCardsDatabaseConfigured() {
+  if (!isDatabaseConfigured()) {
+    throw new Error('DATABASE_URL is required for card data');
+  }
+}
+
+export function toCardRecordFromDb(row: DbCardRow): CardRecord {
   return {
     slug: row.slug,
     name: row.name,
     issuer: row.issuer,
     cardType: cardTypeFromDb[row.cardType],
-    rewardType: seed?.rewardType ?? derivedRewardType,
-    topCategories: seed?.topCategories ?? derivedTopCategories,
+    rewardType: deriveRewardType(row.rewards),
+    topCategories: deriveTopCategories(row.rewards),
     annualFee: Number(row.annualFee),
     creditTierMin: creditTierFromDb[row.creditScoreMin],
-    headline:
-      seed?.headline ??
-      `${row.name} by ${row.issuer}${Number(row.annualFee) === 0 ? ' with no annual fee' : ''}`.trim(),
+    headline: `${row.name} by ${row.issuer}${Number(row.annualFee) === 0 ? ' with no annual fee' : ''}`.trim(),
     description: row.description ?? undefined,
     longDescription: row.longDescription ?? undefined,
     editorRating: row.editorRating != null ? Number(row.editorRating) : undefined,
@@ -198,43 +191,22 @@ export function toCardRecordFromDb(row: DbCardRow, seedBySlug: Map<string, CardS
   };
 }
 
-export async function getCardsDataWithDbFallback(): Promise<{
+export async function getCardsData(): Promise<{
   cards: CardRecord[];
-  source: 'db' | 'json';
+  source: 'db';
 }> {
-  const seedCards = getCardsSeedDataSafe();
+  assertCardsDatabaseConfigured();
 
-  if (!isDatabaseConfigured()) {
-    if (!seedCards) {
-      throw new Error('Card seed JSON is invalid and no database is configured');
-    }
-    return { cards: seedCards.map(seedToCardRecord), source: 'json' };
-  }
+  const rows = await db.card.findMany({
+    where: { isActive: true },
+    include: { rewards: true },
+    orderBy: [{ issuer: 'asc' }, { name: 'asc' }]
+  });
 
-  try {
-    const rows = await db.card.findMany({
-      where: { isActive: true },
-      include: { rewards: true },
-      orderBy: [{ issuer: 'asc' }, { name: 'asc' }]
-    });
-
-    const seedBySlug = new Map((seedCards ?? []).map((card) => [card.slug, card]));
-    const cards = rows
-      .map((row) => toCardRecordFromDb(row, seedBySlug))
-      .filter((card): card is CardRecord => Boolean(card));
-
-    if (cards.length > 0) {
-      return { cards, source: 'db' };
-    }
-  } catch (error) {
-    console.error('[cards] db read failed, falling back to json', error);
-  }
-
-  if (!seedCards) {
-    throw new Error('Card data unavailable: database read failed and seed JSON is invalid');
-  }
-
-  return { cards: seedCards.map(seedToCardRecord), source: 'json' };
+  return {
+    cards: rows.map((row) => toCardRecordFromDb(row)),
+    source: 'db'
+  };
 }
 
 const networkFromDb: Record<Network, string> = {
@@ -259,57 +231,8 @@ export type DbCardDetailRow = Prisma.CardGetPayload<{
   };
 }>;
 
-function seedToCardDetail(seed: CardSeedRecord): CardDetail {
-  return {
-    ...seedToCardRecord(seed),
-    network: seed.network,
-    introApr: seed.introApr,
-    regularAprMin: seed.regularAprMin,
-    regularAprMax: seed.regularAprMax,
-    foreignTxFee: seed.foreignTxFee ?? 0,
-    applyUrl: seed.applyUrl,
-    affiliateUrl: seed.affiliateUrl,
-    rewards: (seed.rewards ?? []).map((r) => ({
-      category: r.category,
-      rate: r.rate,
-      rateType: r.rateType,
-      capAmount: r.capAmount,
-      capPeriod: r.capPeriod,
-      isRotating: r.isRotating,
-      notes: r.notes
-    })),
-    signUpBonuses: (seed.signUpBonuses ?? []).map((b) => ({
-      bonusValue: b.bonusValue,
-      bonusType: b.bonusType,
-      bonusPoints: b.bonusPoints,
-      spendRequired: b.spendRequired,
-      spendPeriodDays: b.spendPeriodDays,
-      isCurrentOffer: b.isCurrentOffer
-    })),
-    benefits: (seed.benefits ?? []).map((b) => ({
-      category: b.category,
-      name: b.name,
-      description: b.description,
-      estimatedValue: b.estimatedValue,
-      activationMethod: b.activationMethod
-    })),
-    transferPartners: (seed.transferPartners ?? []).map((p) => ({
-      partnerName: p.partnerName,
-      partnerType: p.partnerType,
-      transferRatio: p.transferRatio ?? 1
-    }))
-  };
-}
-
-export function toCardDetailFromDb(row: DbCardDetailRow, seedBySlug: Map<string, CardSeedRecord>): CardDetail | null {
-  const seed = seedBySlug.get(row.slug);
-  const base = toCardRecordFromDb(
-    row as DbCardRow,
-    seedBySlug
-  );
-  if (!base) {
-    return seed ? seedToCardDetail(seed) : null;
-  }
+export function toCardDetailFromDb(row: DbCardDetailRow): CardDetail {
+  const base = toCardRecordFromDb(row);
 
   return {
     ...base,
@@ -353,46 +276,27 @@ export function toCardDetailFromDb(row: DbCardDetailRow, seedBySlug: Map<string,
 }
 
 export async function getCardBySlug(slug: string): Promise<CardDetail | null> {
-  const seedCards = getCardsSeedDataSafe();
+  assertCardsDatabaseConfigured();
 
-  if (isDatabaseConfigured()) {
-    try {
-      const row = await db.card.findUnique({
-        where: { slug, isActive: true },
-        include: {
-          rewards: true,
-          signUpBonuses: true,
-          benefits: true,
-          transferPartners: true
-        }
-      });
-
-      if (row) {
-        const seedBySlug = new Map((seedCards ?? []).map((c) => [c.slug, c]));
-        return toCardDetailFromDb(row, seedBySlug);
-      }
-    } catch (error) {
-      console.error('[cards] db read failed for slug', slug, error);
+  const row = await db.card.findFirst({
+    where: { slug, isActive: true },
+    include: {
+      rewards: true,
+      signUpBonuses: true,
+      benefits: true,
+      transferPartners: true
     }
-  }
+  });
 
-  const seed = seedCards?.find((c) => c.slug === slug);
-  return seed ? seedToCardDetail(seed) : null;
+  return row ? toCardDetailFromDb(row) : null;
 }
 
 export async function getAllCardSlugs(): Promise<string[]> {
-  if (isDatabaseConfigured()) {
-    try {
-      const rows = await db.card.findMany({
-        where: { isActive: true },
-        select: { slug: true }
-      });
-      if (rows.length > 0) return rows.map((r) => r.slug);
-    } catch {
-      // fall through to JSON
-    }
-  }
+  assertCardsDatabaseConfigured();
 
-  const seedCards = getCardsSeedDataSafe();
-  return seedCards?.map((c) => c.slug) ?? [];
+  const rows = await db.card.findMany({
+    where: { isActive: true },
+    select: { slug: true }
+  });
+  return rows.map((r) => r.slug);
 }

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { quizRequestSchema, rankQuizResults } from '@/lib/quiz-engine';
 import { instrumentedApi } from '@/lib/api-route';
-import { getCardsDataWithDbFallback } from '@/lib/cards';
+import { getCardsData } from '@/lib/cards';
 import { badRequest, parseJsonBody } from '@/lib/api-helpers';
 
 export async function POST(req: Request) {
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       return badRequest('Invalid payload');
     }
 
-    const { cards } = await getCardsDataWithDbFallback();
+    const { cards } = await getCardsData();
     const ranked = rankQuizResults(cards, parsed.data);
 
     return NextResponse.json({ results: ranked });

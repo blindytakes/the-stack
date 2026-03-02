@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { filterCards, getCardsDataWithDbFallback, paginateCards, cardsQuerySchema } from '@/lib/cards';
+import { filterCards, getCardsData, paginateCards, cardsQuerySchema } from '@/lib/cards';
 import { instrumentedApi } from '@/lib/api-route';
 import { badRequest } from '@/lib/api-helpers';
 
@@ -19,7 +19,7 @@ export async function GET(req: Request) {
       return badRequest('Invalid query params');
     }
 
-    const { cards: allCards } = await getCardsDataWithDbFallback();
+    const { cards: allCards } = await getCardsData();
     const filtered = filterCards(allCards, parsed.data);
     const results = paginateCards(filtered, parsed.data);
 

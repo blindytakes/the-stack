@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
+import { Turnstile, type TurnstileHandle } from '@/components/turnstile';
 
 type NewsletterSignupProps = {
   source?: string;
@@ -21,6 +22,16 @@ export function NewsletterSignup({
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileHandle>(null);
+
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -31,14 +42,17 @@ export function NewsletterSignup({
       const res = await fetch('/api/newsletter/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, source })
+        body: JSON.stringify({
+          email,
+          source,
+          ...(turnstileToken ? { turnstileToken } : {})
+        })
       });
 
       let data: { error?: string; message?: string };
       try {
         data = await res.json();
       } catch {
-        // Response wasn't valid JSON (e.g. framework error page)
         setStatus('error');
         setMessage('Something went wrong. Please try again.');
         return;
@@ -57,6 +71,11 @@ export function NewsletterSignup({
     } catch {
       setStatus('error');
       setMessage('Could not connect. Please try again.');
+    } finally {
+      // Turnstile tokens are single-use — reset the widget so retries
+      // get a fresh token instead of resubmitting a consumed one.
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     }
   }
 
@@ -89,6 +108,13 @@ export function NewsletterSignup({
           {status === 'loading' ? 'Joining...' : 'Subscribe'}
         </Button>
       </form>
+      <div className="mt-3">
+        <Turnstile
+          ref={turnstileRef}
+          onVerify={handleTurnstileVerify}
+          onExpire={handleTurnstileExpire}
+        />
+      </div>
       {status === 'error' && (
         <p className="mt-2 text-sm text-brand-coral">{message}</p>
       )}

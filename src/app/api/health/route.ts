@@ -10,9 +10,10 @@ export async function GET() {
 
     if (!process.env.DATABASE_URL) {
       return NextResponse.json({
-        status: newsletter.ok ? 'ok' : 'degraded',
-        timestamp
-      });
+        status: 'degraded',
+        timestamp,
+        reason: 'DATABASE_URL is not configured'
+      }, { status: 503 });
     }
 
     try {

@@ -5,13 +5,16 @@ import { badRequest, parseJsonBody, serverError } from '@/lib/api-helpers';
 import { db, isDatabaseConfigured } from '@/lib/db';
 import { syncNewsletterSubscriber } from '@/lib/newsletter/provider';
 import { trackedSourceSchema } from '@/lib/tracking';
+import { applyIpRateLimit } from '@/lib/rate-limit';
+import { verifyTurnstileToken, isValidOrigin } from '@/lib/turnstile';
 
 const subscribeSchema = z.object({
   email: z
     .string()
     .email()
     .transform((e) => e.toLowerCase().trim()),
-  source: trackedSourceSchema.default('homepage')
+  source: trackedSourceSchema.default('homepage'),
+  turnstileToken: z.string().min(1).optional()
 });
 
 function maskEmail(email: string) {
@@ -23,6 +26,20 @@ function maskEmail(email: string) {
 
 export async function POST(req: Request) {
   return instrumentedApi('/api/newsletter/subscribe', 'POST', async () => {
+    // 1. Origin check (cheap, no external calls)
+    if (!isValidOrigin(req)) {
+      return badRequest('Invalid request origin');
+    }
+
+    // 2. Rate limiting — 3 requests per 10 minutes, sliding window
+    const rateLimited = await applyIpRateLimit(req, {
+      namespace: 'newsletter_subscribe',
+      limit: 3,
+      window: '10 m',
+      algorithm: 'sliding'
+    });
+    if (rateLimited) return rateLimited;
+
     if (!isDatabaseConfigured()) {
       return serverError('Newsletter signup is temporarily unavailable');
     }
@@ -35,6 +52,12 @@ export async function POST(req: Request) {
     const parsed = subscribeSchema.safeParse(body);
     if (!parsed.success) {
       return badRequest('Please provide a valid email address');
+    }
+
+    // 3. Turnstile verification (skipped when TURNSTILE_SECRET_KEY is unset)
+    const turnstileOk = await verifyTurnstileToken(parsed.data.turnstileToken, req);
+    if (!turnstileOk) {
+      return badRequest('Challenge verification failed. Please try again.');
     }
 
     const existing = await db.subscriber.findUnique({
