@@ -12,6 +12,10 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
+## AI agent guidance
+
+For repository-specific AI workflow and safety guidance, see [AGENTS.md](AGENTS.md).
+
 ## Environment
 
 Minimum:
