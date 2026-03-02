@@ -79,8 +79,13 @@ export function CardVsCardTool() {
 
   useEffect(() => {
     fetch('/api/cards?limit=100')
-      .then((res) => res.json())
-      .then((data) => setCards(data.results))
+      .then(async (res) => {
+        if (!res.ok) throw new Error('Cards request failed');
+        const data = (await res.json()) as { results?: unknown };
+        if (!Array.isArray(data.results)) throw new Error('Invalid cards payload');
+        return data.results as CardRecord[];
+      })
+      .then((results) => setCards(results))
       .catch(() => setCardsError('Could not load card list.'))
       .finally(() => setLoadingCards(false));
   }, []);

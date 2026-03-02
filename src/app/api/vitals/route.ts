@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { instrumentedApi } from '@/lib/api-route';
 import { recordWebVital } from '@/lib/metrics';
 import { badRequest, parseJsonBody } from '@/lib/api-helpers';
+import { normalizeVitalPathToRoute } from '@/lib/vitals-path';
 
 const webVitalSchema = z.object({
   name: z.enum(['LCP', 'CLS', 'INP', 'TTFB']),
@@ -10,16 +11,6 @@ const webVitalSchema = z.object({
   path: z.string().min(1).max(2048),
   device: z.enum(['mobile', 'desktop'])
 });
-
-/**
- * Normalize raw pathnames to route templates server-side so arbitrary
- * callers can't create unbounded OTEL metric cardinality.
- */
-function normalizePathToRoute(pathname: string): string {
-  if (/^\/cards\/[^/]+$/.test(pathname)) return '/cards/[slug]';
-  if (/^\/learn\/[^/]+$/.test(pathname)) return '/learn/[slug]';
-  return pathname;
-}
 
 export async function POST(req: Request) {
   return instrumentedApi('/api/vitals', 'POST', async () => {
@@ -34,7 +25,7 @@ export async function POST(req: Request) {
     }
 
     recordWebVital(parsed.data.name, parsed.data.value, {
-      path: normalizePathToRoute(parsed.data.path),
+      path: normalizeVitalPathToRoute(parsed.data.path),
       device: parsed.data.device
     });
 

@@ -251,7 +251,7 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
     ? sourceInput
     : 'card_detail';
   const outboundApplyUrl = card.affiliateUrl ?? card.applyUrl;
-  const applyClickHref = outboundApplyUrl
+  const applyTrackingHref = outboundApplyUrl
     ? `/api/affiliate/click?${new URLSearchParams({
         card_slug: card.slug,
         source,
@@ -353,11 +353,12 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
               </span>
             ))}
           </div>
-          {applyClickHref && (
+          {outboundApplyUrl && (
             <AffiliateLink
-              href={applyClickHref}
+              href={outboundApplyUrl}
               cardSlug={card.slug}
               source={source}
+              trackingHref={applyTrackingHref}
               className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
             >
               Apply Now

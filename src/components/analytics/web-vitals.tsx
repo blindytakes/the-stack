@@ -1,6 +1,7 @@
 'use client';
 
 import { useReportWebVitals } from 'next/web-vitals';
+import { normalizeVitalPathToRoute } from '@/lib/vitals-path';
 
 type WebVitalPayload = {
   name: 'LCP' | 'CLS' | 'INP' | 'TTFB';
@@ -8,18 +9,6 @@ type WebVitalPayload = {
   path: string;
   device: 'mobile' | 'desktop';
 };
-
-/**
- * Normalize raw pathnames to route templates so OTEL metrics don't explode
- * in cardinality. E.g. /cards/apex-cash-plus → /cards/[slug]
- */
-function normalizePathToRoute(pathname: string): string {
-  // /cards/<anything> → /cards/[slug]
-  if (/^\/cards\/[^/]+$/.test(pathname)) return '/cards/[slug]';
-  // /learn/<anything> → /learn/[slug]
-  if (/^\/learn\/[^/]+$/.test(pathname)) return '/learn/[slug]';
-  return pathname;
-}
 
 export function WebVitalsReporter() {
   useReportWebVitals((metric) => {
@@ -31,7 +20,7 @@ export function WebVitalsReporter() {
     const payload: WebVitalPayload = {
       name: metric.name as WebVitalPayload['name'],
       value: metric.value,
-      path: normalizePathToRoute(window.location.pathname),
+      path: normalizeVitalPathToRoute(window.location.pathname),
       device: window.innerWidth < 640 ? 'mobile' : 'desktop'
     };
 

@@ -6,6 +6,7 @@ type AffiliateLinkProps = {
   href: string;
   cardSlug: string;
   source: string;
+  trackingHref?: string | null;
   className?: string;
   children: React.ReactNode;
 };
@@ -14,6 +15,7 @@ export function AffiliateLink({
   href,
   cardSlug,
   source,
+  trackingHref,
   className,
   children
 }: AffiliateLinkProps) {
@@ -28,6 +30,15 @@ export function AffiliateLink({
           source,
           card_slug: cardSlug
         });
+
+        if (trackingHref) {
+          void fetch(trackingHref, {
+            method: 'GET',
+            keepalive: true
+          }).catch(() => {
+            // Best-effort tracking: never block outbound navigation.
+          });
+        }
       }}
     >
       {children}
