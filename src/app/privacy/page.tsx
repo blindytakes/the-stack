@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
-  const supportEmail = process.env.SUPPORT_EMAIL ?? 'support@thestack.com';
+  const supportEmail = process.env.SUPPORT_EMAIL?.trim();
 
   return (
     <div className="container-page pt-12 pb-16 max-w-3xl">
@@ -82,10 +82,16 @@ export default function PrivacyPage() {
           </p>
           <p className="mt-2">
             To make a request, contact us at{' '}
-            <a href={`mailto:${supportEmail}`} className="text-brand-teal hover:opacity-90">
-              {supportEmail}
-            </a>
-            .
+            {supportEmail ? (
+              <a href={`mailto:${supportEmail}`} className="text-brand-teal hover:opacity-90">
+                {supportEmail}
+              </a>
+            ) : (
+              <span className="text-text-muted">
+                our support channel (set <code>SUPPORT_EMAIL</code> to publish).
+              </span>
+            )}
+            {!supportEmail ? '' : '.'}
           </p>
         </section>
 

@@ -22,7 +22,7 @@ Replace placeholders with values provided by your email platform.
 
 - Type: `TXT`
 - Host/Name: `_dmarc`
-- Value: `v=DMARC1; p=none; rua=mailto:dmarc@yourdomain.com; fo=1`
+- Value: `v=DMARC1; p=none; rua=mailto:<your-dmarc-mailbox@yourdomain>; fo=1`
 
 After stable delivery, move policy from `p=none` to `p=quarantine` and later `p=reject`.
 
