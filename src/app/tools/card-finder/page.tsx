@@ -3,8 +3,9 @@ import { CardFinderTool } from '@/components/tools/card-finder';
 import { ToolPageShell } from '@/components/layout/tool-page-shell';
 
 export const metadata: Metadata = {
-  title: 'Card Finder',
-  description: 'Answer a few questions to get personalized credit card recommendations based on your spending and goals.'
+  title: 'Payout Planner',
+  description:
+    'Answer a few questions to build a personalized offer strategy based on your spending goals and credit profile.'
 };
 
 export default function CardFinderPage() {
@@ -14,8 +15,8 @@ export default function CardFinderPage() {
       path="/tools/card-finder"
       tag="Tool 01"
       tagColorClassName="text-brand-teal"
-      title="Card Finder"
-      description="Answer a few questions to get a short list of cards tailored to your spend, fees, and goals."
+      title="Payout Planner"
+      description="Answer a few questions to get a short list of high-fit offers for your spend, fee tolerance, and goals."
     >
       <CardFinderTool />
     </ToolPageShell>

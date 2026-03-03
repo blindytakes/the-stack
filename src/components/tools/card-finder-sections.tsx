@@ -95,7 +95,7 @@ export function CardFinderActions({
       </Button>
       {isLastStep && isComplete ? (
         <Button onClick={onSubmit} disabled={loading}>
-          {loading ? 'Scoring…' : 'See my results'}
+          {loading ? 'Scoring…' : 'See my payout plan'}
         </Button>
       ) : (
         <Button onClick={onContinue} disabled={!canContinue || isLastStep}>
@@ -116,7 +116,10 @@ export function CardFinderResults({
   return (
     <div className="mt-10 space-y-4">
       <div className="rounded-2xl border border-brand-teal/40 bg-brand-teal/10 p-4">
-        <p className="text-sm text-text-secondary">Top matches based on your inputs</p>
+        <p className="text-sm text-text-secondary">Top payout matches based on your inputs</p>
+        <p className="mt-1 text-xs text-text-muted">
+          Estimated value only. Outcomes vary by approvals, spend, and redemption choices.
+        </p>
       </div>
       <div className="grid gap-4 md:grid-cols-3">
         {results.map((card) => (
@@ -138,7 +141,7 @@ export function CardFinderResults({
       </div>
       <div className="flex flex-wrap gap-4">
         <Button variant="ghost" onClick={onRestart}>
-          Restart quiz
+          Restart plan
         </Button>
       </div>
     </div>

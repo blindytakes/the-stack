@@ -5,7 +5,7 @@ import { ToolPageShell } from '@/components/layout/tool-page-shell';
 export const metadata: Metadata = {
   title: 'Hidden Benefits',
   description:
-    'Discover the hidden perks of your credit card — from purchase protection to travel credits — with estimated annual values.'
+    'Find money you are leaving on the table in your card benefits, from protections to credits, with estimated annual values.'
 };
 
 export default function HiddenBenefitsPage() {
@@ -16,7 +16,7 @@ export default function HiddenBenefitsPage() {
       tag="Tool 02"
       tagColorClassName="text-brand-gold"
       title="Hidden Benefits"
-      description="Select your card and see which protections and credits are worth real money."
+      description="Select your card and uncover which protections and credits are worth real money."
     >
       <HiddenBenefitsTool />
     </ToolPageShell>

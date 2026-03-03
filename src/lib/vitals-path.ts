@@ -2,6 +2,7 @@ const allowedStaticPaths = new Set([
   '/',
   '/about',
   '/affiliate-disclosure',
+  '/banking',
   '/cards',
   '/contact',
   '/learn',

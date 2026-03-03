@@ -87,7 +87,7 @@ export function CardSignUpBonusSection({ bonuses }: { bonuses: SignUpBonusDetail
 
   return (
     <section>
-      <h2 className="text-xs uppercase tracking-[0.3em] text-text-muted">Sign-Up Bonus</h2>
+      <h2 className="text-xs uppercase tracking-[0.3em] text-text-muted">Welcome Offer</h2>
       <div className="mt-4 space-y-3">
         {active.map((bonus, i) => (
           <div
@@ -98,12 +98,15 @@ export function CardSignUpBonusSection({ bonuses }: { bonuses: SignUpBonusDetail
               {bonus.bonusType === 'statement_credit'
                 ? `$${bonus.bonusValue} statement credit`
                 : bonus.bonusPoints
-                  ? `${bonus.bonusPoints.toLocaleString()} bonus points`
+                  ? `${bonus.bonusPoints.toLocaleString()} points (~$${bonus.bonusValue.toLocaleString()} est.)`
                   : `$${bonus.bonusValue} bonus`}
             </p>
             <p className="mt-1 text-sm text-text-secondary">
               Spend ${bonus.spendRequired.toLocaleString()} in the first{' '}
               {Math.round(bonus.spendPeriodDays / 30)} months
+            </p>
+            <p className="mt-1 text-xs text-text-muted">
+              Estimated value only. Actual value varies by redemption choice.
             </p>
           </div>
         ))}

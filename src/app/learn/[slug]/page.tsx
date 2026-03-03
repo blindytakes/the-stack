@@ -61,13 +61,13 @@ export default async function ArticlePage({ params }: Props) {
 
       <div className="mt-16 max-w-2xl rounded-2xl border border-white/10 bg-bg-surface p-6">
         <p className="text-sm text-text-muted">
-          Want to find the right card for your situation?{' '}
+          Ready to make the banks work for you?{' '}
           <Link href="/tools/card-finder" className="text-brand-teal transition hover:underline">
-            Try the Card Finder
+            Build your payout plan
           </Link>{' '}
           or{' '}
           <Link href="/tools/card-vs-card" className="text-brand-teal transition hover:underline">
-            compare two cards head-to-head
+            compare offers head-to-head
           </Link>
           .
         </p>

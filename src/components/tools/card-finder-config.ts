@@ -13,9 +13,9 @@ export const cardFinderSteps: FinderStep[] = [
     id: 'goal',
     title: 'Your main goal',
     options: [
-      { label: 'Cash back', value: 'cashback' },
-      { label: 'Travel points', value: 'travel' },
-      { label: 'Balance flexibility', value: 'flexibility' }
+      { label: 'Fast cash value', value: 'cashback' },
+      { label: 'High travel upside', value: 'travel' },
+      { label: 'Flexible everyday returns', value: 'flexibility' }
     ]
   },
   {

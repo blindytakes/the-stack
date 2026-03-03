@@ -27,7 +27,16 @@ export default function TermsPage() {
           <h2 className="text-base font-semibold text-text-primary">Educational content only</h2>
           <p>
             The Stack provides educational information and product comparisons. Nothing on this
-            site is legal, tax, investment, or individualized financial advice.
+            site is legal, tax, investment, or individualized financial advice. Any value examples
+            are estimates, not guarantees, and outcomes vary by user profile and market conditions.
+          </p>
+        </section>
+
+        <section>
+          <h2 className="text-base font-semibold text-text-primary">Responsible use guidance</h2>
+          <p>
+            Strategies discussed on this site assume responsible credit use, including paying
+            statement balances in full and on time to avoid interest charges.
           </p>
         </section>
 

@@ -120,7 +120,7 @@ function SignUpBonusRow({ a, b }: { a: CardDetail; b: CardDetail }) {
 
   return (
     <div>
-      <SectionHeading>Sign-Up Bonus</SectionHeading>
+      <SectionHeading>Welcome Offer</SectionHeading>
       <div className="mt-3 rounded-2xl border border-brand-gold/10 bg-brand-gold/5 p-5">
         <CardLabels a={a} b={b} />
         <div className="grid grid-cols-2 gap-4">

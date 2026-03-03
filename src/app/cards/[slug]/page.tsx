@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: card.name,
-    description: card.description ?? `${card.name} by ${card.issuer} - ${card.headline}`
+    description: card.description ?? `${card.name} by ${card.issuer} - offer details and value breakdown`
   };
 }
 
@@ -92,7 +92,7 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
         </div>
 
         <div className="rounded-3xl border border-white/10 bg-bg-elevated p-6">
-          <p className="text-xs uppercase tracking-[0.3em] text-text-muted">Quick Facts</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-text-muted">Offer Snapshot</p>
           <dl className="mt-4 space-y-3">
             <div className="flex justify-between">
               <dt className="text-sm text-text-secondary">Annual Fee</dt>
@@ -166,7 +166,7 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
               source={source}
               className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
             >
-              Apply Now
+              Apply for This Card
             </AffiliateLink>
           )}
         </div>

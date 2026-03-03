@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'Learn',
-  description: 'Playbooks on credit card strategy, timing, and maximizing value.'
+  description: 'Playbooks on bank and credit strategy for earning more, keeping more, and avoiding traps.'
 };
 
 const articles = [
@@ -54,6 +54,14 @@ const articles = [
       'Carrying a balance doesn\'t help your score. Closing old cards can hurt it. Here\'s what actually matters — and what doesn\'t.',
     category: 'Fundamentals',
     readTime: '4 min'
+  },
+  {
+    slug: 'bank-account-bonuses-101',
+    title: 'Bank Account Bonuses 101: How to Actually Keep the Money',
+    description:
+      'Checking and savings bonuses can be high-value, but only if you avoid fee clawbacks and missed requirements.',
+    category: 'Banking',
+    readTime: '6 min'
   }
 ];
 
@@ -61,7 +69,8 @@ const categoryColor: Record<string, string> = {
   Fundamentals: 'text-brand-teal',
   Strategy: 'text-brand-gold',
   'Getting Started': 'text-brand-coral',
-  Comparison: 'text-text-secondary'
+  Comparison: 'text-text-secondary',
+  Banking: 'text-brand-teal'
 };
 
 export default function LearnPage() {
@@ -73,8 +82,12 @@ export default function LearnPage() {
           Playbooks & Guides
         </h1>
         <p className="mt-4 text-lg text-text-secondary">
-          Clear-headed strategy on credit cards — no affiliate bait, no filler. Just the stuff
-          that actually helps you make better decisions.
+          Clear-headed bank and credit strategy. No affiliate bait, no filler, just practical
+          frameworks that help you make and keep more money.
+        </p>
+        <p className="mt-2 text-sm text-text-muted">
+          Card-focused playbooks are live now, with dedicated banking bonus and APY guides rolling
+          out next.
         </p>
       </div>
 

@@ -5,40 +5,40 @@ import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 
 const highlights = [
   {
-    title: 'Signal over hype',
-    copy: 'Every recommendation is based on your inputs and transparent scoring.'
+    title: 'Earn more',
+    copy: 'Target sign-up bonuses, rewards, and promo value with transparent math.'
   },
   {
-    title: 'Built for real spend',
-    copy: 'We map bonuses, fees, and categories to how you actually use a card.'
+    title: 'Keep more',
+    copy: 'Avoid interest and fee traps with pay-in-full rules and better account decisions.'
   },
   {
-    title: 'Zero fluff tools',
-    copy: 'Fast, focused flows that get you to a decision in minutes.'
+    title: 'Grow more',
+    copy: 'Build credit and cash flow systems that improve your yearly net value.'
   }
 ];
 
 const tools = [
   {
-    tag: 'Tool',
-    title: 'Card Finder',
-    description: 'A five-step quiz that surfaces the top three cards for your profile.',
+    tag: 'Plan',
+    title: 'Payout Planner',
+    description: 'A five-step flow that maps your next best offers based on your profile.',
     href: '/tools/card-finder',
     color: 'text-brand-teal',
     soon: false
   },
   {
-    tag: 'Toolkit',
+    tag: 'Recover',
     title: 'Hidden Benefits',
-    description: 'See which protections and credits are worth real money.',
+    description: 'Find credits and protections you are not using, with yearly value estimates.',
     href: '/tools/hidden-benefits',
     color: 'text-brand-gold',
     soon: false
   },
   {
     tag: 'Compare',
-    title: 'Card vs Card',
-    description: 'Head-to-head breakdowns on fees, rewards, and bonuses.',
+    title: 'Offer vs Offer',
+    description: 'Head-to-head net-value breakdowns on bonuses, fees, rewards, and benefits.',
     href: '/tools/card-vs-card',
     color: 'text-brand-coral',
     soon: false
@@ -56,24 +56,27 @@ export default function HomePage() {
         <div className="space-y-6">
           <p className="text-sm uppercase tracking-[0.2em] text-brand-gold">The Stack</p>
           <h1 className="font-[var(--font-heading)] text-4xl leading-tight text-text-primary md:text-6xl">
-            Find the credit card that matches your priorities.
+            Make the Banks Work for You.
           </h1>
           <p className="max-w-xl text-lg text-text-secondary">
-            Start with the Card Finder and get a ranked list of options built around your spend, fees,
-            and credit tier. No sponsored rankings. No mystery logic.
+            Use a disciplined bonus and banking strategy to capture up to $3,000/year in value.
+            No debt games. No mystery logic.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link href="/tools/card-finder">
-              <Button>Start the Card Finder</Button>
+              <Button>Start My Payout Plan</Button>
             </Link>
             <Link href="/learn">
-              <Button variant="ghost">Read the playbooks</Button>
+              <Button variant="ghost">Read the money playbooks</Button>
             </Link>
           </div>
+          <p className="text-xs text-text-muted">
+            Results vary by credit profile, available offers, spend, and redemption choices.
+          </p>
         </div>
         <div className="rounded-3xl border border-white/10 bg-bg-elevated p-8 shadow-[0_0_45px_rgba(45,212,191,0.08)]">
           <div className="space-y-4">
-            <p className="text-xs uppercase tracking-[0.3em] text-text-muted">What you get</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-text-muted">How it works</p>
             <div className="space-y-3">
               {highlights.map((item) => (
                 <div key={item.title} className="rounded-2xl border border-white/5 bg-bg-surface p-4">

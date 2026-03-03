@@ -15,14 +15,14 @@ export function ValueSummaryBar({
   return (
     <div className="grid gap-4 md:grid-cols-3">
       <div className="rounded-2xl border border-white/5 bg-bg-surface p-4 text-center">
-        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Total Benefits</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Annual Payout</p>
         <p className="mt-1 text-2xl font-semibold text-brand-teal">
           ~${totalValue.toLocaleString()}
           <span className="text-sm font-normal text-text-muted">/yr</span>
         </p>
       </div>
       <div className="rounded-2xl border border-white/5 bg-bg-surface p-4 text-center">
-        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Annual Fee</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Cost</p>
         <p
           className={`mt-1 text-2xl font-semibold ${
             annualFee > 0 ? 'text-brand-coral' : 'text-brand-teal'
@@ -32,7 +32,7 @@ export function ValueSummaryBar({
         </p>
       </div>
       <div className="rounded-2xl border border-white/5 bg-bg-surface p-4 text-center">
-        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Net Value</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Net Gain</p>
         <p
           className={`mt-1 text-2xl font-semibold ${
             netValue >= 0 ? 'text-brand-teal' : 'text-brand-coral'

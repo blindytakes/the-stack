@@ -23,6 +23,10 @@ export default function AffiliateDisclosurePage() {
         <p>
           We aim to disclose affiliate relationships clearly and keep methodology transparent.
         </p>
+        <p>
+          Any value examples (including &quot;up to $3,000/year&quot;) are illustrative, not
+          guaranteed. Results vary by approval, offer availability, spending, and redemption.
+        </p>
       </div>
     </div>
   );

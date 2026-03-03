@@ -113,6 +113,35 @@ export const learnArticles: Record<string, LearnArticle> = {
       }
     ]
   },
+  'bank-account-bonuses-101': {
+    title: 'Bank Account Bonuses 101: How to Actually Keep the Money',
+    category: 'Banking',
+    readTime: '6 min',
+    description:
+      'Checking and savings bonuses can be high-value, but only if you avoid fee clawbacks and missed requirements.',
+    sections: [
+      {
+        heading: 'Why banks pay signup bonuses',
+        body: 'Banks are buying deposits and customer relationships. A checking bonus or savings bonus is marketing spend in exchange for your direct deposit, minimum balance, or account activity. If you can meet those requirements without distorting your normal money flow, these offers can be one of the highest hourly-rate moves in personal finance.'
+      },
+      {
+        heading: 'Read the requirement stack, not just the headline',
+        body: 'A headline like "$400 checking bonus" usually hides a stack of conditions: a direct deposit threshold, a timeline, debit card transactions, and a minimum account open period. Missing one condition can forfeit the bonus. Before opening anything, list every requirement with dates, then decide if your current cash flow can satisfy them naturally.'
+      },
+      {
+        heading: 'Watch the fee and clawback traps',
+        body: 'A bonus loses value fast if monthly fees, overdraft incidents, or early closure penalties eat into it. Many accounts waive maintenance fees only if you keep a minimum balance or qualifying direct deposit. Calculate net value, not gross bonus: bonus value minus all account costs and taxes.'
+      },
+      {
+        heading: 'Build a simple tracking system',
+        body: 'Use a basic tracker with five fields: account name, open date, requirement deadlines, expected payout date, and close-safe date. Add reminders one week before each deadline. Most bonus failures are not math problems; they are execution problems caused by forgotten dates.'
+      },
+      {
+        heading: 'How this fits a wider payout strategy',
+        body: 'Bank bonuses work best when paired with card strategy, not as a separate project. Use cards for spend-based rewards and welcome offers, and use deposit accounts for direct-deposit and cash-balance incentives. The goal is one coordinated system that raises annual net value without adding debt risk.'
+      }
+    ]
+  },
   'travel-vs-cashback': {
     title: 'Travel Points vs Cash Back: Which Is Actually Better?',
     category: 'Comparison',
@@ -175,5 +204,6 @@ export const learnCategoryColor: Record<string, string> = {
   Fundamentals: 'text-brand-teal',
   Strategy: 'text-brand-gold',
   'Getting Started': 'text-brand-coral',
-  Comparison: 'text-text-secondary'
+  Comparison: 'text-text-secondary',
+  Banking: 'text-brand-teal'
 };

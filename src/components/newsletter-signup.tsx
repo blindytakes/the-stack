@@ -26,7 +26,7 @@ type NewsletterSignupProps = {
 export function NewsletterSignup({
   source = 'homepage',
   heading = 'Stay in the loop',
-  description = 'Get weekly card picks and strategy — no spam, ever.',
+  description = 'Get weekly bonus plays, APY opportunities, and fee-avoidance strategy.',
   compact = false
 }: NewsletterSignupProps) {
   const [email, setEmail] = useState('');

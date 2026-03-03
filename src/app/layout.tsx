@@ -23,7 +23,8 @@ export const metadata: Metadata = {
     default: 'The Stack',
     template: '%s | The Stack'
   },
-  description: 'Find credit cards by priorities, not hype.'
+  description:
+    'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.'
 };
 
 export default function RootLayout({
