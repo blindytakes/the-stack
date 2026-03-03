@@ -45,9 +45,31 @@ const tools = [
   }
 ];
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: 'The Stack',
+      url: 'https://thestackfinance.com',
+      description:
+        'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.'
+    },
+    {
+      '@type': 'Organization',
+      name: 'The Stack',
+      url: 'https://thestackfinance.com'
+    }
+  ]
+};
+
 export default function HomePage() {
   return (
     <div className="container-page pt-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <TrackFunnelEventOnView
         event="landing_view"
         properties={{ source: 'homepage', path: '/' }}
