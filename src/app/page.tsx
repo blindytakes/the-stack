@@ -51,14 +51,14 @@ const jsonLd = {
     {
       '@type': 'WebSite',
       name: 'The Stack',
-      url: 'https://thestackfinance.com',
+      url: 'https://thestackhq.com',
       description:
         'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.'
     },
     {
       '@type': 'Organization',
       name: 'The Stack',
-      url: 'https://thestackfinance.com'
+      url: 'https://thestackhq.com'
     }
   ]
 };

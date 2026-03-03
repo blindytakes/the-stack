@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { learnArticles } from '@/lib/learn-articles';
 
-const SITE_URL = 'https://thestackfinance.com';
+const SITE_URL = 'https://thestackhq.com';
 
 /**
  * Dynamic sitemap for all static pages, card detail pages, and learn articles.

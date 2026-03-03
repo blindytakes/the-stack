@@ -19,7 +19,7 @@ const dmSerif = DM_Serif_Display({
   display: 'swap'
 });
 
-const SITE_URL = 'https://thestackfinance.com';
+const SITE_URL = 'https://thestackhq.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
