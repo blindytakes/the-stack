@@ -203,10 +203,12 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
   };
 }
 
-export async function getCardsData(): Promise<{
+export type CardsDataResponse = {
   cards: CardRecord[];
   source: 'db';
-}> {
+};
+
+export async function getCardsData(): Promise<CardsDataResponse> {
   assertCardsDatabaseConfigured();
 
   const rows = await db.card.findMany({

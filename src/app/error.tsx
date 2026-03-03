@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { isDevelopmentEnv } from '@/lib/config/runtime';
 
 export default function GlobalError({
   error,
@@ -13,7 +14,7 @@ export default function GlobalError({
     <div className="container-page flex min-h-[60vh] flex-col items-center justify-center text-center">
       <h1 className="font-[var(--font-heading)] text-4xl text-text-primary">Something went wrong</h1>
       <p className="mt-4 max-w-md text-text-secondary">
-        {process.env.NODE_ENV === 'development'
+        {isDevelopmentEnv()
           ? error.message
           : 'An unexpected error occurred. Please try again.'}
       </p>

@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
 import { instrumentedApi } from '@/lib/api-route';
-import { recordWebVital } from '@/lib/metrics';
 import { badRequest, parseJsonBody } from '@/lib/api-helpers';
-import { normalizeVitalPathToRoute } from '@/lib/vitals-path';
 import { applyIpRateLimit } from '@/lib/rate-limit';
+import { ingestWebVital } from '@/lib/services/vitals-service';
 
 /**
  * Web Vitals ingestion endpoint.
@@ -15,13 +13,6 @@ import { applyIpRateLimit } from '@/lib/rate-limit';
  * - Normalize path values before recording metrics.
  * - Return 204 on success for lightweight client beacons.
  */
-
-const webVitalSchema = z.object({
-  name: z.enum(['LCP', 'CLS', 'INP', 'TTFB']),
-  value: z.number().finite().nonnegative(),
-  path: z.string().min(1).max(2048),
-  device: z.enum(['mobile', 'desktop'])
-});
 
 export async function POST(req: Request) {
   return instrumentedApi('/api/vitals', 'POST', async () => {
@@ -35,19 +26,10 @@ export async function POST(req: Request) {
     if (rateLimited) return rateLimited;
 
     const body = await parseJsonBody(req);
-    if (body === null) {
-      return badRequest('Invalid JSON');
+    const result = ingestWebVital(body);
+    if (!result.ok) {
+      return badRequest(result.error);
     }
-
-    const parsed = webVitalSchema.safeParse(body);
-    if (!parsed.success) {
-      return badRequest('Invalid payload');
-    }
-
-    recordWebVital(parsed.data.name, parsed.data.value, {
-      path: normalizeVitalPathToRoute(parsed.data.path),
-      device: parsed.data.device
-    });
 
     return new NextResponse(null, { status: 204 });
   });

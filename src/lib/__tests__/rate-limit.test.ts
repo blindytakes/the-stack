@@ -106,6 +106,29 @@ describe('applyIpRateLimit (in-memory fallback)', () => {
     expect(second).not.toBeNull();
     expect(second!.status).toBe(429);
   });
+
+  it('evicts oldest entries when in-memory fallback store exceeds max size', async () => {
+    const config = {
+      namespace: 'test-mem-cap',
+      limit: 1,
+      window: '1 h' as const
+    };
+
+    for (let i = 0; i < 5_200; i += 1) {
+      const req = new Request('http://localhost', {
+        headers: { 'x-forwarded-for': `203.0.113.${i}` }
+      });
+      await applyIpRateLimit(req, config);
+    }
+
+    const firstReq = new Request('http://localhost', {
+      headers: { 'x-forwarded-for': '203.0.113.0' }
+    });
+    const result = await applyIpRateLimit(firstReq, config);
+
+    // If the earliest key was evicted, this behaves like a first request again.
+    expect(result).toBeNull();
+  });
 });
 
 describe('getClientIp', () => {

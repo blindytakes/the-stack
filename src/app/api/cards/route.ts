@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { filterCards, getCardsData, paginateCards, cardsQuerySchema } from '@/lib/cards';
 import { instrumentedApi } from '@/lib/api-route';
 import { badRequest } from '@/lib/api-helpers';
+import { getCardsList } from '@/lib/services/cards-service';
 
 /**
  * Card listing API endpoint.
@@ -14,30 +14,19 @@ import { badRequest } from '@/lib/api-helpers';
 export async function GET(req: Request) {
   return instrumentedApi('/api/cards', 'GET', async () => {
     const url = new URL(req.url);
-    const rawQuery = {
+    const result = await getCardsList({
       issuer: url.searchParams.get('issuer') ?? undefined,
       category: url.searchParams.get('category') ?? undefined,
       maxFee: url.searchParams.get('maxFee') ?? undefined,
       limit: url.searchParams.get('limit') ?? undefined,
       offset: url.searchParams.get('offset') ?? undefined
-    };
-
-    const parsed = cardsQuerySchema.safeParse(rawQuery);
-    if (!parsed.success) {
-      return badRequest('Invalid query params');
-    }
-
-    const { cards: allCards } = await getCardsData();
-    const filtered = filterCards(allCards, parsed.data);
-    const results = paginateCards(filtered, parsed.data);
-
-    return NextResponse.json({
-      results,
-      pagination: {
-        total: filtered.length,
-        limit: parsed.data.limit,
-        offset: parsed.data.offset
-      }
     });
+    if (!result.ok) {
+      if (result.status === 400) {
+        return badRequest(result.error);
+      }
+      return NextResponse.json({ error: result.error }, { status: result.status });
+    }
+    return NextResponse.json(result.data);
   });
 }

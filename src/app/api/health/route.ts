@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { instrumentedApi } from '@/lib/api-route';
-import { db } from '@/lib/db';
-import { getNewsletterProviderStatus } from '@/lib/newsletter/provider';
+import { authorizeHealthCheck } from '@/lib/health-auth';
+import { runHealthCheck } from '@/lib/services/health-service';
 
 /**
  * Health-check endpoint used by uptime checks and deploy diagnostics.
@@ -10,34 +10,21 @@ import { getNewsletterProviderStatus } from '@/lib/newsletter/provider';
  * - `ok`: database reachable and newsletter provider config healthy
  * - `degraded`: missing DB config, failed DB ping, or newsletter provider misconfig
  */
-export async function GET() {
+export async function GET(req: Request) {
   return instrumentedApi('/api/health', 'GET', async () => {
-    const newsletter = getNewsletterProviderStatus();
-    const timestamp = new Date().toISOString();
-
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({
-        status: 'degraded',
-        timestamp,
-        reason: 'DATABASE_URL is not configured'
-      }, { status: 503 });
-    }
-
-    try {
-      await db.$queryRaw`SELECT 1`;
-      return NextResponse.json({
-        status: newsletter.ok ? 'ok' : 'degraded',
-        timestamp
-      });
-    } catch (err) {
-      console.error('[/api/health] DB health check failed:', err);
+    const auth = authorizeHealthCheck(req);
+    if (!auth.ok) {
       return NextResponse.json(
         {
           status: 'degraded',
-          timestamp
+          timestamp: new Date().toISOString(),
+          reason: auth.reason
         },
-        { status: 503 }
+        { status: auth.status }
       );
     }
+
+    const result = await runHealthCheck();
+    return NextResponse.json(result.body, { status: result.status });
   });
 }

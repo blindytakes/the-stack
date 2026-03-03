@@ -47,6 +47,10 @@ Analytics:
 - `NEXT_PUBLIC_POSTHOG_KEY`
 - `NEXT_PUBLIC_POSTHOG_HOST`
 
+Health checks:
+
+- `HEALTH_CHECK_TOKEN` (required in production for `/api/health`)
+
 ### Database
 
 ```bash

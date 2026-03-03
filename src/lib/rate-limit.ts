@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+import { getUpstashRedisConfig } from '@/lib/config/server';
+import { isProductionEnv } from '@/lib/config/runtime';
 
 /**
  * Shared per-IP rate-limiting utilities for API routes.
@@ -8,7 +10,7 @@ import { Redis } from '@upstash/redis';
  * Runtime behavior:
  * - Primary path: Upstash Redis (`@upstash/ratelimit`) for shared limits across instances.
  * - Local/dev path: in-memory counter fallback when Redis env vars are not present.
- * - Failure mode: fail-open if Redis is configured but temporarily unreachable, so user traffic is not blocked.
+ * - Failure mode: degrade to in-memory limits if Redis is configured but temporarily unreachable.
  *
  * All endpoints pass a `namespace` so limits are isolated per API use-case.
  */
@@ -58,11 +60,7 @@ export type RateLimitConfig = {
 // ---------------------------------------------------------------------------
 
 function isUpstashConfigured(): boolean {
-  // Accept either native Upstash var names or Vercel integration KV aliases.
-  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
-  const token =
-    process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
-  return !!(url && token);
+  return getUpstashRedisConfig() !== null;
 }
 
 let _redis: Redis | null = null;
@@ -100,6 +98,42 @@ function getLimiter(config: RateLimitConfig): Ratelimit {
 
 type MemEntry = { count: number; resetAtMs: number };
 const _memStore = new Map<string, MemEntry>();
+const MEM_STORE_MAX_ENTRIES = 5_000;
+const MEM_STORE_SWEEP_INTERVAL_MS = 60_000;
+let _lastMemSweepMs = 0;
+
+function sweepExpiredMemEntries(nowMs: number) {
+  for (const [key, entry] of _memStore.entries()) {
+    if (nowMs >= entry.resetAtMs) {
+      _memStore.delete(key);
+    }
+  }
+}
+
+function enforceMemStoreCap() {
+  if (_memStore.size <= MEM_STORE_MAX_ENTRIES) return;
+
+  // Prefer evicting entries that will expire soonest when over capacity.
+  const entriesByReset = Array.from(_memStore.entries()).sort(
+    (a, b) => a[1].resetAtMs - b[1].resetAtMs
+  );
+  const overflow = _memStore.size - MEM_STORE_MAX_ENTRIES;
+  for (let i = 0; i < overflow; i += 1) {
+    const key = entriesByReset[i]?.[0];
+    if (key) {
+      _memStore.delete(key);
+    }
+  }
+}
+
+function maintainMemStore(nowMs: number) {
+  if (nowMs - _lastMemSweepMs >= MEM_STORE_SWEEP_INTERVAL_MS) {
+    sweepExpiredMemEntries(nowMs);
+    _lastMemSweepMs = nowMs;
+  }
+
+  enforceMemStoreCap();
+}
 
 function parseWindowMs(window: Duration): number {
   const match = window.match(/^(\d+)\s+(ms|s|m|h|d)$/);
@@ -129,6 +163,8 @@ function applyInMemoryLimit(
   const key = `${config.namespace}:${ip}`;
   const windowMs = parseWindowMs(config.window);
   const now = Date.now();
+  maintainMemStore(now);
+
   const existing = _memStore.get(key);
   const isExpired = !existing || now >= existing.resetAtMs;
 
@@ -149,6 +185,7 @@ function applyInMemoryLimit(
 
   entry.count += 1;
   _memStore.set(key, entry);
+  enforceMemStoreCap();
   return null;
 }
 
@@ -194,7 +231,7 @@ export async function applyIpRateLimit(
     }
   }
 
-  if (process.env.NODE_ENV === 'production' && !_warnedMissingUpstashInProd) {
+  if (isProductionEnv() && !_warnedMissingUpstashInProd) {
     _warnedMissingUpstashInProd = true;
     console.warn(
       '[rate-limit] Redis REST env vars not set (UPSTASH_REDIS_REST_* or KV_REST_API_*) in production — ' +

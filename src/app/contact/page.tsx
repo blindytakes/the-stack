@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getSupportEmail } from '@/lib/config/server';
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -6,7 +7,7 @@ export const metadata: Metadata = {
 };
 
 export default function ContactPage() {
-  const supportEmail = process.env.SUPPORT_EMAIL?.trim();
+  const supportEmail = getSupportEmail();
 
   return (
     <div className="container-page pt-12 pb-16 max-w-3xl">

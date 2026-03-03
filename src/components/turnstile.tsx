@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
 import Script from 'next/script';
+import { getTurnstileSiteKey } from '@/lib/config/public';
 
 /**
  * Client wrapper for Cloudflare Turnstile.
@@ -42,7 +43,7 @@ export const Turnstile = forwardRef<TurnstileHandle, TurnstileProps>(
     const callbacksRef = useRef({ onVerify, onExpire });
     callbacksRef.current = { onVerify, onExpire };
 
-    const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+    const siteKey = getTurnstileSiteKey();
 
     // Parent form calls this after submit attempts to force a fresh token.
     useImperativeHandle(ref, () => ({

@@ -1,4 +1,6 @@
 import { getClientIp } from '@/lib/rate-limit';
+import { getTurnstileSecretKey } from '@/lib/config/server';
+import { isDevelopmentEnv, isProductionEnv } from '@/lib/config/runtime';
 
 const VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
@@ -21,9 +23,9 @@ export async function verifyTurnstileToken(
   token: string | undefined,
   req: Request
 ): Promise<boolean> {
-  const secret = process.env.TURNSTILE_SECRET_KEY;
+  const secret = getTurnstileSecretKey();
   if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
+    if (isProductionEnv()) {
       console.error(
         '[turnstile] TURNSTILE_SECRET_KEY not set in production — rejecting request'
       );
@@ -67,7 +69,7 @@ export function isValidOrigin(req: Request): boolean {
   const host = req.headers.get('host');
 
   // In development, be lenient if Origin is missing (e.g. curl, Postman)
-  if (process.env.NODE_ENV === 'development' && !origin) return true;
+  if (isDevelopmentEnv() && !origin) return true;
 
   if (!origin || !host) return false;
 

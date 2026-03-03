@@ -1,10 +1,6 @@
 import { NextResponse } from 'next/server';
-import { z } from 'zod';
-import { getCardBySlug } from '@/lib/cards';
 import { instrumentedApi } from '@/lib/api-route';
-import { badRequest, jsonError } from '@/lib/api-helpers';
-
-const slugSchema = z.string().trim().min(1).max(200);
+import { getCardDetail } from '@/lib/services/cards-service';
 
 export async function GET(
   _req: Request,
@@ -13,15 +9,11 @@ export async function GET(
   const { slug } = await params;
 
   return instrumentedApi('/api/cards/[slug]', 'GET', async () => {
-    const parsed = slugSchema.safeParse(slug);
-    if (!parsed.success) {
-      return badRequest('Invalid slug');
+    const result = await getCardDetail(slug);
+    if (!result.ok) {
+      return NextResponse.json({ error: result.error }, { status: result.status });
     }
 
-    const card = await getCardBySlug(parsed.data);
-    if (!card) {
-      return jsonError('Card not found', 404);
-    }
-    return NextResponse.json({ card });
+    return NextResponse.json(result.data);
   });
 }

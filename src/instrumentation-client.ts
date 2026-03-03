@@ -1,12 +1,11 @@
 import posthog from 'posthog-js';
+import { getPosthogPublicConfig } from '@/lib/config/public';
 
-if (
-  typeof window !== 'undefined' &&
-  process.env.NEXT_PUBLIC_POSTHOG_KEY &&
-  process.env.NEXT_PUBLIC_POSTHOG_HOST
-) {
-  posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
-    api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
+const posthogConfig = getPosthogPublicConfig();
+
+if (typeof window !== 'undefined' && posthogConfig) {
+  posthog.init(posthogConfig.key, {
+    api_host: posthogConfig.host,
     defaults: '2026-01-30'
   });
 }
