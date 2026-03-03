@@ -101,7 +101,7 @@ export function NewsletterSignup({
     <div>
       {!compact && (
         <>
-          <h3 className="font-[var(--font-heading)] text-2xl text-text-primary">{heading}</h3>
+          <h3 className="font-heading text-2xl text-text-primary">{heading}</h3>
           <p className="mt-2 text-sm text-text-secondary">{description}</p>
         </>
       )}

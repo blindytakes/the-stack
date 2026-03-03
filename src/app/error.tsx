@@ -12,7 +12,7 @@ export default function GlobalError({
 }) {
   return (
     <div className="container-page flex min-h-[60vh] flex-col items-center justify-center text-center">
-      <h1 className="font-[var(--font-heading)] text-4xl text-text-primary">Something went wrong</h1>
+      <h1 className="font-heading text-4xl text-text-primary">Something went wrong</h1>
       <p className="mt-4 max-w-md text-text-secondary">
         {isDevelopmentEnv()
           ? error.message

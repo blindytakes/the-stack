@@ -17,12 +17,12 @@ module.exports = {
         text: {
           primary: '#F1F1F3',
           secondary: '#A1A1B5',
-          muted: '#6B6B80'
+          muted: '#8A8A9E'
         }
       },
       fontFamily: {
-        heading: ['"DM Serif Display"', 'serif'],
-        body: ['"DM Sans"', 'sans-serif']
+        heading: ['var(--font-heading)', '"DM Serif Display"', 'serif'],
+        body: ['var(--font-body)', '"DM Sans"', 'sans-serif']
       },
       animation: {
         'fade-up': 'fadeUp 0.5s ease-out forwards',

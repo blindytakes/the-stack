@@ -42,7 +42,7 @@ export default async function ArticlePage({ params }: Props) {
           </span>
           <span className="text-xs text-text-muted">{article.readTime} read</span>
         </div>
-        <h1 className="mt-3 font-[var(--font-heading)] text-4xl leading-tight text-text-primary">
+        <h1 className="mt-3 font-heading text-4xl leading-tight text-text-primary">
           {article.title}
         </h1>
         <p className="mt-4 text-lg text-text-secondary">{article.description}</p>
@@ -51,7 +51,7 @@ export default async function ArticlePage({ params }: Props) {
       <article className="mt-12 max-w-2xl space-y-10">
         {article.sections.map((section, i) => (
           <section key={i}>
-            <h2 className="font-[var(--font-heading)] text-2xl text-text-primary">
+            <h2 className="font-heading text-2xl text-text-primary">
               {section.heading}
             </h2>
             <p className="mt-3 leading-relaxed text-text-secondary">{section.body}</p>

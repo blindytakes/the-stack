@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 export default function MethodologyPage() {
   return (
     <div className="container-page pt-12 pb-16 max-w-3xl">
-      <h1 className="font-[var(--font-heading)] text-4xl text-text-primary">Methodology</h1>
+      <h1 className="font-heading text-4xl text-text-primary">Methodology</h1>
 
       <div className="mt-8 space-y-6 text-sm leading-7 text-text-secondary">
         <section>

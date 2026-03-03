@@ -78,7 +78,7 @@ export default function LearnPage() {
     <div className="container-page pt-12 pb-16">
       <div className="max-w-2xl">
         <p className="text-xs uppercase tracking-[0.3em] text-brand-gold">Learn</p>
-        <h1 className="mt-3 font-[var(--font-heading)] text-4xl text-text-primary">
+        <h1 className="mt-3 font-heading text-4xl text-text-primary">
           Playbooks & Guides
         </h1>
         <p className="mt-4 text-lg text-text-secondary">
@@ -96,7 +96,7 @@ export default function LearnPage() {
           <Link
             key={article.slug}
             href={`/learn/${article.slug}`}
-            className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-white/20"
+            className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
           >
             <div className="flex items-center gap-3">
               <span

@@ -79,7 +79,7 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
       <div className="grid gap-8 lg:grid-cols-[1fr_340px]">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">{card.issuer}</p>
-          <h1 className="mt-2 font-[var(--font-heading)] text-4xl text-text-primary">{card.name}</h1>
+          <h1 className="mt-2 font-heading text-4xl text-text-primary">{card.name}</h1>
           <p className="mt-3 text-lg text-text-secondary">{card.headline}</p>
           {card.longDescription && (
             <p className="mt-4 text-sm leading-relaxed text-text-secondary">{card.longDescription}</p>

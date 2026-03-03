@@ -31,7 +31,7 @@ export default async function CardsPage() {
         <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">
           {cards.length} Cards
         </p>
-        <h1 className="mt-3 font-[var(--font-heading)] text-4xl text-text-primary">
+        <h1 className="mt-3 font-heading text-4xl text-text-primary">
           Card Directory
         </h1>
         <p className="mt-4 text-lg text-text-secondary">
@@ -45,7 +45,7 @@ export default async function CardsPage() {
           <Link
             key={card.slug}
             href={`/cards/${card.slug}?src=cards_directory`}
-            className="group rounded-2xl border border-white/10 bg-bg-surface p-5 transition hover:-translate-y-1 hover:border-white/20"
+            className="group rounded-2xl border border-white/10 bg-bg-surface p-5 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
           >
             <p className="text-xs text-text-muted">{card.issuer}</p>
             <h2 className="mt-1 text-base font-semibold text-text-primary group-hover:text-brand-teal transition">

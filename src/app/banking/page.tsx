@@ -28,7 +28,7 @@ export default function BankingPage() {
     <div className="container-page pt-12 pb-16">
       <div className="max-w-2xl">
         <p className="text-xs uppercase tracking-[0.3em] text-brand-gold">Banking</p>
-        <h1 className="mt-3 font-[var(--font-heading)] text-4xl text-text-primary">
+        <h1 className="mt-3 font-heading text-4xl text-text-primary">
           Make banks work for you beyond cards.
         </h1>
         <p className="mt-4 text-lg text-text-secondary">
@@ -68,7 +68,7 @@ export default function BankingPage() {
       </div>
 
       <div className="mt-12 rounded-3xl border border-white/10 bg-bg-elevated p-8">
-        <h2 className="font-[var(--font-heading)] text-3xl text-text-primary">
+        <h2 className="font-heading text-3xl text-text-primary">
           Start with your highest-probability wins.
         </h2>
         <p className="mt-3 max-w-2xl text-sm text-text-secondary">

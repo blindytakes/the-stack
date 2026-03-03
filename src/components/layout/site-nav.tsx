@@ -45,7 +45,7 @@ export function SiteNav() {
     <header ref={headerRef} className="sticky top-0 z-40 border-b border-white/5 bg-bg/70 backdrop-blur">
       <div className="container-page flex h-16 items-center justify-between">
         <Link href="/" className="text-lg font-semibold tracking-wide text-text-primary">
-          <span className="font-[var(--font-heading)] text-2xl">The Stack</span>
+          <span className="font-heading text-2xl">The Stack</span>
         </Link>
 
         {/* Desktop nav */}

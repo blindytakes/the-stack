@@ -55,7 +55,7 @@ export default function HomePage() {
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-6">
           <p className="text-sm uppercase tracking-[0.2em] text-brand-gold">The Stack</p>
-          <h1 className="font-[var(--font-heading)] text-4xl leading-tight text-text-primary md:text-6xl">
+          <h1 className="font-heading text-4xl leading-tight text-text-primary md:text-6xl">
             Make the Banks Work for You.
           </h1>
           <p className="max-w-xl text-lg text-text-secondary">
@@ -94,7 +94,7 @@ export default function HomePage() {
           <Link
             key={tool.title}
             href={tool.href}
-            className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-white/20"
+            className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
           >
             <p className={`text-xs uppercase tracking-[0.25em] ${tool.color}`}>{tool.tag}</p>
             <h3 className="mt-4 text-xl font-semibold">{tool.title}</h3>

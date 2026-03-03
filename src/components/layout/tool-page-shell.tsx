@@ -28,7 +28,7 @@ export function ToolPageShell({
       />
       <div className="mb-10 max-w-2xl">
         <p className={`text-xs uppercase tracking-[0.3em] ${tagColorClassName}`}>{tag}</p>
-        <h1 className="mt-3 font-[var(--font-heading)] text-4xl text-text-primary">{title}</h1>
+        <h1 className="mt-3 font-heading text-4xl text-text-primary">{title}</h1>
         <p className="mt-4 text-lg text-text-secondary">{description}</p>
       </div>
       {children}

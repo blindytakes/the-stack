@@ -126,7 +126,7 @@ export function CardFinderResults({
           <Link
             key={card.slug}
             href={`/cards/${card.slug}?src=card_finder`}
-            className="group rounded-2xl border border-white/10 bg-bg-surface p-4 transition hover:-translate-y-1 hover:border-white/20"
+            className="group rounded-2xl border border-white/10 bg-bg-surface p-4 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
           >
             <p className="text-xs uppercase tracking-[0.25em] text-text-muted">{card.issuer}</p>
             <h3 className="mt-3 text-lg font-semibold text-text-primary transition group-hover:text-brand-teal">
