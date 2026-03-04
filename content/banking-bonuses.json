@@ -1,0 +1,372 @@
+[
+  {
+    "slug": "us-bank-smartly-checking-450",
+    "bankName": "U.S. Bank",
+    "offerName": "Smartly Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn up to $450 with tiered direct deposits after opening a Smartly Checking account.",
+    "bonusAmount": 450,
+    "estimatedFees": 12,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 2000
+    },
+    "minimumOpeningDeposit": 25,
+    "holdingPeriodDays": 120,
+    "requiredActions": [
+      "Open a new U.S. Bank Smartly Checking account via the promotion page.",
+      "Fund the account with at least $25 within 30 days.",
+      "Enroll in online banking or the U.S. Bank Mobile App within 90 days.",
+      "Receive two or more qualifying direct deposits totaling at least $2,000 within 90 days."
+    ],
+    "stateRestrictions": [
+      "AZ",
+      "AR",
+      "CA",
+      "CO",
+      "ID",
+      "IL",
+      "IN",
+      "IA",
+      "KS",
+      "KY",
+      "MN",
+      "MO",
+      "MT",
+      "NE",
+      "NV",
+      "NM",
+      "NC",
+      "ND",
+      "OH",
+      "OR",
+      "SD",
+      "TN",
+      "TX",
+      "UT",
+      "WA",
+      "WI",
+      "WY"
+    ],
+    "notes": "Offer validity and footprint reflected in public summaries updated in February-March 2026.",
+    "offerUrl": "https://www.forbes.com/advisor/banking/us-bank-promotions-bonus/",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "wells-fargo-everyday-checking-325",
+    "bankName": "Wells Fargo",
+    "offerName": "Everyday Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $325 with qualifying direct deposits after opening a new Everyday Checking account.",
+    "bonusAmount": 325,
+    "estimatedFees": 15,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 1000
+    },
+    "minimumOpeningDeposit": 25,
+    "holdingPeriodDays": 120,
+    "requiredActions": [
+      "Open a new Wells Fargo Everyday Checking account through the promotion page or in branch with code.",
+      "Receive at least $1,000 in qualifying direct deposits within 90 days.",
+      "Keep the account open and above $0 through bonus payout."
+    ],
+    "notes": "NerdWallet reported expiration April 14, 2026 on its March 1, 2026 update.",
+    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "bmo-smart-advantage-checking-400",
+    "bankName": "BMO",
+    "offerName": "Smart Advantage/Smart Money Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $400 after opening eligible BMO checking and meeting direct deposit requirements.",
+    "bonusAmount": 400,
+    "estimatedFees": 0,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 4000
+    },
+    "holdingPeriodDays": 100,
+    "requiredActions": [
+      "Open a new BMO Smart Advantage Checking or Smart Money Checking account with the promo code.",
+      "Receive qualifying direct deposits totaling at least $4,000 within 90 days.",
+      "Keep the account in good standing through payout."
+    ],
+    "notes": "Public offers list expiration May 4, 2026 and ~100-day payout timing.",
+    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "capital-one-360-checking-250",
+    "bankName": "Capital One",
+    "offerName": "360 Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $250 after opening 360 Checking and receiving qualifying direct deposits.",
+    "bonusAmount": 250,
+    "estimatedFees": 0,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 500
+    },
+    "holdingPeriodDays": 135,
+    "requiredActions": [
+      "Open a new 360 Checking account using promo code CHECKING250.",
+      "Receive at least two direct deposits of at least $500 each within 75 days of opening."
+    ],
+    "notes": "Offer listed as ongoing as of March 1, 2026.",
+    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "chime-checking-350",
+    "bankName": "Chime",
+    "offerName": "Chime Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn up to $350 over three months with qualifying direct deposits.",
+    "bonusAmount": 350,
+    "estimatedFees": 0,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 200
+    },
+    "holdingPeriodDays": 97,
+    "requiredActions": [
+      "Open a new Chime Checking account.",
+      "Receive a qualifying direct deposit of at least $200 within 30 days to earn the first $100.",
+      "Repeat qualifying direct deposits in each of the next two consecutive months to earn the remaining bonus tiers."
+    ],
+    "notes": "Offer listed as ongoing as of March 1, 2026.",
+    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "chase-total-checking-400",
+    "bankName": "Chase",
+    "offerName": "Chase Total Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $400 after opening Chase Total Checking and receiving direct deposits.",
+    "bonusAmount": 400,
+    "estimatedFees": 15,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 1000
+    },
+    "holdingPeriodDays": 90,
+    "requiredActions": [
+      "Open a new Chase Total Checking account with an eligible coupon.",
+      "Receive direct deposits totaling at least $1,000 within 90 days of coupon enrollment.",
+      "Keep the account open and unrestricted at payout."
+    ],
+    "offerUrl": "https://account.chase.com/consumer/banking/seo",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "chase-secure-banking-125",
+    "bankName": "Chase",
+    "offerName": "Chase Secure Banking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $125 by completing qualifying transactions on a new Chase Secure Banking account.",
+    "bonusAmount": 125,
+    "estimatedFees": 4.95,
+    "directDeposit": {
+      "required": false
+    },
+    "holdingPeriodDays": 60,
+    "requiredActions": [
+      "Open a new Chase Secure Banking account with an eligible coupon.",
+      "Complete 10 qualifying transactions within 60 days of coupon enrollment (for example debit purchases, ACH credits, QuickDeposit, online bill pay, or Zelle)."
+    ],
+    "offerUrl": "https://account.chase.com/consumer/banking/secure",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "etrade-premium-savings-2000",
+    "bankName": "E*TRADE from Morgan Stanley Private Bank",
+    "offerName": "Premium Savings Tiered Bonus",
+    "accountType": "savings",
+    "headline": "Earn up to $2,000 with large new deposits in E*TRADE Premium Savings.",
+    "bonusAmount": 2000,
+    "estimatedFees": 0,
+    "directDeposit": {
+      "required": false
+    },
+    "minimumOpeningDeposit": 0,
+    "holdingPeriodDays": 90,
+    "requiredActions": [
+      "Open a new E*TRADE Premium Savings account and enter promo code SAVE26 by the offer deadline.",
+      "Fund the account within 30 days of opening.",
+      "Maintain qualifying balances for at least 45 additional days after the initial funding window."
+    ],
+    "notes": "Tiered bonuses from $300 to $2,000 were listed with expiration March 11, 2026.",
+    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "bank-of-america-advantage-checking-500",
+    "bankName": "Bank of America",
+    "offerName": "Advantage Banking Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn up to $500 with tiered qualifying direct deposits in a new eligible checking account.",
+    "bonusAmount": 500,
+    "estimatedFees": 12,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 2000
+    },
+    "holdingPeriodDays": 150,
+    "requiredActions": [
+      "Open a new eligible Bank of America Advantage Banking checking account through the bonus page.",
+      "Receive qualifying direct deposits totaling at least $2,000 within 90 days for the first bonus tier.",
+      "Hit higher direct deposit tiers ($5,000 and $10,000) for larger payouts."
+    ],
+    "notes": "Offer listed with expiration May 31, 2026.",
+    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "pnc-virtual-wallet-performance-select-400",
+    "bankName": "PNC",
+    "offerName": "Virtual Wallet Bonus",
+    "accountType": "bundle",
+    "headline": "Earn up to $400 with qualifying direct deposits after opening a new Virtual Wallet account.",
+    "bonusAmount": 400,
+    "estimatedFees": 25,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 500
+    },
+    "holdingPeriodDays": 90,
+    "requiredActions": [
+      "Open a new Virtual Wallet product through the offer page.",
+      "Receive qualifying direct deposits within 60 days ($500+ for Virtual Wallet, $5,000+ for Virtual Wallet with Performance Select).",
+      "Keep the account open through reward posting."
+    ],
+    "notes": "Current public offer window runs through May 28, 2026.",
+    "offerUrl": "https://www.pnc.com/en/personal-banking/banking/checking/bonus-offer.html",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "etrade-max-rate-checking-300",
+    "bankName": "E*TRADE from Morgan Stanley Private Bank",
+    "offerName": "Max-Rate Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $300 with qualifying direct deposits into a new E*TRADE checking account.",
+    "bonusAmount": 300,
+    "estimatedFees": 15,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 1500
+    },
+    "holdingPeriodDays": 120,
+    "requiredActions": [
+      "Open a new Max-Rate Checking (or eligible standard checking) account using promo code CHECKING25.",
+      "Receive at least two direct deposits of at least $1,500 each within 90 days.",
+      "Keep the account in good standing through payout."
+    ],
+    "notes": "Offer listed with expiration March 31, 2026.",
+    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "chase-private-client-checking-3000",
+    "bankName": "Chase",
+    "offerName": "Private Client Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn up to $3,000 with large new-money deposits into eligible Chase Private Client accounts.",
+    "bonusAmount": 3000,
+    "estimatedFees": 35,
+    "directDeposit": {
+      "required": false
+    },
+    "minimumOpeningDeposit": 150000,
+    "holdingPeriodDays": 175,
+    "requiredActions": [
+      "Open or upgrade to a Chase Private Client Checking account with an offer code by the deadline.",
+      "Transfer at least $150,000 in eligible new money within 45 days.",
+      "Maintain the qualifying new-money balance for at least 90 days after enrollment."
+    ],
+    "offerUrl": "https://account.chase.com/consumer/banking/chase-private-client-checking-account",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "sofi-checking-savings-300",
+    "bankName": "SoFi",
+    "offerName": "Checking and Savings Direct Deposit Bonus",
+    "accountType": "bundle",
+    "headline": "Earn up to $300 after receiving qualifying direct deposits in a new SoFi Checking and Savings account.",
+    "bonusAmount": 300,
+    "estimatedFees": 0,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 1000
+    },
+    "holdingPeriodDays": 35,
+    "requiredActions": [
+      "Open a new SoFi Checking and Savings account.",
+      "Receive at least one eligible direct deposit.",
+      "Accumulate at least $1,000 in eligible direct deposits during the first 25-day direct deposit bonus period for a payout (or $5,000+ for the top tier)."
+    ],
+    "offerUrl": "https://support.sofi.com/hc/en-us/articles/6502391083789--300-Direct-Deposit-Welcome-Offer",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "citi-regular-checking-325",
+    "bankName": "Citibank",
+    "offerName": "Regular Checking Enhanced Direct Deposit Bonus",
+    "accountType": "checking",
+    "headline": "Earn $325 by opening eligible Citi checking and completing enhanced direct deposit requirements.",
+    "bonusAmount": 325,
+    "estimatedFees": 15,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 3000
+    },
+    "holdingPeriodDays": 120,
+    "requiredActions": [
+      "Open a new eligible Citi checking account and enroll in the bonus offer before the deadline.",
+      "Complete at least two Enhanced Direct Deposits totaling at least $3,000 within 90 days.",
+      "Keep the account open and in good standing through the 90-to-120-day payout window."
+    ],
+    "notes": "Offer deadline widely published as April 13, 2026 for the $325 enhanced-direct-deposit tier.",
+    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "alliant-ultimate-opportunity-savings-100",
+    "bankName": "Alliant Credit Union",
+    "offerName": "Ultimate Opportunity Savings Bonus",
+    "accountType": "savings",
+    "headline": "Earn $100 for consistent monthly saving activity in a new Ultimate Opportunity Savings account.",
+    "bonusAmount": 100,
+    "estimatedFees": 0,
+    "directDeposit": {
+      "required": false
+    },
+    "minimumOpeningDeposit": 100,
+    "holdingPeriodDays": 365,
+    "requiredActions": [
+      "Open a new Ultimate Opportunity Savings account through the promotional page.",
+      "Deposit at least $100 within 30 days.",
+      "Deposit or transfer at least $100 monthly for the next 11 consecutive months.",
+      "Maintain an average daily balance of at least $100 and end the 12-month period with at least $1,200 in the account."
+    ],
+    "offerUrl": "https://promo.alliantcreditunion.org",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  }
+]
