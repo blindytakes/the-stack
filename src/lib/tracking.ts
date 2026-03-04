@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const trackedSourceValues = [
   'homepage',
+  'homepage_consultation',
   'footer',
   'card_detail',
   'card_finder',

@@ -3,18 +3,21 @@ import type { Metadata } from 'next';
 
 const whatWeDo = [
   {
-    title: 'Card breakdowns',
-    description: 'Clear tradeoffs on fees, credits, rewards, and first-year value.',
+    title: 'Pick the right card faster',
+    description:
+      'See what you will actually keep after annual fees, usable credits, rewards, and first-year value.',
     href: '/cards'
   },
   {
-    title: 'Decision tools',
-    description: 'Payout planning and side-by-side comparisons to narrow your next move.',
+    title: 'Know your next best move',
+    description:
+      'Use payout planning and side-by-side comparisons to choose confidently in minutes, not hours.',
     href: '/tools/card-finder'
   },
   {
-    title: 'Strategy content',
-    description: 'Practical playbooks for bonus timing, redemptions, and avoiding fee drag.',
+    title: 'Avoid costly mistakes',
+    description:
+      'Follow practical playbooks for bonus timing, redemptions, and avoiding fee drag so more value stays in your pocket.',
     href: '/blog'
   }
 ];
@@ -67,6 +70,10 @@ export default function AboutPage() {
 
       <section className="mt-10 rounded-2xl border border-white/10 bg-bg-elevated p-6 md:p-8">
         <h2 className="text-2xl font-heading text-text-primary">What We Do</h2>
+        <p className="mt-3 text-sm leading-7 text-text-secondary">
+          We focus on one outcome: helping you make better money decisions with less time and less
+          guesswork.
+        </p>
         <ul className="mt-5 space-y-4">
           {whatWeDo.map((item) => (
             <li key={item.title} className="text-sm leading-7 text-text-secondary">

@@ -132,7 +132,20 @@ export default function HomePage() {
 
       <section className="mt-16">
         <div className="rounded-3xl border border-white/10 bg-bg-elevated p-8 md:p-10">
-          <NewsletterSignup source="homepage" />
+          <NewsletterSignup
+            source="homepage"
+            heading="Get Weekly Payout Plays + Optional 1:1 Strategy Session"
+            description="Join a free newsletter built to help you make better card and banking decisions with less guesswork."
+            valueBullets={[
+              'Best current offers that are actually worth your time',
+              'Fee traps and mistakes to avoid before you apply',
+              'One practical action step each week'
+            ]}
+            showConsultationOption
+            consultationSource="homepage_consultation"
+            consultationLabel="I am interested in a 1:1 strategy consultation."
+            finePrint="Free newsletter. Unsubscribe anytime. Consultations are educational only and not individualized financial advice."
+          />
         </div>
       </section>
     </div>
