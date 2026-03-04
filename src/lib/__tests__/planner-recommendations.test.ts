@@ -42,8 +42,8 @@ describe('toPlannerRecommendationFromCard', () => {
 });
 
 describe('toPlannerRecommendationFromBankingBonus', () => {
-  it('maps banking bonus records into normalized planner recommendation fields', () => {
-    const { bonuses } = getBankingBonusesData();
+  it('maps banking bonus records into normalized planner recommendation fields', async () => {
+    const { bonuses } = await getBankingBonusesData();
     const offer = bonuses.find((bonus) => bonus.slug === 'summit-national-checking-300');
     expect(offer).toBeDefined();
     if (!offer) return;
@@ -125,7 +125,7 @@ describe('rankPlannerRecommendationsByPriority', () => {
 });
 
 describe('buildPlanRecommendationsFromQuiz', () => {
-  it('builds both card and banking lanes from quiz and banking seed data', () => {
+  it('builds both card and banking lanes from quiz and banking seed data', async () => {
     const cards: QuizResult[] = [
       {
         slug: 'sample-card',
@@ -144,7 +144,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
       }
     ];
 
-    const bankingBonuses = getBankingBonusesData().bonuses;
+    const bankingBonuses = (await getBankingBonusesData()).bonuses;
     const bundle = buildPlanRecommendationsFromQuiz(cards, bankingBonuses, baseInput, {
       maxCards: 1,
       maxBanking: 1
@@ -156,9 +156,9 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     expect(bundle.exclusions.some((item) => item.lane === 'banking')).toBe(true);
   });
 
-  it('applies banking hard filters and returns exclusion reasons', () => {
+  it('applies banking hard filters and returns exclusion reasons', async () => {
     const cards: QuizResult[] = [];
-    const bankingBonuses = getBankingBonusesData().bonuses;
+    const bankingBonuses = (await getBankingBonusesData()).bonuses;
 
     const bundle = buildPlanRecommendationsFromQuiz(
       cards,

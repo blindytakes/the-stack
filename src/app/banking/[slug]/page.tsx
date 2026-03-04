@@ -14,12 +14,13 @@ type Props = {
 };
 
 export async function generateStaticParams() {
-  return getAllBankingBonusSlugs().map((slug) => ({ slug }));
+  const slugs = await getAllBankingBonusSlugs();
+  return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const offer = getBankingBonusBySlug(slug);
+  const offer = await getBankingBonusBySlug(slug);
   if (!offer) return { title: 'Banking Offer Not Found' };
 
   return {
@@ -41,12 +42,14 @@ function formatDays(days?: number) {
 
 export default async function BankingOfferDetailPage({ params }: Props) {
   const { slug } = await params;
-  const offer = getBankingBonusBySlug(slug);
+  const offer = await getBankingBonusBySlug(slug);
   if (!offer) notFound();
 
   const requirements = getBankingOfferRequirements(offer);
   const outboundOfferUrl = offer.affiliateUrl ?? offer.offerUrl;
-  const relatedOffers = getBankingBonusesData().bonuses.filter((item) => item.slug !== offer.slug).slice(0, 3);
+  const relatedOffers = (await getBankingBonusesData()).bonuses
+    .filter((item) => item.slug !== offer.slug)
+    .slice(0, 3);
 
   return (
     <div className="container-page pt-12 pb-16">

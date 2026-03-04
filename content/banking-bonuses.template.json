@@ -1,0 +1,48 @@
+[
+  {
+    "slug": "example-national-checking-400",
+    "bankName": "Example National Bank",
+    "offerName": "Premium Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $400 after completing direct deposit and account activity requirements.",
+    "bonusAmount": 400,
+    "estimatedFees": 12,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 1000
+    },
+    "minimumOpeningDeposit": 250,
+    "holdingPeriodDays": 120,
+    "requiredActions": [
+      "Receive one qualifying payroll direct deposit within 60 days.",
+      "Complete at least 10 debit transactions in the first 90 days."
+    ],
+    "stateRestrictions": ["NY", "NJ", "CT"],
+    "notes": "Confirm monthly maintenance fee waivers before applying.",
+    "offerUrl": "https://www.example.com/checking-bonus",
+    "affiliateUrl": "https://www.example.com/checking-bonus?ref=thestack",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "example-online-savings-250",
+    "bankName": "Example Online Bank",
+    "offerName": "High-Yield Savings Bonus",
+    "accountType": "savings",
+    "headline": "Earn $250 by depositing fresh funds and maintaining the qualifying balance.",
+    "bonusAmount": 250,
+    "estimatedFees": 0,
+    "directDeposit": {
+      "required": false
+    },
+    "minimumOpeningDeposit": 10000,
+    "holdingPeriodDays": 90,
+    "requiredActions": [
+      "Deposit at least $10,000 in new money within 30 days.",
+      "Maintain qualifying balance through the bonus payout date."
+    ],
+    "offerUrl": "https://www.example.com/savings-bonus",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  }
+]

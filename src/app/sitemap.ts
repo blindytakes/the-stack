@@ -6,10 +6,10 @@ const SITE_URL = 'https://thestackhq.com';
 /**
  * Dynamic sitemap for all static pages, detail pages, and editorial content.
  *
- * Card slugs come from the database. Banking offer slugs come from seed data.
+ * Card slugs and banking offer slugs are sourced from the database when
+ * available, with banking falling back to seed records if DB is unavailable.
  * If the DB is unavailable at build time (e.g. during CI or preview deploys),
- * the sitemap still emits all static, banking, and article routes — card routes
- * are simply omitted until the next ISR/rebuild.
+ * the sitemap still emits all static, banking, and article routes.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -63,11 +63,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.warn('[sitemap] Could not fetch card slugs — DB may be unavailable');
   }
 
-  // ── Banking detail routes (from seed data) ────────────────────────────
+  // ── Banking detail routes (DB with seed fallback) ─────────────────────
   let bankingRoutes: MetadataRoute.Sitemap = [];
   try {
     const { getAllBankingBonusSlugs } = await import('@/lib/banking-bonuses');
-    const slugs = getAllBankingBonusSlugs();
+    const slugs = await getAllBankingBonusSlugs();
     bankingRoutes = slugs.map((slug) => ({
       url: `${SITE_URL}/banking/${slug}`,
       changeFrequency: 'weekly' as const,

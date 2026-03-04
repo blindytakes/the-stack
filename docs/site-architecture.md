@@ -145,7 +145,7 @@ Card bonuses (v1):
 
 Banking bonuses (v1):
 
-- Source: curated seed dataset (JSON/TS) before full DB model.
+- Source: Prisma-backed `BankingBonus` table with seed fallback when DB data is unavailable.
 - Routes: `/banking`, `/banking/[slug]`.
 
 Shared planner output model (v1):
@@ -155,7 +155,7 @@ Shared planner output model (v1):
 
 Phase 2 data plan:
 
-- Add dedicated banking offer tables in Prisma for first-class filtering and updates.
+- Add/maintain ingestion path for banking offers (manual JSON import now, partner feeds later).
 - Keep shared ranking/view models at the service layer.
 
 ## 10) Content and Messaging Guardrails
@@ -188,7 +188,7 @@ Track at minimum:
 
 ### Phase 2: Data foundation
 
-1. Create banking bonus seed dataset for v1.
+1. Maintain banking offers in DB via import workflow and verification cadence.
 2. Define shared planner recommendation shape.
 
 ### Phase 3: Homepage alignment

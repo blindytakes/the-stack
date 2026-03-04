@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { quizRequestSchema, type QuizRequest, type QuizResult } from '@/lib/quiz-engine';
-import { getBankingBonusesData } from '@/lib/banking-bonuses';
+import type { BankingBonusListItem } from '@/lib/banking-bonuses';
 import { buildPlanRecommendationsFromQuiz } from '@/lib/planner-recommendations';
 import { buildPlanResultsPayload, savePlanResults } from '@/lib/plan-results-storage';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
@@ -65,10 +65,12 @@ export function useCardFinderState() {
       if (!res.ok) throw new Error('Failed to fetch results');
 
       const data = (await res.json()) as { results: QuizResult[] };
-      const bankingBonuses = getBankingBonusesData().bonuses;
+      const bankingRes = await fetch('/api/banking?limit=100&offset=0');
+      if (!bankingRes.ok) throw new Error('Failed to fetch banking offers');
+      const bankingData = (await bankingRes.json()) as { results: BankingBonusListItem[] };
       const planBundle = buildPlanRecommendationsFromQuiz(
         data.results,
-        bankingBonuses,
+        bankingData.results,
         parsedAnswers.data,
         {
           maxCards: 3,

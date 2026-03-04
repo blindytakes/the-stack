@@ -58,6 +58,23 @@ npx prisma db push            # apply schema to your database
 npx prisma studio              # browse data in GUI
 ```
 
+### Banking offers import
+
+Use the manual import script to load or refresh banking bonus offers from JSON.
+
+```bash
+# 1) Start from the template
+cp content/banking-bonuses.template.json content/banking-bonuses.json
+
+# 2) Edit content/banking-bonuses.json with your current offers
+
+# 3) Import into DB
+npm run banking:import -- ./content/banking-bonuses.json
+
+# Optional: deactivate DB offers not present in the file
+npm run banking:import -- ./content/banking-bonuses.json --deactivate-missing
+```
+
 ## Deliverability
 
 See [docs/deliverability.md](docs/deliverability.md) for SPF/DKIM/DMARC and monitoring setup.
@@ -74,6 +91,7 @@ See [docs/deliverability.md](docs/deliverability.md) for SPF/DKIM/DMARC and moni
 | `npm run db:push` | Push Prisma schema to DB |
 | `npm run db:migrate` | Run Prisma migrations |
 | `npm run db:studio` | Open Prisma Studio |
+| `npm run banking:import -- <file>` | Upsert banking offers from JSON |
 
 ## Stack
 

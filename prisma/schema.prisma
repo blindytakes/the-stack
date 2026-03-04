@@ -200,3 +200,52 @@ model Subscriber {
 
   @@index([isActive])
 }
+
+// ---------------------------------------------------------------------------
+// Banking Bonuses
+// ---------------------------------------------------------------------------
+
+model BankingBonus {
+  id                         String                  @id @default(cuid())
+  slug                       String                  @unique
+  bankName                   String
+  offerName                  String
+  accountType                BankingAccountType
+  headline                   String
+  bonusAmount                Decimal
+  estimatedFees              Decimal                 @default(0)
+  directDepositRequired      Boolean                 @default(false)
+  directDepositMinimumAmount Decimal?
+  minimumOpeningDeposit      Decimal?
+  holdingPeriodDays          Int?
+  requiredActions            String[]
+  stateRestrictions          String[]
+  notes                      String?
+  offerUrl                   String?
+  affiliateUrl               String?
+  sourceType                 BankingBonusSourceType  @default(MANUAL)
+  sourceLabel                String?
+  confidenceScore            Int?
+  expiresAt                  DateTime?
+  isActive                   Boolean                 @default(true)
+  lastVerified               DateTime                @default(now())
+  createdAt                  DateTime                @default(now())
+  updatedAt                  DateTime                @updatedAt
+
+  @@index([isActive])
+  @@index([accountType])
+  @@index([lastVerified])
+}
+
+enum BankingAccountType {
+  CHECKING
+  SAVINGS
+  BUNDLE
+}
+
+enum BankingBonusSourceType {
+  MANUAL
+  PARTNER_FEED
+  AFFILIATE_NETWORK
+  EDITORIAL
+}

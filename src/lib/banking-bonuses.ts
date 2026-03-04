@@ -1,4 +1,7 @@
+import { BankingAccountType, type Prisma } from '@prisma/client';
 import { z } from 'zod';
+import { db, isDatabaseConfigured } from '@/lib/db';
+import { getNodeEnv } from '@/lib/config/runtime';
 import {
   bankingAccountTypeSchema,
   bankingBonusesSeedDatasetSchema,
@@ -127,6 +130,14 @@ export type BankingBonusListItem = BankingBonusRecord & {
   estimatedNetValue: number;
 };
 
+export type BankingBonusesDataSource = 'db' | 'seed';
+
+const accountTypeFromDb: Record<BankingAccountType, BankingBonusRecord['accountType']> = {
+  CHECKING: 'checking',
+  SAVINGS: 'savings',
+  BUNDLE: 'bundle'
+};
+
 export const bankingBonusesQuerySchema = z.object({
   accountType: bankingAccountTypeSchema.optional(),
   requiresDirectDeposit: z.enum(['yes', 'no']).optional(),
@@ -137,6 +148,12 @@ export const bankingBonusesQuerySchema = z.object({
 
 export type BankingBonusesQuery = z.infer<typeof bankingBonusesQuerySchema>;
 
+type DbBankingBonusRow = Prisma.BankingBonusGetPayload<Record<string, never>>;
+
+function sortByNetValueDesc<T extends BankingBonusListItem>(bonuses: T[]): T[] {
+  return [...bonuses].sort((a, b) => b.estimatedNetValue - a.estimatedNetValue);
+}
+
 function toListItem(record: BankingBonusRecord): BankingBonusListItem {
   return {
     ...record,
@@ -144,11 +161,55 @@ function toListItem(record: BankingBonusRecord): BankingBonusListItem {
   };
 }
 
-function getActiveBankingBonuses(): BankingBonusListItem[] {
-  return bankingBonusSeedData
-    .filter((record) => record.isActive)
-    .map(toListItem)
-    .sort((a, b) => b.estimatedNetValue - a.estimatedNetValue);
+function toRecordFromDb(row: DbBankingBonusRow): BankingBonusRecord {
+  const stateRestrictions = row.stateRestrictions.map((state) => state.trim().toUpperCase());
+
+  return {
+    slug: row.slug,
+    bankName: row.bankName,
+    offerName: row.offerName,
+    accountType: accountTypeFromDb[row.accountType],
+    headline: row.headline,
+    bonusAmount: Number(row.bonusAmount),
+    estimatedFees: Number(row.estimatedFees),
+    directDeposit: {
+      required: row.directDepositRequired,
+      ...(row.directDepositRequired && row.directDepositMinimumAmount != null
+        ? { minimumAmount: Number(row.directDepositMinimumAmount) }
+        : {})
+    },
+    minimumOpeningDeposit:
+      row.minimumOpeningDeposit != null ? Number(row.minimumOpeningDeposit) : undefined,
+    holdingPeriodDays: row.holdingPeriodDays ?? undefined,
+    requiredActions: row.requiredActions,
+    stateRestrictions: stateRestrictions.length > 0 ? stateRestrictions : undefined,
+    notes: row.notes ?? undefined,
+    offerUrl: row.offerUrl ?? undefined,
+    affiliateUrl: row.affiliateUrl ?? undefined,
+    isActive: row.isActive,
+    lastVerified: row.lastVerified.toISOString()
+  };
+}
+
+function getActiveSeedBankingBonuses(): BankingBonusListItem[] {
+  return sortByNetValueDesc(
+    bankingBonusSeedData.filter((record) => record.isActive).map(toListItem)
+  );
+}
+
+function shouldUseDbSource(): boolean {
+  if (!isDatabaseConfigured()) return false;
+  if (getNodeEnv() === 'test') return false;
+  return true;
+}
+
+async function getActiveDbBankingBonuses(): Promise<BankingBonusListItem[]> {
+  const rows = await db.bankingBonus.findMany({
+    where: { isActive: true },
+    orderBy: [{ bankName: 'asc' }, { offerName: 'asc' }]
+  });
+
+  return sortByNetValueDesc(rows.map(toRecordFromDb).map(toListItem));
 }
 
 export function getBankingOfferRequirements(offer: BankingBonusRecord): string[] {
@@ -174,22 +235,75 @@ export function getBankingOfferRequirements(offer: BankingBonusRecord): string[]
   return requirements;
 }
 
-export function getBankingBonusesData(): {
+export async function getBankingBonusesData(): Promise<{
   bonuses: BankingBonusListItem[];
-  source: 'seed';
-} {
+  source: BankingBonusesDataSource;
+}> {
+  if (!shouldUseDbSource()) {
+    return {
+      bonuses: getActiveSeedBankingBonuses(),
+      source: 'seed'
+    };
+  }
+
+  try {
+    const dbBonuses = await getActiveDbBankingBonuses();
+    if (dbBonuses.length > 0) {
+      return {
+        bonuses: dbBonuses,
+        source: 'db'
+      };
+    }
+  } catch (error) {
+    console.error('[banking-bonuses] failed to load DB offers; falling back to seed', {
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+
   return {
-    bonuses: getActiveBankingBonuses(),
+    bonuses: getActiveSeedBankingBonuses(),
     source: 'seed'
   };
 }
 
-export function getBankingBonusBySlug(slug: string): BankingBonusListItem | null {
-  return getActiveBankingBonuses().find((bonus) => bonus.slug === slug) ?? null;
+export async function getBankingBonusBySlug(slug: string): Promise<BankingBonusListItem | null> {
+  if (shouldUseDbSource()) {
+    try {
+      const dbOffer = await db.bankingBonus.findFirst({
+        where: { slug, isActive: true }
+      });
+      if (dbOffer) {
+        return toListItem(toRecordFromDb(dbOffer));
+      }
+    } catch (error) {
+      console.error('[banking-bonuses] failed to load DB offer by slug; falling back to seed', {
+        slug,
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+
+  return getActiveSeedBankingBonuses().find((bonus) => bonus.slug === slug) ?? null;
 }
 
-export function getAllBankingBonusSlugs(): string[] {
-  return getActiveBankingBonuses().map((bonus) => bonus.slug);
+export async function getAllBankingBonusSlugs(): Promise<string[]> {
+  if (shouldUseDbSource()) {
+    try {
+      const rows = await db.bankingBonus.findMany({
+        where: { isActive: true },
+        select: { slug: true }
+      });
+      if (rows.length > 0) {
+        return rows.map((row) => row.slug);
+      }
+    } catch (error) {
+      console.error('[banking-bonuses] failed to load DB slugs; falling back to seed', {
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
+  }
+
+  return getActiveSeedBankingBonuses().map((bonus) => bonus.slug);
 }
 
 export function filterBankingBonuses(

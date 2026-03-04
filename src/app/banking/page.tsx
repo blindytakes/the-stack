@@ -53,7 +53,7 @@ export default async function BankingPage({ searchParams }: Props) {
   const query =
     parsedQuery.success ? parsedQuery.data : bankingBonusesQuerySchema.parse({ limit: 100, offset: 0 });
 
-  const { bonuses } = getBankingBonusesData();
+  const { bonuses } = await getBankingBonusesData();
   const filtered = filterBankingBonuses(bonuses, query);
   const offers = paginateBankingBonuses(filtered, query);
   const totalNetValue = offers.reduce((sum, offer) => sum + offer.estimatedNetValue, 0);
