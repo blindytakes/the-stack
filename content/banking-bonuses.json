@@ -49,7 +49,7 @@
       "WY"
     ],
     "notes": "Offer validity and footprint reflected in public summaries updated in February-March 2026.",
-    "offerUrl": "https://www.forbes.com/advisor/banking/us-bank-promotions-bonus/",
+    "offerUrl": "https://www.usbank.com/bank-accounts/checking-accounts/smartly-checking-account.html",
     "isActive": true,
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
@@ -118,7 +118,7 @@
       "Receive at least two direct deposits of at least $500 each within 75 days of opening."
     ],
     "notes": "Offer listed as ongoing as of March 1, 2026.",
-    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "offerUrl": "https://www.capitalone.com/bank/checking250/",
     "isActive": true,
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
@@ -342,7 +342,7 @@
       "Keep the account open and in good standing through the 90-to-120-day payout window."
     ],
     "notes": "Offer deadline widely published as April 13, 2026 for the $325 enhanced-direct-deposit tier.",
-    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "offerUrl": "https://banking.citi.com/cbol/checking-accounts/checking-offer/default.htm",
     "isActive": true,
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
@@ -366,6 +366,219 @@
       "Maintain an average daily balance of at least $100 and end the 12-month period with at least $1,200 in the account."
     ],
     "offerUrl": "https://promo.alliantcreditunion.org",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "td-complete-checking-200",
+    "bankName": "TD Bank",
+    "offerName": "TD Complete Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $200 after opening TD Complete Checking and receiving qualifying direct deposits.",
+    "bonusAmount": 200,
+    "estimatedFees": 15,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 500
+    },
+    "holdingPeriodDays": 120,
+    "requiredActions": [
+      "Open a new TD Complete Checking account through the promotional page.",
+      "Receive at least $500 in qualifying direct deposits within 60 days of account opening."
+    ],
+    "notes": "TD published this offer with an end date of April 30, 2026.",
+    "offerUrl": "https://www.td.com/us/en/personal-banking/checking-and-saving-bonus",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "td-beyond-checking-300",
+    "bankName": "TD Bank",
+    "offerName": "TD Beyond Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $300 after opening TD Beyond Checking and meeting direct deposit requirements.",
+    "bonusAmount": 300,
+    "estimatedFees": 25,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 2500
+    },
+    "holdingPeriodDays": 120,
+    "requiredActions": [
+      "Open a new TD Beyond Checking account through the promotional page.",
+      "Receive at least $2,500 in qualifying direct deposits within 60 days of account opening."
+    ],
+    "notes": "TD published this offer with an end date of April 30, 2026.",
+    "offerUrl": "https://www.td.com/us/en/personal-banking/checking-and-saving-bonus",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "key-smart-checking-300",
+    "bankName": "KeyBank",
+    "offerName": "Key Smart Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $300 with Key Smart Checking after qualifying direct deposits.",
+    "bonusAmount": 300,
+    "estimatedFees": 0,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 2000
+    },
+    "minimumOpeningDeposit": 10,
+    "holdingPeriodDays": 150,
+    "requiredActions": [
+      "Open a new Key Smart Checking account with offer code KDMA0226 by the published deadline.",
+      "Make the $10 minimum opening deposit.",
+      "Receive at least $2,000 in eligible direct deposits within 90 days of account opening."
+    ],
+    "notes": "KeyBank lists this promotional window through May 22, 2026 and payout within 60 days after qualification.",
+    "offerUrl": "https://www.key.com/personal/checking/checking-account-bonus-offers.html",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "key-select-checking-500",
+    "bankName": "KeyBank",
+    "offerName": "Key Select Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $500 with Key Select Checking after qualifying direct deposits.",
+    "bonusAmount": 500,
+    "estimatedFees": 25,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 5000
+    },
+    "minimumOpeningDeposit": 50,
+    "holdingPeriodDays": 150,
+    "requiredActions": [
+      "Open a new Key Select Checking account with offer code KDMB0226 by the published deadline.",
+      "Make the $50 minimum opening deposit.",
+      "Receive at least $5,000 in eligible direct deposits within 90 days of account opening."
+    ],
+    "notes": "KeyBank lists this promotional window through May 22, 2026 and payout within 60 days after qualification.",
+    "offerUrl": "https://www.key.com/personal/checking/checking-account-bonus-offers.html",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "truist-one-checking-400",
+    "bankName": "Truist",
+    "offerName": "Truist One Checking Online Bonus",
+    "accountType": "checking",
+    "headline": "Earn $400 by opening Truist One Checking online and completing deposit and debit activity requirements.",
+    "bonusAmount": 400,
+    "estimatedFees": 12,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 2000
+    },
+    "minimumOpeningDeposit": 50,
+    "holdingPeriodDays": 120,
+    "requiredActions": [
+      "Open a new Truist One Checking account online and enroll with promo code DC400TR1Q425 during the offer window.",
+      "Receive at least two qualifying direct deposits totaling at least $2,000 within 120 days of account opening.",
+      "Complete at least 20 qualifying debit card purchases within 120 days of account opening."
+    ],
+    "notes": "Truist disclosure indicates offer window through March 25, 2026.",
+    "offerUrl": "https://www.truist.com/open-account/banking-accounts",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "marcus-online-savings-1500",
+    "bankName": "Marcus by Goldman Sachs",
+    "offerName": "Online Savings Cash Bonus",
+    "accountType": "savings",
+    "headline": "Earn up to $1,500 by enrolling and maintaining qualifying new balances in Marcus Online Savings.",
+    "bonusAmount": 1500,
+    "estimatedFees": 0,
+    "directDeposit": {
+      "required": false
+    },
+    "minimumOpeningDeposit": 0,
+    "holdingPeriodDays": 100,
+    "requiredActions": [
+      "Enroll a Marcus Online Savings account in the cash bonus offer by the published deadline.",
+      "Deposit at least $100,000 in eligible new funds within the 10-day funding period for the top bonus tier.",
+      "Maintain the required balance for the 90-day maintenance period."
+    ],
+    "notes": "Offer terms page lists enrollment deadline of March 11, 2026 with $100/$750/$1,500 tiers.",
+    "offerUrl": "https://www.marcus.com/us/en/disclosure/savings-bonus-offer-details-2026",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "huntington-perks-checking-400",
+    "bankName": "Huntington Bank",
+    "offerName": "Perks Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $400 with a new Huntington Perks Checking account after direct deposit qualification.",
+    "bonusAmount": 400,
+    "estimatedFees": 10,
+    "directDeposit": {
+      "required": true,
+      "minimumAmount": 500
+    },
+    "holdingPeriodDays": 104,
+    "requiredActions": [
+      "Open a new Huntington Perks Checking account using the promotion flow.",
+      "Receive a qualifying direct deposit of at least $500 within 90 days.",
+      "Keep the account open through bonus payout."
+    ],
+    "stateRestrictions": [
+      "CO",
+      "IL",
+      "IN",
+      "KY",
+      "MI",
+      "MN",
+      "NC",
+      "OH",
+      "PA",
+      "SC",
+      "WV",
+      "WI"
+    ],
+    "notes": "Forbes reported this offer expiration as March 15, 2026 and state-based availability.",
+    "offerUrl": "https://www.forbes.com/advisor/banking/huntington-bank-promotions/",
+    "isActive": true,
+    "lastVerified": "2026-03-04T00:00:00.000Z"
+  },
+  {
+    "slug": "huntington-platinum-perks-checking-600",
+    "bankName": "Huntington Bank",
+    "offerName": "Platinum Perks Checking Bonus",
+    "accountType": "checking",
+    "headline": "Earn $600 with a new Huntington Platinum Perks Checking account after qualifying new-money deposits.",
+    "bonusAmount": 600,
+    "estimatedFees": 25,
+    "directDeposit": {
+      "required": false
+    },
+    "minimumOpeningDeposit": 25000,
+    "holdingPeriodDays": 104,
+    "requiredActions": [
+      "Open a new Huntington Platinum Perks Checking account using the promotion flow.",
+      "Make cumulative new-money deposits of at least $25,000 within 90 days.",
+      "Keep the account open through bonus payout."
+    ],
+    "stateRestrictions": [
+      "CO",
+      "IL",
+      "IN",
+      "KY",
+      "MI",
+      "MN",
+      "NC",
+      "OH",
+      "PA",
+      "SC",
+      "WV",
+      "WI"
+    ],
+    "notes": "Forbes reported this offer expiration as March 15, 2026 and state-based availability.",
+    "offerUrl": "https://www.forbes.com/advisor/banking/huntington-bank-promotions/",
     "isActive": true,
     "lastVerified": "2026-03-04T00:00:00.000Z"
   }
