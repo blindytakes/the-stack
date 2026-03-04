@@ -11,6 +11,7 @@ describe('normalizeVitalPathToRoute', () => {
 
   it('normalizes dynamic card, blog, and learn slugs', () => {
     expect(normalizeVitalPathToRoute('/cards/apex-cash-plus')).toBe('/cards/[slug]');
+    expect(normalizeVitalPathToRoute('/banking/summit-national-checking-300')).toBe('/banking/[slug]');
     expect(normalizeVitalPathToRoute('/blog/why-amex-platinum-is-overrated')).toBe('/blog/[slug]');
     expect(normalizeVitalPathToRoute('/learn/annual-fee-math')).toBe('/learn/[slug]');
   });

@@ -4,11 +4,12 @@ import { allBlogSlugs } from '@/lib/learn-articles';
 const SITE_URL = 'https://thestackhq.com';
 
 /**
- * Dynamic sitemap for all static pages, card detail pages, and editorial content.
+ * Dynamic sitemap for all static pages, detail pages, and editorial content.
  *
- * Card slugs come from the database. If the DB is unavailable at build time
- * (e.g. during CI or preview deploys), the sitemap still emits all static and
- * article routes — card routes are simply omitted until the next ISR/rebuild.
+ * Card slugs come from the database. Banking offer slugs come from seed data.
+ * If the DB is unavailable at build time (e.g. during CI or preview deploys),
+ * the sitemap still emits all static, banking, and article routes — card routes
+ * are simply omitted until the next ISR/rebuild.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
@@ -62,5 +63,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.warn('[sitemap] Could not fetch card slugs — DB may be unavailable');
   }
 
-  return [...staticRoutes, ...blogRoutes, ...cardRoutes];
+  // ── Banking detail routes (from seed data) ────────────────────────────
+  let bankingRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const { getAllBankingBonusSlugs } = await import('@/lib/banking-bonuses');
+    const slugs = getAllBankingBonusSlugs();
+    bankingRoutes = slugs.map((slug) => ({
+      url: `${SITE_URL}/banking/${slug}`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+      lastModified: now
+    }));
+  } catch {
+    console.warn('[sitemap] Could not fetch banking slugs');
+  }
+
+  return [...staticRoutes, ...blogRoutes, ...cardRoutes, ...bankingRoutes];
 }

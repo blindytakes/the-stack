@@ -91,7 +91,7 @@ export function toPlannerRecommendationFromBankingBonus(
     provider: input.bankName,
     estimatedNetValue: asNetValue(input.bonusAmount - input.estimatedFees),
     effort: bankEffortFromOffer(input),
-    detailPath: `/banking?offer=${input.slug}`,
+    detailPath: `/banking/${input.slug}`,
     timelineDays: input.holdingPeriodDays,
     keyRequirements: getBankingOfferRequirements(input)
   };

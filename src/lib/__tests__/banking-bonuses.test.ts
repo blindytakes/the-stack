@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   bankingBonusesQuerySchema,
   filterBankingBonuses,
+  getAllBankingBonusSlugs,
+  getBankingBonusBySlug,
   getBankingBonusesData,
   getBankingOfferRequirements,
   paginateBankingBonuses
@@ -20,6 +22,25 @@ describe('getBankingBonusesData', () => {
     for (let i = 1; i < bonuses.length; i += 1) {
       expect(bonuses[i - 1].estimatedNetValue).toBeGreaterThanOrEqual(bonuses[i].estimatedNetValue);
     }
+  });
+});
+
+describe('banking slug helpers', () => {
+  it('returns active slugs only', () => {
+    const slugs = getAllBankingBonusSlugs();
+    expect(slugs.length).toBeGreaterThan(0);
+    expect(slugs.includes('oak-legacy-checking-300-legacy')).toBe(false);
+  });
+
+  it('finds active offer by slug', () => {
+    const offer = getBankingBonusBySlug('summit-national-checking-300');
+    expect(offer).toBeTruthy();
+    expect(offer?.bankName).toBe('Summit National Bank');
+  });
+
+  it('returns null for inactive or unknown slugs', () => {
+    expect(getBankingBonusBySlug('oak-legacy-checking-300-legacy')).toBeNull();
+    expect(getBankingBonusBySlug('does-not-exist')).toBeNull();
   });
 });
 

@@ -144,6 +144,13 @@ function toListItem(record: BankingBonusRecord): BankingBonusListItem {
   };
 }
 
+function getActiveBankingBonuses(): BankingBonusListItem[] {
+  return bankingBonusSeedData
+    .filter((record) => record.isActive)
+    .map(toListItem)
+    .sort((a, b) => b.estimatedNetValue - a.estimatedNetValue);
+}
+
 export function getBankingOfferRequirements(offer: BankingBonusRecord): string[] {
   const requirements: string[] = [];
 
@@ -172,12 +179,17 @@ export function getBankingBonusesData(): {
   source: 'seed';
 } {
   return {
-    bonuses: bankingBonusSeedData
-      .filter((record) => record.isActive)
-      .map(toListItem)
-      .sort((a, b) => b.estimatedNetValue - a.estimatedNetValue),
+    bonuses: getActiveBankingBonuses(),
     source: 'seed'
   };
+}
+
+export function getBankingBonusBySlug(slug: string): BankingBonusListItem | null {
+  return getActiveBankingBonuses().find((bonus) => bonus.slug === slug) ?? null;
+}
+
+export function getAllBankingBonusSlugs(): string[] {
+  return getActiveBankingBonuses().map((bonus) => bonus.slug);
 }
 
 export function filterBankingBonuses(

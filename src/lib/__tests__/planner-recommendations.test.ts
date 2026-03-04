@@ -43,7 +43,7 @@ describe('toPlannerRecommendationFromBankingBonus', () => {
     expect(recommendation.lane).toBe('banking');
     expect(recommendation.kind).toBe('bank_bonus');
     expect(recommendation.estimatedNetValue).toBe(288);
-    expect(recommendation.detailPath).toBe('/banking?offer=summit-national-checking-300');
+    expect(recommendation.detailPath).toBe('/banking/summit-national-checking-300');
     expect(recommendation.keyRequirements.some((item) => item.includes('direct deposit'))).toBe(true);
   });
 });
