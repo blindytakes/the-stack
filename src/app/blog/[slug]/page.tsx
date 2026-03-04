@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
+  allBlogArticles,
   allBlogSlugs,
   getArticleBySlug,
   learnCategoryColor
@@ -24,6 +25,13 @@ export default async function BlogArticlePage({ params }: Props) {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
   if (!article) notFound();
+  const relatedByCategory = allBlogArticles
+    .filter((candidate) => candidate.slug !== slug && candidate.category === article.category)
+    .sort((a, b) => (b.featuredOrder ?? -1) - (a.featuredOrder ?? -1));
+  const relatedFallback = allBlogArticles
+    .filter((candidate) => candidate.slug !== slug && candidate.category !== article.category)
+    .sort((a, b) => (b.featuredOrder ?? -1) - (a.featuredOrder ?? -1));
+  const relatedArticles = [...relatedByCategory, ...relatedFallback].slice(0, 3);
 
   return (
     <div className="container-page pt-12 pb-16">
@@ -74,6 +82,36 @@ export default async function BlogArticlePage({ params }: Props) {
           .
         </p>
       </div>
+
+      {relatedArticles.length > 0 ? (
+        <section className="mt-12 max-w-4xl">
+          <p className="text-xs uppercase tracking-[0.3em] text-brand-coral">Keep Reading</p>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {relatedArticles.map((related) => (
+              <Link
+                key={related.slug}
+                href={`/blog/${related.slug}`}
+                className="group rounded-2xl border border-white/10 bg-bg-surface p-5 transition hover:-translate-y-1 hover:border-brand-coral/35 hover:shadow-[0_0_18px_rgba(251,146,60,0.08)]"
+              >
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-[10px] uppercase tracking-[0.2em] ${
+                      learnCategoryColor[related.category] ?? 'text-text-muted'
+                    }`}
+                  >
+                    {related.category}
+                  </span>
+                  <span className="text-[10px] text-text-muted">{related.readTime}</span>
+                </div>
+                <h3 className="mt-2 text-base font-semibold text-text-primary transition group-hover:text-brand-coral">
+                  {related.title}
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-text-secondary">{related.description}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

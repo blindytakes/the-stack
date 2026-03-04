@@ -125,6 +125,7 @@ export default async function BlogPage({ searchParams }: Props) {
       }
     }
   });
+  const [featuredArticle, ...remainingArticles] = sortedArticles;
 
   return (
     <div className="container-page pt-12 pb-16">
@@ -137,32 +138,80 @@ export default async function BlogPage({ searchParams }: Props) {
         </p>
       </div>
 
-      <section className="mt-8 max-w-4xl rounded-2xl border border-white/10 bg-bg-surface p-5">
-        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Filter by category</p>
-        <div className="mt-3 flex flex-wrap gap-2">
+      {featuredArticle ? (
+        <section className="mt-8 max-w-4xl">
           <Link
-            href={buildBlogHref(null, selectedSort)}
-            className={`rounded-full border px-3 py-1.5 text-xs transition ${
-              selectedCategory === null
-                ? 'border-brand-coral/50 bg-brand-coral/15 text-brand-coral'
-                : 'border-white/10 text-text-secondary hover:border-brand-coral/30 hover:text-text-primary'
-            }`}
+            href={`/blog/${featuredArticle.slug}`}
+            className="group block rounded-3xl border border-white/10 bg-gradient-to-br from-brand-coral/12 via-bg-elevated to-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-coral/40 hover:shadow-[0_0_28px_rgba(251,146,60,0.12)]"
           >
-            All ({allBlogArticles.length})
+            <p className="text-[10px] uppercase tracking-[0.25em] text-brand-coral">Featured</p>
+            <div className="mt-3 flex items-center gap-3">
+              <span
+                className={`text-[10px] uppercase tracking-[0.2em] ${
+                  learnCategoryColor[featuredArticle.category] ?? 'text-text-muted'
+                }`}
+              >
+                {featuredArticle.category}
+              </span>
+              <span className="text-[10px] text-text-muted">{featuredArticle.readTime}</span>
+            </div>
+            <h2 className="mt-3 text-2xl font-semibold text-text-primary transition group-hover:text-brand-coral">
+              {featuredArticle.title}
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm text-text-secondary">{featuredArticle.description}</p>
           </Link>
-          {categories.map((category) => (
-            <Link
-              key={category}
-              href={buildBlogHref(category, selectedSort)}
-              className={`rounded-full border px-3 py-1.5 text-xs transition ${
-                selectedCategory === category
-                  ? 'border-brand-coral/50 bg-brand-coral/15 text-brand-coral'
-                  : 'border-white/10 text-text-secondary hover:border-brand-coral/30 hover:text-text-primary'
-              }`}
-            >
-              {category} ({categoryCounts.get(category) ?? 0})
-            </Link>
-          ))}
+        </section>
+      ) : null}
+
+      <section className="mt-6 max-w-4xl rounded-2xl border border-white/10 bg-bg-surface p-5">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Category</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <Link
+                href={buildBlogHref(null, selectedSort)}
+                className={`rounded-full border px-3 py-1.5 text-xs transition ${
+                  selectedCategory === null
+                    ? 'border-brand-coral/50 bg-brand-coral/15 text-brand-coral'
+                    : 'border-white/10 text-text-secondary hover:border-brand-coral/30 hover:text-text-primary'
+                }`}
+              >
+                All ({allBlogArticles.length})
+              </Link>
+              {categories.map((category) => (
+                <Link
+                  key={category}
+                  href={buildBlogHref(category, selectedSort)}
+                  className={`rounded-full border px-3 py-1.5 text-xs transition ${
+                    selectedCategory === category
+                      ? 'border-brand-coral/50 bg-brand-coral/15 text-brand-coral'
+                      : 'border-white/10 text-text-secondary hover:border-brand-coral/30 hover:text-text-primary'
+                  }`}
+                >
+                  {category} ({categoryCounts.get(category) ?? 0})
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Sort</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {sortOptions.map((option) => (
+                <Link
+                  key={option.value}
+                  href={buildBlogHref(selectedCategory, option.value)}
+                  className={`rounded-full border px-3 py-1.5 text-xs transition ${
+                    selectedSort === option.value
+                      ? 'border-brand-coral/50 bg-brand-coral/15 text-brand-coral'
+                      : 'border-white/10 text-text-secondary hover:border-brand-coral/30 hover:text-text-primary'
+                  }`}
+                >
+                  {option.label}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
         <p className="mt-3 text-xs text-text-muted">
           Showing {sortedArticles.length} post{sortedArticles.length === 1 ? '' : 's'}
@@ -170,26 +219,7 @@ export default async function BlogPage({ searchParams }: Props) {
         </p>
       </section>
 
-      <section className="mt-4 max-w-4xl rounded-2xl border border-white/10 bg-bg-surface p-5">
-        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Sort</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {sortOptions.map((option) => (
-            <Link
-              key={option.value}
-              href={buildBlogHref(selectedCategory, option.value)}
-              className={`rounded-full border px-3 py-1.5 text-xs transition ${
-                selectedSort === option.value
-                  ? 'border-brand-coral/50 bg-brand-coral/15 text-brand-coral'
-                  : 'border-white/10 text-text-secondary hover:border-brand-coral/30 hover:text-text-primary'
-              }`}
-            >
-              {option.label}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <BlogGrid articles={sortedArticles} />
+      <BlogGrid articles={remainingArticles} />
     </div>
   );
 }
