@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const navItems = [
-  { href: '/tools/card-finder', label: 'Planner' },
+  { href: '/tools/card-finder', label: 'Start Here' },
   { href: '/cards', label: 'Cards' },
   { href: '/banking', label: 'Banking' },
   { href: '/blog', label: 'Blog' },
@@ -67,7 +67,7 @@ export function SiteNav() {
             href="/tools/card-finder"
             className="hidden rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90 sm:inline-flex"
           >
-            Start My Payout Plan
+            Build My Bonus Plan
           </Link>
 
           {/* Mobile hamburger */}
@@ -113,7 +113,7 @@ export function SiteNav() {
               onClick={() => setOpen(false)}
               className="mt-2 rounded-full bg-brand-teal px-4 py-3 text-center text-sm font-semibold text-black transition hover:opacity-90"
             >
-              Start My Payout Plan
+              Build My Bonus Plan
             </Link>
           </div>
         </nav>

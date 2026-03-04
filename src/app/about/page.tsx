@@ -41,7 +41,7 @@ export default function AboutPage() {
           href="/tools/card-finder"
           className="inline-flex items-center justify-center rounded-full bg-brand-teal px-5 py-2 text-sm font-semibold text-black transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
-          Start My Payout Plan
+          Build My Bonus Plan
         </Link>
         <Link
           href="/cards"

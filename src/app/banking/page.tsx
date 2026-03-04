@@ -77,7 +77,7 @@ export default function BankingPage() {
         </p>
         <div className="mt-6 flex flex-wrap gap-3">
           <Link href="/tools/card-finder">
-            <Button>Start My Payout Plan</Button>
+            <Button>Build My Bonus Plan</Button>
           </Link>
           <Link href="/blog">
             <Button variant="ghost">Read the playbooks</Button>
