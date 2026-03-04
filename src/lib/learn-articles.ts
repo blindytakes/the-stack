@@ -1,12 +1,171 @@
+export type LearnArticleSeries = 'Evergreen Assets' | 'Core Playbooks';
+
 export type LearnArticle = {
   title: string;
   category: string;
   readTime: string;
   description: string;
+  series?: LearnArticleSeries;
+  featuredOrder?: number;
   sections: { heading: string; body: string }[];
 };
 
 export const learnArticles: Record<string, LearnArticle> = {
+  'why-sign-up-bonuses-matter-more-than-everything-else-combined': {
+    title: 'Why Sign-Up Bonuses Matter More Than Everything Else Combined',
+    category: 'Strategy',
+    readTime: '7 min',
+    series: 'Evergreen Assets',
+    featuredOrder: 1,
+    description:
+      'Category multipliers are nice. Welcome offers are where the real acceleration happens.',
+    sections: [
+      {
+        heading: 'The value gap most people never run',
+        body: 'Most people spend months debating whether 2x or 3x points is better in a category, while ignoring the largest value event in the entire card lifecycle: the sign-up bonus. A typical welcome offer can be worth the equivalent of years of ordinary category optimization. That is not hype; it is arithmetic. If one card gives a welcome offer worth roughly $750 and your everyday card earns an extra 1% versus the fallback option, you would need $75,000 of spend just to match that single bonus. Multipliers matter, but they are the slow lane. Bonuses are the jump-start.'
+      },
+      {
+        heading: 'Everyday rewards cannot catch up quickly',
+        body: 'Category earnings are incremental by design. They improve your return one purchase at a time, which is useful for long-term efficiency, but they rarely create meaningful short-term movement. Sign-up bonuses compress a large amount of value into a defined window, usually 60 to 120 days. That compression changes the economics of your full strategy: one strong bonus can fund a domestic flight, offset a major annual fee, or build a travel points base you can compound later. If your goal is outsized annual return, you should optimize the highest-leverage variable first.'
+      },
+      {
+        heading: 'Bonuses create optionality, not just points',
+        body: 'A large bonus balance gives you options that pure category earning does not. You can redeem for travel, convert to cash-like value, or hold until a specific redemption appears. Optionality has real financial value because it lets you wait for good opportunities instead of forcing a bad redemption. It also lowers pressure to overspend for tiny marginal gains, because your core yield came from a planned welcome offer rather than constant micromanagement. In practical terms, bonuses provide strategic breathing room. They move you from optimization anxiety into deliberate decision-making.'
+      },
+      {
+        heading: 'The safe framework: plan spend first, apply second',
+        body: 'The right process is simple: forecast your next 90 days of unavoidable expenses, then choose a card whose minimum spend requirement fits that forecast naturally. Rent, insurance, utilities, planned travel, and recurring household spend are the raw inputs. Do not reverse the order by applying first and scrambling later. If you need to buy things you would not otherwise buy, the bonus is already compromised. Welcome offers only stay high-value when they sit on top of normal cash flow, paid in full every statement period with zero interest charges.'
+      },
+      {
+        heading: 'Why this remains evergreen across market cycles',
+        body: 'Issuers change categories, adjust transfer partners, and refresh benefit packages, but one pattern stays durable: banks are willing to pay heavily for new prime customers. That makes sign-up bonuses the most persistent source of excess value in card strategy. The specific best offer changes, yet the underlying playbook does not: qualify responsibly, align spend windows with real expenses, hit requirements cleanly, and stop. If you do only one thing well in the rewards game, do this well. Almost everything else is secondary optimization.'
+      }
+    ]
+  },
+  'why-amex-platinum-is-overrated': {
+    title: 'Why the Amex Platinum Is Overrated for Most People',
+    category: 'Card Reviews',
+    readTime: '7 min',
+    series: 'Evergreen Assets',
+    featuredOrder: 2,
+    description:
+      'Great for a narrow profile, expensive for everyone else. The mismatch is the problem.',
+    sections: [
+      {
+        heading: 'Prestige is not the same as net value',
+        body: 'The Platinum card wins on perception: premium branding, heavy marketing, and a long benefit list that looks unbeatable at first glance. But perception is not portfolio math. Most households do not extract enough reliable annual value to justify a premium fee card with this much breakage risk. A card can be excellent on paper and still be overrated in practice when the median user captures only a fraction of the advertised benefit stack. The core question is not whether the perks are real. It is whether those perks are naturally used by your lifestyle without behavioral forcing.'
+      },
+      {
+        heading: 'Credits are segmented, not liquid',
+        body: 'A major reason the card feels overrated is how benefits are delivered: as fragmented credits with channel, timing, or merchant restrictions. A $200 value delivered as four constrained transactions is not economically identical to $200 of flexible cash. If redemption requires changing where you shop, setting reminders, or buying things you did not need, the realized value drops fast. Many cardholders mentally count 100% of published credits while actually redeeming far less. The gap between theoretical and realized value is where most disappointment happens, and that gap is structural, not user error.'
+      },
+      {
+        heading: 'Lounge access has become a weaker differentiator',
+        body: 'Airport lounge access remains useful for frequent flyers, but the experience is less differentiated than it was several years ago. Crowd pressure, guest limitations, and airport-specific quality variance can turn a premium headline perk into an inconsistent convenience. If your home airport has poor lounge coverage or your travel pattern is mostly direct short-haul flights, the utility can be sporadic. In that scenario, assigning a large annual dollar value to lounge access is optimistic. A benefit you use occasionally should be valued occasionally, even if the marketing frame implies universal utility.'
+      },
+      {
+        heading: 'The earn structure is narrow for everyday spend',
+        body: 'For many users, the Platinum card is not an efficient daily driver. Its strongest earning multipliers are concentrated in travel channels, while everyday categories such as groceries, gas, and general purchases are often better served by other products. That creates a two-card or three-card management burden just to maintain competitive baseline returns. If a premium card requires multiple companions to avoid weak everyday economics, it should be evaluated as one component in a system, not as a standalone winner. Most people buy it as the latter and then underperform.'
+      },
+      {
+        heading: 'Who should still get it',
+        body: 'The card is not bad; it is simply over-prescribed. It can be excellent for high-frequency travelers who can naturally use the credits, value elite travel perks, and already spend heavily in qualifying channels. It is usually weaker for occasional travelers chasing status optics. A better framework is to treat Platinum as a specialized tool, not a universal recommendation. If your real habits fit the tool, keep it. If you need a spreadsheet and twelve reminders just to break even, that is your answer.'
+      }
+    ]
+  },
+  'why-chase-sapphire-reserve-is-losing-its-shine': {
+    title: 'Why Chase Sapphire Reserve Is Losing Its Shine',
+    category: 'Card Reviews',
+    readTime: '7 min',
+    series: 'Evergreen Assets',
+    featuredOrder: 3,
+    description:
+      'Still a strong card, but no longer the automatic premium default it once was.',
+    sections: [
+      {
+        heading: 'From category king to one option among many',
+        body: 'The Sapphire Reserve once stood out because it combined strong travel protections, broad utility, and relatively straightforward premium economics. That edge has narrowed as competitors improved earn rates, launched stronger welcome offers, and added richer transfer ecosystems. The card is still good, but the market around it changed faster than most cardholders updated their assumptions. Legacy reputation now does a lot of the work. When people call it a no-brainer in 2026, they are often repeating a verdict from an earlier competitive era, not reflecting current opportunity cost.'
+      },
+      {
+        heading: 'Annual fee pressure is harder to ignore now',
+        body: 'Premium annual fees always demand clear offset logic, but the tolerance for fuzzy value has declined as households focus on net return. A large travel credit helps, yet beyond that anchor the remaining economics depend on usage patterns that are less universal than they appear. If your redemptions are basic and your travel cadence is moderate, the fee burden can creep back into the equation faster than expected. A premium card should feel obviously accretive year after year. For many users, Reserve now feels merely acceptable unless they are highly engaged optimizers.'
+      },
+      {
+        heading: 'Redemption advantage is less exclusive',
+        body: 'One of Reserve\'s historical advantages was elevated redemption value within the issuer ecosystem. Today, many advanced users prioritize transfer partner redemptions anyway, and competing ecosystems now offer comparable high-end outcomes when used skillfully. If your best redemptions come from transfers rather than fixed portal multipliers, the distinctiveness of any one premium card falls. Reserve still offers solid flexibility, but flexibility alone is no longer rare. The gap between "good redemption tool" and "best long-term anchor" has narrowed, and that is the core reason the card feels less dominant.'
+      },
+      {
+        heading: 'System fit matters more than brand loyalty',
+        body: 'The biggest strategic mistake is evaluating premium cards in isolation. The real question is how a card fits with your no-fee earners, your business cards, and your transfer goals. Reserve can still perform well inside a well-designed Chase-heavy setup, but it can underperform if your highest spend categories live elsewhere. As alternatives improve, blind loyalty becomes expensive. The better approach is periodic portfolio re-underwriting: recalculate where your spend happens, where your points are redeemed, and whether the premium fee is still buying a measurable edge.'
+      },
+      {
+        heading: 'What "losing shine" really means',
+        body: 'Losing shine does not mean losing relevance. It means the card moved from "automatic recommendation" to "conditional recommendation." For some users, it remains the right premium anchor. For many others, it is now one contender in a deeper field with stronger low-friction value propositions. That distinction matters because old heuristics can lock you into yesterday\'s best setup. The card still deserves a fair hearing. It just no longer wins by default.'
+      }
+    ]
+  },
+  'why-capital-one-venture-x-is-the-future-winner': {
+    title: 'Why Capital One Venture X Is the Future Winner',
+    category: 'Card Reviews',
+    readTime: '7 min',
+    series: 'Evergreen Assets',
+    featuredOrder: 4,
+    description:
+      'Its advantage is not hype. It is repeatable, low-friction value at portfolio scale.',
+    sections: [
+      {
+        heading: 'The winning model: high value with low maintenance',
+        body: 'The Venture X thesis is simple: deliver premium-tier utility without requiring premium-tier effort. That matters more than most people realize. Complex cards often look superior in spreadsheet mode, then underperform in real life because users miss credits, split spend inefficiently, or abandon optimization routines. Venture X has positioned itself around durable ease: a strong base earn rate, usable travel value, and benefits that do not require a dozen monthly behaviors. In the long run, systems with lower operational friction usually outperform systems with higher theoretical upside and lower execution consistency.'
+      },
+      {
+        heading: 'It works unusually well as a portfolio anchor',
+        body: 'Many premium cards are strongest only when heavily paired with multiple ecosystem companions. Venture X can still pair well, but it does not depend on complex stacking to stay competitive. A simple two-card setup can already generate robust returns: use category-optimized earners where obvious, then route all uncategorized spend to Venture X for stable baseline accumulation. That creates a cleaner default path for busy users and reduces reward leakage from accidental 1x spend. Cards that become "easy defaults" tend to win share over time because they match how people actually spend.'
+      },
+      {
+        heading: 'Ecosystem quality is now good enough to compound',
+        body: 'Capital One\'s ecosystem is no longer a niche side option. Transfer partners are broad enough for serious redemptions, and the travel experience has improved enough to serve mainstream users who want one integrated path. You do not need an ecosystem to be perfect; you need it to be reliably useful across many scenarios. Once that threshold is crossed, ease and consistency become decisive. Venture X benefits from this dynamic because it sits at the center of a maturing stack that increasingly supports both casual and advanced strategies.'
+      },
+      {
+        heading: 'The economics are psychologically resilient',
+        body: 'A card can be mathematically positive and still feel bad if value realization is brittle. Venture X tends to avoid that problem by keeping the annual value logic more legible for the median user. When cardholders can clearly explain why they keep a card in one sentence, retention quality improves. Better retention often leads to stronger product investment loops, which further improves competitiveness. This is an underrated flywheel: understandable value attracts disciplined users, disciplined users keep the product healthy, and product health supports future benefits.'
+      },
+      {
+        heading: 'What could break the "future winner" case',
+        body: 'No thesis is permanent. This view weakens if benefits become fragmented, annual economics deteriorate, or competitor products deliver meaningfully better low-friction value. But under current dynamics, Venture X is well aligned with where consumer behavior is moving: fewer moving parts, higher baseline returns, and benefits that are actually usable. The most likely long-term winners in rewards are not the flashiest cards. They are the cards people can run well every year without turning points into a second job.'
+      }
+    ]
+  },
+  'why-return-protection-is-the-secret-you-need-now': {
+    title: 'Why Return Protection Is the Secret Benefit You Need Now',
+    category: 'Benefits',
+    readTime: '6 min',
+    series: 'Evergreen Assets',
+    featuredOrder: 5,
+    description:
+      'When return windows fail you, this overlooked protection can quietly save real money.',
+    sections: [
+      {
+        heading: 'The hidden inflation hedge for uncertain purchases',
+        body: 'Prices are higher, return policies are tighter, and more merchants are shortening windows or adding exclusions. That makes purchase regret more expensive than it used to be. Return protection is the quiet counterweight: when a merchant denies an eligible return, your card benefit may reimburse you up to a limit. In volatile pricing environments, this is not a niche perk. It is practical downside control. You can buy with less fear of being stuck, especially for seasonal items, gifts, or products where fit and quality are hard to evaluate from a product page.'
+      },
+      {
+        heading: 'How return protection differs from other protections',
+        body: 'Many people confuse return protection with purchase protection or extended warranty, but they solve different problems. Purchase protection usually covers theft or accidental damage shortly after purchase. Extended warranty stretches manufacturer coverage for defects. Return protection addresses a specific friction point: the item is still functional, but the store refuses a return within your card\'s eligible claim window. That distinction matters because it fills the exact gap where consumers often lose money. Knowing which benefit does what helps you choose the right card at checkout instead of hoping any protection will apply later.'
+      },
+      {
+        heading: 'Where it creates the most real-world value',
+        body: 'Return protection shines in categories with high preference risk: apparel sizing, home goods, electronics accessories, gifts, and niche purchases where product descriptions can mislead. It is also useful when buying from stores with stricter final-sale language or complicated holiday return rules. The key is intentional card selection. If you have multiple cards, route uncertain purchases to the card with the strongest return protection terms and claim limits, even if the points multiplier is slightly lower. A one-point earn-rate difference is trivial compared with losing the full purchase amount.'
+      },
+      {
+        heading: 'A claim process that actually works',
+        body: 'Most failed claims are documentation failures, not eligibility failures. Keep the receipt, keep proof of payment, save the merchant return denial, and file promptly within the stated timeline. Photograph the item if requested and follow shipping instructions exactly if the benefit administrator asks for return of the product. Build a simple folder in your notes app or cloud drive for uncertain purchases so evidence is ready. This turns a frustrating process into a repeatable workflow. The benefit is only powerful when execution is clean and fast.'
+      },
+      {
+        heading: 'Why this should influence your card stack today',
+        body: 'Return protection is rarely highlighted in flashy marketing, which is exactly why it is undervalued. It does not create social proof like lounge photos or metal card aesthetics, but it can prevent immediate cash losses in everyday life. In a practical card strategy, this benefit deserves a dedicated role: one card for uncertain retail purchases, another for category-maximizing routine spend, and separate cards for bonuses when needed. That structure improves both upside and downside management. The best rewards strategy is not just about earning more. It is about losing less.'
+      }
+    ]
+  },
   'how-credit-card-rewards-actually-work': {
     title: 'How Credit Card Rewards Actually Work',
     category: 'Fundamentals',
@@ -205,5 +364,58 @@ export const learnCategoryColor: Record<string, string> = {
   Strategy: 'text-brand-gold',
   'Getting Started': 'text-brand-coral',
   Comparison: 'text-text-secondary',
-  Banking: 'text-brand-teal'
+  Banking: 'text-brand-teal',
+  'Card Reviews': 'text-brand-coral',
+  Benefits: 'text-brand-gold'
 };
+
+export type LearnArticleCard = {
+  slug: string;
+  title: string;
+  category: string;
+  readTime: string;
+  description: string;
+  series: LearnArticleSeries;
+  featuredOrder: number | null;
+};
+
+function getArticleSeries(article: LearnArticle): LearnArticleSeries {
+  return article.series ?? 'Core Playbooks';
+}
+
+const allLearnArticleCards: LearnArticleCard[] = Object.entries(learnArticles).map(
+  ([slug, article]) => ({
+    slug,
+    title: article.title,
+    category: article.category,
+    readTime: article.readTime,
+    description: article.description,
+    series: getArticleSeries(article),
+    featuredOrder: article.featuredOrder ?? null
+  })
+);
+
+const evergreenSortMax = Number.MAX_SAFE_INTEGER;
+
+export const evergreenAssetArticles = allLearnArticleCards
+  .filter((article) => article.series === 'Evergreen Assets')
+  .sort(
+    (a, b) =>
+      (a.featuredOrder ?? evergreenSortMax) - (b.featuredOrder ?? evergreenSortMax)
+  );
+
+export const corePlaybookArticles = allLearnArticleCards.filter(
+  (article) => article.series === 'Core Playbooks'
+);
+
+export const evergreenAssetSlugs = evergreenAssetArticles.map((article) => article.slug);
+export const corePlaybookSlugs = corePlaybookArticles.map((article) => article.slug);
+
+export function getArticleBySlugAndSeries(
+  slug: string,
+  series: LearnArticleSeries
+): LearnArticle | null {
+  const article = learnArticles[slug];
+  if (!article) return null;
+  return getArticleSeries(article) === series ? article : null;
+}

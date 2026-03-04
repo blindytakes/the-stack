@@ -3,6 +3,7 @@ const allowedStaticPaths = new Set([
   '/about',
   '/affiliate-disclosure',
   '/banking',
+  '/blog',
   '/cards',
   '/contact',
   '/learn',
@@ -36,6 +37,7 @@ export function normalizeVitalPathToRoute(rawPath: string): string {
     pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 
   if (/^\/cards\/[^/]+$/.test(normalized)) return '/cards/[slug]';
+  if (/^\/blog\/[^/]+$/.test(normalized)) return '/blog/[slug]';
   if (/^\/learn\/[^/]+$/.test(normalized)) return '/learn/[slug]';
   if (allowedStaticPaths.has(normalized)) return normalized;
 

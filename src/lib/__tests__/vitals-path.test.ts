@@ -4,16 +4,21 @@ import { normalizeVitalPathToRoute } from '../vitals-path';
 describe('normalizeVitalPathToRoute', () => {
   it('normalizes known static routes', () => {
     expect(normalizeVitalPathToRoute('/tools/card-finder')).toBe('/tools/card-finder');
+    expect(normalizeVitalPathToRoute('/blog/')).toBe('/blog');
     expect(normalizeVitalPathToRoute('/cards/')).toBe('/cards');
   });
 
-  it('normalizes dynamic card and learn slugs', () => {
+  it('normalizes dynamic card, blog, and learn slugs', () => {
     expect(normalizeVitalPathToRoute('/cards/apex-cash-plus')).toBe('/cards/[slug]');
+    expect(normalizeVitalPathToRoute('/blog/why-amex-platinum-is-overrated')).toBe('/blog/[slug]');
     expect(normalizeVitalPathToRoute('/learn/annual-fee-math')).toBe('/learn/[slug]');
   });
 
   it('drops query strings, hashes, and full URL inputs', () => {
     expect(normalizeVitalPathToRoute('/cards/apex-cash-plus?src=card_finder')).toBe('/cards/[slug]');
+    expect(normalizeVitalPathToRoute('https://example.com/blog/why-sign-up-bonuses-matter')).toBe(
+      '/blog/[slug]'
+    );
     expect(normalizeVitalPathToRoute('https://example.com/learn/first-card-playbook#top')).toBe(
       '/learn/[slug]'
     );

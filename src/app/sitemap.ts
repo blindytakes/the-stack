@@ -1,10 +1,10 @@
 import type { MetadataRoute } from 'next';
-import { learnArticles } from '@/lib/learn-articles';
+import { corePlaybookSlugs, evergreenAssetSlugs } from '@/lib/learn-articles';
 
 const SITE_URL = 'https://thestackhq.com';
 
 /**
- * Dynamic sitemap for all static pages, card detail pages, and learn articles.
+ * Dynamic sitemap for all static pages, card detail pages, and editorial content.
  *
  * Card slugs come from the database. If the DB is unavailable at build time
  * (e.g. during CI or preview deploys), the sitemap still emits all static and
@@ -19,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/cards', changeFrequency: 'daily' as const, priority: 0.9 },
     { path: '/banking', changeFrequency: 'weekly' as const, priority: 0.8 },
     { path: '/learn', changeFrequency: 'weekly' as const, priority: 0.8 },
+    { path: '/blog', changeFrequency: 'weekly' as const, priority: 0.8 },
     { path: '/tools/card-finder', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/tools/hidden-benefits', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/tools/card-vs-card', changeFrequency: 'monthly' as const, priority: 0.7 },
@@ -37,15 +38,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now
   }));
 
-  // ── Learn article routes ───────────────────────────────────────────────
-  const articleRoutes: MetadataRoute.Sitemap = Object.keys(learnArticles).map(
-    (slug) => ({
-      url: `${SITE_URL}/learn/${slug}`,
-      changeFrequency: 'monthly' as const,
-      priority: 0.7,
-      lastModified: now
-    })
-  );
+  // ── Learn + blog article routes ────────────────────────────────────────
+  const learnRoutes: MetadataRoute.Sitemap = corePlaybookSlugs.map((slug) => ({
+    url: `${SITE_URL}/learn/${slug}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+    lastModified: now
+  }));
+
+  const blogRoutes: MetadataRoute.Sitemap = evergreenAssetSlugs.map((slug) => ({
+    url: `${SITE_URL}/blog/${slug}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+    lastModified: now
+  }));
 
   // ── Card detail routes (from DB) ──────────────────────────────────────
   let cardRoutes: MetadataRoute.Sitemap = [];
@@ -65,5 +71,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.warn('[sitemap] Could not fetch card slugs — DB may be unavailable');
   }
 
-  return [...staticRoutes, ...articleRoutes, ...cardRoutes];
+  return [...staticRoutes, ...learnRoutes, ...blogRoutes, ...cardRoutes];
 }
