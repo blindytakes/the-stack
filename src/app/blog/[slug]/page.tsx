@@ -2,27 +2,27 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
-  evergreenAssetSlugs,
-  getArticleBySlugAndSeries,
+  allBlogSlugs,
+  getArticleBySlug,
   learnCategoryColor
 } from '@/lib/learn-articles';
 
 type Props = { params: Promise<{ slug: string }> };
 
 export function generateStaticParams() {
-  return evergreenAssetSlugs.map((slug) => ({ slug }));
+  return allBlogSlugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const article = getArticleBySlugAndSeries(slug, 'Evergreen Assets');
+  const article = getArticleBySlug(slug);
   if (!article) return { title: 'Article Not Found' };
   return { title: article.title, description: article.description };
 }
 
 export default async function BlogArticlePage({ params }: Props) {
   const { slug } = await params;
-  const article = getArticleBySlugAndSeries(slug, 'Evergreen Assets');
+  const article = getArticleBySlug(slug);
   if (!article) notFound();
 
   return (

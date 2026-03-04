@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import {
-  evergreenAssetArticles,
+  allBlogArticles,
   learnCategoryColor,
   type LearnArticleCard
 } from '@/lib/learn-articles';
@@ -9,7 +9,7 @@ import {
 export const metadata: Metadata = {
   title: 'Blog',
   description:
-    'Evergreen essays on card strategy, issuer shifts, and overlooked benefits that move real net value.'
+    'Guides, strategy breakdowns, and high-conviction takes on cards, banking, and benefits.'
 };
 
 type Props = {
@@ -86,11 +86,11 @@ function BlogGrid({ articles }: { articles: LearnArticleCard[] }) {
 
 export default async function BlogPage({ searchParams }: Props) {
   const search = await searchParams;
-  const categories = [...new Set(evergreenAssetArticles.map((article) => article.category))];
+  const categories = [...new Set(allBlogArticles.map((article) => article.category))];
   const categoryCounts = new Map(
     categories.map((category) => [
       category,
-      evergreenAssetArticles.filter((article) => article.category === category).length
+      allBlogArticles.filter((article) => article.category === category).length
     ])
   );
   const requestedCategory = firstParam(search.category);
@@ -104,8 +104,8 @@ export default async function BlogPage({ searchParams }: Props) {
       : 'newest';
 
   const filteredArticles = selectedCategory
-    ? evergreenAssetArticles.filter((article) => article.category === selectedCategory)
-    : evergreenAssetArticles;
+    ? allBlogArticles.filter((article) => article.category === selectedCategory)
+    : allBlogArticles;
   const sortedArticles = [...filteredArticles].sort((a, b) => {
     switch (selectedSort) {
       case 'most-opinionated': {
@@ -121,7 +121,7 @@ export default async function BlogPage({ searchParams }: Props) {
       }
       case 'newest':
       default: {
-        return (b.featuredOrder ?? 0) - (a.featuredOrder ?? 0);
+        return (b.featuredOrder ?? -1) - (a.featuredOrder ?? -1);
       }
     }
   });
@@ -130,17 +130,10 @@ export default async function BlogPage({ searchParams }: Props) {
     <div className="container-page pt-12 pb-16">
       <div className="max-w-2xl">
         <p className="text-xs uppercase tracking-[0.3em] text-brand-coral">Blog</p>
-        <h1 className="mt-3 font-heading text-4xl text-text-primary">Evergreen Assets</h1>
+        <h1 className="mt-3 font-heading text-4xl text-text-primary">Guides, Strategy & Takes</h1>
         <p className="mt-4 text-lg text-text-secondary">
-          High-conviction takes on cards, issuers, and benefit strategy. Built to stay useful
-          beyond short-term offer cycles.
-        </p>
-        <p className="mt-2 text-sm text-text-muted">
-          Looking for step-by-step guides? Start in{' '}
-          <Link href="/learn" className="text-brand-teal transition hover:underline">
-            Learn
-          </Link>
-          .
+          Everything in one feed: foundational playbooks, strategic frameworks, and opinionated
+          takes on issuers and benefits.
         </p>
       </div>
 
@@ -155,7 +148,7 @@ export default async function BlogPage({ searchParams }: Props) {
                 : 'border-white/10 text-text-secondary hover:border-brand-coral/30 hover:text-text-primary'
             }`}
           >
-            All ({evergreenAssetArticles.length})
+            All ({allBlogArticles.length})
           </Link>
           {categories.map((category) => (
             <Link

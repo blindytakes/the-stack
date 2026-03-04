@@ -408,8 +408,14 @@ export const corePlaybookArticles = allLearnArticleCards.filter(
   (article) => article.series === 'Core Playbooks'
 );
 
+export const allBlogArticles = allLearnArticleCards;
+export const allBlogSlugs = allBlogArticles.map((article) => article.slug);
 export const evergreenAssetSlugs = evergreenAssetArticles.map((article) => article.slug);
 export const corePlaybookSlugs = corePlaybookArticles.map((article) => article.slug);
+
+export function getArticleBySlug(slug: string): LearnArticle | null {
+  return learnArticles[slug] ?? null;
+}
 
 export function getArticleBySlugAndSeries(
   slug: string,

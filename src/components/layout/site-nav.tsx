@@ -8,7 +8,6 @@ const navItems = [
   { href: '/tools/card-finder', label: 'Planner' },
   { href: '/cards', label: 'Cards' },
   { href: '/banking', label: 'Banking' },
-  { href: '/learn', label: 'Learn' },
   { href: '/blog', label: 'Blog' },
   { href: '/methodology', label: 'Methodology' },
   { href: '/about', label: 'About' }

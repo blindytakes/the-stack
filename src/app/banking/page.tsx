@@ -60,7 +60,7 @@ export default function BankingPage() {
           missed requirements.
         </p>
         <Link
-          href="/learn/bank-account-bonuses-101"
+          href="/blog/bank-account-bonuses-101"
           className="mt-3 inline-block text-sm font-semibold text-brand-teal transition hover:underline"
         >
           Read the playbook
@@ -79,7 +79,7 @@ export default function BankingPage() {
           <Link href="/tools/card-finder">
             <Button>Start My Payout Plan</Button>
           </Link>
-          <Link href="/learn">
+          <Link href="/blog">
             <Button variant="ghost">Read the playbooks</Button>
           </Link>
         </div>

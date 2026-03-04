@@ -88,7 +88,7 @@ export default function HomePage() {
             <Link href="/tools/card-finder">
               <Button>Start My Payout Plan</Button>
             </Link>
-            <Link href="/learn">
+            <Link href="/blog">
               <Button variant="ghost">Read the money playbooks</Button>
             </Link>
           </div>

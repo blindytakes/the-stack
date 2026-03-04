@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { corePlaybookSlugs, evergreenAssetSlugs } from '@/lib/learn-articles';
+import { allBlogSlugs } from '@/lib/learn-articles';
 
 const SITE_URL = 'https://thestackhq.com';
 
@@ -18,7 +18,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '', changeFrequency: 'weekly' as const, priority: 1.0 },
     { path: '/cards', changeFrequency: 'daily' as const, priority: 0.9 },
     { path: '/banking', changeFrequency: 'weekly' as const, priority: 0.8 },
-    { path: '/learn', changeFrequency: 'weekly' as const, priority: 0.8 },
     { path: '/blog', changeFrequency: 'weekly' as const, priority: 0.8 },
     { path: '/tools/card-finder', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/tools/hidden-benefits', changeFrequency: 'monthly' as const, priority: 0.7 },
@@ -38,15 +37,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now
   }));
 
-  // ── Learn + blog article routes ────────────────────────────────────────
-  const learnRoutes: MetadataRoute.Sitemap = corePlaybookSlugs.map((slug) => ({
-    url: `${SITE_URL}/learn/${slug}`,
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-    lastModified: now
-  }));
-
-  const blogRoutes: MetadataRoute.Sitemap = evergreenAssetSlugs.map((slug) => ({
+  // ── Blog article routes ────────────────────────────────────────────────
+  const blogRoutes: MetadataRoute.Sitemap = allBlogSlugs.map((slug) => ({
     url: `${SITE_URL}/blog/${slug}`,
     changeFrequency: 'monthly' as const,
     priority: 0.7,
@@ -71,5 +63,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     console.warn('[sitemap] Could not fetch card slugs — DB may be unavailable');
   }
 
-  return [...staticRoutes, ...learnRoutes, ...blogRoutes, ...cardRoutes];
+  return [...staticRoutes, ...blogRoutes, ...cardRoutes];
 }
