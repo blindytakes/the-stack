@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import { getSupportEmail } from '@/lib/config/server';
 
 const whatWeDo = [
   {
@@ -20,27 +19,19 @@ const whatWeDo = [
   }
 ];
 
-const standards = [
-  'Fit and net value matter more than payout rates.',
-  'We flag assumptions and show when results can vary.',
-  'We avoid debt-first advice and prioritize pay-in-full behavior.'
-];
-
 export const metadata: Metadata = {
   title: 'About',
   description: 'How The Stack works, how we evaluate cards, and how we make money.'
 };
 
 export default function AboutPage() {
-  const supportEmail = getSupportEmail();
-
   return (
     <div className="container-page pt-12 pb-16 max-w-4xl">
       <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">About</p>
       <h1 className="mt-3 font-heading text-4xl text-text-primary md:text-5xl">About The Stack</h1>
       <p className="mt-4 max-w-3xl text-text-secondary">
         The Stack helps you make banks work for you with transparent strategy, practical tools, and
-        no mystery ranking logic.
+        no mystery ranking logic. It is free to use, and always will be for you.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link
@@ -112,47 +103,18 @@ export default function AboutPage() {
         </p>
       </section>
 
-      <section className="mt-10 grid gap-4 md:grid-cols-2">
-        <article className="rounded-2xl border border-white/10 bg-bg-surface p-6">
-          <h2 className="text-lg font-semibold text-text-primary">How We Make Money</h2>
-          <p className="mt-3 text-sm leading-7 text-text-secondary">
-            Some links are affiliate links and may pay us if you are approved. That revenue supports
-            the site, but it does not directly set rankings or recommendations.
-          </p>
-          <Link
-            href="/affiliate-disclosure"
-            className="mt-3 inline-block text-sm font-semibold text-brand-teal transition hover:underline"
-          >
-            Read full affiliate disclosure
-          </Link>
-        </article>
-
-        <article className="rounded-2xl border border-white/10 bg-bg-surface p-6">
-          <h2 className="text-lg font-semibold text-text-primary">Editorial Standards</h2>
-          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm leading-7 text-text-secondary">
-            {standards.map((standard) => (
-              <li key={standard}>{standard}</li>
-            ))}
-          </ul>
-        </article>
-      </section>
-
       <section className="mt-10 rounded-2xl border border-white/10 bg-bg-elevated p-6 md:p-8">
-        <h2 className="text-2xl font-heading text-text-primary">Contact & Feedback</h2>
+        <h2 className="text-2xl font-heading text-text-primary">Feedback or Questions?</h2>
         <p className="mt-3 text-sm leading-7 text-text-secondary">
           Found an error, want us to review a strategy, or have feedback on rankings? Reach out and
           we will take a look.
         </p>
-        {supportEmail ? (
-          <a
-            href={`mailto:${supportEmail}`}
-            className="mt-3 inline-block text-sm font-semibold text-brand-teal transition hover:underline"
-          >
-            {supportEmail}
-          </a>
-        ) : (
-          <p className="mt-3 text-sm text-text-muted">Support contact details are being updated.</p>
-        )}
+        <a
+          href="mailto:team@thestackhq.com"
+          className="mt-3 inline-block text-sm font-semibold text-brand-teal transition hover:underline"
+        >
+          team@thestackhq.com
+        </a>
       </section>
     </div>
   );

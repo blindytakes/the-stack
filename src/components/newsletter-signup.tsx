@@ -5,13 +5,14 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import { Turnstile, type TurnstileHandle } from '@/components/turnstile';
+import { getTurnstileSiteKey } from '@/lib/config/public';
 
 /**
  * Newsletter signup form UI.
  *
  * Flow:
  * - Collect email + source metadata.
- * - Collect Turnstile token when widget is available.
+ * - Collect Turnstile token when challenge UI is shown.
  * - POST to `/api/newsletter/subscribe`.
  * - Reset Turnstile in `finally` so each submit uses a fresh token.
  */
@@ -23,20 +24,26 @@ type NewsletterSignupProps = {
   compact?: boolean;
 };
 
+const TURNSTILE_REQUIRED_MESSAGE = 'Please complete the security check to subscribe.';
+
 export function NewsletterSignup({
   source = 'homepage',
   heading = 'Stay in the loop',
   description = 'Get weekly bonus plays, APY opportunities, and fee-avoidance strategy.',
   compact = false
 }: NewsletterSignupProps) {
+  const turnstileEnabled = Boolean(getTurnstileSiteKey());
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [showTurnstile, setShowTurnstile] = useState(() => !compact && turnstileEnabled);
   const turnstileRef = useRef<TurnstileHandle>(null);
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token);
+    setStatus((current) => (current === 'error' ? 'idle' : current));
+    setMessage((current) => (current === TURNSTILE_REQUIRED_MESSAGE ? '' : current));
   }, []);
 
   const handleTurnstileExpire = useCallback(() => {
@@ -45,6 +52,14 @@ export function NewsletterSignup({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+
+    if (turnstileEnabled && !turnstileToken) {
+      setShowTurnstile(true);
+      setStatus('error');
+      setMessage(TURNSTILE_REQUIRED_MESSAGE);
+      return;
+    }
+
     setStatus('loading');
     setMessage('');
 
@@ -110,6 +125,11 @@ export function NewsletterSignup({
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onFocus={() => {
+            if (compact && turnstileEnabled) {
+              setShowTurnstile(true);
+            }
+          }}
           placeholder="Enter your email"
           required
           className="flex-1 rounded-full border border-white/10 bg-bg-surface px-4 py-2 text-sm text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none"
@@ -118,13 +138,15 @@ export function NewsletterSignup({
           {status === 'loading' ? 'Joining...' : 'Subscribe'}
         </Button>
       </form>
-      <div className="mt-3">
-        <Turnstile
-          ref={turnstileRef}
-          onVerify={handleTurnstileVerify}
-          onExpire={handleTurnstileExpire}
-        />
-      </div>
+      {showTurnstile && (
+        <div className="mt-3">
+          <Turnstile
+            ref={turnstileRef}
+            onVerify={handleTurnstileVerify}
+            onExpire={handleTurnstileExpire}
+          />
+        </div>
+      )}
       {status === 'error' && (
         <p className="mt-2 text-sm text-brand-coral">{message}</p>
       )}
