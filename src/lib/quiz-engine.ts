@@ -13,7 +13,15 @@ export const quizRequestSchema = z.object({
   goal: z.enum(['cashback', 'travel', 'flexibility']),
   spend: z.enum(spendingCategoryValues),
   fee: z.enum(['no_fee', 'up_to_95', 'over_95_ok']),
-  credit: z.enum(['excellent', 'good', 'fair', 'building'])
+  credit: z.enum(['excellent', 'good', 'fair', 'building']),
+  directDeposit: z.enum(['yes', 'no']).default('yes'),
+  state: z
+    .string()
+    .trim()
+    .length(2)
+    .transform((value) => value.toUpperCase())
+    .default('NY'),
+  openingCash: z.enum(['lt_2000', 'from_2000_to_10000', 'at_least_10000']).default('from_2000_to_10000')
 });
 
 export type QuizRequest = z.infer<typeof quizRequestSchema>;
@@ -57,7 +65,8 @@ function scoreCard(card: CardRecord, input: QuizRequest) {
 
 export type QuizResult = CardRecord & { score: number };
 
-// Return highest scoring eligible cards first, trimmed to top 3 for the quiz UI.
+// Return highest scoring eligible cards first. Keep more than top-3 so
+// downstream planners can enforce stricter fit filters without running dry.
 export function rankQuizResults(cards: CardRecord[], input: QuizRequest): QuizResult[] {
   const eligible = cards.filter((card) => creditRank[card.creditTierMin] <= creditRank[input.credit]);
 
@@ -67,5 +76,5 @@ export function rankQuizResults(cards: CardRecord[], input: QuizRequest): QuizRe
       score: scoreCard(card, input)
     }))
     .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
+    .slice(0, 12);
 }

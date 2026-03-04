@@ -1,6 +1,10 @@
 import { z } from 'zod';
 import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
-import type { PlannerRecommendation } from '@/lib/planner-recommendations';
+import type {
+  PlannerExcludedOffer,
+  PlannerExclusionReason,
+  PlannerRecommendation
+} from '@/lib/planner-recommendations';
 
 const PLAN_RESULTS_VERSION = 1 as const;
 const SESSION_KEY = 'thestack.plan.results.v1';
@@ -14,17 +18,36 @@ const plannerRecommendationSchema = z.object({
   title: z.string().min(1),
   provider: z.string().min(1),
   estimatedNetValue: z.number().finite(),
+  priorityScore: z.number().finite().default(0),
   effort: z.enum(['low', 'medium', 'high']),
   detailPath: z.string().min(1),
   timelineDays: z.number().int().positive().optional(),
   keyRequirements: z.array(z.string()).min(1)
 });
 
+const plannerExclusionReasonSchema: z.ZodType<PlannerExclusionReason> = z.enum([
+  'no_signup_bonus',
+  'fee_preference',
+  'credit_tier',
+  'direct_deposit_required',
+  'state_restricted',
+  'opening_deposit_too_high'
+]);
+
+const plannerExcludedOfferSchema: z.ZodType<PlannerExcludedOffer> = z.object({
+  id: z.string().min(1),
+  lane: z.enum(['cards', 'banking']),
+  title: z.string().min(1),
+  provider: z.string().min(1),
+  reasons: z.array(plannerExclusionReasonSchema).min(1)
+});
+
 const planResultsStorageSchema = z.object({
   version: z.literal(PLAN_RESULTS_VERSION),
   savedAt: z.number().int().positive(),
   answers: quizRequestSchema,
-  recommendations: z.array(plannerRecommendationSchema)
+  recommendations: z.array(plannerRecommendationSchema),
+  exclusions: z.array(plannerExcludedOfferSchema).default([])
 });
 
 export type PlanResultsStoragePayload = z.infer<typeof planResultsStorageSchema>;
@@ -38,12 +61,14 @@ export type PlanResultsLoadResult =
 export function buildPlanResultsPayload(input: {
   answers: QuizRequest;
   recommendations: PlannerRecommendation[];
+  exclusions: PlannerExcludedOffer[];
 }): PlanResultsStoragePayload {
   return {
     version: PLAN_RESULTS_VERSION,
     savedAt: Date.now(),
     answers: input.answers,
-    recommendations: input.recommendations
+    recommendations: input.recommendations,
+    exclusions: input.exclusions
   };
 }
 

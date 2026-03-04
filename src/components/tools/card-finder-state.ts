@@ -66,14 +66,20 @@ export function useCardFinderState() {
 
       const data = (await res.json()) as { results: QuizResult[] };
       const bankingBonuses = getBankingBonusesData().bonuses;
-      const recommendations = buildPlanRecommendationsFromQuiz(data.results, bankingBonuses, {
-        maxCards: 3,
-        maxBanking: 3
-      });
+      const planBundle = buildPlanRecommendationsFromQuiz(
+        data.results,
+        bankingBonuses,
+        parsedAnswers.data,
+        {
+          maxCards: 3,
+          maxBanking: 3
+        }
+      );
       savePlanResults(
         buildPlanResultsPayload({
           answers: parsedAnswers.data,
-          recommendations
+          recommendations: planBundle.recommendations,
+          exclusions: planBundle.exclusions
         })
       );
 

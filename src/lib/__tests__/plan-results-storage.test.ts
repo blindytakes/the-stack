@@ -36,7 +36,10 @@ const basePayload = buildPlanResultsPayload({
     goal: 'cashback',
     spend: 'dining',
     fee: 'up_to_95',
-    credit: 'good'
+    credit: 'good',
+    directDeposit: 'yes',
+    state: 'NY',
+    openingCash: 'from_2000_to_10000'
   },
   recommendations: [
     {
@@ -46,12 +49,14 @@ const basePayload = buildPlanResultsPayload({
       title: 'Test Card',
       provider: 'Test Bank',
       estimatedNetValue: 500,
+      priorityScore: 620,
       effort: 'medium',
       detailPath: '/cards/test',
       timelineDays: 90,
       keyRequirements: ['Spend $4,000 in 3 months']
     }
-  ]
+  ],
+  exclusions: []
 });
 
 describe('plan-results-storage', () => {

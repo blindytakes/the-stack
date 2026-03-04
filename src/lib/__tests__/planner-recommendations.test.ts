@@ -1,12 +1,23 @@
 import { describe, expect, it } from 'vitest';
-import type { QuizResult } from '../quiz-engine';
+import type { QuizRequest, QuizResult } from '../quiz-engine';
 import {
   buildPlanRecommendationsFromQuiz,
+  rankPlannerRecommendationsByPriority,
   rankPlannerRecommendationsByValue,
   toPlannerRecommendationFromBankingBonus,
   toPlannerRecommendationFromCard
 } from '../planner-recommendations';
 import { getBankingBonusesData } from '../banking-bonuses';
+
+const baseInput: QuizRequest = {
+  goal: 'cashback',
+  spend: 'dining',
+  fee: 'up_to_95',
+  credit: 'good',
+  directDeposit: 'yes',
+  state: 'NY',
+  openingCash: 'from_2000_to_10000'
+};
 
 describe('toPlannerRecommendationFromCard', () => {
   it('maps card inputs into normalized planner recommendation fields', () => {
@@ -78,6 +89,41 @@ describe('rankPlannerRecommendationsByValue', () => {
   });
 });
 
+describe('rankPlannerRecommendationsByPriority', () => {
+  it('returns recommendations sorted by priority score descending', () => {
+    const low = {
+      ...toPlannerRecommendationFromCard({
+        slug: 'low-priority',
+        name: 'Low Priority',
+        issuer: 'Sample',
+        annualFee: 0,
+        creditTierMin: 'building',
+        bonusValue: 200,
+        spendRequired: 500,
+        spendPeriodDays: 90
+      }),
+      priorityScore: 120
+    };
+    const high = {
+      ...toPlannerRecommendationFromCard({
+        slug: 'high-priority',
+        name: 'High Priority',
+        issuer: 'Sample',
+        annualFee: 95,
+        creditTierMin: 'good',
+        bonusValue: 600,
+        spendRequired: 3000,
+        spendPeriodDays: 90
+      }),
+      priorityScore: 220
+    };
+
+    const ranked = rankPlannerRecommendationsByPriority([low, high]);
+    expect(ranked[0].id).toBe('card:high-priority');
+    expect(ranked[1].id).toBe('card:low-priority');
+  });
+});
+
 describe('buildPlanRecommendationsFromQuiz', () => {
   it('builds both card and banking lanes from quiz and banking seed data', () => {
     const cards: QuizResult[] = [
@@ -99,13 +145,84 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     ];
 
     const bankingBonuses = getBankingBonusesData().bonuses;
-    const recommendations = buildPlanRecommendationsFromQuiz(cards, bankingBonuses, {
+    const bundle = buildPlanRecommendationsFromQuiz(cards, bankingBonuses, baseInput, {
       maxCards: 1,
       maxBanking: 1
     });
 
-    expect(recommendations).toHaveLength(2);
-    expect(recommendations.some((item) => item.lane === 'cards')).toBe(true);
-    expect(recommendations.some((item) => item.lane === 'banking')).toBe(true);
+    expect(bundle.recommendations).toHaveLength(2);
+    expect(bundle.recommendations.some((item) => item.lane === 'cards')).toBe(true);
+    expect(bundle.recommendations.some((item) => item.lane === 'banking')).toBe(true);
+    expect(bundle.exclusions.some((item) => item.lane === 'banking')).toBe(true);
+  });
+
+  it('applies banking hard filters and returns exclusion reasons', () => {
+    const cards: QuizResult[] = [];
+    const bankingBonuses = getBankingBonusesData().bonuses;
+
+    const bundle = buildPlanRecommendationsFromQuiz(
+      cards,
+      bankingBonuses,
+      {
+        ...baseInput,
+        directDeposit: 'no',
+        openingCash: 'lt_2000'
+      },
+      { maxBanking: 5 }
+    );
+
+    expect(bundle.recommendations.some((item) => item.lane === 'banking')).toBe(true);
+    expect(
+      bundle.exclusions.some((item) => item.reasons.includes('direct_deposit_required'))
+    ).toBe(true);
+    expect(
+      bundle.exclusions.some((item) => item.reasons.includes('opening_deposit_too_high'))
+    ).toBe(true);
+  });
+
+  it('applies card hard filters and excludes mismatched offers', () => {
+    const cards: QuizResult[] = [
+      {
+        slug: 'premium-card',
+        name: 'Premium Card',
+        issuer: 'Premium Bank',
+        cardType: 'personal',
+        rewardType: 'points',
+        topCategories: ['travel'],
+        annualFee: 550,
+        creditTierMin: 'excellent',
+        headline: 'Premium',
+        score: 7,
+        bestSignUpBonusValue: 1000,
+        bestSignUpBonusSpendRequired: 5000,
+        bestSignUpBonusSpendPeriodDays: 90
+      },
+      {
+        slug: 'no-bonus-card',
+        name: 'No Bonus Card',
+        issuer: 'Basic Bank',
+        cardType: 'personal',
+        rewardType: 'cashback',
+        topCategories: ['dining'],
+        annualFee: 0,
+        creditTierMin: 'building',
+        headline: 'No bonus',
+        score: 6,
+        bestSignUpBonusValue: 0,
+        bestSignUpBonusSpendRequired: 0,
+        bestSignUpBonusSpendPeriodDays: 90
+      }
+    ];
+
+    const bundle = buildPlanRecommendationsFromQuiz(cards, [], {
+      ...baseInput,
+      fee: 'no_fee',
+      credit: 'good'
+    });
+
+    expect(bundle.recommendations).toHaveLength(0);
+    expect(bundle.exclusions.some((item) => item.reasons.includes('fee_preference'))).toBe(true);
+    expect(bundle.exclusions.some((item) => item.reasons.includes('credit_tier'))).toBe(true);
+    expect(bundle.exclusions.some((item) => item.reasons.includes('no_signup_bonus'))).toBe(true);
   });
 });

@@ -11,8 +11,10 @@ import {
   type PlanResultsStoragePayload
 } from '@/lib/plan-results-storage';
 import {
-  rankPlannerRecommendationsByValue,
-  type PlannerRecommendation
+  rankPlannerRecommendationsByPriority,
+  type PlannerRecommendation,
+  type PlannerExcludedOffer,
+  type PlannerExclusionReason
 } from '@/lib/planner-recommendations';
 
 type LoadState = { status: 'loading' } | PlanResultsLoadResult;
@@ -21,6 +23,15 @@ function formatValue(value: number) {
   const rounded = Math.round(value);
   return `$${rounded.toLocaleString()}`;
 }
+
+const exclusionActions: Record<PlannerExclusionReason, string> = {
+  no_signup_bonus: 'Focus on offers with active welcome bonuses only.',
+  fee_preference: 'Loosen your annual-fee preference to see more high-upside card options.',
+  credit_tier: 'Raise approval odds first with utilization and on-time payment improvements.',
+  direct_deposit_required: 'Routing payroll direct deposit unlocks most checking bonuses.',
+  state_restricted: 'Some bank bonuses are limited by state eligibility rules.',
+  opening_deposit_too_high: 'More opening cash unlocks larger savings and bundle bonuses.'
+};
 
 function RecommendationCard({ item }: { item: PlannerRecommendation }) {
   return (
@@ -31,7 +42,7 @@ function RecommendationCard({ item }: { item: PlannerRecommendation }) {
         Estimated net value: <span className="font-semibold text-brand-teal">{formatValue(item.estimatedNetValue)}</span>
       </p>
       <p className="mt-1 text-xs text-text-muted">
-        Effort: {item.effort}
+        Fit score: {item.priorityScore} • Effort: {item.effort}
         {item.timelineDays ? ` • timeline: ${item.timelineDays} days` : ''}
       </p>
       <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-text-secondary">
@@ -49,17 +60,38 @@ function RecommendationCard({ item }: { item: PlannerRecommendation }) {
   );
 }
 
-function EmptyLaneCard({ lane }: { lane: 'cards' | 'banking' }) {
+function EmptyLaneCard({
+  lane,
+  exclusions
+}: {
+  lane: 'cards' | 'banking';
+  exclusions: PlannerExcludedOffer[];
+}) {
   const label = lane === 'cards' ? 'Card Bonuses' : 'Banking Bonuses';
-  const unlock =
+  const fallback =
     lane === 'cards'
-      ? 'Improve approval odds by focusing on on-time payments and lower utilization.'
-      : 'Set up direct deposit and maintain required balances to unlock more bank offers.';
+      ? 'Adjust fee and credit filters to unlock more card bonus paths.'
+      : 'Adjust direct deposit, state, and opening cash filters to unlock more bank bonus paths.';
+  const reasonActions = Array.from(
+    new Set(
+      exclusions.flatMap((offer) => offer.reasons.map((reason) => exclusionActions[reason]))
+    )
+  ).slice(0, 3);
+  const unlockActions = reasonActions.length > 0 ? reasonActions : [fallback];
 
   return (
     <article className="rounded-2xl border border-dashed border-white/20 bg-bg-surface p-5">
       <h3 className="text-lg font-semibold text-text-primary">{label}: Not a fit right now</h3>
-      <p className="mt-2 text-sm text-text-secondary">{unlock}</p>
+      <p className="mt-2 text-sm text-text-secondary">
+        {exclusions.length > 0
+          ? `${exclusions.length} offers were filtered out by your current inputs.`
+          : 'No matching offers were found for this lane yet.'}
+      </p>
+      <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-text-secondary">
+        {unlockActions.map((action) => (
+          <li key={action}>{action}</li>
+        ))}
+      </ul>
     </article>
   );
 }
@@ -71,18 +103,20 @@ function PlanSummary({
   payload: PlanResultsStoragePayload;
   onClear: () => void;
 }) {
-  const sorted = useMemo(
-    () => rankPlannerRecommendationsByValue(payload.recommendations),
+  const prioritized = useMemo(
+    () => rankPlannerRecommendationsByPriority(payload.recommendations),
     [payload.recommendations]
   );
-  const cardLane = sorted.filter((item) => item.lane === 'cards');
-  const bankingLane = sorted.filter((item) => item.lane === 'banking');
-  const totalValue = sorted.reduce((sum, item) => sum + item.estimatedNetValue, 0);
-  const doNow = rankPlannerRecommendationsByValue([
+  const cardLane = prioritized.filter((item) => item.lane === 'cards');
+  const bankingLane = prioritized.filter((item) => item.lane === 'banking');
+  const cardExclusions = payload.exclusions.filter((item) => item.lane === 'cards');
+  const bankingExclusions = payload.exclusions.filter((item) => item.lane === 'banking');
+  const totalValue = prioritized.reduce((sum, item) => sum + item.estimatedNetValue, 0);
+  const doNow = rankPlannerRecommendationsByPriority([
     ...(cardLane[0] ? [cardLane[0]] : []),
     ...(bankingLane[0] ? [bankingLane[0]] : [])
   ]);
-  const doNext = rankPlannerRecommendationsByValue([
+  const doNext = rankPlannerRecommendationsByPriority([
     ...cardLane.slice(1),
     ...bankingLane.slice(1)
   ]);
@@ -118,7 +152,7 @@ function PlanSummary({
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-text-primary">Card Bonus Track</h3>
             {cardLane.length === 0 ? (
-              <EmptyLaneCard lane="cards" />
+              <EmptyLaneCard lane="cards" exclusions={cardExclusions} />
             ) : (
               cardLane.map((item) => <RecommendationCard key={item.id} item={item} />)
             )}
@@ -126,7 +160,7 @@ function PlanSummary({
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-text-primary">Bank Bonus Track</h3>
             {bankingLane.length === 0 ? (
-              <EmptyLaneCard lane="banking" />
+              <EmptyLaneCard lane="banking" exclusions={bankingExclusions} />
             ) : (
               bankingLane.map((item) => <RecommendationCard key={item.id} item={item} />)
             )}

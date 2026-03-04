@@ -18,6 +18,19 @@ function makeCard(overrides: Partial<CardRecord> = {}): CardRecord {
   };
 }
 
+function makeInput(overrides: Partial<QuizRequest> = {}): QuizRequest {
+  return {
+    goal: 'cashback',
+    spend: 'dining',
+    fee: 'no_fee',
+    credit: 'good',
+    directDeposit: 'yes',
+    state: 'NY',
+    openingCash: 'from_2000_to_10000',
+    ...overrides
+  };
+}
+
 describe('rankQuizResults', () => {
   const cards: CardRecord[] = [
     makeCard({ slug: 'cashback-dining', rewardType: 'cashback', topCategories: ['dining'], annualFee: 0, creditTierMin: 'good' }),
@@ -26,35 +39,35 @@ describe('rankQuizResults', () => {
     makeCard({ slug: 'secured-starter', rewardType: 'cashback', topCategories: ['all'], annualFee: 0, creditTierMin: 'building' })
   ];
 
-  it('returns at most 3 results', () => {
-    const input: QuizRequest = { goal: 'flexibility', spend: 'dining', fee: 'over_95_ok', credit: 'excellent' };
+  it('returns at most 12 results', () => {
+    const input = makeInput({ goal: 'flexibility', spend: 'dining', fee: 'over_95_ok', credit: 'excellent' });
     const results = rankQuizResults(cards, input);
-    expect(results.length).toBeLessThanOrEqual(3);
+    expect(results.length).toBeLessThanOrEqual(12);
   });
 
   it('filters by credit tier eligibility', () => {
-    const input: QuizRequest = { goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'fair' };
+    const input = makeInput({ goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'fair' });
     const results = rankQuizResults(cards, input);
     // 'fair' credit (rank 2) can only access cards with creditTierMin fair (2) or building (1)
     expect(results.every((r) => ['fair', 'building'].includes(r.creditTierMin))).toBe(true);
   });
 
   it('favors matching goal reward type', () => {
-    const input: QuizRequest = { goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'excellent' };
+    const input = makeInput({ goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'excellent' });
     const results = rankQuizResults(cards, input);
     // cashback-dining should score highest: goal match + category match + fee match
     expect(results[0].slug).toBe('cashback-dining');
   });
 
   it('favors matching spend category', () => {
-    const input: QuizRequest = { goal: 'travel', spend: 'travel', fee: 'up_to_95', credit: 'good' };
+    const input = makeInput({ goal: 'travel', spend: 'travel', fee: 'up_to_95', credit: 'good' });
     const results = rankQuizResults(cards, input);
     // travel-points has goal match + category match + fee match
     expect(results[0].slug).toBe('travel-points');
   });
 
   it('penalizes annual fee when user wants no fee', () => {
-    const input: QuizRequest = { goal: 'flexibility', spend: 'travel', fee: 'no_fee', credit: 'excellent' };
+    const input = makeInput({ goal: 'flexibility', spend: 'travel', fee: 'no_fee', credit: 'excellent' });
     const results = rankQuizResults(cards, input);
     // Cards with annualFee > 0 get score penalty
     const freeCards = results.filter((r) => r.annualFee === 0);
@@ -65,7 +78,7 @@ describe('rankQuizResults', () => {
   });
 
   it('includes score property on results', () => {
-    const input: QuizRequest = { goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'excellent' };
+    const input = makeInput({ goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'excellent' });
     const results = rankQuizResults(cards, input);
     results.forEach((r) => {
       expect(typeof r.score).toBe('number');
@@ -73,7 +86,7 @@ describe('rankQuizResults', () => {
   });
 
   it('returns results sorted by score descending', () => {
-    const input: QuizRequest = { goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'excellent' };
+    const input = makeInput({ goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'excellent' });
     const results = rankQuizResults(cards, input);
     for (let i = 1; i < results.length; i++) {
       expect(results[i - 1].score).toBeGreaterThanOrEqual(results[i].score);
@@ -81,7 +94,7 @@ describe('rankQuizResults', () => {
   });
 
   it('returns empty array when no cards are eligible', () => {
-    const input: QuizRequest = { goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'building' };
+    const input = makeInput({ goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'building' });
     // Only 'secured-starter' has creditTierMin 'building'
     const restrictedCards = [
       makeCard({ slug: 'premium-only', creditTierMin: 'excellent' })
@@ -97,9 +110,15 @@ describe('quizRequestSchema', () => {
       goal: 'cashback',
       spend: 'dining',
       fee: 'no_fee',
-      credit: 'good'
+      credit: 'good',
+      directDeposit: 'yes',
+      state: 'ny',
+      openingCash: 'from_2000_to_10000'
     });
     expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.state).toBe('NY');
+    }
   });
 
   it('rejects invalid goal', () => {
@@ -107,7 +126,10 @@ describe('quizRequestSchema', () => {
       goal: 'invalid',
       spend: 'dining',
       fee: 'no_fee',
-      credit: 'good'
+      credit: 'good',
+      directDeposit: 'yes',
+      state: 'ny',
+      openingCash: 'from_2000_to_10000'
     });
     expect(parsed.success).toBe(false);
   });
