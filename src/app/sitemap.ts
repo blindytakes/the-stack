@@ -22,7 +22,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/tools/card-finder', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/tools/hidden-benefits', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/tools/card-vs-card', changeFrequency: 'monthly' as const, priority: 0.7 },
-    { path: '/methodology', changeFrequency: 'monthly' as const, priority: 0.5 },
     { path: '/about', changeFrequency: 'monthly' as const, priority: 0.4 },
     { path: '/contact', changeFrequency: 'yearly' as const, priority: 0.3 },
     { path: '/privacy', changeFrequency: 'yearly' as const, priority: 0.2 },

@@ -10,8 +10,7 @@ const footerLinks = [
   { href: '/privacy', label: 'Privacy' },
   { href: '/terms', label: 'Terms' },
   { href: '/affiliate-disclosure', label: 'Affiliate Disclosure' },
-  { href: '/contact', label: 'Contact' },
-  { href: '/methodology', label: 'Methodology' }
+  { href: '/contact', label: 'Contact' }
 ];
 
 export function SiteFooter() {
