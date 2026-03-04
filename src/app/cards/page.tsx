@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Card Directory',
-  description: 'Browse and compare cards by welcome bonus value, rewards, fees, and benefits.'
+  description: 'Browse and compare cards by fit, welcome offers, rewards, fees, and real-world value.'
 };
 
 export default async function CardsPage() {
@@ -35,8 +35,8 @@ export default async function CardsPage() {
           Card Directory
         </h1>
         <p className="mt-4 text-lg text-text-secondary">
-          Browse every card in our database. Click any card to see welcome bonus details,
-          rewards, and net value breakdown.
+          Explore cards by what matters to real people: annual fee tradeoffs, welcome offers,
+          reward fit, and ongoing value.
         </p>
       </div>
 

@@ -53,7 +53,7 @@ export function CardRewardsSection({
 
   return (
     <section>
-      <h2 className="text-xs uppercase tracking-[0.3em] text-text-muted">Rewards - {label}</h2>
+      <h2 className="text-xs uppercase tracking-[0.3em] text-text-muted">How You Earn ({label})</h2>
       <div className="mt-4 space-y-2">
         {sorted.map((reward, i) => (
           <div
@@ -106,7 +106,7 @@ export function CardSignUpBonusSection({ bonuses }: { bonuses: SignUpBonusDetail
               {Math.round(bonus.spendPeriodDays / 30)} months
             </p>
             <p className="mt-1 text-xs text-text-muted">
-              Estimated value only. Actual value varies by redemption choice.
+              Estimate only. Real value depends on eligibility and redemption choices.
             </p>
           </div>
         ))}
@@ -120,7 +120,7 @@ export function CardBenefitsSection({ benefits }: { benefits: BenefitDetail[] })
 
   return (
     <section>
-      <h2 className="text-xs uppercase tracking-[0.3em] text-text-muted">Benefits</h2>
+      <h2 className="text-xs uppercase tracking-[0.3em] text-text-muted">Perks & Credits</h2>
       <div className="mt-4 space-y-2">
         {benefits.map((benefit, i) => (
           <div
@@ -190,7 +190,7 @@ export function CardProsConsSection({ pros, cons }: { pros?: string[]; cons?: st
 
   return (
     <section>
-      <h2 className="text-xs uppercase tracking-[0.3em] text-text-muted">Pros & Cons</h2>
+      <h2 className="text-xs uppercase tracking-[0.3em] text-text-muted">What We Like / Watch Outs</h2>
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         {pros && pros.length > 0 && (
           <div className="rounded-2xl border border-white/5 bg-bg-surface p-5">
