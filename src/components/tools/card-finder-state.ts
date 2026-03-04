@@ -1,16 +1,20 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import type { QuizRequest, QuizResult } from '@/lib/quiz-engine';
+import { useRouter } from 'next/navigation';
+import { quizRequestSchema, type QuizRequest, type QuizResult } from '@/lib/quiz-engine';
+import { getBankingBonusesData } from '@/lib/banking-bonuses';
+import { buildPlanRecommendationsFromQuiz } from '@/lib/planner-recommendations';
+import { buildPlanResultsPayload, savePlanResults } from '@/lib/plan-results-storage';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import { cardFinderSteps } from '@/components/tools/card-finder-config';
 
 type QuizAnswers = Partial<QuizRequest>;
 
 export function useCardFinderState() {
+  const router = useRouter();
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>({});
-  const [results, setResults] = useState<QuizResult[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -37,7 +41,6 @@ export function useCardFinderState() {
 
   function resetFinder() {
     setAnswers({});
-    setResults(null);
     setError('');
     setStepIndex(0);
   }
@@ -45,22 +48,40 @@ export function useCardFinderState() {
   async function submitQuiz() {
     setLoading(true);
     setError('');
-    setResults(null);
+
+    const parsedAnswers = quizRequestSchema.safeParse(answers);
+    if (!parsedAnswers.success) {
+      setLoading(false);
+      setError('Please answer all questions before continuing.');
+      return;
+    }
 
     try {
       const res = await fetch('/api/quiz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(answers)
+        body: JSON.stringify(parsedAnswers.data)
       });
       if (!res.ok) throw new Error('Failed to fetch results');
 
       const data = (await res.json()) as { results: QuizResult[] };
-      setResults(data.results);
+      const bankingBonuses = getBankingBonusesData().bonuses;
+      const recommendations = buildPlanRecommendationsFromQuiz(data.results, bankingBonuses, {
+        maxCards: 3,
+        maxBanking: 3
+      });
+      savePlanResults(
+        buildPlanResultsPayload({
+          answers: parsedAnswers.data,
+          recommendations
+        })
+      );
+
       trackFunnelEvent('quiz_completed', {
         source: 'card_finder',
         tool: 'card_finder'
       });
+      router.push('/plan/results');
     } catch {
       setError('Could not load recommendations.');
     } finally {
@@ -73,7 +94,6 @@ export function useCardFinderState() {
     stepIndex,
     currentStep,
     answers,
-    results,
     loading,
     error,
     progress,

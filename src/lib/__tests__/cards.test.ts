@@ -277,6 +277,7 @@ function makeDbCardRow(overrides: Partial<DbCardRow> = {}): DbCardRow {
     pros: [],
     cons: [],
     rewards: [],
+    signUpBonuses: [],
     ...overrides
   };
 }
@@ -354,6 +355,41 @@ describe('toCardRecordFromDb', () => {
     const row = makeDbCardRow({ rewards: [] });
     const result = toCardRecordFromDb(row);
     expect(result.rewardType).toBe('cashback');
+  });
+
+  it('maps best current sign-up bonus fields when available', () => {
+    const row = makeDbCardRow({
+      signUpBonuses: [
+        {
+          id: 's1',
+          cardId: 'test-id',
+          bonusValue: new Prisma.Decimal(500),
+          bonusType: 'points',
+          bonusPoints: 50000,
+          spendRequired: new Prisma.Decimal(3000),
+          spendPeriodDays: 90,
+          isCurrentOffer: true,
+          expiresAt: null,
+          createdAt: now
+        },
+        {
+          id: 's2',
+          cardId: 'test-id',
+          bonusValue: new Prisma.Decimal(750),
+          bonusType: 'points',
+          bonusPoints: 75000,
+          spendRequired: new Prisma.Decimal(4000),
+          spendPeriodDays: 90,
+          isCurrentOffer: true,
+          expiresAt: null,
+          createdAt: now
+        }
+      ]
+    });
+    const result = toCardRecordFromDb(row);
+    expect(result.bestSignUpBonusValue).toBe(750);
+    expect(result.bestSignUpBonusSpendRequired).toBe(4000);
+    expect(result.bestSignUpBonusSpendPeriodDays).toBe(90);
   });
 });
 

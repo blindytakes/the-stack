@@ -45,6 +45,9 @@ export type CardRecord = {
   editorRating?: number;
   pros?: string[];
   cons?: string[];
+  bestSignUpBonusValue?: number;
+  bestSignUpBonusSpendRequired?: number;
+  bestSignUpBonusSpendPeriodDays?: number;
 };
 
 export type RewardDetail = {
@@ -133,6 +136,7 @@ export function paginateCards(cards: CardRecord[], query: Pick<CardsQuery, 'limi
 export type DbCardRow = Prisma.CardGetPayload<{
   include: {
     rewards: true;
+    signUpBonuses: true;
   };
 }>;
 
@@ -177,6 +181,20 @@ function deriveTopCategories(rewards: DbCardRow['rewards']): SpendingCategoryVal
   );
 }
 
+function deriveBestSignUpBonus(signUpBonuses: DbCardRow['signUpBonuses']) {
+  if (signUpBonuses.length === 0) return null;
+  const active = signUpBonuses.filter((bonus) => bonus.isCurrentOffer !== false);
+  const candidates = active.length > 0 ? active : signUpBonuses;
+  const best = [...candidates].sort((a, b) => Number(b.bonusValue) - Number(a.bonusValue))[0];
+  if (!best) return null;
+
+  return {
+    bonusValue: Number(best.bonusValue),
+    spendRequired: Number(best.spendRequired),
+    spendPeriodDays: best.spendPeriodDays
+  };
+}
+
 function assertCardsDatabaseConfigured() {
   if (!isDatabaseConfigured()) {
     throw new Error('DATABASE_URL is required for card data');
@@ -185,6 +203,8 @@ function assertCardsDatabaseConfigured() {
 
 // Map Prisma list-query rows into the compact CardRecord used by directory/search views.
 export function toCardRecordFromDb(row: DbCardRow): CardRecord {
+  const bestSignUpBonus = deriveBestSignUpBonus(row.signUpBonuses);
+
   return {
     slug: row.slug,
     name: row.name,
@@ -199,7 +219,10 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
     longDescription: row.longDescription ?? undefined,
     editorRating: row.editorRating != null ? Number(row.editorRating) : undefined,
     pros: row.pros.length > 0 ? row.pros : undefined,
-    cons: row.cons.length > 0 ? row.cons : undefined
+    cons: row.cons.length > 0 ? row.cons : undefined,
+    bestSignUpBonusValue: bestSignUpBonus?.bonusValue,
+    bestSignUpBonusSpendRequired: bestSignUpBonus?.spendRequired,
+    bestSignUpBonusSpendPeriodDays: bestSignUpBonus?.spendPeriodDays
   };
 }
 
@@ -213,7 +236,7 @@ export async function getCardsData(): Promise<CardsDataResponse> {
 
   const rows = await db.card.findMany({
     where: { isActive: true },
-    include: { rewards: true },
+    include: { rewards: true, signUpBonuses: true },
     orderBy: [{ issuer: 'asc' }, { name: 'asc' }]
   });
 

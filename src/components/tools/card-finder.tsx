@@ -3,8 +3,7 @@
 import {
   CardFinderActions,
   CardFinderProgress,
-  CardFinderQuestion,
-  CardFinderResults
+  CardFinderQuestion
 } from '@/components/tools/card-finder-sections';
 import { useCardFinderState } from '@/components/tools/card-finder-state';
 
@@ -14,7 +13,6 @@ export function CardFinderTool() {
     stepIndex,
     currentStep,
     answers,
-    results,
     loading,
     error,
     progress,
@@ -24,8 +22,7 @@ export function CardFinderTool() {
     selectCurrentOption,
     goBack,
     goForward,
-    submitQuiz,
-    resetFinder
+    submitQuiz
   } = useCardFinderState();
 
   return (
@@ -54,8 +51,6 @@ export function CardFinderTool() {
           <p className="text-sm text-brand-coral">{error}</p>
         </div>
       )}
-
-      {results && <CardFinderResults results={results} onRestart={resetFinder} />}
     </section>
   );
 }

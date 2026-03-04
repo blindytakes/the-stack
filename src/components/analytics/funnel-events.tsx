@@ -7,6 +7,7 @@ export type FunnelEventName =
   | 'landing_view'
   | 'tool_started'
   | 'quiz_completed'
+  | 'plan_results_view'
   | 'card_detail_view'
   | 'newsletter_subscribed'
   | 'affiliate_click';
