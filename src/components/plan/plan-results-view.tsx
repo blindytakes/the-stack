@@ -18,10 +18,143 @@ import {
 } from '@/lib/planner-recommendations';
 
 type LoadState = { status: 'loading' } | PlanResultsLoadResult;
+type TimelineEntry = {
+  id: string;
+  lane: 'cards' | 'banking';
+  title: string;
+  startDate: Date;
+  completeDate: Date;
+  payoutDate: Date;
+};
+const TIMELINE_DAYS = 365;
 
 function formatValue(value: number) {
   const rounded = Math.round(value);
   return `$${rounded.toLocaleString()}`;
+}
+
+function formatShortDate(date: Date) {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date);
+}
+
+function addDays(date: Date, days: number) {
+  const copy = new Date(date);
+  copy.setDate(copy.getDate() + days);
+  return copy;
+}
+
+function diffDays(from: Date, to: Date) {
+  const ms = to.getTime() - from.getTime();
+  return Math.max(0, Math.round(ms / (1000 * 60 * 60 * 24)));
+}
+
+function toTimelinePercent(planStart: Date, date: Date) {
+  const day = diffDays(planStart, date);
+  return Math.max(0, Math.min(100, (day / TIMELINE_DAYS) * 100));
+}
+
+function monthLabels(planStart: Date) {
+  return Array.from({ length: 12 }, (_, index) => {
+    const d = new Date(planStart);
+    d.setMonth(d.getMonth() + index);
+    return new Intl.DateTimeFormat('en-US', { month: 'short' }).format(d);
+  });
+}
+
+function scheduleLane(
+  items: PlannerRecommendation[],
+  planStart: Date,
+  lane: 'cards' | 'banking'
+): TimelineEntry[] {
+  const entries: TimelineEntry[] = [];
+  let cursor = new Date(planStart);
+
+  for (const item of items) {
+    const requirementDays = item.timelineDays ?? 90;
+    const payoutLagDays = lane === 'cards' ? 30 : 21;
+    const completeDate = addDays(cursor, requirementDays);
+    const payoutDate = addDays(completeDate, payoutLagDays);
+
+    entries.push({
+      id: item.id,
+      lane,
+      title: item.title,
+      startDate: new Date(cursor),
+      completeDate,
+      payoutDate
+    });
+
+    cursor = completeDate;
+  }
+
+  return entries;
+}
+
+function buildTimelineEntries(recommendations: PlannerRecommendation[], planStart: Date): TimelineEntry[] {
+  const cards = recommendations.filter((item) => item.lane === 'cards');
+  const banking = recommendations.filter((item) => item.lane === 'banking');
+  return [...scheduleLane(cards, planStart, 'cards'), ...scheduleLane(banking, planStart, 'banking')].sort(
+    (a, b) => a.startDate.getTime() - b.startDate.getTime()
+  );
+}
+
+function toIcsDate(date: Date) {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const d = String(date.getUTCDate()).padStart(2, '0');
+  return `${y}${m}${d}`;
+}
+
+function escapeIcsText(value: string) {
+  return value.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
+}
+
+function buildTimelineIcs(entries: TimelineEntry[]) {
+  const lines: string[] = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//The Stack//Bonus Plan//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH'
+  ];
+
+  for (const entry of entries) {
+    const milestones = [
+      { label: 'Open account/card', date: entry.startDate },
+      { label: 'Complete requirements', date: entry.completeDate },
+      { label: 'Bonus expected', date: entry.payoutDate }
+    ];
+
+    for (const milestone of milestones) {
+      const start = toIcsDate(milestone.date);
+      const end = toIcsDate(addDays(milestone.date, 1));
+      lines.push('BEGIN:VEVENT');
+      lines.push(`UID:${escapeIcsText(`${entry.id}-${milestone.label}@thestackhq.com`)}`);
+      lines.push(`DTSTAMP:${toIcsDate(new Date())}T000000Z`);
+      lines.push(`DTSTART;VALUE=DATE:${start}`);
+      lines.push(`DTEND;VALUE=DATE:${end}`);
+      lines.push(`SUMMARY:${escapeIcsText(`${milestone.label}: ${entry.title}`)}`);
+      lines.push(`DESCRIPTION:${escapeIcsText(`Lane: ${entry.lane}`)}`);
+      lines.push('END:VEVENT');
+    }
+  }
+
+  lines.push('END:VCALENDAR');
+  return lines.join('\r\n');
+}
+
+function downloadTimelineCalendar(entries: TimelineEntry[]) {
+  if (entries.length === 0) return;
+  const ics = buildTimelineIcs(entries);
+  const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'the-stack-bonus-plan.ics';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 const exclusionActions: Record<PlannerExclusionReason, string> = {
@@ -103,6 +236,11 @@ function PlanSummary({
   payload: PlanResultsStoragePayload;
   onClear: () => void;
 }) {
+  const planStart = useMemo(() => {
+    const d = new Date(payload.savedAt);
+    return Number.isNaN(d.getTime()) ? new Date() : d;
+  }, [payload.savedAt]);
+  const labels = useMemo(() => monthLabels(planStart), [planStart]);
   const prioritized = useMemo(
     () => rankPlannerRecommendationsByPriority(payload.recommendations),
     [payload.recommendations]
@@ -120,6 +258,10 @@ function PlanSummary({
     ...cardLane.slice(1),
     ...bankingLane.slice(1)
   ]);
+  const timelineEntries = useMemo(
+    () => buildTimelineEntries(prioritized, planStart),
+    [prioritized, planStart]
+  );
 
   return (
     <div>
@@ -143,6 +285,68 @@ function PlanSummary({
           ) : (
             <p className="text-sm text-text-muted">No do-now recommendations are available yet.</p>
           )}
+        </div>
+      </section>
+
+      <section className="mt-10">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="font-heading text-2xl text-text-primary">Execution Timeline</h2>
+            <p className="mt-2 text-sm text-text-secondary">
+              Follow this schedule to open each offer, finish requirements, and track expected payout windows.
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            onClick={() => downloadTimelineCalendar(timelineEntries)}
+            disabled={timelineEntries.length === 0}
+          >
+            Add to Calendar
+          </Button>
+        </div>
+
+        <div className="mt-4 overflow-x-auto rounded-2xl border border-white/10 bg-bg-surface p-4">
+          <div className="grid min-w-[640px] grid-cols-12 gap-2 text-[10px] uppercase tracking-[0.2em] text-text-muted">
+            {labels.map((label, index) => (
+              <span key={`${label}-${index}`}>{label}</span>
+            ))}
+          </div>
+          <div className="mt-4 space-y-4">
+            {timelineEntries.map((entry) => {
+              const startPct = toTimelinePercent(planStart, entry.startDate);
+              const completePct = toTimelinePercent(planStart, entry.completeDate);
+              const payoutPct = toTimelinePercent(planStart, entry.payoutDate);
+              const barWidth = Math.max(3, completePct - startPct);
+
+              return (
+                <div key={entry.id} className="rounded-xl border border-white/10 bg-bg/40 p-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <p className="text-sm font-semibold text-text-primary">{entry.title}</p>
+                    <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase text-text-muted">
+                      {entry.lane === 'cards' ? 'Card' : 'Banking'}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs text-text-muted">
+                    Open by {formatShortDate(entry.startDate)} • Complete by {formatShortDate(entry.completeDate)} • Bonus expected {formatShortDate(entry.payoutDate)}
+                  </p>
+                  <div className="relative mt-3 h-3 rounded-full bg-bg-elevated">
+                    <div
+                      className={`absolute top-0 h-3 rounded-full ${entry.lane === 'cards' ? 'bg-brand-gold/70' : 'bg-brand-teal/70'}`}
+                      style={{ left: `${startPct}%`, width: `${barWidth}%` }}
+                    />
+                    <span
+                      className="absolute top-1/2 h-4 w-4 rounded-full border-2 border-bg bg-brand-teal"
+                      style={{ left: `${payoutPct}%`, transform: 'translate(-50%, -50%)' }}
+                      aria-hidden
+                    />
+                  </div>
+                </div>
+              );
+            })}
+            {timelineEntries.length === 0 && (
+              <p className="text-sm text-text-muted">No timeline items yet. Build recommendations first.</p>
+            )}
+          </div>
         </div>
       </section>
 
