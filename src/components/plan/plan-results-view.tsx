@@ -42,7 +42,7 @@ function RecommendationCard({ item }: { item: PlannerRecommendation }) {
         Estimated net value: <span className="font-semibold text-brand-teal">{formatValue(item.estimatedNetValue)}</span>
       </p>
       <p className="mt-1 text-xs text-text-muted">
-        Fit score: {item.priorityScore} • Effort: {item.effort}
+        Effort: {item.effort}
         {item.timelineDays ? ` • timeline: ${item.timelineDays} days` : ''}
       </p>
       <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-text-secondary">

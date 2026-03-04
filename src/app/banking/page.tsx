@@ -19,21 +19,32 @@ type Props = {
   searchParams: Promise<SearchParams>;
 };
 
+type BankingFilterState = {
+  accountType?: 'checking' | 'savings' | 'bundle';
+  requiresDirectDeposit?: 'yes' | 'no';
+  state?: string;
+};
+
 function firstParam(value: string | string[] | undefined) {
   if (Array.isArray(value)) return value[0];
   return value;
 }
 
-function accountTypeHref(accountType?: 'checking' | 'savings' | 'bundle') {
-  if (!accountType) return '/banking';
-  const params = new URLSearchParams({ accountType });
-  return `/banking?${params.toString()}`;
-}
+function bankingFiltersHref(current: BankingFilterState, updates: Partial<BankingFilterState>) {
+  const next: BankingFilterState = {
+    accountType: current.accountType,
+    requiresDirectDeposit: current.requiresDirectDeposit,
+    state: current.state,
+    ...updates
+  };
 
-function directDepositHref(value?: 'yes' | 'no') {
-  if (!value) return '/banking';
-  const params = new URLSearchParams({ directDeposit: value });
-  return `/banking?${params.toString()}`;
+  const params = new URLSearchParams();
+  if (next.accountType) params.set('accountType', next.accountType);
+  if (next.requiresDirectDeposit) params.set('directDeposit', next.requiresDirectDeposit);
+  if (next.state) params.set('state', next.state);
+
+  const query = params.toString();
+  return query ? `/banking?${query}` : '/banking';
 }
 
 function formatCurrency(value: number) {
@@ -52,6 +63,11 @@ export default async function BankingPage({ searchParams }: Props) {
   const parsedQuery = bankingBonusesQuerySchema.safeParse(rawQuery);
   const query =
     parsedQuery.success ? parsedQuery.data : bankingBonusesQuerySchema.parse({ limit: 100, offset: 0 });
+  const currentFilters: BankingFilterState = {
+    accountType: query.accountType,
+    requiresDirectDeposit: query.requiresDirectDeposit,
+    state: query.state
+  };
 
   const { bonuses } = await getBankingBonusesData();
   const filtered = filterBankingBonuses(bonuses, query);
@@ -79,14 +95,26 @@ export default async function BankingPage({ searchParams }: Props) {
         <p className="text-xs uppercase tracking-[0.25em] text-text-muted">Filters</p>
         <div className="mt-4 flex flex-wrap gap-2">
           {[
-            { label: 'All account types', href: accountTypeHref(), active: !query.accountType },
+            {
+              label: 'All account types',
+              href: bankingFiltersHref(currentFilters, { accountType: undefined }),
+              active: !query.accountType
+            },
             {
               label: 'Checking',
-              href: accountTypeHref('checking'),
+              href: bankingFiltersHref(currentFilters, { accountType: 'checking' }),
               active: query.accountType === 'checking'
             },
-            { label: 'Savings', href: accountTypeHref('savings'), active: query.accountType === 'savings' },
-            { label: 'Bundle', href: accountTypeHref('bundle'), active: query.accountType === 'bundle' }
+            {
+              label: 'Savings',
+              href: bankingFiltersHref(currentFilters, { accountType: 'savings' }),
+              active: query.accountType === 'savings'
+            },
+            {
+              label: 'Bundle',
+              href: bankingFiltersHref(currentFilters, { accountType: 'bundle' }),
+              active: query.accountType === 'bundle'
+            }
           ].map((item) => (
             <Link
               key={item.label}
@@ -105,17 +133,17 @@ export default async function BankingPage({ searchParams }: Props) {
           {[
             {
               label: 'Any direct deposit requirement',
-              href: directDepositHref(),
+              href: bankingFiltersHref(currentFilters, { requiresDirectDeposit: undefined }),
               active: !query.requiresDirectDeposit
             },
             {
               label: 'Direct deposit required',
-              href: directDepositHref('yes'),
+              href: bankingFiltersHref(currentFilters, { requiresDirectDeposit: 'yes' }),
               active: query.requiresDirectDeposit === 'yes'
             },
             {
               label: 'No direct deposit required',
-              href: directDepositHref('no'),
+              href: bankingFiltersHref(currentFilters, { requiresDirectDeposit: 'no' }),
               active: query.requiresDirectDeposit === 'no'
             }
           ].map((item) => (
