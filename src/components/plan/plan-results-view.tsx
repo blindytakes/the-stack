@@ -275,9 +275,9 @@ function PlanSummary({
       </div>
 
       <section className="mt-8">
-        <h2 className="font-heading text-2xl text-text-primary">Do Now</h2>
+        <h2 className="font-heading text-2xl text-text-primary">Start Today</h2>
         <p className="mt-2 text-sm text-text-secondary">
-          Start with these highest-priority actions to capture value quickly.
+          Start earning your money now with these highest-priority actions.
         </p>
         <div className={`mt-4 grid gap-4 ${doNow.length > 1 ? 'md:grid-cols-2' : ''}`}>
           {doNow.length > 0 ? (
@@ -441,7 +441,7 @@ export function PlanResultsView() {
         </p>
         <div className="mt-6">
           <Link href="/tools/card-finder">
-            <Button>Build My Bonus Plan</Button>
+            <Button>Start My Bonus Plan</Button>
           </Link>
         </div>
       </div>

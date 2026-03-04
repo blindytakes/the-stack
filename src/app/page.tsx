@@ -84,9 +84,15 @@ export default function HomePage() {
             Use a disciplined bonus and banking strategy to capture up to $3,000/year in value.
             No debt games. No mystery logic.
           </p>
+          <div className="space-y-1">
+            <p className="text-xs uppercase tracking-[0.25em] text-brand-gold">Start Today</p>
+            <p className="text-sm text-text-secondary">
+              Start earning your money now with your first bonus move this week.
+            </p>
+          </div>
           <div className="flex flex-wrap gap-4">
             <Link href="/tools/card-finder">
-              <Button>Build My Bonus Plan</Button>
+              <Button>Start My Bonus Plan</Button>
             </Link>
             <Link href="/blog">
               <Button variant="ghost">Read the money playbooks</Button>
