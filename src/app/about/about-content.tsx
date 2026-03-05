@@ -6,25 +6,19 @@ import { NewsletterSignup } from '@/components/newsletter-signup';
 
 const tools = [
   {
-    tag: 'Plan',
     title: 'Payout Planner',
     description: 'Build a card and bank bonus schedule that fits your spending and timeline.',
-    href: '/tools/card-finder',
-    color: 'text-brand-teal'
+    href: '/tools/card-finder'
   },
   {
-    tag: 'Compare',
     title: 'Offer vs Offer',
     description: 'Compare offers and track real net value after fees, credits, and deadlines.',
-    href: '/tools/card-vs-card',
-    color: 'text-brand-coral'
+    href: '/tools/card-vs-card'
   },
   {
-    tag: 'Learn',
     title: 'Playbooks',
     description: 'Avoid costly mistakes like missed bonus windows, weak redemptions, and fee traps.',
-    href: '/blog',
-    color: 'text-brand-gold'
+    href: '/blog'
   }
 ];
 
@@ -81,8 +75,7 @@ export function AboutContent() {
       {/* Why / Who — side by side cards */}
       <section className="mt-16 grid gap-6 md:grid-cols-2">
         <article className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]">
-          <p className="text-xs uppercase tracking-[0.25em] text-brand-teal">The Problem</p>
-          <h2 className="mt-3 text-xl font-semibold text-text-primary">Why We Exist</h2>
+          <h2 className="text-xl font-semibold text-text-primary">Why We Exist</h2>
           <p className="mt-3 text-base leading-7 text-text-primary/90">
             Banks design products to maximize their profit, not yours.{' '}
             <span className="text-text-primary/70">
@@ -92,8 +85,7 @@ export function AboutContent() {
           </p>
         </article>
         <article className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]">
-          <p className="text-xs uppercase tracking-[0.25em] text-brand-gold">The Team</p>
-          <h2 className="mt-3 text-xl font-semibold text-text-primary">Who We Are</h2>
+          <h2 className="text-xl font-semibold text-text-primary">Who We Are</h2>
           <p className="mt-3 text-base leading-7 text-text-primary/90">
             A team of builders and rewards nerds who got tired of watching banks win.{' '}
             <span className="text-text-primary/70">
@@ -117,8 +109,7 @@ export function AboutContent() {
               href={tool.href}
               className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
             >
-              <p className={`text-xs uppercase tracking-[0.25em] ${tool.color}`}>{tool.tag}</p>
-              <h3 className="mt-3 text-lg font-semibold text-text-primary">{tool.title}</h3>
+              <h3 className="text-lg font-semibold text-text-primary">{tool.title}</h3>
               <p className="mt-2 text-base leading-7 text-text-primary/70">{tool.description}</p>
             </Link>
           ))}
