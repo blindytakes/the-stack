@@ -3,21 +3,15 @@ import type { Metadata } from 'next';
 
 const whatWeDo = [
   {
-    title: 'Pick the right card faster',
-    description:
-      'See what you will actually keep after annual fees, usable credits, rewards, and first-year value.',
-    href: '/cards'
-  },
-  {
-    title: 'Know your next best move',
-    description:
-      'Use payout planning and side-by-side comparisons to choose confidently in minutes, not hours.',
+    title: 'Build a card and bank bonus schedule that fits your spending and timeline.',
     href: '/tools/card-finder'
   },
   {
-    title: 'Avoid costly mistakes',
-    description:
-      'Follow practical playbooks for bonus timing, redemptions, and avoiding fee drag so more value stays in your pocket.',
+    title: 'Compare offers and track real net value after fees, credits, and deadlines.',
+    href: '/tools/card-vs-card'
+  },
+  {
+    title: 'Avoid costly mistakes like missed bonus windows, weak redemptions, and fee traps.',
     href: '/blog'
   }
 ];
@@ -30,11 +24,11 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="container-page pt-12 pb-16 max-w-4xl">
-      <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">About</p>
-      <h1 className="mt-3 font-heading text-4xl text-text-primary md:text-5xl">About The Stack</h1>
+      <h1 className="font-heading text-4xl text-text-primary md:text-5xl">About The Stack</h1>
       <p className="mt-4 max-w-3xl text-text-secondary">
-        The Stack helps you make banks work for you with transparent strategy, practical tools, and
-        no mystery ranking logic. It is free to use, and always will be for you.
+        The Stack helps you make big banks and credit card companies work for you. We&apos;ve spent years
+        helping friends and family navigate rewards, fees, and fine print with practical, proven
+        strategies. So we put everything we&apos;ve learned here for anyone to use, free.
       </p>
       <div className="mt-6 flex flex-wrap gap-3">
         <Link
@@ -54,33 +48,35 @@ export default function AboutPage() {
       <section className="mt-10 grid gap-4 md:grid-cols-2">
         <article className="rounded-2xl border border-white/10 bg-bg-surface p-6">
           <h2 className="text-lg font-semibold text-text-primary">Why We Exist</h2>
-          <p className="mt-3 text-sm leading-7 text-text-secondary">
-            Most card and banking content is noisy, payout-driven, or hard to compare. We built The
-            Stack to turn that into a clear system for capturing real value while keeping risk low.
+          <p className="mt-3 text-base leading-8 text-text-secondary">
+            Big banks and card issuers build products to maximize their profit, not your outcome.
+            Between headline offers, buried terms, and fee traps, most customers are set up to leave
+            money on the table. The Stack exists to flip that dynamic: show you the catches, map the
+            best move, and help you come out ahead.
           </p>
         </article>
         <article className="rounded-2xl border border-white/10 bg-bg-surface p-6">
           <h2 className="text-lg font-semibold text-text-primary">Who We Are</h2>
-          <p className="mt-3 text-sm leading-7 text-text-secondary">
-            We are operators and product builders focused on one job: make bank and credit decisions
-            simpler, faster, and more evidence-based for everyday users.
+          <p className="mt-3 text-base leading-8 text-text-secondary">
+            We are a small team of builders and rewards nerds helping people use these systems in
+            their favor instead of getting played by them. We track new offers, pressure-test
+            strategies, and publish simple playbooks so you can act quickly and keep more of your
+            money.
           </p>
         </article>
       </section>
 
       <section className="mt-10 rounded-2xl border border-white/10 bg-bg-elevated p-6 md:p-8">
         <h2 className="text-2xl font-heading text-text-primary">What We Do</h2>
-        <p className="mt-3 text-sm leading-7 text-text-secondary">
-          We focus on one outcome: helping you make better money decisions with less time and less
-          guesswork.
+        <p className="mt-3 text-base leading-8 text-text-secondary">
+          What we do is simple: give you a plan, show you the math, and help you execute.
         </p>
-        <ul className="mt-5 space-y-4">
+        <ul className="mt-5 list-disc space-y-3 pl-5">
           {whatWeDo.map((item) => (
-            <li key={item.title} className="text-sm leading-7 text-text-secondary">
+            <li key={item.title} className="text-base leading-8 text-text-secondary">
               <Link href={item.href} className="font-semibold text-text-primary transition hover:text-brand-teal">
                 {item.title}
               </Link>
-              : {item.description}
             </li>
           ))}
         </ul>
@@ -88,13 +84,13 @@ export default function AboutPage() {
 
       <section className="mt-10 rounded-2xl border border-white/10 bg-bg-surface p-6 md:p-8">
         <h2 className="text-2xl font-heading text-text-primary">How We Evaluate Cards</h2>
-        <p className="mt-4 text-sm leading-7 text-text-secondary">
-          We score options by expected value and user fit, not by commission rate. That means we
-          weight annual fee drag, usable credits, bonus timing, reward earn rate, and practical
-          redemption value. Every recommendation should pass a simple question: does this improve
-          your real-world outcome over the next 12 months?
+        <p className="mt-4 text-base leading-8 text-text-secondary">
+          We score cards by your expected net value, not by commission rate. That means we penalize
+          annual fee drag, discount credits most people will not fully use, and prioritize rewards
+          you can actually redeem. If a card only looks good on marketing pages, it does not rank
+          well here.
         </p>
-        <p className="mt-3 text-sm text-text-secondary">
+        <p className="mt-3 text-base leading-8 text-text-secondary">
           You can inspect assumptions directly in our{' '}
           <Link href="/cards" className="font-semibold text-brand-teal transition hover:underline">
             card guides
