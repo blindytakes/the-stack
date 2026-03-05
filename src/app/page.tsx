@@ -3,6 +3,9 @@ import { Button } from '@/components/ui/button';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 
+const SITE_URL = 'https://thestackhq.com';
+const LOGO_URL = `${SITE_URL}/icon.png`;
+
 const highlights = [
   {
     title: 'Earn more',
@@ -51,14 +54,20 @@ const jsonLd = {
     {
       '@type': 'WebSite',
       name: 'The Stack',
-      url: 'https://thestackhq.com',
+      url: SITE_URL,
       description:
         'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.'
     },
     {
       '@type': 'Organization',
       name: 'The Stack',
-      url: 'https://thestackhq.com'
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: LOGO_URL,
+        width: 512,
+        height: 512
+      }
     }
   ]
 };
