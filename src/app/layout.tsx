@@ -38,7 +38,15 @@ export const metadata: Metadata = {
       template: '%s | The Stack'
     },
     description:
-      'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.'
+      'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.',
+    images: [
+      {
+        url: '/opengraph-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'The Stack'
+      }
+    ]
   },
   twitter: {
     card: 'summary_large_image',
@@ -47,7 +55,8 @@ export const metadata: Metadata = {
       template: '%s | The Stack'
     },
     description:
-      'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.'
+      'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.',
+    images: ['/twitter-image.png']
   },
   other: {
     'color-scheme': 'dark'
