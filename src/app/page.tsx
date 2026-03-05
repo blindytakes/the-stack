@@ -5,6 +5,8 @@ import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
+const SITE_DESCRIPTION =
+  'Learn how to make the most of your money with practical card and banking strategies.';
 
 const highlights = [
   {
@@ -55,8 +57,7 @@ const jsonLd = {
       '@type': 'WebSite',
       name: 'The Stack',
       url: SITE_URL,
-      description:
-        'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.'
+      description: SITE_DESCRIPTION
     },
     {
       '@type': 'Organization',
@@ -90,8 +91,7 @@ export default function HomePage() {
             Make the Banks Work for You.
           </h1>
           <p className="max-w-xl text-lg text-text-secondary">
-            Use a disciplined bonus and banking strategy to capture up to $3,000/year in value.
-            No debt games. No mystery logic.
+            Learn how to make the most of your money with practical card and banking strategies.
           </p>
           <div className="space-y-1">
             <p className="text-xs uppercase tracking-[0.25em] text-brand-gold">Start Today</p>

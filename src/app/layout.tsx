@@ -20,6 +20,8 @@ const dmSerif = DM_Serif_Display({
 });
 
 const SITE_URL = 'https://thestackhq.com';
+const SITE_DESCRIPTION =
+  'Learn how to make the most of your money with practical card and banking strategies.';
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -27,8 +29,7 @@ export const metadata: Metadata = {
     default: 'The Stack',
     template: '%s | The Stack'
   },
-  description:
-    'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.',
+  description: SITE_DESCRIPTION,
   openGraph: {
     type: 'website',
     locale: 'en_US',
@@ -37,8 +38,7 @@ export const metadata: Metadata = {
       default: 'The Stack',
       template: '%s | The Stack'
     },
-    description:
-      'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.',
+    description: SITE_DESCRIPTION,
     images: [
       {
         url: '/opengraph-image.png',
@@ -54,8 +54,7 @@ export const metadata: Metadata = {
       default: 'The Stack',
       template: '%s | The Stack'
     },
-    description:
-      'Make the banks work for you with transparent bonus strategy, banking plays, and payout math.',
+    description: SITE_DESCRIPTION,
     images: ['/twitter-image.png']
   },
   other: {
