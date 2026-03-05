@@ -5,6 +5,7 @@ import {
   allBlogArticles,
   type LearnArticleCard
 } from '@/lib/learn-articles';
+import { filterCardsForDirectory } from '@/lib/cards-directory';
 import { CardsOnlyPlanPath } from '@/components/cards/cards-only-plan-path';
 import { CardsDirectoryExplorer } from '@/components/cards/cards-directory-explorer';
 
@@ -24,6 +25,7 @@ export const metadata: Metadata = {
 
 export default async function CardsPage() {
   const { cards } = await getCardsData();
+  const directoryCards = filterCardsForDirectory(cards);
   const snapshotDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
@@ -43,14 +45,14 @@ export default async function CardsPage() {
     <div className="container-page pt-12 pb-16">
       <div className="mb-10 max-w-2xl">
         <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">
-          {cards.length} Cards
+          {directoryCards.length} Cards
         </p>
         <h1 className="mt-3 font-heading text-4xl text-text-primary">
           Card Directory
         </h1>
         <p className="mt-4 text-lg text-text-secondary">
           Answer five quick questions to build a focused 12-month card plan, or browse the full
-          directory by annual fee, rewards fit, and credit profile.
+          directory by sign-up bonus value, issuer, annual fee, and credit profile.
         </p>
       </div>
 
@@ -91,7 +93,7 @@ export default async function CardsPage() {
           Browse Every Card
         </p>
       </div>
-      <CardsDirectoryExplorer cards={cards} learnArticles={featuredLearn} />
+      <CardsDirectoryExplorer cards={directoryCards} learnArticles={featuredLearn} />
     </div>
   );
 }
