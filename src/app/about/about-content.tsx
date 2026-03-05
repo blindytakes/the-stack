@@ -8,25 +8,28 @@ const tools = [
   {
     title: 'Payout Planner',
     description: 'Build a card and bank bonus schedule that fits your spending and timeline.',
-    href: '/tools/card-finder'
+    href: '/tools/card-finder',
+    cta: 'Open planner'
   },
   {
     title: 'Offer vs Offer',
     description: 'Compare offers and track real net value after fees, credits, and deadlines.',
-    href: '/tools/card-vs-card'
+    href: '/tools/card-vs-card',
+    cta: 'Compare offers'
   },
   {
     title: 'Playbooks',
-    description: 'Avoid costly mistakes and track your money with our easy to use templates for free.',
-    href: '/blog'
+    description: 'Avoid costly mistakes and track your money with our easy to use templates.',
+    href: '/blog',
+    cta: 'Read playbooks'
   }
 ];
 
 const stats = [
-  { end: 10, prefix: '', suffix: '+', label: 'Years of experience' },
   { end: 200, prefix: '', suffix: '+', label: 'Cards tracked' },
   { end: 100, prefix: '', suffix: '+', label: 'Banks monitored' },
-  { end: 0, from: 500, prefix: '$', suffix: '', label: 'Cost to you' }
+  { end: 100, prefix: '', suffix: '%', label: 'Free to use' },
+  { end: 10, prefix: '', suffix: '+', label: 'Years of experience' }
 ];
 
 export function AboutContent() {
@@ -38,9 +41,10 @@ export function AboutContent() {
         Make the Banks Work for You.
       </h1>
       <p className="mt-5 max-w-3xl text-lg leading-8 text-text-secondary">
-        The Stack helps you make big banks and credit card companies work for you. We&apos;ve spent
-        years helping friends and family navigate rewards, fees, and fine print with practical,
-        proven strategies. So we put everything we&apos;ve learned here for anyone to use, free.
+        The Stack helps you make banks and card issuers work for you. We have spent years helping
+        friends and family navigate rewards, fees, and fine print with practical, proven
+        strategies. Now we&apos;re sharing what we&apos;ve learned in one place for anyone to use,
+        free.
       </p>
       <div className="mt-8 flex flex-wrap gap-3">
         <Link
@@ -50,10 +54,10 @@ export function AboutContent() {
           Build My Bonus Plan
         </Link>
         <Link
-          href="/cards"
-          className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-2 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          href="/blog"
+          className="inline-flex items-center justify-center rounded-full border border-white/15 bg-bg-surface px-5 py-2 text-sm font-semibold text-text-primary transition hover:border-white/30 hover:bg-bg-elevated focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
         >
-          Browse Card Guides
+          Read the Playbooks
         </Link>
       </div>
 
@@ -63,7 +67,6 @@ export function AboutContent() {
           <div key={stat.label} className="text-center">
             <CountUp
               end={stat.end}
-              from={stat.from}
               prefix={stat.prefix}
               suffix={stat.suffix}
               className="font-heading text-5xl text-text-primary md:text-6xl"
@@ -77,22 +80,18 @@ export function AboutContent() {
       <section className="mt-16 grid gap-6 md:grid-cols-2">
         <article className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]">
           <h2 className="text-xl font-semibold text-text-primary">Why We Exist</h2>
-          <p className="mt-3 text-base leading-7 text-text-primary/90">
-            Banks design products to maximize their profit, not yours.{' '}
-            <span className="text-text-primary/70">
-              The Stack exists to flip that. Show you the catches, map the best move, and help you
-              come out ahead.
-            </span>
+          <p className="mt-3 text-base leading-7 text-text-secondary">
+            Big banks and credit card companies are built to profit from confusion, bad habits, and
+            fine print. The Stack exists to flip that dynamic with practical tools, clear math, and
+            guidance that helps you avoid the traps and come out ahead.
           </p>
         </article>
         <article className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]">
-          <h2 className="text-xl font-semibold text-text-primary">Who We Are</h2>
-          <p className="mt-3 text-base leading-7 text-text-primary/90">
-            A team of builders and rewards nerds who got tired of watching banks win.{' '}
-            <span className="text-text-primary/70">
-              We track offers, pressure-test strategies, and publish playbooks so you can act fast
-              and keep more of your money.
-            </span>
+          <h2 className="text-xl font-semibold text-text-primary">Who Built This</h2>
+          <p className="mt-3 text-base leading-7 text-text-secondary">
+            The Stack was built by finance professionals who got tired of watching banks and credit
+            card companies profit from confusion. We created The Stack to give you better
+            information, clearer math, and practical tools that make it easier to make money.
           </p>
         </article>
       </section>
@@ -107,10 +106,29 @@ export function AboutContent() {
             <Link
               key={tool.title}
               href={tool.href}
-              className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
+              className="group flex h-full flex-col rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
             >
-              <h3 className="text-lg font-semibold text-text-primary">{tool.title}</h3>
+              <h3 className="text-lg font-semibold text-text-primary transition group-hover:text-brand-teal">
+                {tool.title}
+              </h3>
               <p className="mt-2 text-base leading-7 text-text-primary/70">{tool.description}</p>
+              <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-teal">
+                <span>{tool.cta}</span>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 16 16"
+                  className="h-4 w-4 transition group-hover:translate-x-1"
+                  fill="none"
+                >
+                  <path
+                    d="M3.5 8h8m0 0-3-3m3 3-3 3"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
             </Link>
           ))}
         </div>
@@ -118,15 +136,14 @@ export function AboutContent() {
 
       {/* Newsletter CTA */}
       <section className="mt-16 rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center md:p-10">
-        <p className="text-xs uppercase tracking-[0.25em] text-brand-gold">Stay Ahead</p>
-        <h2 className="mt-2 font-heading text-2xl text-text-primary md:text-3xl">
+        <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
           Get Weekly Payout Plays
         </h2>
-        <p className="mx-auto mt-3 max-w-lg text-base text-text-secondary">
-          Bonus offers, APY opportunities, and fee traps to avoid. Delivered weekly.
+        <p className="mx-auto mt-3 max-w-none text-lg text-text-secondary md:text-xl lg:whitespace-nowrap">
+          Bonus offers, finance how-tos, and free tools. Delivered weekly. No Slop.
         </p>
-        <div className="mx-auto mt-6 max-w-md">
-          <NewsletterSignup source="about" compact />
+        <div className="mx-auto mt-6 max-w-xl">
+          <NewsletterSignup source="about" compact size="large" />
         </div>
       </section>
 

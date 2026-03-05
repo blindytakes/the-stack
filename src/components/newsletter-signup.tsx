@@ -23,6 +23,7 @@ type NewsletterSignupProps = {
   heading?: string;
   description?: string;
   compact?: boolean;
+  size?: 'default' | 'large';
   valueBullets?: string[];
   showConsultationOption?: boolean;
   consultationLabel?: string;
@@ -37,6 +38,7 @@ export function NewsletterSignup({
   heading = 'Stay in the loop',
   description = 'Get weekly bonus plays, APY opportunities, and fee-avoidance strategy.',
   compact = false,
+  size = 'default',
   valueBullets = [],
   showConsultationOption = false,
   consultationLabel = "I'm interested in a 1:1 strategy consultation",
@@ -51,6 +53,7 @@ export function NewsletterSignup({
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [showTurnstile, setShowTurnstile] = useState(() => !compact && turnstileEnabled);
   const turnstileRef = useRef<TurnstileHandle>(null);
+  const largeSize = size === 'large';
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token);
@@ -155,9 +158,15 @@ export function NewsletterSignup({
           }}
           placeholder="Enter your email"
           required
-          className="flex-1 rounded-full border border-white/10 bg-bg-surface px-4 py-2 text-sm text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none"
+          className={`flex-1 rounded-full border border-white/10 bg-bg-surface text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none ${
+            largeSize ? 'px-6 py-3.5 text-lg md:text-xl' : 'px-4 py-2 text-sm'
+          }`}
         />
-        <Button type="submit" disabled={status === 'loading'}>
+        <Button
+          type="submit"
+          disabled={status === 'loading'}
+          className={largeSize ? 'px-7 py-3.5 text-lg md:text-xl' : ''}
+        >
           {status === 'loading' ? 'Joining...' : 'Subscribe'}
         </Button>
       </form>
