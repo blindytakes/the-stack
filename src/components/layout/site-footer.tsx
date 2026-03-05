@@ -15,7 +15,7 @@ const footerLinks = [
 
 export function SiteFooter() {
   const pathname = usePathname();
-  const showFooterNewsletter = pathname !== '/';
+  const showFooterNewsletter = pathname !== '/' && pathname !== '/about';
   const year = new Date().getFullYear();
 
   return (

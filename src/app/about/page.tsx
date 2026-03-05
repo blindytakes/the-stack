@@ -33,25 +33,6 @@ const stats = [
   { value: '$0', label: 'Cost to you' }
 ];
 
-const principles = [
-  {
-    label: 'Net value scoring',
-    detail: 'We rank by your expected outcome, not by commission rate.'
-  },
-  {
-    label: 'Fee drag penalty',
-    detail: 'Annual fees reduce a card\u2019s score unless benefits clearly offset them.'
-  },
-  {
-    label: 'Credit realism',
-    detail: 'We discount credits most people won\u2019t fully use.'
-  },
-  {
-    label: 'Transparent math',
-    detail: 'Every assumption is visible in our card guides and comparison tools.'
-  }
-];
-
 export const metadata: Metadata = {
   title: 'About',
   description: 'How The Stack works, how we evaluate cards, and how we make money.'
@@ -90,7 +71,7 @@ export default function AboutPage() {
         {stats.map((stat) => (
           <div key={stat.label} className="text-center">
             <p className="font-heading text-3xl text-text-primary md:text-4xl">{stat.value}</p>
-            <p className="mt-1 text-sm text-text-muted">{stat.label}</p>
+            <p className="mt-1 text-sm text-text-secondary">{stat.label}</p>
           </div>
         ))}
       </section>
@@ -100,21 +81,23 @@ export default function AboutPage() {
         <article className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]">
           <p className="text-xs uppercase tracking-[0.25em] text-brand-teal">The Problem</p>
           <h2 className="mt-3 text-xl font-semibold text-text-primary">Why We Exist</h2>
-          <p className="mt-3 text-base leading-7 text-text-secondary">
-            Big banks and card issuers build products to maximize their profit, not your outcome.
-            Between headline offers, buried terms, and fee traps, most customers are set up to leave
-            money on the table. The Stack exists to flip that dynamic: show you the catches, map the
-            best move, and help you come out ahead.
+          <p className="mt-3 text-base leading-7 text-text-primary/80">
+            Banks design products to maximize their profit, not yours.{' '}
+            <span className="text-text-secondary">
+              The Stack exists to flip that. Show you the catches, map the best move, and help you
+              come out ahead.
+            </span>
           </p>
         </article>
         <article className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]">
           <p className="text-xs uppercase tracking-[0.25em] text-brand-gold">The Team</p>
           <h2 className="mt-3 text-xl font-semibold text-text-primary">Who We Are</h2>
-          <p className="mt-3 text-base leading-7 text-text-secondary">
-            We are a small team of builders and rewards nerds helping people use these systems in
-            their favor instead of getting played by them. We track new offers, pressure-test
-            strategies, and publish simple playbooks so you can act quickly and keep more of your
-            money.
+          <p className="mt-3 text-base leading-7 text-text-primary/80">
+            A team of builders and rewards nerds who got tired of watching banks win.{' '}
+            <span className="text-text-secondary">
+              We track offers, pressure-test strategies, and publish playbooks so you can act fast
+              and keep more of your money.
+            </span>
           </p>
         </article>
       </section>
@@ -134,47 +117,10 @@ export default function AboutPage() {
             >
               <p className={`text-xs uppercase tracking-[0.25em] ${tool.color}`}>{tool.tag}</p>
               <h3 className="mt-3 text-lg font-semibold text-text-primary">{tool.title}</h3>
-              <p className="mt-2 text-sm leading-6 text-text-secondary">{tool.description}</p>
+              <p className="mt-2 text-base leading-7 text-text-secondary">{tool.description}</p>
             </Link>
           ))}
         </div>
-      </section>
-
-      {/* How We Evaluate — promoted section */}
-      <section className="mt-16 rounded-3xl border border-white/10 bg-bg-elevated p-8 shadow-[0_0_45px_rgba(45,212,191,0.08)] md:p-10">
-        <p className="text-xs uppercase tracking-[0.25em] text-brand-gold">Our Method</p>
-        <h2 className="mt-2 font-heading text-2xl text-text-primary md:text-3xl">
-          How We Evaluate Cards
-        </h2>
-        <p className="mt-4 text-base leading-7 text-text-secondary">
-          If a card only looks good on marketing pages, it does not rank well here. We score by
-          what you actually keep, not what the issuer advertises.
-        </p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          {principles.map((p) => (
-            <div
-              key={p.label}
-              className="rounded-2xl border border-white/5 bg-bg-surface p-4"
-            >
-              <p className="text-sm font-semibold text-text-primary">{p.label}</p>
-              <p className="mt-1 text-sm text-text-secondary">{p.detail}</p>
-            </div>
-          ))}
-        </div>
-        <p className="mt-6 text-sm text-text-secondary">
-          Inspect every assumption in our{' '}
-          <Link href="/cards" className="font-semibold text-brand-teal transition hover:underline">
-            card guides
-          </Link>{' '}
-          and{' '}
-          <Link
-            href="/tools/card-vs-card"
-            className="font-semibold text-brand-teal transition hover:underline"
-          >
-            comparison tools
-          </Link>{' '}
-          before making a decision.
-        </p>
       </section>
 
       {/* Newsletter CTA */}
@@ -183,8 +129,8 @@ export default function AboutPage() {
         <h2 className="mt-2 font-heading text-2xl text-text-primary md:text-3xl">
           Get Weekly Payout Plays
         </h2>
-        <p className="mx-auto mt-3 max-w-lg text-sm text-text-secondary">
-          Bonus offers, APY opportunities, and fee traps to avoid — delivered weekly.
+        <p className="mx-auto mt-3 max-w-lg text-base text-text-secondary">
+          Bonus offers, APY opportunities, and fee traps to avoid. Delivered weekly.
         </p>
         <div className="mx-auto mt-6 max-w-md">
           <NewsletterSignup source="about" compact />
