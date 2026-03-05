@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import {
@@ -231,10 +232,12 @@ function EmptyLaneCard({
 
 function PlanSummary({
   payload,
-  onClear
+  onClear,
+  cardsOnlyMode
 }: {
   payload: PlanResultsStoragePayload;
   onClear: () => void;
+  cardsOnlyMode: boolean;
 }) {
   const planStart = useMemo(() => {
     const d = new Date(payload.savedAt);
@@ -245,22 +248,34 @@ function PlanSummary({
     () => rankPlannerRecommendationsByPriority(payload.recommendations),
     [payload.recommendations]
   );
-  const cardLane = prioritized.filter((item) => item.lane === 'cards');
-  const bankingLane = prioritized.filter((item) => item.lane === 'banking');
+  const scopedRecommendations = useMemo(
+    () => (cardsOnlyMode ? prioritized.filter((item) => item.lane === 'cards') : prioritized),
+    [cardsOnlyMode, prioritized]
+  );
+  const cardLane = scopedRecommendations.filter((item) => item.lane === 'cards');
+  const bankingLane = scopedRecommendations.filter((item) => item.lane === 'banking');
   const cardExclusions = payload.exclusions.filter((item) => item.lane === 'cards');
-  const bankingExclusions = payload.exclusions.filter((item) => item.lane === 'banking');
-  const totalValue = prioritized.reduce((sum, item) => sum + item.estimatedNetValue, 0);
-  const doNow = rankPlannerRecommendationsByPriority([
-    ...(cardLane[0] ? [cardLane[0]] : []),
-    ...(bankingLane[0] ? [bankingLane[0]] : [])
-  ]);
-  const doNext = rankPlannerRecommendationsByPriority([
-    ...cardLane.slice(1),
-    ...bankingLane.slice(1)
-  ]);
+  const bankingExclusions = cardsOnlyMode
+    ? []
+    : payload.exclusions.filter((item) => item.lane === 'banking');
+  const totalValue = scopedRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
+  const cardValue = cardLane.reduce((sum, item) => sum + item.estimatedNetValue, 0);
+  const bankingValue = bankingLane.reduce((sum, item) => sum + item.estimatedNetValue, 0);
+  const doNow = cardsOnlyMode
+    ? cardLane.slice(0, 2)
+    : rankPlannerRecommendationsByPriority([
+        ...(cardLane[0] ? [cardLane[0]] : []),
+        ...(bankingLane[0] ? [bankingLane[0]] : [])
+      ]);
+  const doNext = cardsOnlyMode
+    ? cardLane.slice(2)
+    : rankPlannerRecommendationsByPriority([
+        ...cardLane.slice(1),
+        ...bankingLane.slice(1)
+      ]);
   const timelineEntries = useMemo(
-    () => buildTimelineEntries(prioritized, planStart),
-    [prioritized, planStart]
+    () => buildTimelineEntries(scopedRecommendations, planStart),
+    [scopedRecommendations, planStart]
   );
 
   return (
@@ -269,8 +284,9 @@ function PlanSummary({
         <p className="text-xs uppercase tracking-[0.25em] text-text-muted">12-Month Plan Value</p>
         <p className="mt-2 font-heading text-4xl text-text-primary">{formatValue(totalValue)}</p>
         <p className="mt-2 text-sm text-text-secondary">
-          Card bonuses: {formatValue(cardLane.reduce((sum, item) => sum + item.estimatedNetValue, 0))} • Banking bonuses:{' '}
-          {formatValue(bankingLane.reduce((sum, item) => sum + item.estimatedNetValue, 0))}
+          {cardsOnlyMode
+            ? `Card bonuses: ${formatValue(cardValue)}`
+            : `Card bonuses: ${formatValue(cardValue)} • Banking bonuses: ${formatValue(bankingValue)}`}
         </p>
       </div>
 
@@ -351,25 +367,37 @@ function PlanSummary({
       </section>
 
       <section className="mt-10">
-        <h2 className="font-heading text-2xl text-text-primary">Lane Breakdown</h2>
-        <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-text-primary">Card Bonus Track</h3>
+        <h2 className="font-heading text-2xl text-text-primary">
+          {cardsOnlyMode ? 'Card Bonus Track' : 'Lane Breakdown'}
+        </h2>
+        {cardsOnlyMode ? (
+          <div className="mt-4 space-y-4">
             {cardLane.length === 0 ? (
               <EmptyLaneCard lane="cards" exclusions={cardExclusions} />
             ) : (
               cardLane.map((item) => <RecommendationCard key={item.id} item={item} />)
             )}
           </div>
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-text-primary">Bank Bonus Track</h3>
-            {bankingLane.length === 0 ? (
-              <EmptyLaneCard lane="banking" exclusions={bankingExclusions} />
-            ) : (
-              bankingLane.map((item) => <RecommendationCard key={item.id} item={item} />)
-            )}
+        ) : (
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-text-primary">Card Bonus Track</h3>
+              {cardLane.length === 0 ? (
+                <EmptyLaneCard lane="cards" exclusions={cardExclusions} />
+              ) : (
+                cardLane.map((item) => <RecommendationCard key={item.id} item={item} />)
+              )}
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-text-primary">Bank Bonus Track</h3>
+              {bankingLane.length === 0 ? (
+                <EmptyLaneCard lane="banking" exclusions={bankingExclusions} />
+              ) : (
+                bankingLane.map((item) => <RecommendationCard key={item.id} item={item} />)
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </section>
 
       <section className="mt-10">
@@ -387,8 +415,10 @@ function PlanSummary({
       </section>
 
       <div className="mt-10 flex flex-wrap gap-3">
-        <Link href="/tools/card-finder">
-          <Button variant="ghost">Adjust My Plan</Button>
+        <Link href={cardsOnlyMode ? '/cards#card-plan' : '/tools/card-finder'}>
+          <Button variant="ghost">
+            {cardsOnlyMode ? 'Adjust Card Plan' : 'Adjust My Plan'}
+          </Button>
         </Link>
         <button
           type="button"
@@ -403,6 +433,8 @@ function PlanSummary({
 }
 
 export function PlanResultsView() {
+  const searchParams = useSearchParams();
+  const cardsOnlyMode = searchParams.get('mode') === 'cards_only';
   const [state, setState] = useState<LoadState>({ status: 'loading' });
 
   function handleClearPlan() {
@@ -416,11 +448,16 @@ export function PlanResultsView() {
 
     if (loaded.status === 'fresh' || loaded.status === 'recovered') {
       trackFunnelEvent('plan_results_view', {
-        source: loaded.status === 'fresh' ? loaded.source : 'local_recovery',
-        path: '/plan/results'
+        source: cardsOnlyMode
+          ? 'cards_only_path'
+          : loaded.status === 'fresh'
+            ? loaded.source
+            : 'local_recovery',
+        path: '/plan/results',
+        tool: cardsOnlyMode ? 'cards_only_path' : 'card_finder'
       });
     }
-  }, []);
+  }, [cardsOnlyMode]);
 
   if (state.status === 'loading') {
     return (
@@ -436,12 +473,16 @@ export function PlanResultsView() {
         <h1 className="font-heading text-3xl text-text-primary">Your plan is not available</h1>
         <p className="mt-3 max-w-2xl text-sm leading-7 text-text-secondary">
           {state.status === 'stale'
-            ? 'Your previous plan expired. Build a fresh plan to get up-to-date recommendations.'
-            : 'Build a plan first to view your personalized card and banking bonus actions.'}
+            ? cardsOnlyMode
+              ? 'Your previous card-only plan expired. Build a fresh plan to get up-to-date recommendations.'
+              : 'Your previous plan expired. Build a fresh plan to get up-to-date recommendations.'
+            : cardsOnlyMode
+              ? 'Build a plan first to view your personalized credit card bonus actions.'
+              : 'Build a plan first to view your personalized card and banking bonus actions.'}
         </p>
         <div className="mt-6">
-          <Link href="/tools/card-finder">
-            <Button>Start My Bonus Plan</Button>
+          <Link href={cardsOnlyMode ? '/cards#card-plan' : '/tools/card-finder'}>
+            <Button>{cardsOnlyMode ? 'Build My Card-Only Plan' : 'Start My Bonus Plan'}</Button>
           </Link>
         </div>
       </div>
@@ -450,16 +491,24 @@ export function PlanResultsView() {
 
   return (
     <div className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
-      <h1 className="font-heading text-4xl text-text-primary">Your 12-Month Bonus Plan</h1>
+      <h1 className="font-heading text-4xl text-text-primary">
+        {cardsOnlyMode ? 'Your 12-Month Card Plan' : 'Your 12-Month Bonus Plan'}
+      </h1>
       <p className="mt-3 text-sm text-text-secondary">
-        Card bonuses and banking bonuses in one coordinated action plan.
+        {cardsOnlyMode
+          ? 'Credit card bonuses in one focused 12-month execution roadmap.'
+          : 'Card bonuses and banking bonuses in one coordinated action plan.'}
       </p>
       {state.status === 'recovered' && (
         <p className="mt-3 text-sm text-brand-gold">
           Recovered your latest saved plan from this browser.
         </p>
       )}
-      <PlanSummary payload={state.payload} onClear={handleClearPlan} />
+      <PlanSummary
+        payload={state.payload}
+        onClear={handleClearPlan}
+        cardsOnlyMode={cardsOnlyMode}
+      />
     </div>
   );
 }

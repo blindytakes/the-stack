@@ -4,7 +4,12 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import type { QuizResult } from '@/lib/quiz-engine';
-import type { FinderStep } from '@/components/tools/card-finder-config';
+
+export type FinderQuestionStep = {
+  id: string;
+  title: string;
+  options: Array<{ label: string; value: string }>;
+};
 
 export function CardFinderProgress({
   stepIndex,
@@ -32,7 +37,7 @@ export function CardFinderQuestion({
   selectedValue,
   onSelect
 }: {
-  step: FinderStep;
+  step: FinderQuestionStep;
   selectedValue?: string;
   onSelect: (value: string) => void;
 }) {
@@ -75,6 +80,8 @@ export function CardFinderActions({
   isLastStep,
   isComplete,
   loading,
+  submitLabel,
+  submittingLabel,
   onBack,
   onContinue,
   onSubmit
@@ -84,6 +91,8 @@ export function CardFinderActions({
   isLastStep: boolean;
   isComplete: boolean;
   loading: boolean;
+  submitLabel?: string;
+  submittingLabel?: string;
   onBack: () => void;
   onContinue: () => void;
   onSubmit: () => void;
@@ -95,7 +104,7 @@ export function CardFinderActions({
       </Button>
       {isLastStep && isComplete ? (
         <Button onClick={onSubmit} disabled={loading}>
-          {loading ? 'Scoring…' : 'See my payout plan'}
+          {loading ? (submittingLabel ?? 'Scoring...') : (submitLabel ?? 'See my payout plan')}
         </Button>
       ) : (
         <Button onClick={onContinue} disabled={!canContinue || isLastStep}>
