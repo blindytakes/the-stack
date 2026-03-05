@@ -150,14 +150,15 @@ export function AboutContent() {
       {/* Feedback — compact */}
       <section className="mt-16 text-center">
         <p className="text-sm text-text-secondary">
-          Found an error, have feedback on rankings, or want us to review a strategy?{' '}
+          Found an error, have feedback on our rankings, or want us to review a strategy? Email{' '}
           <a
             href="mailto:team@thestackhq.com"
             className="font-semibold text-brand-teal transition hover:underline"
           >
-            Reach out
+            team@thestackhq.com
           </a>
-          . This site is for educational purposes only and is not personalized financial advice.
+          . This site is for educational purposes only and does not provide personalized financial
+          advice.
         </p>
       </section>
     </div>
