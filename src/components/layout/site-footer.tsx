@@ -23,14 +23,12 @@ export function SiteFooter() {
       {/* Newsletter */}
       {showFooterNewsletter && (
         <div className="container-page border-b border-white/5 py-10">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-sm">
-              <p className="text-sm font-semibold text-text-primary">Get weekly bank payout plays</p>
-              <p className="mt-1 text-xs text-text-muted">
-                Bonus offers, APY opportunities, and fee traps to avoid.
-              </p>
-            </div>
-            <div className="w-full md:max-w-md">
+          <div className="mx-auto max-w-lg text-center">
+            <p className="text-sm font-semibold text-text-primary">Get weekly bank payout plays</p>
+            <p className="mt-1 text-xs text-text-muted">
+              Bonus offers, APY opportunities, and fee traps to avoid.
+            </p>
+            <div className="mt-4">
               <NewsletterSignup source="footer" compact />
             </div>
           </div>
