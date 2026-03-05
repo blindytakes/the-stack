@@ -17,7 +17,7 @@ const tools = [
   },
   {
     title: 'Playbooks',
-    description: 'Avoid costly mistakes like missed bonus windows, weak redemptions, and fee traps.',
+    description: 'Avoid costly mistakes and track your money with our easy to use templates for free.',
     href: '/blog'
   }
 ];
@@ -26,7 +26,7 @@ const stats = [
   { end: 10, prefix: '', suffix: '+', label: 'Years of experience' },
   { end: 200, prefix: '', suffix: '+', label: 'Cards tracked' },
   { end: 100, prefix: '', suffix: '+', label: 'Banks monitored' },
-  { end: 0, prefix: '$', suffix: '', label: 'Cost to you' }
+  { end: 0, from: 500, prefix: '$', suffix: '', label: 'Cost to you' }
 ];
 
 export function AboutContent() {
@@ -63,6 +63,7 @@ export function AboutContent() {
           <div key={stat.label} className="text-center">
             <CountUp
               end={stat.end}
+              from={stat.from}
               prefix={stat.prefix}
               suffix={stat.suffix}
               className="font-heading text-5xl text-text-primary md:text-6xl"
@@ -98,9 +99,8 @@ export function AboutContent() {
 
       {/* What We Do — tool cards matching homepage pattern */}
       <section className="mt-16">
-        <p className="text-xs uppercase tracking-[0.25em] text-text-muted">What We Do</p>
-        <h2 className="mt-2 font-heading text-2xl text-text-primary md:text-3xl">
-          Give you a plan, show you the math, help you execute.
+        <h2 className="font-heading text-2xl text-text-primary md:text-3xl">
+          The Stack gives you a plan, shows you the math, and helps you execute.
         </h2>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
           {tools.map((tool) => (
