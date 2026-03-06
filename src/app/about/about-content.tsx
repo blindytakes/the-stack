@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { CountUp } from '@/components/ui/count-up';
+import { ProofPoints } from '@/components/proof-points';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 
 const tools = [
@@ -23,13 +23,6 @@ const tools = [
     href: '/blog',
     cta: 'Read playbooks'
   }
-];
-
-const stats = [
-  { end: 200, prefix: '', suffix: '+', label: 'Cards tracked' },
-  { end: 100, prefix: '', suffix: '+', label: 'Banks monitored' },
-  { end: 100, prefix: '', suffix: '%', label: 'Free to use' },
-  { end: 10, prefix: '', suffix: '+', label: 'Years of experience' }
 ];
 
 export function AboutContent() {
@@ -62,19 +55,7 @@ export function AboutContent() {
       </div>
 
       {/* Proof points */}
-      <section className="mt-16 grid grid-cols-2 gap-6 sm:grid-cols-4">
-        {stats.map((stat) => (
-          <div key={stat.label} className="text-center">
-            <CountUp
-              end={stat.end}
-              prefix={stat.prefix}
-              suffix={stat.suffix}
-              className="font-heading text-5xl text-text-primary md:text-6xl"
-            />
-            <p className="mt-2 text-sm text-text-secondary">{stat.label}</p>
-          </div>
-        ))}
-      </section>
+      <ProofPoints className="mt-16" />
 
       {/* Why / Who — side by side cards */}
       <section className="mt-16 grid gap-6 md:grid-cols-2">

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
+import { ProofPoints } from '@/components/proof-points';
 
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
@@ -10,16 +11,16 @@ const SITE_DESCRIPTION =
 
 const highlights = [
   {
-    title: 'Earn more',
-    copy: 'Target sign-up bonuses, rewards, and promo value with transparent math.'
+    title: 'Your plan',
+    copy: 'Build a card and bank bonus schedule that fits your spending and timing.'
   },
   {
-    title: 'Keep more',
-    copy: 'Avoid interest and fee traps with pay-in-full rules and better account decisions.'
+    title: 'Real value',
+    copy: 'See the real value after fees, credits, and fine print.'
   },
   {
-    title: 'Grow more',
-    copy: 'Build credit and cash flow systems that improve your yearly net value.'
+    title: 'Next move',
+    copy: 'Know what to apply for now, what to skip, and what to do next.'
   }
 ];
 
@@ -86,30 +87,23 @@ export default function HomePage() {
       />
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-6">
-          <p className="text-sm uppercase tracking-[0.2em] text-brand-gold">The Stack</p>
+          <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold md:text-lg">
+            The Stack
+          </p>
           <h1 className="font-heading text-4xl leading-tight text-text-primary md:text-6xl">
             Make the Banks Work for You.
           </h1>
-          <p className="max-w-xl text-lg text-text-secondary">
-            Learn how to make the most of your money with practical card and banking strategies.
+          <p className="max-w-2xl text-xl leading-8 text-text-secondary md:text-2xl">
+            Banks and card issuers are built to profit off you. The Stack helps you flip that
+            dynamic with better offers, clear math, and practical next moves.
           </p>
-          <div className="space-y-1">
-            <p className="text-xs uppercase tracking-[0.25em] text-brand-gold">Start Today</p>
-            <p className="text-sm text-text-secondary">
-              Start earning your money now with your first bonus move this week.
-            </p>
-          </div>
           <div className="flex flex-wrap gap-4">
             <Link href="/tools/card-finder">
-              <Button>Start My Bonus Plan</Button>
-            </Link>
-            <Link href="/blog">
-              <Button variant="ghost">Read the money playbooks</Button>
+              <Button className="px-7 py-3 text-base md:px-8 md:py-3.5 md:text-lg">
+                Start My Bonus Plan
+              </Button>
             </Link>
           </div>
-          <p className="text-xs text-text-muted">
-            Results vary by credit profile, available offers, spend, and redemption choices.
-          </p>
         </div>
         <div className="rounded-3xl border border-white/10 bg-bg-elevated p-8 shadow-[0_0_45px_rgba(45,212,191,0.08)]">
           <div className="space-y-4">
@@ -125,6 +119,8 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      <ProofPoints className="mt-16" />
 
       <section className="mt-16 grid gap-6 md:grid-cols-3">
         {tools.map((tool) => (
@@ -149,17 +145,11 @@ export default function HomePage() {
         <div className="rounded-3xl border border-white/10 bg-bg-elevated p-8 md:p-10">
           <NewsletterSignup
             source="homepage"
-            heading="Get Weekly Payout Plays + Optional 1:1 Strategy Session"
-            description="Join a free newsletter built to help you make better card and banking decisions with less guesswork."
-            valueBullets={[
-              'Best current offers that are actually worth your time',
-              'Fee traps and mistakes to avoid before you apply',
-              'One practical action step each week'
-            ]}
-            showConsultationOption
-            consultationSource="homepage_consultation"
-            consultationLabel="I am interested in a 1:1 strategy consultation."
-            finePrint="Free newsletter. Unsubscribe anytime. Consultations are educational only and not individualized financial advice."
+            eyebrow="Free Weekly Newsletter"
+            heading="Get Weekly Payout Plays"
+            description="One useful email each week with the best offers worth your time, mistakes to avoid, and one clear next move."
+            finePrint="Free. No spam. Unsubscribe anytime."
+            submitLabel="Join Free"
           />
         </div>
       </section>

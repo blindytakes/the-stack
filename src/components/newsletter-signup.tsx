@@ -20,6 +20,7 @@ import type { TrackedSource } from '@/lib/tracking';
 
 type NewsletterSignupProps = {
   source?: string;
+  eyebrow?: string;
   heading?: string;
   description?: string;
   compact?: boolean;
@@ -29,12 +30,14 @@ type NewsletterSignupProps = {
   consultationLabel?: string;
   consultationSource?: TrackedSource;
   finePrint?: string;
+  submitLabel?: string;
 };
 
 const TURNSTILE_REQUIRED_MESSAGE = 'Please complete the security check to subscribe.';
 
 export function NewsletterSignup({
   source = 'homepage',
+  eyebrow,
   heading = 'Stay in the loop',
   description = 'Get weekly bonus plays, APY opportunities, and fee-avoidance strategy.',
   compact = false,
@@ -43,7 +46,8 @@ export function NewsletterSignup({
   showConsultationOption = false,
   consultationLabel = "I'm interested in a 1:1 strategy consultation",
   consultationSource,
-  finePrint
+  finePrint,
+  submitLabel = 'Subscribe'
 }: NewsletterSignupProps) {
   const turnstileEnabled = Boolean(getTurnstileSiteKey());
   const [email, setEmail] = useState('');
@@ -135,6 +139,9 @@ export function NewsletterSignup({
     <div>
       {!compact && (
         <>
+          {eyebrow && (
+            <p className="text-xs uppercase tracking-[0.28em] text-brand-gold">{eyebrow}</p>
+          )}
           <h3 className="font-heading text-2xl text-text-primary">{heading}</h3>
           <p className="mt-2 text-sm text-text-secondary">{description}</p>
           {valueBullets.length > 0 && (
@@ -146,29 +153,32 @@ export function NewsletterSignup({
           )}
         </>
       )}
-      <form onSubmit={handleSubmit} className={`flex gap-3 ${compact ? '' : 'mt-4'}`}>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          onFocus={() => {
-            if (compact && turnstileEnabled) {
-              setShowTurnstile(true);
-            }
-          }}
-          placeholder="Enter your email"
-          required
-          className={`flex-1 rounded-full border border-white/10 bg-bg-surface text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none ${
-            largeSize ? 'px-6 py-3.5 text-lg md:text-xl' : 'px-4 py-2 text-sm'
-          }`}
-        />
-        <Button
-          type="submit"
-          disabled={status === 'loading'}
-          className={largeSize ? 'px-7 py-3.5 text-lg md:text-xl' : ''}
-        >
-          {status === 'loading' ? 'Joining...' : 'Subscribe'}
-        </Button>
+      <form
+        onSubmit={handleSubmit}
+        className={compact ? 'flex gap-3' : 'mt-4 flex flex-col gap-3 sm:flex-row'}
+      >
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onFocus={() => {
+              if (compact && turnstileEnabled) {
+                setShowTurnstile(true);
+              }
+            }}
+            placeholder="Enter your email"
+            required
+            className={`flex-1 border border-white/10 bg-bg-surface text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none ${
+              largeSize ? 'rounded-full px-6 py-3.5 text-lg md:text-xl' : 'rounded-full px-4 py-2 text-sm'
+            }`}
+          />
+          <Button
+            type="submit"
+            disabled={status === 'loading'}
+            className={`${compact ? '' : 'sm:self-start'} ${largeSize ? 'px-7 py-3.5 text-lg md:text-xl' : ''}`}
+          >
+            {status === 'loading' ? 'Joining...' : submitLabel}
+          </Button>
       </form>
       {showConsultationOption && !compact && (
         <label className="mt-3 flex items-start gap-2 text-xs text-text-muted">
