@@ -1,125 +1,95 @@
 'use client';
 
 import Link from 'next/link';
-import { ProofPoints } from '@/components/proof-points';
 import { NewsletterSignup } from '@/components/newsletter-signup';
-
-const tools = [
-  {
-    title: 'Payout Planner',
-    description: 'Build a card and bank bonus schedule that fits your spending and timeline.',
-    href: '/tools/card-finder',
-    cta: 'Open planner'
-  },
-  {
-    title: 'Offer vs Offer',
-    description: 'Compare offers and track real net value after fees, credits, and deadlines.',
-    href: '/tools/card-vs-card',
-    cta: 'Compare offers'
-  },
-  {
-    title: 'Playbooks',
-    description: 'Avoid costly mistakes and track your money with our easy to use templates.',
-    href: '/blog',
-    cta: 'Read playbooks'
-  }
-];
 
 export function AboutContent() {
   return (
-    <div className="container-page pt-12 pb-16 max-w-4xl">
-      {/* Hero */}
-      <p className="text-sm uppercase tracking-[0.2em] text-brand-gold">About</p>
-      <h1 className="mt-3 font-heading text-4xl text-text-primary md:text-5xl">
-        Make the Banks Work for You.
-      </h1>
-      <p className="mt-5 max-w-3xl text-lg leading-8 text-text-secondary">
-        The Stack helps you make banks and card issuers work for you. We have spent years helping
-        friends and family navigate rewards, fees, and fine print with practical, proven
-        strategies. Now we&apos;re sharing what we&apos;ve learned in one place for anyone to use,
-        free.
-      </p>
-      <div className="mt-8 flex flex-wrap gap-3">
-        <Link
-          href="/tools/card-finder"
-          className="inline-flex items-center justify-center rounded-full bg-brand-teal px-5 py-2 text-sm font-semibold text-black transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-        >
-          Build My Bonus Plan
-        </Link>
-        <Link
-          href="/blog"
-          className="inline-flex items-center justify-center rounded-full border border-white/15 bg-bg-surface px-5 py-2 text-sm font-semibold text-text-primary transition hover:border-white/30 hover:bg-bg-elevated focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-        >
-          Read the Playbooks
-        </Link>
-      </div>
+    <div className="container-page pt-12 pb-16 max-w-5xl">
+      <section className="mx-auto max-w-5xl text-center">
+        <p className="text-sm uppercase tracking-[0.2em] text-brand-gold">About</p>
 
-      {/* Proof points */}
-      <ProofPoints className="mt-16" />
+        <h1 className="mx-auto mt-3 max-w-[14ch] text-balance font-heading text-5xl leading-[0.94] text-text-primary md:max-w-[30ch] md:text-6xl">
+          Why We Built The Stack
+        </h1>
 
-      {/* Why / Who — side by side cards */}
-      <section className="mt-16 grid gap-6 md:grid-cols-2">
-        <article className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]">
-          <h2 className="text-xl font-semibold text-text-primary">Why We Exist</h2>
-          <p className="mt-3 text-base leading-7 text-text-secondary">
-            Big banks and credit card companies are built to profit from confusion, bad habits, and
-            fine print. The Stack exists to flip that dynamic with practical tools, clear math, and
-            guidance that helps you avoid the traps and come out ahead.
+        <div className="mx-auto mt-8 max-w-2xl space-y-5 text-left text-xl leading-9 text-text-primary/80">
+          <p>
+            We started The Stack after each making more than $5,000 in a single year from cards
+            and bank accounts we were already using. Friends kept asking how we were finding the
+            best offers, timing applications, and tracking the fine print without making expensive
+            mistakes.
           </p>
-        </article>
-        <article className="group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]">
-          <h2 className="text-xl font-semibold text-text-primary">Who Built This</h2>
-          <p className="mt-3 text-base leading-7 text-text-secondary">
-            The Stack was built by finance professionals who got tired of watching banks and credit
-            card companies profit from confusion. We created The Stack to give you better
-            information, clearer math, and practical tools that make it easier to make money.
+          <p>
+            Most of the advice online felt built for clicks, not real decisions, so we built the
+            resource we wanted ourselves: clear math, honest comparisons, and practical tools that
+            help you know what an offer is actually worth before you apply. That&apos;s what The
+            Stack is for.
           </p>
-        </article>
-      </section>
-
-      {/* What We Do — tool cards matching homepage pattern */}
-      <section className="mt-16">
-        <h2 className="font-heading text-2xl text-text-primary md:text-3xl">
-          The Stack gives you a plan, shows you the math, and helps you execute.
-        </h2>
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {tools.map((tool) => (
-            <Link
-              key={tool.title}
-              href={tool.href}
-              className="group flex h-full flex-col rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
-            >
-              <h3 className="text-lg font-semibold text-text-primary transition group-hover:text-brand-teal">
-                {tool.title}
-              </h3>
-              <p className="mt-2 text-base leading-7 text-text-primary/70">{tool.description}</p>
-              <div className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-brand-teal">
-                <span>{tool.cta}</span>
-                <svg
-                  aria-hidden="true"
-                  viewBox="0 0 16 16"
-                  className="h-4 w-4 transition group-hover:translate-x-1"
-                  fill="none"
-                >
-                  <path
-                    d="M3.5 8h8m0 0-3-3m3 3-3 3"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </Link>
-          ))}
         </div>
       </section>
 
-      {/* Newsletter CTA */}
-      <section className="mt-16 rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center md:p-10">
-        <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
-          Get Weekly Payout Plays
+      <section className="mx-auto mt-16 max-w-4xl">
+        <h2 className="text-center font-heading text-2xl text-text-primary md:text-3xl">
+          What we built
         </h2>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          <article className="min-h-[210px] rounded-2xl border border-white/10 bg-bg-surface p-7 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)] md:p-8">
+            <h3 className="text-xl font-semibold text-text-primary">Spreadsheet trackers</h3>
+            <p className="mt-3 text-base leading-7 text-text-primary/70">
+              Track your bonuses and spending in one place
+            </p>
+          </article>
+          <article className="min-h-[210px] rounded-2xl border border-white/10 bg-bg-surface p-7 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)] md:p-8">
+            <h3 className="text-xl font-semibold text-text-primary">Scheduling tools</h3>
+            <p className="mt-3 text-base leading-7 text-text-primary/70">
+              Know exactly when to apply and hit your spend
+            </p>
+          </article>
+          <article className="min-h-[210px] rounded-2xl border border-white/10 bg-bg-surface p-7 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)] md:p-8">
+            <h3 className="text-xl font-semibold text-text-primary">Offer comparisons</h3>
+            <p className="mt-3 text-base leading-7 text-text-primary/70">
+              See the real net value of any card before you commit
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section className="mx-auto mt-16 max-w-4xl rounded-2xl border border-white/10 bg-bg-surface/70 px-6 py-6 md:px-8">
+        <h2 className="text-center font-heading text-2xl text-text-primary">
+          Why trust The Stack
+        </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-center text-base leading-7 text-text-secondary md:text-lg">
+          We built The Stack because most rewards advice is optimized for clicks, not decisions.
+          We do not sell sponsored rankings, and we aim to show the real tradeoffs behind every
+          offer.
+        </p>
+        <ul className="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm font-semibold text-text-primary">
+          <li className="rounded-full border border-white/10 bg-bg px-4 py-2">
+            No sponsored rankings
+          </li>
+          <li className="rounded-full border border-white/10 bg-bg px-4 py-2">
+            Clear affiliate disclosure
+          </li>
+          <li className="rounded-full border border-white/10 bg-bg px-4 py-2">No paywalls, ever</li>
+        </ul>
+        <div className="mt-8 text-center">
+          <p className="text-sm text-text-secondary md:text-base">
+            New here? Start with a personalized plan.
+          </p>
+          <div className="mt-4">
+            <Link
+              href="/tools/card-finder"
+              className="inline-flex items-center justify-center rounded-full bg-brand-teal px-6 py-3 text-sm font-semibold text-black transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+            >
+              Start Your Personal Plan
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto mt-14 max-w-4xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center md:p-10">
+        <h2 className="font-heading text-3xl text-text-primary md:text-4xl">Get Weekly Payout Plays</h2>
         <p className="mx-auto mt-3 max-w-none text-lg text-text-secondary md:text-xl lg:whitespace-nowrap">
           Bonus offers, finance how-tos, and free tools. Delivered weekly. No Slop.
         </p>
@@ -128,18 +98,13 @@ export function AboutContent() {
         </div>
       </section>
 
-      {/* Feedback — compact */}
-      <section className="mt-16 text-center">
+      <section className="mx-auto mt-16 max-w-4xl text-center">
         <p className="text-sm text-text-secondary">
-          Found an error, have feedback on our rankings, or want us to review a strategy? Email{' '}
-          <a
-            href="mailto:team@thestackhq.com"
-            className="font-semibold text-brand-teal transition hover:underline"
-          >
+          Have questions or want to reach out? Email us at{' '}
+          <a href="mailto:team@thestackhq.com" className="font-semibold text-brand-teal transition hover:underline">
             team@thestackhq.com
           </a>
-          . This site is for educational purposes only and does not provide personalized financial
-          advice.
+          .
         </p>
       </section>
     </div>
