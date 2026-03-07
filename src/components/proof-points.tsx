@@ -1,10 +1,10 @@
 import { CountUp } from '@/components/ui/count-up';
 
 const proofPoints = [
-  { end: 200, prefix: '', suffix: '+', label: 'Cards tracked' },
-  { end: 100, prefix: '', suffix: '+', label: 'Banks monitored' },
+  { end: 100, prefix: '$', suffix: 'k+', label: 'In bonuses earned' },
+  { end: 200, prefix: '', suffix: '+', label: 'Offers tracked' },
   { end: 100, prefix: '', suffix: '%', label: 'Free to use' },
-  { end: 10, prefix: '', suffix: '+', label: 'Years of experience' }
+  { end: 1, prefix: '', suffix: '', label: 'Plan for you' }
 ];
 
 type ProofPointsProps = {
@@ -20,15 +20,15 @@ export function ProofPoints({ className = '', variant = 'default' }: ProofPoints
           {proofPoints.map((stat) => (
             <div
               key={stat.label}
-              className="text-center lg:flex-1 lg:text-left"
+              className="text-center lg:flex-1"
             >
               <CountUp
                 end={stat.end}
                 prefix={stat.prefix}
                 suffix={stat.suffix}
-                className="font-heading text-3xl text-text-primary md:text-4xl"
+                className="font-heading text-5xl text-text-primary md:text-7xl"
               />
-              <p className="mt-1 text-[11px] uppercase tracking-[0.22em] text-text-muted">
+              <p className="mt-1 text-lg uppercase tracking-[0.22em] text-text-muted">
                 {stat.label}
               </p>
             </div>
@@ -47,7 +47,7 @@ export function ProofPoints({ className = '', variant = 'default' }: ProofPoints
               end={stat.end}
               prefix={stat.prefix}
               suffix={stat.suffix}
-              className="font-heading text-5xl text-text-primary md:text-6xl"
+              className="font-heading text-6xl text-text-primary md:text-7xl"
             />
             <p className="mt-2 text-sm text-text-secondary">{stat.label}</p>
           </div>

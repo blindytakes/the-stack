@@ -13,25 +13,28 @@ const tools = [
   {
     tag: 'Plan',
     title: 'Payout Planner',
-    description: 'A five-step flow that maps your next best offers based on your profile.',
+    description: 'Your personalized roadmap. We map out the best offers for your profile and tell you exactly when to apply and what to do next.',
     href: '/tools/card-finder',
     color: 'text-brand-teal',
+    borderColor: 'border-brand-teal',
     soon: false
   },
   {
     tag: 'Recover',
     title: 'Hidden Benefits',
-    description: 'Find credits and protections you are not using, with yearly value estimates.',
+    description: 'Stop leaving money on the table. Find card credits and protections you are not using, with a dollar estimate of what you are missing.',
     href: '/tools/hidden-benefits',
     color: 'text-brand-gold',
+    borderColor: 'border-brand-gold',
     soon: false
   },
   {
     tag: 'Compare',
     title: 'Offer vs Offer',
-    description: 'Head-to-head net-value breakdowns on bonuses, fees, rewards, and benefits.',
+    description: 'Side-by-side card comparisons that cut through the hype. Real net value after bonuses, fees, and rewards so you know which one actually wins.',
     href: '/tools/card-vs-card',
     color: 'text-brand-coral',
+    borderColor: 'border-brand-coral',
     soon: false
   }
 ];
@@ -79,8 +82,9 @@ export default function HomePage() {
             Make the Banks Work for You.
           </h1>
           <p className="max-w-[45ch] text-xl font-medium leading-relaxed text-text-secondary md:text-2xl">
-            Banks and card issuers are built to profit off you. The Stack helps you flip that
-            dynamic with better offers, clear math, and practical next moves.
+            Banks and card issuers are built to profit off you. The Stack flips that, for free.
+            We find you the best offers, track your payouts, and give you a personalized plan so
+            you always know your next move.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
@@ -192,10 +196,9 @@ export default function HomePage() {
           <RevealOnScroll key={tool.title} className="h-full" delayMs={index * 80}>
             <Link
               href={tool.href}
-              className="group flex h-full flex-col rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
+              className={`group flex h-full flex-col rounded-2xl border ${tool.borderColor} bg-bg-surface p-6 transition hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]`}
             >
-              <p className={`text-xs uppercase tracking-[0.25em] ${tool.color}`}>{tool.tag}</p>
-              <h3 className="mt-4 text-xl font-semibold">{tool.title}</h3>
+              <h3 className="text-xl font-semibold">{tool.title}</h3>
               <p className="mt-2 text-sm text-text-secondary">{tool.description}</p>
               {tool.soon && (
                 <span className="mt-3 inline-block rounded-full border border-white/10 px-3 py-1 text-xs text-text-muted">
@@ -207,15 +210,54 @@ export default function HomePage() {
         ))}
       </section>
 
+      <section className="mt-20">
+        <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">How it works</p>
+        <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">Three steps to your first bonus.</h2>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {[
+            { step: '01', title: 'Answer a few questions', description: 'Tell us about your spending habits and goals. Takes about 2 minutes.' },
+            { step: '02', title: 'Get your personalized plan', description: 'We build a step-by-step roadmap with the best offers in the right order for your profile.' },
+            { step: '03', title: 'Follow the schedule and earn', description: 'Know exactly what to apply for and when. Track your progress and collect your bonuses.' },
+          ].map((item) => (
+            <div key={item.step} className="rounded-2xl border border-white/10 bg-bg-surface p-6">
+              <p className="font-heading text-4xl text-brand-teal">{item.step}</p>
+              <h3 className="mt-3 text-lg font-semibold text-text-primary">{item.title}</h3>
+              <p className="mt-2 text-sm text-text-secondary">{item.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="mt-20">
+        <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">Real results</p>
+        <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">What people are saying.</h2>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {[
+            { quote: "I have zero financial background and still made over $3,000 in my first year just by following the plan The Stack built for me. I just did what it told me to do.", name: "Jamie R.", detail: "Earned $3,200 in year one" },
+            { quote: "I never thought about credit card strategy before this. The Stack taught me things I wish I had known years ago. It's like having a financial advisor who actually explains things.", name: "Marcus T.", detail: "First bonus unlocked in 60 days" },
+            { quote: "Every other site just gives you a list of cards. The Stack gave me a schedule. I knew exactly what to apply for and when. Two bonuses in, already up $1,500.", name: "Priya S.", detail: "$1,500 earned in 4 months" },
+          ].map((t) => (
+            <div key={t.name} className="flex flex-col justify-between rounded-2xl border border-white/10 bg-bg-surface p-6">
+              <p className="text-sm leading-relaxed text-text-secondary">
+                &ldquo;{t.quote}&rdquo;
+              </p>
+              <div className="mt-6">
+                <p className="font-semibold text-text-primary">{t.name}</p>
+                <p className="mt-0.5 text-xs uppercase tracking-[0.2em] text-brand-teal">{t.detail}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="mt-16">
         <div className="rounded-3xl border border-white/10 bg-bg-elevated p-8 md:p-10">
           <NewsletterSignup
             source="homepage"
-            eyebrow="Free Weekly Newsletter"
-            heading="Join Strategic Spenders."
-            description="One useful email each week with the best offers worth your time, mistakes to avoid, and one clear next move."
+            heading="Get Your Free Bonus Plan."
+            description="Drop your email and we'll send you a personalized starting point, plus weekly updates on the best offers worth your time."
             finePrint="Free. No spam. Unsubscribe anytime."
-            submitLabel="Join Free"
+            submitLabel="Get My Plan"
           />
         </div>
       </section>
