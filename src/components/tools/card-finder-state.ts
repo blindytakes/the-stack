@@ -2,14 +2,23 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { quizRequestSchema, type QuizRequest, type QuizResult } from '@/lib/quiz-engine';
-import type { BankingBonusListItem } from '@/lib/banking-bonuses';
-import { buildPlanRecommendationsFromQuiz } from '@/lib/planner-recommendations';
+import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
 import { buildPlanResultsPayload, savePlanResults } from '@/lib/plan-results-storage';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import { cardFinderSteps } from '@/components/tools/card-finder-config';
+import type { PlanScheduleItem } from '@/lib/plan-engine';
+import type {
+  PlannerExcludedOffer,
+  PlannerRecommendation
+} from '@/lib/planner-recommendations';
 
 type QuizAnswers = Partial<QuizRequest>;
+type PlanApiResponse = {
+  generatedAt: number;
+  recommendations: PlannerRecommendation[];
+  exclusions: PlannerExcludedOffer[];
+  schedule: PlanScheduleItem[];
+};
 
 export function useCardFinderState() {
   const router = useRouter();
@@ -57,31 +66,23 @@ export function useCardFinderState() {
     }
 
     try {
-      const res = await fetch('/api/quiz', {
+      const res = await fetch('/api/plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(parsedAnswers.data)
+        body: JSON.stringify({
+          answers: parsedAnswers.data
+        })
       });
-      if (!res.ok) throw new Error('Failed to fetch results');
+      if (!res.ok) throw new Error('Failed to build plan');
 
-      const data = (await res.json()) as { results: QuizResult[] };
-      const bankingRes = await fetch('/api/banking?limit=100&offset=0');
-      if (!bankingRes.ok) throw new Error('Failed to fetch banking offers');
-      const bankingData = (await bankingRes.json()) as { results: BankingBonusListItem[] };
-      const planBundle = buildPlanRecommendationsFromQuiz(
-        data.results,
-        bankingData.results,
-        parsedAnswers.data,
-        {
-          maxCards: 3,
-          maxBanking: 3
-        }
-      );
+      const data = (await res.json()) as PlanApiResponse;
       savePlanResults(
         buildPlanResultsPayload({
+          savedAt: data.generatedAt,
           answers: parsedAnswers.data,
-          recommendations: planBundle.recommendations,
-          exclusions: planBundle.exclusions
+          recommendations: data.recommendations,
+          exclusions: data.exclusions,
+          schedule: data.schedule
         })
       );
 

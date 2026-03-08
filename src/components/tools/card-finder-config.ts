@@ -29,6 +29,16 @@ export const cardFinderSteps: FinderStep[] = [
     ]
   },
   {
+    id: 'monthlySpend',
+    title: 'How much normal monthly spend can you put on a new card?',
+    options: [
+      { label: 'Under $1,000', value: 'lt_1000' },
+      { label: '$1,000 to $2,500', value: 'from_1000_to_2500' },
+      { label: '$2,500 to $5,000', value: 'from_2500_to_5000' },
+      { label: '$5,000+', value: 'at_least_5000' }
+    ]
+  },
+  {
     id: 'fee',
     title: 'Annual fee preference',
     options: [
@@ -62,6 +72,15 @@ export const cardFinderSteps: FinderStep[] = [
       { label: 'Under $2,000', value: 'lt_2000' },
       { label: '$2,000 to $10,000', value: 'from_2000_to_10000' },
       { label: '$10,000+', value: 'at_least_10000' }
+    ]
+  },
+  {
+    id: 'pace',
+    title: 'How aggressive should your 12-month plan be?',
+    options: [
+      { label: 'Conservative', value: 'conservative' },
+      { label: 'Balanced', value: 'balanced' },
+      { label: 'Aggressive', value: 'aggressive' }
     ]
   },
   {

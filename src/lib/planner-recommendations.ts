@@ -5,6 +5,12 @@ import {
   type BankingBonusListItem,
   type BankingBonusRecord
 } from '@/lib/banking-bonuses';
+import {
+  buildPlanSchedule,
+  type PlanScheduleIssue,
+  type PlanScheduleItem,
+  type PlannerRecommendationScheduleConstraints
+} from '@/lib/plan-engine';
 
 export type PlannerRecommendationLane = 'cards' | 'banking';
 export type PlannerRecommendationKind = 'card_bonus' | 'bank_bonus';
@@ -38,11 +44,14 @@ export type PlannerRecommendation = {
   detailPath: string;
   timelineDays?: number;
   keyRequirements: string[];
+  scheduleConstraints: PlannerRecommendationScheduleConstraints;
 };
 
 export type PlannerRecommendationBundle = {
   recommendations: PlannerRecommendation[];
   exclusions: PlannerExcludedOffer[];
+  schedule: PlanScheduleItem[];
+  scheduleIssues: PlanScheduleIssue[];
 };
 
 export type CardPlannerInput = Pick<CardRecord, 'slug' | 'name' | 'issuer' | 'annualFee' | 'creditTierMin'> & {
@@ -210,7 +219,12 @@ export function toPlannerRecommendationFromCard(input: CardPlannerInput): Planne
       `Spend $${input.spendRequired.toLocaleString()} within ${spendMonths} months`,
       `Typical approval profile: ${creditTierLabel[input.creditTierMin]} credit or higher`,
       'Pay statements in full to avoid interest drag'
-    ]
+    ],
+    scheduleConstraints: {
+      activeDays: input.spendPeriodDays,
+      payoutLagDays: 30,
+      requiredSpend: input.spendRequired
+    }
   };
 }
 
@@ -230,7 +244,13 @@ export function toPlannerRecommendationFromBankingBonus(
     effort: bankEffortFromOffer(input),
     detailPath: `/banking/${input.slug}`,
     timelineDays: input.holdingPeriodDays,
-    keyRequirements: getBankingOfferRequirements(input)
+    keyRequirements: getBankingOfferRequirements(input),
+    scheduleConstraints: {
+      activeDays: input.holdingPeriodDays ?? 90,
+      payoutLagDays: 21,
+      requiredDeposit: input.minimumOpeningDeposit,
+      requiresDirectDeposit: input.directDeposit.required
+    }
   };
 }
 
@@ -252,7 +272,7 @@ export function buildPlanRecommendationsFromQuiz(
   cardResults: QuizResult[],
   bankingBonuses: BankingBonusListItem[],
   input: QuizRequest,
-  options: { maxCards?: number; maxBanking?: number } = {}
+  options: { maxCards?: number; maxBanking?: number; startAt?: number } = {}
 ): PlannerRecommendationBundle {
   const maxCards = options.maxCards ?? 3;
   const maxBanking = options.maxBanking ?? 3;
@@ -311,11 +331,26 @@ export function buildPlanRecommendationsFromQuiz(
     });
   }
 
-  const selectedCards = rankPlannerRecommendationsByPriority(eligibleCards).slice(0, maxCards);
-  const selectedBanking = rankPlannerRecommendationsByPriority(eligibleBanking).slice(0, maxBanking);
+  const scheduleResult = buildPlanSchedule(
+    [...eligibleCards, ...eligibleBanking],
+    input,
+    {
+      startAt: options.startAt,
+      maxCards,
+      maxBanking
+    }
+  );
+  const recommendationsById = new Map(
+    [...eligibleCards, ...eligibleBanking].map((recommendation) => [recommendation.id, recommendation])
+  );
+  const scheduledRecommendations = scheduleResult.scheduled
+    .map((item) => recommendationsById.get(item.recommendationId))
+    .filter((recommendation): recommendation is PlannerRecommendation => Boolean(recommendation));
 
   return {
-    recommendations: [...selectedCards, ...selectedBanking],
-    exclusions
+    recommendations: scheduledRecommendations,
+    exclusions,
+    schedule: scheduleResult.scheduled,
+    scheduleIssues: scheduleResult.issues
   };
 }

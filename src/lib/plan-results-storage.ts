@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
+import type { PlanScheduleItem } from '@/lib/plan-engine';
 import type {
   PlannerExcludedOffer,
   PlannerExclusionReason,
@@ -22,7 +23,14 @@ const plannerRecommendationSchema = z.object({
   effort: z.enum(['low', 'medium', 'high']),
   detailPath: z.string().min(1),
   timelineDays: z.number().int().positive().optional(),
-  keyRequirements: z.array(z.string()).min(1)
+  keyRequirements: z.array(z.string()).min(1),
+  scheduleConstraints: z.object({
+    activeDays: z.number().int().positive(),
+    payoutLagDays: z.number().int().min(0),
+    requiredSpend: z.number().positive().optional(),
+    requiredDeposit: z.number().nonnegative().optional(),
+    requiresDirectDeposit: z.boolean().optional()
+  })
 });
 
 const plannerExclusionReasonSchema: z.ZodType<PlannerExclusionReason> = z.enum([
@@ -42,12 +50,21 @@ const plannerExcludedOfferSchema: z.ZodType<PlannerExcludedOffer> = z.object({
   reasons: z.array(plannerExclusionReasonSchema).min(1)
 });
 
+const planScheduleItemSchema: z.ZodType<PlanScheduleItem> = z.object({
+  recommendationId: z.string().min(1),
+  lane: z.enum(['cards', 'banking']),
+  startAt: z.number().int().positive(),
+  completeAt: z.number().int().positive(),
+  payoutAt: z.number().int().positive()
+});
+
 const planResultsStorageSchema = z.object({
   version: z.literal(PLAN_RESULTS_VERSION),
   savedAt: z.number().int().positive(),
   answers: quizRequestSchema,
   recommendations: z.array(plannerRecommendationSchema),
-  exclusions: z.array(plannerExcludedOfferSchema).default([])
+  exclusions: z.array(plannerExcludedOfferSchema).default([]),
+  schedule: z.array(planScheduleItemSchema).default([])
 });
 
 export type PlanResultsStoragePayload = z.infer<typeof planResultsStorageSchema>;
@@ -62,13 +79,16 @@ export function buildPlanResultsPayload(input: {
   answers: QuizRequest;
   recommendations: PlannerRecommendation[];
   exclusions: PlannerExcludedOffer[];
+  schedule?: PlanScheduleItem[];
+  savedAt?: number;
 }): PlanResultsStoragePayload {
   return {
     version: PLAN_RESULTS_VERSION,
-    savedAt: Date.now(),
+    savedAt: input.savedAt ?? Date.now(),
     answers: input.answers,
     recommendations: input.recommendations,
-    exclusions: input.exclusions
+    exclusions: input.exclusions,
+    schedule: input.schedule ?? []
   };
 }
 

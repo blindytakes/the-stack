@@ -11,12 +11,21 @@ import {
   type FinderQuestionStep
 } from '@/components/tools/card-finder-sections';
 import { buildPlanResultsPayload, savePlanResults } from '@/lib/plan-results-storage';
-import { buildPlanRecommendationsFromQuiz } from '@/lib/planner-recommendations';
-import { quizRequestSchema, type QuizResult } from '@/lib/quiz-engine';
+import { quizRequestSchema } from '@/lib/quiz-engine';
+import type { PlanScheduleItem } from '@/lib/plan-engine';
+import type {
+  PlannerExcludedOffer,
+  PlannerRecommendation
+} from '@/lib/planner-recommendations';
 
-type CardPlanPace = 'conservative' | 'balanced' | 'aggressive';
-type CardOnlyQuestionId = 'goal' | 'spend' | 'fee' | 'credit' | 'pace';
+type CardOnlyQuestionId = 'goal' | 'spend' | 'monthlySpend' | 'fee' | 'credit' | 'pace';
 type CardOnlyAnswers = Partial<Record<CardOnlyQuestionId, string>>;
+type PlanApiResponse = {
+  generatedAt: number;
+  recommendations: PlannerRecommendation[];
+  exclusions: PlannerExcludedOffer[];
+  schedule: PlanScheduleItem[];
+};
 
 type CardOnlyStep = FinderQuestionStep & { id: CardOnlyQuestionId };
 
@@ -38,6 +47,16 @@ const cardOnlySteps: CardOnlyStep[] = [
       { label: 'Dining', value: 'dining' },
       { label: 'Travel', value: 'travel' },
       { label: 'General spending', value: 'all' }
+    ]
+  },
+  {
+    id: 'monthlySpend',
+    title: 'How much normal monthly spend can you put on a new card?',
+    options: [
+      { label: 'Under $1,000', value: 'lt_1000' },
+      { label: '$1,000 to $2,500', value: 'from_1000_to_2500' },
+      { label: '$2,500 to $5,000', value: 'from_2500_to_5000' },
+      { label: '$5,000+', value: 'at_least_5000' }
     ]
   },
   {
@@ -69,17 +88,6 @@ const cardOnlySteps: CardOnlyStep[] = [
     ]
   }
 ];
-
-const paceToMaxCards: Record<CardPlanPace, number> = {
-  conservative: 2,
-  balanced: 3,
-  aggressive: 4
-};
-
-function parsePace(value: string | undefined): CardPlanPace {
-  if (value === 'conservative' || value === 'aggressive') return value;
-  return 'balanced';
-}
 
 export function CardsOnlyPlanPath() {
   const router = useRouter();
@@ -120,11 +128,13 @@ export function CardsOnlyPlanPath() {
     const parsedAnswers = quizRequestSchema.safeParse({
       goal: answers.goal,
       spend: answers.spend,
+      monthlySpend: answers.monthlySpend,
       fee: answers.fee,
       credit: answers.credit,
       directDeposit: 'no',
       openingCash: 'lt_2000',
-      state: 'OT'
+      state: 'OT',
+      pace: answers.pace
     });
 
     if (!parsedAnswers.success) {
@@ -134,27 +144,27 @@ export function CardsOnlyPlanPath() {
     }
 
     try {
-      const quizRes = await fetch('/api/quiz', {
+      const planRes = await fetch('/api/plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(parsedAnswers.data)
+        body: JSON.stringify({
+          answers: parsedAnswers.data,
+          options: {
+            maxBanking: 0
+          }
+        })
       });
-      if (!quizRes.ok) throw new Error('Failed to score card plan quiz');
+      if (!planRes.ok) throw new Error('Failed to build card plan');
 
-      const quizData = (await quizRes.json()) as { results: QuizResult[] };
-      const planPace = parsePace(answers.pace);
-      const planBundle = buildPlanRecommendationsFromQuiz(
-        quizData.results,
-        [],
-        parsedAnswers.data,
-        { maxCards: paceToMaxCards[planPace], maxBanking: 0 }
-      );
+      const data = (await planRes.json()) as PlanApiResponse;
 
       savePlanResults(
         buildPlanResultsPayload({
+          savedAt: data.generatedAt,
           answers: parsedAnswers.data,
-          recommendations: planBundle.recommendations,
-          exclusions: planBundle.exclusions
+          recommendations: data.recommendations,
+          exclusions: data.exclusions,
+          schedule: data.schedule
         })
       );
 
@@ -178,7 +188,7 @@ export function CardsOnlyPlanPath() {
           <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">Card-Only Path</p>
           <h2 className="mt-2 font-heading text-3xl text-text-primary">Build My 12-Month Card Plan</h2>
           <p className="mt-2 max-w-2xl text-sm text-text-secondary">
-            Answer five quick questions and get a focused roadmap based only on credit card bonuses.
+            Answer six quick questions and get a focused roadmap based only on credit card bonuses.
           </p>
         </div>
         <Link href="#cards-directory" className="text-sm text-text-secondary transition hover:text-text-primary">

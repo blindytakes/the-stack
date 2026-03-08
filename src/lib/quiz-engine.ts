@@ -21,7 +21,11 @@ export const quizRequestSchema = z.object({
     .length(2)
     .transform((value) => value.toUpperCase())
     .default('NY'),
-  openingCash: z.enum(['lt_2000', 'from_2000_to_10000', 'at_least_10000']).default('from_2000_to_10000')
+  openingCash: z.enum(['lt_2000', 'from_2000_to_10000', 'at_least_10000']).default('from_2000_to_10000'),
+  monthlySpend: z
+    .enum(['lt_1000', 'from_1000_to_2500', 'from_2500_to_5000', 'at_least_5000'])
+    .default('from_2500_to_5000'),
+  pace: z.enum(['conservative', 'balanced', 'aggressive']).default('balanced')
 });
 
 export type QuizRequest = z.infer<typeof quizRequestSchema>;

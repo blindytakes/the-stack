@@ -91,7 +91,29 @@ function scheduleLane(
   return entries;
 }
 
-function buildTimelineEntries(recommendations: PlannerRecommendation[], planStart: Date): TimelineEntry[] {
+function buildScheduledTimelineEntries(
+  recommendations: PlannerRecommendation[],
+  schedule: PlanResultsStoragePayload['schedule']
+): TimelineEntry[] {
+  const recommendationsById = new Map(recommendations.map((item) => [item.id, item]));
+  return schedule
+    .map((item) => {
+      const recommendation = recommendationsById.get(item.recommendationId);
+      if (!recommendation) return null;
+      return {
+        id: recommendation.id,
+        lane: recommendation.lane,
+        title: recommendation.title,
+        startDate: new Date(item.startAt),
+        completeDate: new Date(item.completeAt),
+        payoutDate: new Date(item.payoutAt)
+      };
+    })
+    .filter((entry): entry is TimelineEntry => Boolean(entry))
+    .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
+}
+
+function buildTimelineEntriesFallback(recommendations: PlannerRecommendation[], planStart: Date): TimelineEntry[] {
   const cards = recommendations.filter((item) => item.lane === 'cards');
   const banking = recommendations.filter((item) => item.lane === 'banking');
   return [...scheduleLane(cards, planStart, 'cards'), ...scheduleLane(banking, planStart, 'banking')].sort(
@@ -244,39 +266,46 @@ function PlanSummary({
     return Number.isNaN(d.getTime()) ? new Date() : d;
   }, [payload.savedAt]);
   const labels = useMemo(() => monthLabels(planStart), [planStart]);
-  const prioritized = useMemo(
+  const prioritizedRecommendations = useMemo(
     () => rankPlannerRecommendationsByPriority(payload.recommendations),
     [payload.recommendations]
   );
   const scopedRecommendations = useMemo(
-    () => (cardsOnlyMode ? prioritized.filter((item) => item.lane === 'cards') : prioritized),
-    [cardsOnlyMode, prioritized]
+    () =>
+      cardsOnlyMode
+        ? prioritizedRecommendations.filter((item) => item.lane === 'cards')
+        : prioritizedRecommendations,
+    [cardsOnlyMode, prioritizedRecommendations]
   );
-  const cardLane = scopedRecommendations.filter((item) => item.lane === 'cards');
-  const bankingLane = scopedRecommendations.filter((item) => item.lane === 'banking');
   const cardExclusions = payload.exclusions.filter((item) => item.lane === 'cards');
   const bankingExclusions = cardsOnlyMode
     ? []
     : payload.exclusions.filter((item) => item.lane === 'banking');
-  const totalValue = scopedRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
+  const timelineEntries = useMemo(
+    () =>
+      payload.schedule.length > 0
+        ? buildScheduledTimelineEntries(scopedRecommendations, payload.schedule)
+        : buildTimelineEntriesFallback(scopedRecommendations, planStart),
+    [payload.schedule, planStart, scopedRecommendations]
+  );
+  const orderedRecommendations = useMemo(() => {
+    if (timelineEntries.length === 0) return scopedRecommendations;
+    const recommendationsById = new Map(scopedRecommendations.map((item) => [item.id, item]));
+    const scheduled = timelineEntries
+      .map((entry) => recommendationsById.get(entry.id))
+      .filter((item): item is PlannerRecommendation => Boolean(item));
+    const scheduledIds = new Set(scheduled.map((item) => item.id));
+    const unscheduled = scopedRecommendations.filter((item) => !scheduledIds.has(item.id));
+    return [...scheduled, ...unscheduled];
+  }, [scopedRecommendations, timelineEntries]);
+  const cardLane = orderedRecommendations.filter((item) => item.lane === 'cards');
+  const bankingLane = orderedRecommendations.filter((item) => item.lane === 'banking');
+  const totalValue = orderedRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
   const cardValue = cardLane.reduce((sum, item) => sum + item.estimatedNetValue, 0);
   const bankingValue = bankingLane.reduce((sum, item) => sum + item.estimatedNetValue, 0);
-  const doNow = cardsOnlyMode
-    ? cardLane.slice(0, 2)
-    : rankPlannerRecommendationsByPriority([
-        ...(cardLane[0] ? [cardLane[0]] : []),
-        ...(bankingLane[0] ? [bankingLane[0]] : [])
-      ]);
-  const doNext = cardsOnlyMode
-    ? cardLane.slice(2)
-    : rankPlannerRecommendationsByPriority([
-        ...cardLane.slice(1),
-        ...bankingLane.slice(1)
-      ]);
-  const timelineEntries = useMemo(
-    () => buildTimelineEntries(scopedRecommendations, planStart),
-    [scopedRecommendations, planStart]
-  );
+  const doNowLimit = 2;
+  const doNow = orderedRecommendations.slice(0, doNowLimit);
+  const doNext = orderedRecommendations.slice(doNowLimit);
 
   return (
     <div>

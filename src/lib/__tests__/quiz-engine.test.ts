@@ -27,6 +27,8 @@ function makeInput(overrides: Partial<QuizRequest> = {}): QuizRequest {
     directDeposit: 'yes',
     state: 'NY',
     openingCash: 'from_2000_to_10000',
+    monthlySpend: 'from_2500_to_5000',
+    pace: 'balanced',
     ...overrides
   };
 }
@@ -113,11 +115,14 @@ describe('quizRequestSchema', () => {
       credit: 'good',
       directDeposit: 'yes',
       state: 'ny',
-      openingCash: 'from_2000_to_10000'
+      openingCash: 'from_2000_to_10000',
+      monthlySpend: 'from_2500_to_5000',
+      pace: 'balanced'
     });
     expect(parsed.success).toBe(true);
     if (parsed.success) {
       expect(parsed.data.state).toBe('NY');
+      expect(parsed.data.monthlySpend).toBe('from_2500_to_5000');
     }
   });
 

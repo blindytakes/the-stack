@@ -16,7 +16,9 @@ const baseInput: QuizRequest = {
   credit: 'good',
   directDeposit: 'yes',
   state: 'NY',
-  openingCash: 'from_2000_to_10000'
+  openingCash: 'from_2000_to_10000',
+  monthlySpend: 'from_2500_to_5000',
+  pace: 'balanced'
 };
 
 describe('toPlannerRecommendationFromCard', () => {
@@ -153,6 +155,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     expect(bundle.recommendations).toHaveLength(2);
     expect(bundle.recommendations.some((item) => item.lane === 'cards')).toBe(true);
     expect(bundle.recommendations.some((item) => item.lane === 'banking')).toBe(true);
+    expect(bundle.schedule).toHaveLength(2);
     expect(bundle.exclusions.some((item) => item.lane === 'banking')).toBe(true);
   });
 

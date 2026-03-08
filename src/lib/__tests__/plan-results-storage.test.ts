@@ -39,7 +39,9 @@ const basePayload = buildPlanResultsPayload({
     credit: 'good',
     directDeposit: 'yes',
     state: 'NY',
-    openingCash: 'from_2000_to_10000'
+    openingCash: 'from_2000_to_10000',
+    monthlySpend: 'from_2500_to_5000',
+    pace: 'balanced'
   },
   recommendations: [
     {
@@ -53,10 +55,24 @@ const basePayload = buildPlanResultsPayload({
       effort: 'medium',
       detailPath: '/cards/test',
       timelineDays: 90,
-      keyRequirements: ['Spend $4,000 in 3 months']
+      keyRequirements: ['Spend $4,000 in 3 months'],
+      scheduleConstraints: {
+        activeDays: 90,
+        payoutLagDays: 30,
+        requiredSpend: 4000
+      }
     }
   ],
-  exclusions: []
+  exclusions: [],
+  schedule: [
+    {
+      recommendationId: 'card:test',
+      lane: 'cards',
+      startAt: Date.now(),
+      completeAt: Date.now() + 1000,
+      payoutAt: Date.now() + 2000
+    }
+  ]
 });
 
 describe('plan-results-storage', () => {
