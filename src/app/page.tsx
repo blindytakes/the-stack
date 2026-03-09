@@ -2,42 +2,72 @@ import Link from 'next/link';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { ProofPoints } from '@/components/proof-points';
-import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
 const SITE_DESCRIPTION =
-  'Learn how to make the most of your money with practical card and banking strategies.';
+  'Build a personalized 12-month card and bank bonus plan with practical next-step guidance.';
 
-const tools = [
+const planIncludes = [
   {
-    tag: 'Plan',
-    title: 'Payout Planner',
-    description: 'Your personalized roadmap. We map out the best offers for your profile and tell you exactly when to apply and what to do next.',
-    href: '/tools/card-finder',
-    color: 'text-brand-teal',
-    borderColor: 'border-brand-teal',
-    soon: false
+    title: 'Ranked next moves',
+    description:
+      'See the strongest card and bank offers for your profile in the order they make the most sense.'
   },
   {
-    tag: 'Recover',
-    title: 'Hidden Benefits',
-    description: 'Stop leaving money on the table. Find card credits and protections you are not using, with a dollar estimate of what you are missing.',
-    href: '/tools/hidden-benefits',
-    color: 'text-brand-gold',
-    borderColor: 'border-brand-gold',
-    soon: false
+    title: 'Estimated 12-month value',
+    description:
+      'Get a grounded net-value estimate so you can tell the difference between hype and actual upside.'
   },
   {
-    tag: 'Compare',
-    title: 'Offer vs Offer',
-    description: 'Side-by-side card comparisons that cut through the hype. Real net value after bonuses, fees, and rewards so you know which one actually wins.',
-    href: '/tools/card-vs-card',
-    color: 'text-brand-coral',
-    borderColor: 'border-brand-coral',
-    soon: false
+    title: 'Clear starting point',
+    description:
+      'Know what to do first, what can wait, and which offers are better saved for later.'
+  },
+  {
+    title: 'Realistic pace',
+    description:
+      'Your plan is built to be doable, with timing and effort that fit real life instead of churn-for-churn’s-sake.'
   }
-];
+] as const;
+
+const faqs = [
+  {
+    question: 'Is The Stack free?',
+    answer:
+      'Yes. The planner and comparison tools are free to use. You can run the quiz, review your results, and explore the site without paying.'
+  },
+  {
+    question: 'How long does the planner take?',
+    answer:
+      'About 2 minutes for most people. We ask enough to make the recommendations useful without turning it into a long intake form.'
+  },
+  {
+    question: 'Does the planner cover bank bonuses too?',
+    answer:
+      'Yes. The full planner can include both card bonuses and bank bonuses when they fit your profile and timing.'
+  },
+  {
+    question: 'Do I need excellent credit?',
+    answer:
+      'No. Some offers are best for excellent credit, but the planner also filters for what is more realistic based on the credit profile you choose.'
+  },
+  {
+    question: 'How do you estimate value?',
+    answer:
+      'We use the bonus value, annual fee, and practical assumptions around offer quality and fit so the ranking is more grounded than a raw points headline.'
+  },
+  {
+    question: 'Will applying hurt my credit?',
+    answer:
+      'New applications can create a small temporary dip, so this is best used by people who already pay on time and are comfortable opening accounts deliberately.'
+  },
+  {
+    question: 'Do I need a spreadsheet to use this?',
+    answer:
+      'No. The point is to give you a clearer plan without making you build your own spreadsheet first.'
+  }
+] as const;
 
 const jsonLd = {
   '@context': 'https://schema.org',
@@ -83,8 +113,8 @@ export default function HomePage() {
           </h1>
           <p className="max-w-[45ch] text-xl font-medium leading-relaxed text-text-secondary md:text-2xl">
             Banks and card issuers are built to profit off you. The Stack flips that, for free.
-            We find you the best offers, track your payouts, and give you a personalized plan so
-            you always know your next move.
+            Answer a few questions and get a personalized bonus plan that ranks the best next card
+            and bank offers for your profile, then shows you what to do first.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
@@ -108,60 +138,64 @@ export default function HomePage() {
               </svg>
             </Link>
           </div>
+          <p className="text-sm font-medium text-text-muted">
+            Free. Takes about 2 minutes. No spreadsheet required.
+          </p>
         </div>
         <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 shadow-[0_0_45px_rgba(45,212,191,0.08)] backdrop-blur-2xl md:p-8">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.18),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(212,168,83,0.12),transparent_38%)]" />
           <div className="relative space-y-6">
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-3">
-                <p className="text-xs uppercase tracking-[0.3em] text-text-muted">Bonus Tracker</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-text-muted">Sample Plan</p>
                 <div>
                   <h2 className="text-2xl font-semibold text-text-primary md:text-3xl">
-                    Never Miss a Payout.
+                    See your next two moves.
                   </h2>
                   <p className="mt-2 max-w-sm text-sm leading-6 text-text-secondary md:text-base">
-                    Track your spend, stay ahead of the deadline, and keep the payout in view.
+                    A short quiz turns your profile into a ranked 12-month plan with cleaner math,
+                    realistic timing, and a clear starting point.
                   </p>
                 </div>
               </div>
               <div className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-sm font-semibold text-brand-teal shadow-[0_0_8px_rgba(16,185,129,0.4)]">
-                80% complete
+                2 min quiz
               </div>
             </div>
 
             <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-sm text-text-muted">Target bonus</p>
-                  <p className="mt-2 font-heading text-4xl text-text-primary">$500</p>
+                  <p className="text-sm text-text-muted">12-month value est.</p>
+                  <p className="mt-2 font-heading text-4xl text-text-primary">$2,150</p>
                 </div>
                 <div className="sm:text-right">
-                  <p className="text-sm text-text-muted">Current progress</p>
-                  <p className="mt-2 text-lg font-semibold text-text-primary">$400 / $500</p>
+                  <p className="text-sm text-text-muted">Start now</p>
+                  <p className="mt-2 text-lg font-semibold text-text-primary">Travel card bonus</p>
                 </div>
               </div>
               <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full w-4/5 rounded-full bg-gradient-to-r from-[#10B981] to-[#34D399] shadow-[0_0_24px_rgba(45,212,191,0.4)]" />
+                <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-[#10B981] to-[#34D399] shadow-[0_0_24px_rgba(45,212,191,0.4)]" />
               </div>
               <div className="mt-3 flex items-center justify-between text-[11px] uppercase tracking-[0.22em] text-text-muted">
-                <span>Applied</span>
-                <span>On track</span>
-                <span>Unlocked</span>
+                <span>Start now</span>
+                <span>Next</span>
+                <span>Later</span>
               </div>
             </div>
 
             <div className="hidden gap-3 lg:grid lg:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-black/15 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-text-muted">Spend left</p>
-                <p className="mt-2 text-xl font-semibold text-text-primary">$100</p>
+                <p className="text-xs uppercase tracking-[0.24em] text-text-muted">First move</p>
+                <p className="mt-2 text-xl font-semibold text-text-primary">Card bonus</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/15 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-text-muted">Time window</p>
-                <p className="mt-2 text-xl font-semibold text-text-primary">18 days</p>
+                <p className="text-xs uppercase tracking-[0.24em] text-text-muted">Next move</p>
+                <p className="mt-2 text-xl font-semibold text-text-primary">Bank bonus</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/15 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-text-muted">Estimated payout</p>
-                <p className="mt-2 text-xl font-semibold text-text-primary">$500</p>
+                <p className="text-xs uppercase tracking-[0.24em] text-text-muted">Pace</p>
+                <p className="mt-2 text-xl font-semibold text-text-primary">3 moves / 12 mo</p>
               </div>
             </div>
 
@@ -169,7 +203,7 @@ export default function HomePage() {
               href="/tools/card-finder"
               className="inline-flex items-center gap-2 self-start text-sm font-semibold text-brand-teal transition hover:translate-x-1 hover:text-brand-teal/85 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
             >
-              <span>See your own progress map</span>
+              <span>Build your own plan</span>
               <svg
                 aria-hidden="true"
                 viewBox="0 0 16 16"
@@ -191,23 +225,29 @@ export default function HomePage() {
 
       <ProofPoints className="mt-12" variant="trust-bar" />
 
-      <section className="mt-16 grid gap-6 md:grid-cols-3">
-        {tools.map((tool, index) => (
-          <RevealOnScroll key={tool.title} className="h-full" delayMs={index * 80}>
-            <Link
-              href={tool.href}
-              className={`group flex h-full flex-col rounded-2xl border ${tool.borderColor} bg-bg-surface p-6 transition hover:-translate-y-1 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]`}
+      <section className="mt-16">
+        <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
+          What You Get
+        </p>
+        <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
+          Your plan does more than rank cards.
+        </h2>
+        <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
+          The planner is built to answer the practical questions that matter: what to do first,
+          what it may be worth, and what is realistic for your profile.
+        </p>
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
+          {planIncludes.map((item) => (
+            <div
+              key={item.title}
+              className="rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:border-brand-teal/25"
             >
-              <h3 className="text-xl font-semibold">{tool.title}</h3>
-              <p className="mt-2 text-sm text-text-secondary">{tool.description}</p>
-              {tool.soon && (
-                <span className="mt-3 inline-block rounded-full border border-white/10 px-3 py-1 text-xs text-text-muted">
-                  Coming soon
-                </span>
-              )}
-            </Link>
-          </RevealOnScroll>
-        ))}
+              <p className="text-xs uppercase tracking-[0.24em] text-brand-teal">Included</p>
+              <h3 className="mt-3 text-xl font-semibold text-text-primary">{item.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-text-secondary">{item.description}</p>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="mt-20">
@@ -216,8 +256,8 @@ export default function HomePage() {
         <div className="mt-10 grid gap-6 md:grid-cols-3">
           {[
             { step: '01', title: 'Answer a few questions', description: 'Tell us about your spending habits and goals. Takes about 2 minutes.' },
-            { step: '02', title: 'Get your personalized plan', description: 'We build a step-by-step roadmap with the best offers in the right order for your profile.' },
-            { step: '03', title: 'Follow the schedule and earn', description: 'Know exactly what to apply for and when. Track your progress and collect your bonuses.' },
+            { step: '02', title: 'Get your personalized plan', description: 'We rank the strongest card and bank offers you can realistically complete and put them in order.' },
+            { step: '03', title: 'Follow the order and execute', description: 'Know what to apply for first, what can wait, and when to compare options before you move.' },
           ].map((item) => (
             <div key={item.step} className="rounded-2xl border border-white/10 bg-bg-surface p-6">
               <p className="font-heading text-4xl text-brand-teal">{item.step}</p>
@@ -250,14 +290,43 @@ export default function HomePage() {
         </div>
       </section>
 
+      <section className="mt-20">
+        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+          <div>
+            <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">FAQ</p>
+            <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
+              Questions people usually have before they start.
+            </h2>
+            <p className="mt-4 max-w-xl text-base leading-7 text-text-secondary md:text-lg">
+              Short answers to the main objections: price, time, credit, and what kind of plan
+              you actually get at the end.
+            </p>
+          </div>
+          <div className="space-y-3">
+            {faqs.map((item) => (
+              <details
+                key={item.question}
+                className="group rounded-2xl border border-white/10 bg-bg-surface p-5 open:border-brand-teal/30"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-semibold text-text-primary">
+                  <span>{item.question}</span>
+                  <span className="text-brand-teal transition group-open:rotate-45">+</span>
+                </summary>
+                <p className="mt-3 pr-8 text-sm leading-7 text-text-secondary">{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="mt-16">
         <div className="rounded-3xl border border-white/10 bg-bg-elevated p-8 md:p-10">
           <NewsletterSignup
             source="homepage"
-            heading="Get Your Free Bonus Plan."
-            description="Drop your email and we'll send you a personalized starting point, plus weekly updates on the best offers worth your time."
+            heading="Get Weekly Bonus Plays."
+            description="Get the best offers worth your attention, practical strategy, and product updates in your inbox."
             finePrint="Free. No spam. Unsubscribe anytime."
-            submitLabel="Get My Plan"
+            submitLabel="Join Free"
           />
         </div>
       </section>
