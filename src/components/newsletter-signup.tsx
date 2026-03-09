@@ -55,7 +55,7 @@ export function NewsletterSignup({
   const [message, setMessage] = useState('');
   const [consultationInterest, setConsultationInterest] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [showTurnstile, setShowTurnstile] = useState(() => !compact && turnstileEnabled);
+  const [showTurnstile, setShowTurnstile] = useState(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
   const largeSize = size === 'large';
 
