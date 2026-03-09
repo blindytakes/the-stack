@@ -1,4 +1,5 @@
 import { readTrimmed } from '@/lib/config/read-trimmed';
+import { isProductionEnv } from '@/lib/config/runtime';
 
 export type PosthogPublicConfig = {
   key: string;
@@ -13,5 +14,6 @@ export function getPosthogPublicConfig(): PosthogPublicConfig | null {
 }
 
 export function getTurnstileSiteKey(): string | null {
+  if (!isProductionEnv()) return null;
   return readTrimmed(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 }

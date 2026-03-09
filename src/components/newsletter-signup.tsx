@@ -161,11 +161,6 @@ export function NewsletterSignup({
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            onFocus={() => {
-              if (compact && turnstileEnabled) {
-                setShowTurnstile(true);
-              }
-            }}
             placeholder="Enter your email"
             required
             className={`flex-1 border border-white/10 bg-bg-surface text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none ${
