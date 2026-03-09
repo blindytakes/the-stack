@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { planResponseSchema } from '@/lib/plan-contract';
 
 const buildPlanMock = vi.fn();
 
@@ -53,7 +54,7 @@ describe('/api/plan route contract', () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(body.generatedAt).toBe(123);
+    expect(planResponseSchema.parse(body).generatedAt).toBe(123);
     expect(buildPlanMock).toHaveBeenCalled();
   });
 

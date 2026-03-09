@@ -135,6 +135,46 @@ describe('plan-service', () => {
     );
   });
 
+  it('maps invalid generated plan payloads to a 500 result', async () => {
+    getCardsDataMock.mockResolvedValue({
+      cards: [],
+      source: 'db'
+    });
+    getBankingBonusesDataMock.mockResolvedValue({
+      bonuses: [],
+      source: 'seed'
+    });
+    buildPlanRecommendationsFromQuizMock.mockReturnValue({
+      recommendations: [
+        {
+          id: 'broken-recommendation'
+        }
+      ],
+      exclusions: [],
+      schedule: [],
+      scheduleIssues: []
+    });
+
+    const result = await buildPlan({
+      answers: {
+        goal: 'cashback',
+        spend: 'dining',
+        fee: 'no_fee',
+        credit: 'good',
+        directDeposit: 'yes',
+        state: 'NY',
+        monthlySpend: 'from_2500_to_5000',
+        pace: 'balanced'
+      }
+    });
+
+    expect(result).toEqual({
+      ok: false,
+      status: 500,
+      error: 'Plan generation is temporarily unavailable'
+    });
+  });
+
   it('maps internal failures to a 500 result', async () => {
     getCardsDataMock.mockRejectedValue(new Error('db down'));
 

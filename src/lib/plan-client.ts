@@ -3,45 +3,32 @@ import {
   savePlanResults,
   type PlanResultsStoragePayload
 } from '@/lib/plan-results-storage';
-import type { QuizRequest } from '@/lib/quiz-engine';
-import type { PlanScheduleItem } from '@/lib/plan-engine';
-import type {
-  PlannerExcludedOffer,
-  PlannerRecommendation
-} from '@/lib/planner-recommendations';
+import {
+  planRequestSchema,
+  planResponseSchema,
+  type PlanBuildRequest
+} from '@/lib/plan-contract';
 
-export type PlanRequestOptions = {
-  maxCards?: number;
-  maxBanking?: number;
-};
-
-export type PlanApiResponse = {
-  generatedAt: number;
-  recommendations: PlannerRecommendation[];
-  exclusions: PlannerExcludedOffer[];
-  schedule: PlanScheduleItem[];
-};
-
-export async function submitPlanQuiz(input: {
-  answers: QuizRequest;
-  options?: PlanRequestOptions;
-}): Promise<PlanResultsStoragePayload> {
+export async function submitPlanQuiz(input: PlanBuildRequest): Promise<PlanResultsStoragePayload> {
+  const request = planRequestSchema.parse(input);
   const res = await fetch('/api/plan', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      answers: input.answers,
-      options: input.options
-    })
+    body: JSON.stringify(request)
   });
   if (!res.ok) {
     throw new Error('Failed to build plan');
   }
 
-  const data = (await res.json()) as PlanApiResponse;
+  const parsedResponse = planResponseSchema.safeParse(await res.json());
+  if (!parsedResponse.success) {
+    throw new Error('Invalid plan response');
+  }
+
+  const data = parsedResponse.data;
   const payload = buildPlanResultsPayload({
     savedAt: data.generatedAt,
-    answers: input.answers,
+    answers: request.answers,
     recommendations: data.recommendations,
     exclusions: data.exclusions,
     schedule: data.schedule

@@ -1,34 +1,18 @@
-import { z } from 'zod';
 import { getCardsData } from '@/lib/cards';
 import { getBankingBonusesData } from '@/lib/banking-bonuses';
-import { quizRequestSchema, rankQuizResults } from '@/lib/quiz-engine';
+import {
+  planRequestSchema,
+  planResponseSchema,
+  type PlanApiResponse
+} from '@/lib/plan-contract';
+import { rankQuizResults } from '@/lib/quiz-engine';
 import { getPlanPaceConfig } from '@/lib/plan-engine';
 import { buildPlanRecommendationsFromQuiz } from '@/lib/planner-recommendations';
-
-const planRequestOptionsSchema = z
-  .object({
-    maxCards: z.number().int().min(0).max(6).optional(),
-    maxBanking: z.number().int().min(0).max(6).optional()
-  })
-  .optional();
-
-export const planRequestSchema = z.object({
-  answers: quizRequestSchema,
-  options: planRequestOptionsSchema
-});
-
-export type PlanBuildRequest = z.infer<typeof planRequestSchema>;
 
 export type BuildPlanResult =
   | {
       ok: true;
-      data: {
-        generatedAt: number;
-        recommendations: ReturnType<typeof buildPlanRecommendationsFromQuiz>['recommendations'];
-        exclusions: ReturnType<typeof buildPlanRecommendationsFromQuiz>['exclusions'];
-        schedule: ReturnType<typeof buildPlanRecommendationsFromQuiz>['schedule'];
-        scheduleIssues: ReturnType<typeof buildPlanRecommendationsFromQuiz>['scheduleIssues'];
-      };
+      data: PlanApiResponse;
     }
   | { ok: false; status: 400 | 500; error: string };
 
@@ -62,16 +46,27 @@ export async function buildPlan(rawBody: unknown | null): Promise<BuildPlanResul
         maxBanking
       }
     );
+    const responsePayload = planResponseSchema.safeParse({
+      generatedAt,
+      recommendations: planBundle.recommendations,
+      exclusions: planBundle.exclusions,
+      schedule: planBundle.schedule,
+      scheduleIssues: planBundle.scheduleIssues
+    });
+    if (!responsePayload.success) {
+      console.error('[plan-service] invalid plan response payload', {
+        issues: responsePayload.error.issues
+      });
+      return {
+        ok: false,
+        status: 500,
+        error: 'Plan generation is temporarily unavailable'
+      };
+    }
 
     return {
       ok: true,
-      data: {
-        generatedAt,
-        recommendations: planBundle.recommendations,
-        exclusions: planBundle.exclusions,
-        schedule: planBundle.schedule,
-        scheduleIssues: planBundle.scheduleIssues
-      }
+      data: responsePayload.data
     };
   } catch (error) {
     console.error('[plan-service] failed to build plan', {

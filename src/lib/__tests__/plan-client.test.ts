@@ -96,4 +96,26 @@ describe('plan-client', () => {
       })
     ).rejects.toThrow('Failed to build plan');
   });
+
+  it('throws when the plan response shape is invalid', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          generatedAt: 123,
+          recommendations: 'bad',
+          exclusions: [],
+          schedule: []
+        })
+      })
+    );
+    installWindow();
+
+    await expect(
+      submitPlanQuiz({
+        answers: baseAnswers
+      })
+    ).rejects.toThrow('Invalid plan response');
+  });
 });
