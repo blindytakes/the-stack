@@ -69,6 +69,47 @@ const faqs = [
   }
 ] as const;
 
+const howItWorksSteps = [
+  {
+    step: '01',
+    title: 'Answer a few questions',
+    description: 'Tell us about your spending habits and goals. Takes about 2 minutes.'
+  },
+  {
+    step: '02',
+    title: 'Get your personalized plan',
+    description:
+      'We rank the strongest card and bank offers you can realistically complete and put them in order.'
+  },
+  {
+    step: '03',
+    title: 'Follow the order and execute',
+    description:
+      'Know what to apply for first, what can wait, and when to compare options before you move.'
+  }
+] as const;
+
+const testimonials = [
+  {
+    quote:
+      'I have zero financial background and still made over $3,000 in my first year just by following the plan The Stack built for me. I just did what it told me to do.',
+    name: 'Jamie R.',
+    detail: 'Earned $3,200 in year one'
+  },
+  {
+    quote:
+      "I never thought about credit card strategy before this. The Stack taught me things I wish I had known years ago. It's like having a financial advisor who actually explains things.",
+    name: 'Marcus T.',
+    detail: 'First bonus unlocked in 60 days'
+  },
+  {
+    quote:
+      'Every other site just gives you a list of cards. The Stack gave me a schedule. I knew exactly what to apply for and when. Two bonuses in, already up $1,500.',
+    name: 'Priya S.',
+    detail: '$1,500 earned in 4 months'
+  }
+] as const;
+
 const jsonLd = {
   '@context': 'https://schema.org',
   '@graph': [
@@ -250,59 +291,99 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mt-20">
-        <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">How it works</p>
-        <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">Three steps to your first bonus.</h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {[
-            { step: '01', title: 'Answer a few questions', description: 'Tell us about your spending habits and goals. Takes about 2 minutes.' },
-            { step: '02', title: 'Get your personalized plan', description: 'We rank the strongest card and bank offers you can realistically complete and put them in order.' },
-            { step: '03', title: 'Follow the order and execute', description: 'Know what to apply for first, what can wait, and when to compare options before you move.' },
-          ].map((item) => (
-            <div key={item.step} className="rounded-2xl border border-white/10 bg-bg-surface p-6">
-              <p className="font-heading text-4xl text-brand-teal">{item.step}</p>
-              <h3 className="mt-3 text-lg font-semibold text-text-primary">{item.title}</h3>
-              <p className="mt-2 text-sm text-text-secondary">{item.description}</p>
-            </div>
-          ))}
+      <section className="mt-20 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
+        <div className="max-w-3xl">
+          <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
+            How it works
+          </p>
+          <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
+              Three steps to your first bonus.
+            </h2>
+            <p className="max-w-xl text-sm leading-7 text-text-secondary md:text-base">
+              The planner is meant to reduce guesswork. First it figures out what fits. Then it
+              tells you what to do now, what to do next, and what can wait.
+            </p>
+          </div>
         </div>
-      </section>
 
-      <section className="mt-20">
-        <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">Real results</p>
-        <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">What people are saying.</h2>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {[
-            { quote: "I have zero financial background and still made over $3,000 in my first year just by following the plan The Stack built for me. I just did what it told me to do.", name: "Jamie R.", detail: "Earned $3,200 in year one" },
-            { quote: "I never thought about credit card strategy before this. The Stack taught me things I wish I had known years ago. It's like having a financial advisor who actually explains things.", name: "Marcus T.", detail: "First bonus unlocked in 60 days" },
-            { quote: "Every other site just gives you a list of cards. The Stack gave me a schedule. I knew exactly what to apply for and when. Two bonuses in, already up $1,500.", name: "Priya S.", detail: "$1,500 earned in 4 months" },
-          ].map((t) => (
-            <div key={t.name} className="flex flex-col justify-between rounded-2xl border border-white/10 bg-bg-surface p-6">
-              <p className="text-sm leading-relaxed text-text-secondary">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div className="mt-6">
-                <p className="font-semibold text-text-primary">{t.name}</p>
-                <p className="mt-0.5 text-xs uppercase tracking-[0.2em] text-brand-teal">{t.detail}</p>
+        <div className="mt-10 grid gap-4 lg:grid-cols-3">
+          {howItWorksSteps.map((item) => (
+            <div
+              key={item.step}
+              className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <p className="font-heading text-4xl text-brand-teal">{item.step}</p>
+                <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-text-muted">
+                  Step {item.step}
+                </span>
               </div>
+              <h3 className="mt-6 text-xl font-semibold text-text-primary">{item.title}</h3>
+              <p className="mt-3 max-w-sm text-sm leading-7 text-text-secondary">
+                {item.description}
+              </p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-6 rounded-[1.5rem] border border-brand-teal/15 bg-brand-teal/[0.05] px-5 py-4 text-sm leading-7 text-text-secondary">
+          People do better when the sequence is obvious. The value is not just the recommendation.
+          It is the order.
+        </div>
+
+        <div className="mt-14 grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+          <div className="lg:sticky lg:top-24">
+            <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
+              Real results
+            </p>
+            <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
+              What people are saying.
+            </h2>
+            <p className="mt-4 max-w-md text-base leading-7 text-text-secondary md:text-lg">
+              The pattern is consistent: once people stop guessing and start following a plan, the
+              process feels lighter and the upside becomes easier to capture.
+            </p>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-2">
+            {testimonials.map((t, index) => (
+              <div
+                key={t.name}
+                className={`flex flex-col justify-between rounded-[1.75rem] border p-6 ${
+                  index === 0
+                    ? 'border-brand-teal/20 bg-brand-teal/[0.06] md:row-span-2'
+                    : 'border-white/10 bg-white/[0.03]'
+                }`}
+              >
+                <p className="text-sm leading-8 text-text-secondary md:text-base">
+                  &ldquo;{t.quote}&rdquo;
+                </p>
+                <div className="mt-8">
+                  <p className="font-semibold text-text-primary">{t.name}</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.22em] text-brand-teal">
+                    {t.detail}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       <section className="mt-20">
-        <div className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-          <div>
+        <div className="mx-auto max-w-3xl">
+          <div className="text-center">
             <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">FAQ</p>
             <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
               Questions people usually have before they start.
             </h2>
-            <p className="mt-4 max-w-xl text-base leading-7 text-text-secondary md:text-lg">
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
               Short answers to the main objections: price, time, credit, and what kind of plan
               you actually get at the end.
             </p>
           </div>
-          <div className="space-y-3">
+          <div className="mt-10 space-y-3">
             {faqs.map((item) => (
               <details
                 key={item.question}
