@@ -11,13 +11,8 @@ import {
   CardFinderQuestion,
   type FinderQuestionStep
 } from '@/components/tools/card-finder-sections';
-import { buildPlanResultsPayload, savePlanResults } from '@/lib/plan-results-storage';
+import { submitPlanQuiz } from '@/lib/plan-client';
 import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
-import type { PlanScheduleItem } from '@/lib/plan-engine';
-import type {
-  PlannerExcludedOffer,
-  PlannerRecommendation
-} from '@/lib/planner-recommendations';
 import type { CardRecord } from '@/lib/cards';
 
 type CardOnlyQuestionId =
@@ -36,12 +31,6 @@ type CardOnlyAnswers = Partial<
     | 'credit'
   >
 >;
-type PlanApiResponse = {
-  generatedAt: number;
-  recommendations: PlannerRecommendation[];
-  exclusions: PlannerExcludedOffer[];
-  schedule: PlanScheduleItem[];
-};
 
 type CardOnlyStep = FinderQuestionStep & { id: CardOnlyQuestionId };
 
@@ -191,29 +180,12 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
     }
 
     try {
-      const planRes = await fetch('/api/plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          answers: parsedAnswers.data,
-          options: {
-            maxBanking: 0
-          }
-        })
+      await submitPlanQuiz({
+        answers: parsedAnswers.data,
+        options: {
+          maxBanking: 0
+        }
       });
-      if (!planRes.ok) throw new Error('Failed to build card plan');
-
-      const data = (await planRes.json()) as PlanApiResponse;
-
-      savePlanResults(
-        buildPlanResultsPayload({
-          savedAt: data.generatedAt,
-          answers: parsedAnswers.data,
-          recommendations: data.recommendations,
-          exclusions: data.exclusions,
-          schedule: data.schedule
-        })
-      );
 
       trackFunnelEvent('quiz_completed', {
         source: 'cards_plan_page',

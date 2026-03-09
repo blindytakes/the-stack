@@ -3,23 +3,12 @@
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
-import { buildPlanResultsPayload, savePlanResults } from '@/lib/plan-results-storage';
+import { submitPlanQuiz } from '@/lib/plan-client';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import { cardFinderSteps } from '@/components/tools/card-finder-config';
 import type { CardSelectionQuestionId } from '@/components/tools/card-finder-sections';
-import type { PlanScheduleItem } from '@/lib/plan-engine';
-import type {
-  PlannerExcludedOffer,
-  PlannerRecommendation
-} from '@/lib/planner-recommendations';
 
 type QuizAnswers = Partial<QuizRequest>;
-type PlanApiResponse = {
-  generatedAt: number;
-  recommendations: PlannerRecommendation[];
-  exclusions: PlannerExcludedOffer[];
-  schedule: PlanScheduleItem[];
-};
 
 export function useCardFinderState() {
   const router = useRouter();
@@ -113,25 +102,9 @@ export function useCardFinderState() {
     }
 
     try {
-      const res = await fetch('/api/plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          answers: parsedAnswers.data
-        })
+      await submitPlanQuiz({
+        answers: parsedAnswers.data
       });
-      if (!res.ok) throw new Error('Failed to build plan');
-
-      const data = (await res.json()) as PlanApiResponse;
-      savePlanResults(
-        buildPlanResultsPayload({
-          savedAt: data.generatedAt,
-          answers: parsedAnswers.data,
-          recommendations: data.recommendations,
-          exclusions: data.exclusions,
-          schedule: data.schedule
-        })
-      );
 
       trackFunnelEvent('quiz_completed', {
         source: 'card_finder',

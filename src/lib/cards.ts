@@ -188,7 +188,9 @@ function deriveBestSignUpBonus(signUpBonuses: DbCardRow['signUpBonuses']) {
   if (signUpBonuses.length === 0) return null;
   const active = signUpBonuses.filter((bonus) => bonus.isCurrentOffer !== false);
   const candidates = active.length > 0 ? active : signUpBonuses;
-  const best = [...candidates].sort((a, b) => Number(b.bonusValue) - Number(a.bonusValue))[0];
+  const best = [...candidates].sort(
+    (a, b) => Number(b.bonusValue) - Number(a.bonusValue) || a.id.localeCompare(b.id)
+  )[0];
   if (!best) return null;
 
   return {

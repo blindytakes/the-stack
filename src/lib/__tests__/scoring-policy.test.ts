@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import {
+  bankingPriorityScoringPolicy,
   cardOpenScoringPolicy,
+  cardPriorityScoringPolicy,
   estimateBankBonusNetValue,
   estimateCardBenefitAdjustment,
   estimateCardOpenValue,
@@ -45,6 +47,8 @@ describe('scoring-policy', () => {
   });
 
   it('builds card priority from open value plus fit and execution bonuses', () => {
+    expect(cardPriorityScoringPolicy.fitWeight).toBe(60);
+    expect(cardPriorityScoringPolicy.effortAdjustment.low).toBe(50);
     expect(
       scoreCardOpenPriority({
         estimatedNetValue: 755,
@@ -59,6 +63,7 @@ describe('scoring-policy', () => {
 
   it('scores banking offers and scheduler contribution deterministically', () => {
     expect(estimateBankBonusNetValue(400, 12)).toBe(388);
+    expect(bankingPriorityScoringPolicy.effortAdjustment.low).toBe(45);
     expect(
       scoreBankingPriority({
         estimatedNetValue: 388,

@@ -5,10 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { EmptyLaneCard } from '@/components/plan/empty-lane-card';
 import { PlanTimeline } from '@/components/plan/plan-timeline';
-import {
-  type EligibilityDraft,
-  type PlanApiResponse
-} from '@/components/plan/plan-results-config';
+import { type EligibilityDraft } from '@/components/plan/plan-results-config';
 import {
   buildScheduledTimelineEntries,
   buildTimelineEntriesFallback,
@@ -20,12 +17,11 @@ import { ResultsEligibilityEditor } from '@/components/plan/results-eligibility-
 import { SummaryStatCard } from '@/components/plan/summary-stat-card';
 import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
+import { submitPlanQuiz } from '@/lib/plan-client';
 import { useCardsDirectory } from '@/lib/cards-client';
 import {
-  buildPlanResultsPayload,
   clearPlanResults,
   loadPlanResults,
-  savePlanResults,
   type PlanResultsLoadResult,
   type PlanResultsStoragePayload
 } from '@/lib/plan-results-storage';
@@ -297,32 +293,14 @@ export function PlanResultsView() {
     }
 
     try {
-      const res = await fetch('/api/plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          answers: parsedAnswers.data,
-          options: cardsOnlyMode
-            ? {
-                maxBanking: 0
-              }
-            : undefined
-        })
-      });
-      if (!res.ok) {
-        throw new Error('Failed to refresh plan');
-      }
-
-      const data = (await res.json()) as PlanApiResponse;
-      const nextPayload = buildPlanResultsPayload({
-        savedAt: data.generatedAt,
+      const nextPayload = await submitPlanQuiz({
         answers: parsedAnswers.data,
-        recommendations: data.recommendations,
-        exclusions: data.exclusions,
-        schedule: data.schedule
+        options: cardsOnlyMode
+          ? {
+              maxBanking: 0
+            }
+          : undefined
       });
-
-      savePlanResults(nextPayload);
       setState({
         status: 'fresh',
         payload: nextPayload,

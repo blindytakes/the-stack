@@ -395,6 +395,43 @@ describe('toCardRecordFromDb', () => {
     expect(result.bestSignUpBonusSpendPeriodDays).toBe(90);
   });
 
+  it('breaks equal-value sign-up bonus ties deterministically by id', () => {
+    const row = makeDbCardRow({
+      signUpBonuses: [
+        {
+          id: 'bonus-b',
+          cardId: 'test-id',
+          bonusValue: new Prisma.Decimal(750),
+          bonusType: 'points',
+          bonusPoints: 75000,
+          spendRequired: new Prisma.Decimal(5000),
+          spendPeriodDays: 120,
+          isCurrentOffer: true,
+          expiresAt: null,
+          createdAt: now
+        },
+        {
+          id: 'bonus-a',
+          cardId: 'test-id',
+          bonusValue: new Prisma.Decimal(750),
+          bonusType: 'points',
+          bonusPoints: 75000,
+          spendRequired: new Prisma.Decimal(4000),
+          spendPeriodDays: 90,
+          isCurrentOffer: true,
+          expiresAt: null,
+          createdAt: now
+        }
+      ]
+    });
+
+    const result = toCardRecordFromDb(row);
+
+    expect(result.bestSignUpBonusValue).toBe(750);
+    expect(result.bestSignUpBonusSpendRequired).toBe(4000);
+    expect(result.bestSignUpBonusSpendPeriodDays).toBe(90);
+  });
+
   it('derives separate total and conservative planner benefit values', () => {
     const row = makeDbCardRow({
       benefits: [

@@ -1,23 +1,11 @@
 import type { FinderCardSelectionStep } from '@/components/tools/card-finder-sections';
-import type { PlanResultsStoragePayload } from '@/lib/plan-results-storage';
 import type { QuizRequest } from '@/lib/quiz-engine';
-import type {
-  PlannerExcludedOffer,
-  PlannerExclusionReason,
-  PlannerRecommendation
-} from '@/lib/planner-recommendations';
+import type { PlannerExclusionReason } from '@/lib/planner-recommendations';
 
 export type EligibilityDraft = Pick<
   QuizRequest,
   'ownedCardSlugs' | 'amexLifetimeBlockedSlugs' | 'chase524Status'
 >;
-
-export type PlanApiResponse = {
-  generatedAt: number;
-  recommendations: PlannerRecommendation[];
-  exclusions: PlannerExcludedOffer[];
-  schedule: PlanResultsStoragePayload['schedule'];
-};
 
 export const ownedCardsEditorStep: FinderCardSelectionStep = {
   id: 'ownedCardSlugs',

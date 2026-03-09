@@ -67,6 +67,60 @@ export const cardOpenScoringPolicy = {
   benefitCap: 250
 } as const;
 
+/**
+ * Card recommendation priority weights.
+ *
+ * `estimatedNetValue` stays the base score in dollar terms. The weights below
+ * adjust ordering for quiz fit and execution friction so ranking can be tuned
+ * without rewriting the scoring function.
+ */
+export const cardPriorityScoringPolicy = {
+  fitWeight: 60,
+  effortAdjustment: {
+    low: 50,
+    medium: 15,
+    high: -25
+  },
+  timelineAdjustment: {
+    within90Days: 20,
+    within120Days: 10
+  },
+  feePreferenceAdjustment: {
+    noFeeMatch: 25,
+    upTo95Match: 15
+  }
+} as const;
+
+/**
+ * Banking recommendation priority weights.
+ *
+ * Banking starts from estimated net value, then adjusts for operational effort,
+ * payout timing, direct-deposit friction, geographic eligibility, and deposit
+ * size so the ordering remains explicit and easy to tune.
+ */
+export const bankingPriorityScoringPolicy = {
+  effortAdjustment: {
+    low: 45,
+    medium: 15,
+    high: -20
+  },
+  timelineAdjustment: {
+    within90Days: 20,
+    within120Days: 10
+  },
+  directDepositAdjustment: {
+    notRequired: 20,
+    requiredAndAvailable: 8
+  },
+  eligibilityAdjustment: {
+    nationallyAvailable: 10
+  },
+  depositAdjustment: {
+    upTo2000: 20,
+    upTo10000: 10
+  }
+} as const;
+
 function roundCurrencyValue(value: number): number {
   return Number(value.toFixed(2));
 }
@@ -135,17 +189,22 @@ export function getBankRecommendationEffort(
 }
 
 export function scoreCardOpenPriority(input: CardPriorityInput): number {
-  let score = input.estimatedNetValue + input.fitScore * 60;
+  let score = input.estimatedNetValue + input.fitScore * cardPriorityScoringPolicy.fitWeight;
 
-  if (input.effort === 'low') score += 50;
-  if (input.effort === 'medium') score += 15;
-  if (input.effort === 'high') score -= 25;
+  score += cardPriorityScoringPolicy.effortAdjustment[input.effort];
 
-  if (input.timelineDays && input.timelineDays <= 90) score += 20;
-  else if (input.timelineDays && input.timelineDays <= 120) score += 10;
+  if (input.timelineDays && input.timelineDays <= 90) {
+    score += cardPriorityScoringPolicy.timelineAdjustment.within90Days;
+  } else if (input.timelineDays && input.timelineDays <= 120) {
+    score += cardPriorityScoringPolicy.timelineAdjustment.within120Days;
+  }
 
-  if (input.feePreference === 'no_fee' && input.annualFee === 0) score += 25;
-  if (input.feePreference === 'up_to_95' && input.annualFee <= 95) score += 15;
+  if (input.feePreference === 'no_fee' && input.annualFee === 0) {
+    score += cardPriorityScoringPolicy.feePreferenceAdjustment.noFeeMatch;
+  }
+  if (input.feePreference === 'up_to_95' && input.annualFee <= 95) {
+    score += cardPriorityScoringPolicy.feePreferenceAdjustment.upTo95Match;
+  }
 
   return Math.round(score);
 }
@@ -157,21 +216,30 @@ export function estimateBankBonusNetValue(bonusAmount: number, estimatedFees: nu
 export function scoreBankingPriority(input: BankingPriorityInput): number {
   let score = input.estimatedNetValue;
 
-  if (input.effort === 'low') score += 45;
-  if (input.effort === 'medium') score += 15;
-  if (input.effort === 'high') score -= 20;
+  score += bankingPriorityScoringPolicy.effortAdjustment[input.effort];
 
-  if (input.timelineDays && input.timelineDays <= 90) score += 20;
-  else if (input.timelineDays && input.timelineDays <= 120) score += 10;
+  if (input.timelineDays && input.timelineDays <= 90) {
+    score += bankingPriorityScoringPolicy.timelineAdjustment.within90Days;
+  } else if (input.timelineDays && input.timelineDays <= 120) {
+    score += bankingPriorityScoringPolicy.timelineAdjustment.within120Days;
+  }
 
-  if (!input.directDepositRequired) score += 20;
-  else if (input.directDepositAvailability === 'yes') score += 8;
+  if (!input.directDepositRequired) {
+    score += bankingPriorityScoringPolicy.directDepositAdjustment.notRequired;
+  } else if (input.directDepositAvailability === 'yes') {
+    score += bankingPriorityScoringPolicy.directDepositAdjustment.requiredAndAvailable;
+  }
 
-  if (!input.stateRestricted) score += 10;
+  if (!input.stateRestricted) {
+    score += bankingPriorityScoringPolicy.eligibilityAdjustment.nationallyAvailable;
+  }
 
   const deposit = input.minimumOpeningDeposit ?? 0;
-  if (deposit <= 2000) score += 20;
-  else if (deposit <= 10000) score += 10;
+  if (deposit <= 2000) {
+    score += bankingPriorityScoringPolicy.depositAdjustment.upTo2000;
+  } else if (deposit <= 10000) {
+    score += bankingPriorityScoringPolicy.depositAdjustment.upTo10000;
+  }
 
   return Math.round(score);
 }
