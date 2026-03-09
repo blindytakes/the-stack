@@ -5,21 +5,37 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import {
+  CardSelectionQuestion,
   CardFinderActions,
   CardFinderProgress,
   CardFinderQuestion,
   type FinderQuestionStep
 } from '@/components/tools/card-finder-sections';
 import { buildPlanResultsPayload, savePlanResults } from '@/lib/plan-results-storage';
-import { quizRequestSchema } from '@/lib/quiz-engine';
+import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
 import type { PlanScheduleItem } from '@/lib/plan-engine';
 import type {
   PlannerExcludedOffer,
   PlannerRecommendation
 } from '@/lib/planner-recommendations';
+import type { CardRecord } from '@/lib/cards';
 
-type CardOnlyQuestionId = 'goal' | 'spend' | 'monthlySpend' | 'fee' | 'credit' | 'pace';
-type CardOnlyAnswers = Partial<Record<CardOnlyQuestionId, string>>;
+type CardOnlyQuestionId =
+  | 'ownedCardSlugs'
+  | 'chase524Status'
+  | 'spend'
+  | 'monthlySpend'
+  | 'credit';
+type CardOnlyAnswers = Partial<
+  Pick<
+    QuizRequest,
+    | 'ownedCardSlugs'
+    | 'chase524Status'
+    | 'spend'
+    | 'monthlySpend'
+    | 'credit'
+  >
+>;
 type PlanApiResponse = {
   generatedAt: number;
   recommendations: PlannerRecommendation[];
@@ -31,16 +47,24 @@ type CardOnlyStep = FinderQuestionStep & { id: CardOnlyQuestionId };
 
 const cardOnlySteps: CardOnlyStep[] = [
   {
-    id: 'goal',
-    title: 'What is your top goal right now?',
+    id: 'ownedCardSlugs',
+    type: 'card_selection',
+    title: 'Which cards do you already have?',
+    description: 'Optional, but useful. We will exclude cards you already have from new-card recommendations.'
+  },
+  {
+    id: 'chase524Status',
+    type: 'options',
+    title: 'What is your Chase 5/24 status?',
     options: [
-      { label: 'Fast cash value', value: 'cashback' },
-      { label: 'Travel upside', value: 'travel' },
-      { label: 'Flexible rewards', value: 'flexibility' }
+      { label: 'Under 5/24', value: 'under_5_24' },
+      { label: 'At or over 5/24', value: 'at_or_over_5_24' },
+      { label: 'Not sure', value: 'not_sure' }
     ]
   },
   {
     id: 'spend',
+    type: 'options',
     title: 'Where does most of your monthly spend go?',
     options: [
       { label: 'Groceries', value: 'groceries' },
@@ -51,6 +75,7 @@ const cardOnlySteps: CardOnlyStep[] = [
   },
   {
     id: 'monthlySpend',
+    type: 'options',
     title: 'How much normal monthly spend can you put on a new card?',
     options: [
       { label: 'Under $1,000', value: 'lt_1000' },
@@ -60,16 +85,8 @@ const cardOnlySteps: CardOnlyStep[] = [
     ]
   },
   {
-    id: 'fee',
-    title: 'What annual fee range are you comfortable with?',
-    options: [
-      { label: 'No annual fee', value: 'no_fee' },
-      { label: 'Up to $95', value: 'up_to_95' },
-      { label: 'Over $95 is fine', value: 'over_95_ok' }
-    ]
-  },
-  {
     id: 'credit',
+    type: 'options',
     title: 'How would you describe your credit profile?',
     options: [
       { label: 'Excellent', value: 'excellent' },
@@ -77,19 +94,10 @@ const cardOnlySteps: CardOnlyStep[] = [
       { label: 'Fair', value: 'fair' },
       { label: 'Building', value: 'building' }
     ]
-  },
-  {
-    id: 'pace',
-    title: 'How aggressive should your 12-month plan be?',
-    options: [
-      { label: 'Conservative (2 cards)', value: 'conservative' },
-      { label: 'Balanced (3 cards)', value: 'balanced' },
-      { label: 'Aggressive (4 cards)', value: 'aggressive' }
-    ]
   }
 ];
 
-export function CardsOnlyPlanPath() {
+export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
   const router = useRouter();
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<CardOnlyAnswers>({});
@@ -97,17 +105,54 @@ export function CardsOnlyPlanPath() {
   const [error, setError] = useState('');
 
   const currentStep = cardOnlySteps[stepIndex];
-  const selectedValue = answers[currentStep.id];
+  const selectedValue = currentStep.type === 'card_selection' ? undefined : answers[currentStep.id];
   const isLastStep = stepIndex === cardOnlySteps.length - 1;
-  const canContinue = Boolean(selectedValue);
-  const isComplete = cardOnlySteps.every((step) => answers[step.id]);
+  const canContinue = currentStep.type === 'card_selection' ? true : Boolean(selectedValue);
+  const isComplete = cardOnlySteps.every((step) =>
+    step.type === 'card_selection' ? true : Boolean(answers[step.id])
+  );
   const progress = useMemo(
     () => ((stepIndex + 1) / cardOnlySteps.length) * 100,
     [stepIndex]
   );
 
   function selectCurrentOption(value: string) {
+    if (currentStep.type === 'card_selection') {
+      return;
+    }
+
     setAnswers((prev) => ({ ...prev, [currentStep.id]: value }));
+  }
+
+  function updateCardSelection(selectionId: 'ownedCardSlugs', nextValues: string[]) {
+    setAnswers((prev) => ({
+      ...prev,
+      [selectionId]: nextValues
+    }));
+  }
+
+  function toggleCardSelection(slug: string) {
+    if (currentStep.type !== 'card_selection') {
+      return;
+    }
+
+    const selectionId = currentStep.id;
+    const next = new Set(answers[selectionId] ?? []);
+    if (next.has(slug)) {
+      next.delete(slug);
+    } else {
+      next.add(slug);
+    }
+
+    updateCardSelection(selectionId, Array.from(next));
+  }
+
+  function clearCardSelection() {
+    if (currentStep.type !== 'card_selection') {
+      return;
+    }
+
+    updateCardSelection(currentStep.id, []);
   }
 
   function goBack() {
@@ -126,15 +171,17 @@ export function CardsOnlyPlanPath() {
     setError('');
 
     const parsedAnswers = quizRequestSchema.safeParse({
-      goal: answers.goal,
+      ownedCardSlugs: answers.ownedCardSlugs ?? [],
+      amexLifetimeBlockedSlugs: [],
+      chase524Status: answers.chase524Status,
+      goal: 'flexibility',
       spend: answers.spend,
       monthlySpend: answers.monthlySpend,
-      fee: answers.fee,
+      fee: 'over_95_ok',
       credit: answers.credit,
       directDeposit: 'no',
-      openingCash: 'lt_2000',
       state: 'OT',
-      pace: answers.pace
+      pace: 'balanced'
     });
 
     if (!parsedAnswers.success) {
@@ -169,9 +216,9 @@ export function CardsOnlyPlanPath() {
       );
 
       trackFunnelEvent('quiz_completed', {
-        source: 'cards_page',
+        source: 'cards_plan_page',
         tool: 'cards_only_path',
-        path: '/cards'
+        path: '/cards/plan'
       });
       router.push('/plan/results?mode=cards_only');
     } catch {
@@ -182,17 +229,18 @@ export function CardsOnlyPlanPath() {
   }
 
   return (
-    <section id="card-plan" className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
+    <section className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">Card-Only Path</p>
           <h2 className="mt-2 font-heading text-3xl text-text-primary">Build My 12-Month Card Plan</h2>
           <p className="mt-2 max-w-2xl text-sm text-text-secondary">
-            Answer six quick questions and get a focused roadmap based only on credit card bonuses.
+            Start with the cards you already hold and your Chase status. Then answer a few quick
+            questions to get a focused roadmap based only on welcome bonuses.
           </p>
         </div>
-        <Link href="#cards-directory" className="text-sm text-text-secondary transition hover:text-text-primary">
-          Skip and browse cards
+        <Link href="/cards" className="text-sm text-text-secondary transition hover:text-text-primary">
+          Browse cards instead
         </Link>
       </div>
 
@@ -204,11 +252,29 @@ export function CardsOnlyPlanPath() {
         />
       </div>
 
-      <CardFinderQuestion
-        step={currentStep}
-        selectedValue={selectedValue}
-        onSelect={selectCurrentOption}
-      />
+      {currentStep.type === 'card_selection' ? (
+        <CardSelectionQuestion
+          step={currentStep}
+          cards={cards}
+          selectedSlugs={answers[currentStep.id] ?? []}
+          onToggle={toggleCardSelection}
+          onClear={clearCardSelection}
+          searchId="owned-card-search"
+          searchLabel="Search cards"
+          searchPlaceholder="Search by card name or issuer"
+          selectedHeading="Already open"
+          selectedSummary={(count) =>
+            `We’ll exclude ${count} current card${count === 1 ? '' : 's'} from new-card recommendations.`
+          }
+          emptySelectionText="Search for cards you already hold, or continue and add this later once you see your first draft."
+        />
+      ) : (
+        <CardFinderQuestion
+          step={currentStep}
+          selectedValue={typeof selectedValue === 'string' ? selectedValue : undefined}
+          onSelect={selectCurrentOption}
+        />
+      )}
 
       <CardFinderActions
         canGoBack={stepIndex > 0}
@@ -216,6 +282,11 @@ export function CardsOnlyPlanPath() {
         isLastStep={isLastStep}
         isComplete={isComplete}
         loading={loading}
+        continueLabel={
+          currentStep.type === 'card_selection' && (answers[currentStep.id]?.length ?? 0) === 0
+            ? 'Skip for now'
+            : 'Continue'
+        }
         submitLabel="See my 12-month card plan"
         submittingLabel="Building plan..."
         onBack={goBack}
@@ -226,7 +297,7 @@ export function CardsOnlyPlanPath() {
       {error && <p className="mt-4 text-sm text-brand-coral">{error}</p>}
       <p className="mt-4 text-xs text-text-muted">
         Need card + bank bonus strategy instead?{' '}
-        <Link href="/tools/card-finder" className="text-brand-teal transition hover:underline">
+        <Link href="/tools/card-finder?mode=full" className="text-brand-teal transition hover:underline">
           Use the full payout planner.
         </Link>
       </p>

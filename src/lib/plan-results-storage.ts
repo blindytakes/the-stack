@@ -46,9 +46,10 @@ const plannerExclusionReasonSchema: z.ZodType<PlannerExclusionReason> = z.enum([
   'no_signup_bonus',
   'fee_preference',
   'credit_tier',
+  'amex_lifetime_rule',
+  'chase_5_24',
   'direct_deposit_required',
-  'state_restricted',
-  'opening_deposit_too_high'
+  'state_restricted'
 ]);
 
 const plannerExcludedOfferSchema: z.ZodType<PlannerExcludedOffer> = z.object({

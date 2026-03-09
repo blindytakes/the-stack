@@ -37,9 +37,11 @@ const basePayload = buildPlanResultsPayload({
     spend: 'dining',
     fee: 'up_to_95',
     credit: 'good',
+    ownedCardSlugs: [],
+    amexLifetimeBlockedSlugs: [],
+    chase524Status: 'not_sure',
     directDeposit: 'yes',
     state: 'NY',
-    openingCash: 'from_2000_to_10000',
     monthlySpend: 'from_2500_to_5000',
     pace: 'balanced'
   },

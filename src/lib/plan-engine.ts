@@ -30,7 +30,6 @@ export type PlanScheduleItem = {
 export type PlanScheduleIssueReason =
   | 'lane_limit'
   | 'spend_capacity'
-  | 'cash_capacity'
   | 'direct_deposit_slot'
   | 'pace_limit'
   | 'timeline_overflow';
@@ -63,7 +62,6 @@ type ScheduledWindow = {
   estimatedNetValue: number;
   priorityScore: number;
   monthlySpendLoad: number;
-  openingDeposit: number;
   requiresDirectDeposit: boolean;
 };
 
@@ -120,7 +118,6 @@ const paceConfig: Record<QuizRequest['pace'], PlanPaceConfig> = {
 
 const reasonPriority: PlanScheduleIssueReason[] = [
   'spend_capacity',
-  'cash_capacity',
   'direct_deposit_slot',
   'pace_limit',
   'timeline_overflow',
@@ -135,12 +132,6 @@ function addDays(startAt: number, days: number) {
 
 function overlaps(startDay: number, completeDay: number, otherStartDay: number, otherCompleteDay: number) {
   return startDay < otherCompleteDay && otherStartDay < completeDay;
-}
-
-function openingCashCapacity(input: QuizRequest): number {
-  if (input.openingCash === 'lt_2000') return 1999;
-  if (input.openingCash === 'from_2000_to_10000') return 10000;
-  return Number.POSITIVE_INFINITY;
 }
 
 function monthlySpendCapacity(input: QuizRequest): number {
@@ -313,15 +304,6 @@ function getWindowReasons(
   }
 
   if (recommendation.lane === 'banking') {
-    const requiredDeposit = recommendation.scheduleConstraints.requiredDeposit ?? 0;
-    const usedDeposit =
-      overlapping
-        .filter((item) => item.lane === 'banking')
-        .reduce((sum, item) => sum + item.openingDeposit, 0) + requiredDeposit;
-    if (usedDeposit > openingCashCapacity(input)) {
-      reasons.add('cash_capacity');
-    }
-
     if (recommendation.scheduleConstraints.requiresDirectDeposit) {
       const directDepositCount = overlapping.filter(
         (item) => item.lane === 'banking' && item.requiresDirectDeposit
@@ -370,7 +352,6 @@ function searchScheduleWindow(
   const reasonCounts: Record<PlanScheduleIssueReason, number> = {
     lane_limit: 0,
     spend_capacity: 0,
-    cash_capacity: 0,
     direct_deposit_slot: 0,
     pace_limit: 0,
     timeline_overflow: 0
@@ -391,7 +372,6 @@ function searchScheduleWindow(
           estimatedNetValue: recommendation.estimatedNetValue,
           priorityScore: recommendation.priorityScore,
           monthlySpendLoad: monthlySpendLoad(recommendation),
-          openingDeposit: recommendation.scheduleConstraints.requiredDeposit ?? 0,
           requiresDirectDeposit: recommendation.scheduleConstraints.requiresDirectDeposit ?? false
         }
       };

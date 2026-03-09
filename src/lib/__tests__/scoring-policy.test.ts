@@ -67,8 +67,7 @@ describe('scoring-policy', () => {
         directDepositRequired: false,
         stateRestricted: false,
         minimumOpeningDeposit: 1000,
-        directDepositAvailability: 'yes',
-        openingCash: 'from_2000_to_10000'
+        directDepositAvailability: 'yes'
       })
     ).toBe(503);
     expect(

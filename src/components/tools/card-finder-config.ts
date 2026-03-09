@@ -1,54 +1,27 @@
 'use client';
 
-import type { QuizRequest } from '@/lib/quiz-engine';
+import type { FinderQuestionStep } from '@/components/tools/card-finder-sections';
 
-export type FinderStep = {
-  id: keyof QuizRequest;
-  title: string;
-  options: Array<{ label: string; value: string }>;
-};
-
-export const cardFinderSteps: FinderStep[] = [
+export const cardFinderSteps: FinderQuestionStep[] = [
   {
-    id: 'goal',
-    title: 'Your main goal',
-    options: [
-      { label: 'Fast cash value', value: 'cashback' },
-      { label: 'High travel upside', value: 'travel' },
-      { label: 'Flexible everyday returns', value: 'flexibility' }
-    ]
+    id: 'ownedCardSlugs',
+    type: 'card_selection',
+    title: 'Which cards do you already have?',
+    description: 'Optional, but useful. We will exclude cards you already have from new-card recommendations.'
   },
   {
-    id: 'spend',
-    title: 'Biggest monthly spend',
+    id: 'chase524Status',
+    type: 'options',
+    title: 'What is your Chase 5/24 status?',
     options: [
-      { label: 'Groceries', value: 'groceries' },
-      { label: 'Dining', value: 'dining' },
-      { label: 'Travel', value: 'travel' },
-      { label: 'Everything', value: 'all' }
-    ]
-  },
-  {
-    id: 'monthlySpend',
-    title: 'How much normal monthly spend can you put on a new card?',
-    options: [
-      { label: 'Under $1,000', value: 'lt_1000' },
-      { label: '$1,000 to $2,500', value: 'from_1000_to_2500' },
-      { label: '$2,500 to $5,000', value: 'from_2500_to_5000' },
-      { label: '$5,000+', value: 'at_least_5000' }
-    ]
-  },
-  {
-    id: 'fee',
-    title: 'Annual fee preference',
-    options: [
-      { label: 'No annual fee', value: 'no_fee' },
-      { label: 'Up to $95', value: 'up_to_95' },
-      { label: 'Over $95 is ok', value: 'over_95_ok' }
+      { label: 'Under 5/24', value: 'under_5_24' },
+      { label: 'At or over 5/24', value: 'at_or_over_5_24' },
+      { label: 'Not sure', value: 'not_sure' }
     ]
   },
   {
     id: 'credit',
+    type: 'options',
     title: 'Credit tier',
     options: [
       { label: 'Excellent', value: 'excellent' },
@@ -59,28 +32,11 @@ export const cardFinderSteps: FinderStep[] = [
   },
   {
     id: 'directDeposit',
+    type: 'options',
     title: 'Can you route direct deposit to a new bank account?',
     options: [
       { label: 'Yes, I can route direct deposit', value: 'yes' },
       { label: 'No, I cannot route direct deposit', value: 'no' }
-    ]
-  },
-  {
-    id: 'openingCash',
-    title: 'How much cash can you set aside for opening deposits?',
-    options: [
-      { label: 'Under $2,000', value: 'lt_2000' },
-      { label: '$2,000 to $10,000', value: 'from_2000_to_10000' },
-      { label: '$10,000+', value: 'at_least_10000' }
-    ]
-  },
-  {
-    id: 'pace',
-    title: 'How aggressive should your 12-month plan be?',
-    options: [
-      { label: 'Conservative', value: 'conservative' },
-      { label: 'Balanced', value: 'balanced' },
-      { label: 'Aggressive', value: 'aggressive' }
     ]
   }
 ];

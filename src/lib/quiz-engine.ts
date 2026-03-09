@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import type { CardRecord } from '@/lib/cards';
 import { spendingCategoryValues } from '@/lib/cards';
+import { isCardBlockedByIssuerRules } from '@/lib/issuer-rules';
 import { meetsCreditTier, scoreCardFit } from '@/lib/scoring-policy';
 
 /**
@@ -15,6 +16,17 @@ export const quizRequestSchema = z.object({
   spend: z.enum(spendingCategoryValues),
   fee: z.enum(['no_fee', 'up_to_95', 'over_95_ok']),
   credit: z.enum(['excellent', 'good', 'fair', 'building']),
+  ownedCardSlugs: z
+    .array(z.string().trim().min(1))
+    .max(50)
+    .default([])
+    .transform((slugs) => Array.from(new Set(slugs))),
+  amexLifetimeBlockedSlugs: z
+    .array(z.string().trim().min(1))
+    .max(50)
+    .default([])
+    .transform((slugs) => Array.from(new Set(slugs))),
+  chase524Status: z.enum(['under_5_24', 'at_or_over_5_24', 'not_sure']).default('not_sure'),
   directDeposit: z.enum(['yes', 'no']).default('yes'),
   state: z
     .string()
@@ -22,7 +34,6 @@ export const quizRequestSchema = z.object({
     .length(2)
     .transform((value) => value.toUpperCase())
     .default('OT'),
-  openingCash: z.enum(['lt_2000', 'from_2000_to_10000', 'at_least_10000']).default('from_2000_to_10000'),
   monthlySpend: z
     .enum(['lt_1000', 'from_1000_to_2500', 'from_2500_to_5000', 'at_least_5000'])
     .default('from_2500_to_5000'),
@@ -33,10 +44,16 @@ export type QuizRequest = z.infer<typeof quizRequestSchema>;
 
 export type QuizResult = CardRecord & { score: number };
 
-// Return highest scoring eligible cards first. Keep more than top-3 so
-// downstream planners can enforce stricter fit filters without running dry.
+// Return highest scoring eligible cards first. Keep the list focused on
+// net-new openings and issuer-eligible bonuses.
 export function rankQuizResults(cards: CardRecord[], input: QuizRequest): QuizResult[] {
-  const eligible = cards.filter((card) => meetsCreditTier(card.creditTierMin, input.credit));
+  const ownedCardSlugSet = new Set(input.ownedCardSlugs);
+  const eligible = cards.filter(
+    (card) =>
+      meetsCreditTier(card.creditTierMin, input.credit) &&
+      !ownedCardSlugSet.has(card.slug) &&
+      !isCardBlockedByIssuerRules(card, input)
+  );
 
   return eligible
     .map((card) => ({

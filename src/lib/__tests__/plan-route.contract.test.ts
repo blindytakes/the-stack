@@ -43,7 +43,6 @@ describe('/api/plan route contract', () => {
           credit: 'good',
           directDeposit: 'yes',
           state: 'NY',
-          openingCash: 'from_2000_to_10000',
           monthlySpend: 'from_2500_to_5000',
           pace: 'balanced'
         }

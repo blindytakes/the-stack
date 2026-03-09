@@ -14,9 +14,11 @@ const baseInput: QuizRequest = {
   spend: 'dining',
   fee: 'up_to_95',
   credit: 'good',
+  ownedCardSlugs: [],
+  amexLifetimeBlockedSlugs: [],
+  chase524Status: 'not_sure',
   directDeposit: 'yes',
   state: 'NY',
-  openingCash: 'from_2000_to_10000',
   monthlySpend: 'from_2500_to_5000',
   pace: 'balanced'
 };
@@ -186,8 +188,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
       bankingBonuses,
       {
         ...baseInput,
-        directDeposit: 'no',
-        openingCash: 'lt_2000'
+        directDeposit: 'no'
       },
       { maxBanking: 5 }
     );
@@ -195,9 +196,6 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     expect(bundle.recommendations.some((item) => item.lane === 'banking')).toBe(true);
     expect(
       bundle.exclusions.some((item) => item.reasons.includes('direct_deposit_required'))
-    ).toBe(true);
-    expect(
-      bundle.exclusions.some((item) => item.reasons.includes('opening_deposit_too_high'))
     ).toBe(true);
   });
 
@@ -249,5 +247,111 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     expect(bundle.exclusions.some((item) => item.reasons.includes('fee_preference'))).toBe(true);
     expect(bundle.exclusions.some((item) => item.reasons.includes('credit_tier'))).toBe(true);
     expect(bundle.exclusions.some((item) => item.reasons.includes('no_signup_bonus'))).toBe(true);
+  });
+
+  it('skips cards the user already has open', () => {
+    const cards: QuizResult[] = [
+      {
+        slug: 'owned-card',
+        name: 'Owned Card',
+        issuer: 'Sample Bank',
+        cardType: 'personal',
+        rewardType: 'cashback',
+        topCategories: ['dining'],
+        annualFee: 0,
+        creditTierMin: 'good',
+        headline: 'Owned',
+        score: 9,
+        bestSignUpBonusValue: 500,
+        bestSignUpBonusSpendRequired: 1000,
+        bestSignUpBonusSpendPeriodDays: 90,
+        totalBenefitsValue: 0,
+        plannerBenefitsValue: 0
+      },
+      {
+        slug: 'new-card',
+        name: 'New Card',
+        issuer: 'Sample Bank',
+        cardType: 'personal',
+        rewardType: 'cashback',
+        topCategories: ['dining'],
+        annualFee: 0,
+        creditTierMin: 'good',
+        headline: 'New',
+        score: 8,
+        bestSignUpBonusValue: 400,
+        bestSignUpBonusSpendRequired: 1000,
+        bestSignUpBonusSpendPeriodDays: 90,
+        totalBenefitsValue: 0,
+        plannerBenefitsValue: 0
+      }
+    ];
+
+    const bundle = buildPlanRecommendationsFromQuiz(cards, [], {
+      ...baseInput,
+      ownedCardSlugs: ['owned-card']
+    });
+
+    expect(bundle.recommendations.map((item) => item.id)).toEqual(['card:new-card']);
+  });
+
+  it('excludes prior Amex cards under the lifetime rule', () => {
+    const cards: QuizResult[] = [
+      {
+        slug: 'amex-gold-card',
+        name: 'American Express Gold Card',
+        issuer: 'American Express',
+        cardType: 'personal',
+        rewardType: 'points',
+        topCategories: ['dining'],
+        annualFee: 325,
+        creditTierMin: 'good',
+        headline: 'Amex Gold',
+        score: 9,
+        bestSignUpBonusValue: 900,
+        bestSignUpBonusSpendRequired: 6000,
+        bestSignUpBonusSpendPeriodDays: 180,
+        totalBenefitsValue: 0,
+        plannerBenefitsValue: 0
+      }
+    ];
+
+    const bundle = buildPlanRecommendationsFromQuiz(cards, [], {
+      ...baseInput,
+      amexLifetimeBlockedSlugs: ['amex-gold-card']
+    });
+
+    expect(bundle.recommendations).toHaveLength(0);
+    expect(bundle.exclusions.some((item) => item.reasons.includes('amex_lifetime_rule'))).toBe(true);
+  });
+
+  it('excludes Chase cards when the user is at or over 5/24', () => {
+    const cards: QuizResult[] = [
+      {
+        slug: 'chase-sapphire-preferred',
+        name: 'Chase Sapphire Preferred Card',
+        issuer: 'Chase',
+        cardType: 'personal',
+        rewardType: 'points',
+        topCategories: ['travel'],
+        annualFee: 95,
+        creditTierMin: 'good',
+        headline: 'Chase Sapphire Preferred',
+        score: 9,
+        bestSignUpBonusValue: 750,
+        bestSignUpBonusSpendRequired: 4000,
+        bestSignUpBonusSpendPeriodDays: 90,
+        totalBenefitsValue: 0,
+        plannerBenefitsValue: 0
+      }
+    ];
+
+    const bundle = buildPlanRecommendationsFromQuiz(cards, [], {
+      ...baseInput,
+      chase524Status: 'at_or_over_5_24'
+    });
+
+    expect(bundle.recommendations).toHaveLength(0);
+    expect(bundle.exclusions.some((item) => item.reasons.includes('chase_5_24'))).toBe(true);
   });
 });

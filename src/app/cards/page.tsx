@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 import { getCardsData } from '@/lib/cards';
 import {
   allBlogArticles,
   type LearnArticleCard
 } from '@/lib/learn-articles';
 import { filterCardsForDirectory } from '@/lib/cards-directory';
-import { CardsOnlyPlanPath } from '@/components/cards/cards-only-plan-path';
 import { CardsDirectoryExplorer } from '@/components/cards/cards-directory-explorer';
 
 /**
@@ -51,14 +51,32 @@ export default async function CardsPage() {
           Card Directory
         </h1>
         <p className="mt-4 text-lg text-text-secondary">
-          Answer five quick questions to build a focused 12-month card plan, or browse the full
-          directory by sign-up bonus value, issuer, annual fee, and credit profile.
+          Browse the full directory by sign-up bonus value, issuer, annual fee, and credit profile.
+          If you want recommendations instead of browsing, start with the shorter card-only plan.
         </p>
       </div>
 
-      <div className="mb-10">
-        <CardsOnlyPlanPath />
-      </div>
+      <section className="mb-10 rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-8">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="max-w-2xl">
+            <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">Card-Only Planner</p>
+            <h2 className="mt-2 font-heading text-3xl text-text-primary">Want a ranked card plan instead?</h2>
+            <p className="mt-3 text-sm text-text-secondary">
+              Use the dedicated planner page to enter the cards you already have, your Chase
+              status, and a few spend and credit inputs. Then we will build a focused bonus-first
+              card plan without crowding the directory.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/cards/plan">
+              <Button>Build My Card Plan</Button>
+            </Link>
+            <Link href="/tools/card-finder">
+              <Button variant="ghost">Full Cards + Banking Planner</Button>
+            </Link>
+          </div>
+        </div>
+      </section>
 
       <section className="mb-10 grid gap-3 md:grid-cols-3">
         <Link

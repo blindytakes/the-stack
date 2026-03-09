@@ -26,9 +26,11 @@ function makeInput(overrides: Partial<QuizRequest> = {}): QuizRequest {
     spend: 'dining',
     fee: 'no_fee',
     credit: 'good',
+    ownedCardSlugs: [],
+    amexLifetimeBlockedSlugs: [],
+    chase524Status: 'not_sure',
     directDeposit: 'yes',
     state: 'NY',
-    openingCash: 'from_2000_to_10000',
     monthlySpend: 'from_2500_to_5000',
     pace: 'balanced',
     ...overrides
@@ -47,6 +49,78 @@ describe('rankQuizResults', () => {
     const input = makeInput({ goal: 'flexibility', spend: 'dining', fee: 'over_95_ok', credit: 'excellent' });
     const results = rankQuizResults(cards, input);
     expect(results.length).toBeLessThanOrEqual(12);
+  });
+
+  it('excludes cards the user already has open', () => {
+    const input = makeInput({
+      goal: 'cashback',
+      spend: 'dining',
+      fee: 'no_fee',
+      credit: 'excellent',
+      ownedCardSlugs: ['cashback-dining']
+    });
+
+    const results = rankQuizResults(cards, input);
+
+    expect(results.some((card) => card.slug === 'cashback-dining')).toBe(false);
+  });
+
+  it('excludes Amex cards the user already had before under the lifetime rule', () => {
+    const amexCard = makeCard({
+      slug: 'amex-gold-card',
+      issuer: 'American Express',
+      rewardType: 'points',
+      topCategories: ['dining']
+    });
+    const chaseCard = makeCard({
+      slug: 'chase-sapphire-preferred',
+      issuer: 'Chase',
+      rewardType: 'points',
+      topCategories: ['travel']
+    });
+
+    const results = rankQuizResults(
+      [amexCard, chaseCard],
+      makeInput({
+        goal: 'travel',
+        spend: 'travel',
+        fee: 'up_to_95',
+        credit: 'excellent',
+        amexLifetimeBlockedSlugs: ['amex-gold-card']
+      })
+    );
+
+    expect(results.some((card) => card.slug === 'amex-gold-card')).toBe(false);
+    expect(results.some((card) => card.slug === 'chase-sapphire-preferred')).toBe(true);
+  });
+
+  it('excludes Chase cards when the user is at or over 5/24', () => {
+    const chaseCard = makeCard({
+      slug: 'chase-sapphire-preferred',
+      issuer: 'Chase',
+      rewardType: 'points',
+      topCategories: ['travel']
+    });
+    const citiCard = makeCard({
+      slug: 'citi-strata-premier-card',
+      issuer: 'Citi',
+      rewardType: 'points',
+      topCategories: ['travel']
+    });
+
+    const results = rankQuizResults(
+      [chaseCard, citiCard],
+      makeInput({
+        goal: 'travel',
+        spend: 'travel',
+        fee: 'up_to_95',
+        credit: 'excellent',
+        chase524Status: 'at_or_over_5_24'
+      })
+    );
+
+    expect(results.some((card) => card.slug === 'chase-sapphire-preferred')).toBe(false);
+    expect(results.some((card) => card.slug === 'citi-strata-premier-card')).toBe(true);
   });
 
   it('filters by credit tier eligibility', () => {
@@ -117,7 +191,6 @@ describe('quizRequestSchema', () => {
       credit: 'good',
       directDeposit: 'yes',
       state: 'ny',
-      openingCash: 'from_2000_to_10000',
       monthlySpend: 'from_2500_to_5000',
       pace: 'balanced'
     });
@@ -125,6 +198,9 @@ describe('quizRequestSchema', () => {
     if (parsed.success) {
       expect(parsed.data.state).toBe('NY');
       expect(parsed.data.monthlySpend).toBe('from_2500_to_5000');
+      expect(parsed.data.ownedCardSlugs).toEqual([]);
+      expect(parsed.data.amexLifetimeBlockedSlugs).toEqual([]);
+      expect(parsed.data.chase524Status).toBe('not_sure');
     }
   });
 
@@ -135,13 +211,53 @@ describe('quizRequestSchema', () => {
       fee: 'no_fee',
       credit: 'good',
       directDeposit: 'yes',
-      openingCash: 'from_2000_to_10000',
       monthlySpend: 'from_2500_to_5000',
       pace: 'balanced'
     });
     expect(parsed.success).toBe(true);
     if (parsed.success) {
       expect(parsed.data.state).toBe('OT');
+      expect(parsed.data.ownedCardSlugs).toEqual([]);
+      expect(parsed.data.amexLifetimeBlockedSlugs).toEqual([]);
+      expect(parsed.data.chase524Status).toBe('not_sure');
+    }
+  });
+
+  it('deduplicates owned card selections', () => {
+    const parsed = quizRequestSchema.safeParse({
+      goal: 'cashback',
+      spend: 'dining',
+      fee: 'no_fee',
+      credit: 'good',
+      ownedCardSlugs: ['chase-sapphire-preferred', 'chase-sapphire-preferred'],
+      directDeposit: 'yes',
+      state: 'NY',
+      monthlySpend: 'from_2500_to_5000',
+      pace: 'balanced'
+    });
+
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.ownedCardSlugs).toEqual(['chase-sapphire-preferred']);
+    }
+  });
+
+  it('deduplicates Amex lifetime history selections', () => {
+    const parsed = quizRequestSchema.safeParse({
+      goal: 'cashback',
+      spend: 'dining',
+      fee: 'no_fee',
+      credit: 'good',
+      amexLifetimeBlockedSlugs: ['amex-gold-card', 'amex-gold-card'],
+      directDeposit: 'yes',
+      state: 'NY',
+      monthlySpend: 'from_2500_to_5000',
+      pace: 'balanced'
+    });
+
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.amexLifetimeBlockedSlugs).toEqual(['amex-gold-card']);
     }
   });
 
@@ -152,8 +268,7 @@ describe('quizRequestSchema', () => {
       fee: 'no_fee',
       credit: 'good',
       directDeposit: 'yes',
-      state: 'ny',
-      openingCash: 'from_2000_to_10000'
+      state: 'ny'
     });
     expect(parsed.success).toBe(false);
   });

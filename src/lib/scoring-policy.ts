@@ -4,7 +4,6 @@ import type { CardRecord, CreditTierValue, SpendingCategoryValue } from '@/lib/c
 type RewardGoal = 'cashback' | 'travel' | 'flexibility';
 type FeePreference = 'no_fee' | 'up_to_95' | 'over_95_ok';
 type DirectDepositAvailability = 'yes' | 'no';
-type OpeningCashBand = 'lt_2000' | 'from_2000_to_10000' | 'at_least_10000';
 type RecommendationEffort = 'low' | 'medium' | 'high';
 
 type CardFitInput = {
@@ -36,7 +35,6 @@ type BankingPriorityInput = {
   stateRestricted: boolean;
   minimumOpeningDeposit?: number;
   directDepositAvailability: DirectDepositAvailability;
-  openingCash: OpeningCashBand;
 };
 
 type ScheduleContributionInput = {
@@ -71,12 +69,6 @@ export const cardOpenScoringPolicy = {
 
 function roundCurrencyValue(value: number): number {
   return Number(value.toFixed(2));
-}
-
-function availableOpeningCash(band: OpeningCashBand): number {
-  if (band === 'lt_2000') return 1999;
-  if (band === 'from_2000_to_10000') return 10000;
-  return Number.POSITIVE_INFINITY;
 }
 
 export function meetsCreditTier(required: CreditTierValue, available: CreditTierValue): boolean {
@@ -186,17 +178,6 @@ export function scoreBankingPriority(input: BankingPriorityInput): number {
 
 export function scoreScheduleContribution(input: ScheduleContributionInput): number {
   return Math.round(input.estimatedNetValue * 100) + input.priorityScore;
-}
-
-export function bankingDepositFits(
-  minimumOpeningDeposit: number | undefined,
-  openingCash: OpeningCashBand
-): boolean {
-  if (typeof minimumOpeningDeposit !== 'number') {
-    return true;
-  }
-
-  return minimumOpeningDeposit <= availableOpeningCash(openingCash);
 }
 
 export function isStateRestricted(offer: Pick<BankingBonusListItem, 'stateRestrictions'>, state: string): boolean {

@@ -6,7 +6,6 @@ import {
   type BankingBonusRecord
 } from '@/lib/banking-bonuses';
 import {
-  bankingDepositFits,
   creditTierLabel,
   estimateBankBonusNetValue,
   estimateCardBenefitAdjustment,
@@ -24,6 +23,7 @@ import {
   type PlanScheduleItem,
   type PlannerRecommendationScheduleConstraints
 } from '@/lib/plan-engine';
+import { getCardIssuerEligibilityReasons } from '@/lib/issuer-rules';
 
 export type PlannerRecommendationLane = 'cards' | 'banking';
 export type PlannerRecommendationKind = 'card_bonus' | 'bank_bonus';
@@ -33,9 +33,10 @@ export type PlannerExclusionReason =
   | 'no_signup_bonus'
   | 'fee_preference'
   | 'credit_tier'
+  | 'amex_lifetime_rule'
+  | 'chase_5_24'
   | 'direct_deposit_required'
-  | 'state_restricted'
-  | 'opening_deposit_too_high';
+  | 'state_restricted';
 
 export type PlannerExcludedOffer = {
   id: string;
@@ -102,6 +103,8 @@ function getCardExclusionReasons(card: QuizResult, input: QuizRequest): PlannerE
     reasons.push('credit_tier');
   }
 
+  reasons.push(...getCardIssuerEligibilityReasons(card, input));
+
   return reasons;
 }
 
@@ -117,10 +120,6 @@ function getBankingExclusionReasons(
 
   if (isStateRestricted(offer, input.state)) {
     reasons.push('state_restricted');
-  }
-
-  if (!bankingDepositFits(offer.minimumOpeningDeposit, input.openingCash)) {
-    reasons.push('opening_deposit_too_high');
   }
 
   return reasons;
@@ -218,11 +217,16 @@ export function buildPlanRecommendationsFromQuiz(
 ): PlannerRecommendationBundle {
   const maxCards = options.maxCards ?? 3;
   const maxBanking = options.maxBanking ?? 3;
+  const ownedCardSlugSet = new Set(input.ownedCardSlugs);
 
   const exclusions: PlannerExcludedOffer[] = [];
 
   const eligibleCards: PlannerRecommendation[] = [];
   for (const card of cardResults) {
+    if (ownedCardSlugSet.has(card.slug)) {
+      continue;
+    }
+
     const reasons = getCardExclusionReasons(card, input);
     if (reasons.length > 0) {
       exclusions.push({
@@ -284,8 +288,7 @@ export function buildPlanRecommendationsFromQuiz(
         directDepositRequired: offer.directDeposit.required,
         stateRestricted: Boolean(offer.stateRestrictions && offer.stateRestrictions.length > 0),
         minimumOpeningDeposit: offer.minimumOpeningDeposit,
-        directDepositAvailability: input.directDeposit,
-        openingCash: input.openingCash
+        directDepositAvailability: input.directDeposit
       })
     });
   }
