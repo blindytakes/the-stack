@@ -7,7 +7,7 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['.next/**', 'node_modules/**', 'next-env.d.ts']
+    ignores: ['.claude/**', '.next/**', 'node_modules/**', 'next-env.d.ts']
   },
   js.configs.recommended,
   ...tseslint.configs['flat/recommended'],

@@ -30,6 +30,7 @@ describe('toPlannerRecommendationFromCard', () => {
       annualFee: 95,
       creditTierMin: 'good',
       bonusValue: 750,
+      plannerBenefitsValue: 200,
       spendRequired: 4000,
       spendPeriodDays: 90
     });
@@ -37,7 +38,13 @@ describe('toPlannerRecommendationFromCard', () => {
     expect(recommendation.id).toBe('card:sample-card');
     expect(recommendation.lane).toBe('cards');
     expect(recommendation.kind).toBe('card_bonus');
-    expect(recommendation.estimatedNetValue).toBe(655);
+    expect(recommendation.estimatedNetValue).toBe(755);
+    expect(recommendation.valueBreakdown).toEqual({
+      headlineValue: 750,
+      headlineLabel: 'Welcome bonus',
+      benefitAdjustment: 100,
+      annualFee: 95
+    });
     expect(recommendation.detailPath).toBe('/cards/sample-card');
     expect(recommendation.keyRequirements[0]).toContain('$4,000');
   });
@@ -56,6 +63,11 @@ describe('toPlannerRecommendationFromBankingBonus', () => {
     expect(recommendation.lane).toBe('banking');
     expect(recommendation.kind).toBe('bank_bonus');
     expect(recommendation.estimatedNetValue).toBe(288);
+    expect(recommendation.valueBreakdown).toEqual({
+      headlineValue: 300,
+      headlineLabel: 'Bank bonus',
+      estimatedFees: 12
+    });
     expect(recommendation.detailPath).toBe('/banking/summit-national-checking-300');
     expect(recommendation.keyRequirements.some((item) => item.includes('direct deposit'))).toBe(true);
   });
@@ -70,6 +82,7 @@ describe('rankPlannerRecommendationsByValue', () => {
       annualFee: 0,
       creditTierMin: 'building',
       bonusValue: 150,
+      plannerBenefitsValue: 0,
       spendRequired: 500,
       spendPeriodDays: 60
     });
@@ -81,6 +94,7 @@ describe('rankPlannerRecommendationsByValue', () => {
       annualFee: 95,
       creditTierMin: 'excellent',
       bonusValue: 900,
+      plannerBenefitsValue: 0,
       spendRequired: 5000,
       spendPeriodDays: 90
     });
@@ -101,6 +115,7 @@ describe('rankPlannerRecommendationsByPriority', () => {
         annualFee: 0,
         creditTierMin: 'building',
         bonusValue: 200,
+        plannerBenefitsValue: 0,
         spendRequired: 500,
         spendPeriodDays: 90
       }),
@@ -114,6 +129,7 @@ describe('rankPlannerRecommendationsByPriority', () => {
         annualFee: 95,
         creditTierMin: 'good',
         bonusValue: 600,
+        plannerBenefitsValue: 0,
         spendRequired: 3000,
         spendPeriodDays: 90
       }),
@@ -142,7 +158,9 @@ describe('buildPlanRecommendationsFromQuiz', () => {
         score: 8,
         bestSignUpBonusValue: 800,
         bestSignUpBonusSpendRequired: 4000,
-        bestSignUpBonusSpendPeriodDays: 90
+        bestSignUpBonusSpendPeriodDays: 90,
+        totalBenefitsValue: 600,
+        plannerBenefitsValue: 250
       }
     ];
 
@@ -198,7 +216,9 @@ describe('buildPlanRecommendationsFromQuiz', () => {
         score: 7,
         bestSignUpBonusValue: 1000,
         bestSignUpBonusSpendRequired: 5000,
-        bestSignUpBonusSpendPeriodDays: 90
+        bestSignUpBonusSpendPeriodDays: 90,
+        totalBenefitsValue: 1200,
+        plannerBenefitsValue: 250
       },
       {
         slug: 'no-bonus-card',
@@ -213,7 +233,9 @@ describe('buildPlanRecommendationsFromQuiz', () => {
         score: 6,
         bestSignUpBonusValue: 0,
         bestSignUpBonusSpendRequired: 0,
-        bestSignUpBonusSpendPeriodDays: 90
+        bestSignUpBonusSpendPeriodDays: 90,
+        totalBenefitsValue: 0,
+        plannerBenefitsValue: 0
       }
     ];
 

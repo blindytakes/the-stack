@@ -15,6 +15,7 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "banking:import": "tsx prisma/import-banking-bonuses.ts",
+    "card-benefits:import": "tsx prisma/import-card-benefits.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

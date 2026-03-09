@@ -51,6 +51,12 @@ const basePayload = buildPlanResultsPayload({
       title: 'Test Card',
       provider: 'Test Bank',
       estimatedNetValue: 500,
+      valueBreakdown: {
+        headlineValue: 750,
+        headlineLabel: 'Welcome bonus',
+        benefitAdjustment: 125,
+        annualFee: 375
+      },
       priorityScore: 620,
       effort: 'medium',
       detailPath: '/cards/test',

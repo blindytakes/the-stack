@@ -28,10 +28,41 @@ type TimelineEntry = {
   payoutDate: Date;
 };
 const TIMELINE_DAYS = 365;
+const MIN_VISIBLE_BENEFIT_ADJUSTMENT = 25;
 
 function formatValue(value: number) {
   const rounded = Math.round(value);
   return `$${rounded.toLocaleString()}`;
+}
+
+function formatSignedValue(value: number, tone: 'positive' | 'negative') {
+  return `${tone === 'positive' ? '+' : '-'}${formatValue(value)}`;
+}
+
+function whyThisIsFirst(item: PlannerRecommendation) {
+  const breakdown = item.valueBreakdown;
+
+  if (item.kind === 'bank_bonus') {
+    if ((breakdown?.headlineValue ?? 0) >= 1000) {
+      return 'Large cash bonus that meaningfully lifts total payout.';
+    }
+    if ((breakdown?.estimatedFees ?? 0) === 0) {
+      return 'Cash bonus with minimal fee drag and a clear payout path.';
+    }
+    return 'Cash bonus with requirements that fit the current plan pace.';
+  }
+
+  if ((breakdown?.headlineValue ?? 0) >= 750) {
+    return 'Large welcome bonus with a manageable spend window.';
+  }
+  if ((breakdown?.annualFee ?? 0) === 0) {
+    return 'No annual fee and an easy bonus move to stack early.';
+  }
+  if ((breakdown?.benefitAdjustment ?? 0) >= 75) {
+    return 'Strong welcome bonus with useful perks that help offset the fee.';
+  }
+
+  return 'Solid welcome bonus that fits the current spend pace.';
 }
 
 function formatShortDate(date: Date) {
@@ -190,13 +221,59 @@ const exclusionActions: Record<PlannerExclusionReason, string> = {
 };
 
 function RecommendationCard({ item }: { item: PlannerRecommendation }) {
+  const breakdown = item.valueBreakdown;
+  const cardBenefitAdjustment = breakdown?.benefitAdjustment ?? 0;
+  const cardAnnualFee = breakdown?.annualFee ?? 0;
+  const bankEstimatedFees = breakdown?.estimatedFees ?? 0;
+
   return (
     <article className="rounded-2xl border border-white/10 bg-bg-surface p-5">
       <p className="text-xs uppercase tracking-[0.25em] text-text-muted">{item.provider}</p>
       <h3 className="mt-2 text-lg font-semibold text-text-primary">{item.title}</h3>
       <p className="mt-2 text-sm text-text-secondary">
-        Estimated net value: <span className="font-semibold text-brand-teal">{formatValue(item.estimatedNetValue)}</span>
+        {breakdown?.headlineLabel ?? 'Bonus value'}:{' '}
+        <span className="font-semibold text-brand-teal">
+          {formatValue(breakdown?.headlineValue ?? item.estimatedNetValue)}
+        </span>
       </p>
+      {item.kind === 'card_bonus' && breakdown ? (
+        <div className="mt-3 space-y-1 text-xs text-text-muted">
+          {cardBenefitAdjustment >= MIN_VISIBLE_BENEFIT_ADJUSTMENT && (
+            <div className="flex items-center justify-between gap-3">
+              <span>Usable benefits adjustment</span>
+              <span className="font-semibold text-brand-teal">{formatSignedValue(cardBenefitAdjustment, 'positive')}</span>
+            </div>
+          )}
+          {cardAnnualFee > 0 && (
+            <div className="flex items-center justify-between gap-3">
+              <span>Annual fee</span>
+              <span className="font-semibold text-brand-coral">{formatSignedValue(cardAnnualFee, 'negative')}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-2 text-text-secondary">
+            <span>Open value est.</span>
+            <span className="font-semibold text-text-primary">{formatValue(item.estimatedNetValue)}</span>
+          </div>
+        </div>
+      ) : item.kind === 'bank_bonus' && breakdown ? (
+        <div className="mt-3 space-y-1 text-xs text-text-muted">
+          {bankEstimatedFees > 0 && (
+            <div className="flex items-center justify-between gap-3">
+              <span>Estimated fees</span>
+              <span className="font-semibold text-brand-coral">{formatSignedValue(bankEstimatedFees, 'negative')}</span>
+            </div>
+          )}
+          <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-2 text-text-secondary">
+            <span>Net value est.</span>
+            <span className="font-semibold text-text-primary">{formatValue(item.estimatedNetValue)}</span>
+          </div>
+        </div>
+      ) : (
+        <p className="mt-1 text-xs text-text-muted">
+          Estimated value: <span className="font-semibold text-text-primary">{formatValue(item.estimatedNetValue)}</span>
+        </p>
+      )}
+      <p className="mt-3 text-xs text-text-secondary">Why this is first: {whyThisIsFirst(item)}</p>
       <p className="mt-1 text-xs text-text-muted">
         Effort: {item.effort}
         {item.timelineDays ? ` • timeline: ${item.timelineDays} days` : ''}
@@ -310,19 +387,22 @@ function PlanSummary({
   return (
     <div>
       <div className="rounded-2xl border border-brand-teal/30 bg-brand-teal/10 p-5">
-        <p className="text-xs uppercase tracking-[0.25em] text-text-muted">12-Month Plan Value</p>
+        <p className="text-xs uppercase tracking-[0.25em] text-text-muted">12-Month Bonus-First Estimate</p>
         <p className="mt-2 font-heading text-4xl text-text-primary">{formatValue(totalValue)}</p>
         <p className="mt-2 text-sm text-text-secondary">
           {cardsOnlyMode
-            ? `Card bonuses: ${formatValue(cardValue)}`
-            : `Card bonuses: ${formatValue(cardValue)} • Banking bonuses: ${formatValue(bankingValue)}`}
+            ? `Card open-value est.: ${formatValue(cardValue)}`
+            : `Card open-value est.: ${formatValue(cardValue)} • Banking net est.: ${formatValue(bankingValue)}`}
+        </p>
+        <p className="mt-2 text-xs text-text-muted">
+          Card values prioritize welcome bonuses, then apply conservative perk adjustments and annual fees.
         </p>
       </div>
 
       <section className="mt-8">
         <h2 className="font-heading text-2xl text-text-primary">Start Today</h2>
         <p className="mt-2 text-sm text-text-secondary">
-          Start earning your money now with these highest-priority actions.
+          Open these highest-priority bonus moves first.
         </p>
         <div className={`mt-4 grid gap-4 ${doNow.length > 1 ? 'md:grid-cols-2' : ''}`}>
           {doNow.length > 0 ? (
@@ -525,8 +605,8 @@ export function PlanResultsView() {
       </h1>
       <p className="mt-3 text-sm text-text-secondary">
         {cardsOnlyMode
-          ? 'Credit card bonuses in one focused 12-month execution roadmap.'
-          : 'Card bonuses and banking bonuses in one coordinated action plan.'}
+          ? 'We prioritize the biggest card bonuses you can realistically earn, then apply conservative perk and fee adjustments.'
+          : 'We prioritize the biggest card and bank bonuses you can realistically earn, with conservative fee and perk adjustments.'}
       </p>
       {state.status === 'recovered' && (
         <p className="mt-3 text-sm text-brand-gold">

@@ -1,4 +1,5 @@
 import type { QuizRequest } from '@/lib/quiz-engine';
+import { scoreScheduleContribution } from '@/lib/scoring-policy';
 
 export type PlanScheduleLane = 'cards' | 'banking';
 
@@ -160,7 +161,10 @@ function monthlySpendLoad(recommendation: SchedulablePlanRecommendation): number
 }
 
 function contributionScore(recommendation: SchedulablePlanRecommendation): number {
-  return Math.round(recommendation.estimatedNetValue * 100) + recommendation.priorityScore;
+  return scoreScheduleContribution({
+    estimatedNetValue: recommendation.estimatedNetValue,
+    priorityScore: recommendation.priorityScore
+  });
 }
 
 export function getPlanPaceConfig(pace: QuizRequest['pace']): PlanPaceConfig {

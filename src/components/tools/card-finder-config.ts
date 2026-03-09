@@ -82,18 +82,5 @@ export const cardFinderSteps: FinderStep[] = [
       { label: 'Balanced', value: 'balanced' },
       { label: 'Aggressive', value: 'aggressive' }
     ]
-  },
-  {
-    id: 'state',
-    title: 'Where do you live?',
-    options: [
-      { label: 'California (CA)', value: 'CA' },
-      { label: 'Oregon (OR)', value: 'OR' },
-      { label: 'Washington (WA)', value: 'WA' },
-      { label: 'New York (NY)', value: 'NY' },
-      { label: 'Texas (TX)', value: 'TX' },
-      { label: 'Florida (FL)', value: 'FL' },
-      { label: 'Other U.S. State', value: 'OT' }
-    ]
   }
 ];

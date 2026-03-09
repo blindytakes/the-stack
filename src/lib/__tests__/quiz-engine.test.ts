@@ -14,6 +14,8 @@ function makeCard(overrides: Partial<CardRecord> = {}): CardRecord {
     annualFee: 0,
     creditTierMin: 'good',
     headline: 'A test card',
+    totalBenefitsValue: 0,
+    plannerBenefitsValue: 0,
     ...overrides
   };
 }
@@ -123,6 +125,23 @@ describe('quizRequestSchema', () => {
     if (parsed.success) {
       expect(parsed.data.state).toBe('NY');
       expect(parsed.data.monthlySpend).toBe('from_2500_to_5000');
+    }
+  });
+
+  it('defaults state to OT when location is omitted', () => {
+    const parsed = quizRequestSchema.safeParse({
+      goal: 'cashback',
+      spend: 'dining',
+      fee: 'no_fee',
+      credit: 'good',
+      directDeposit: 'yes',
+      openingCash: 'from_2000_to_10000',
+      monthlySpend: 'from_2500_to_5000',
+      pace: 'balanced'
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.state).toBe('OT');
     }
   });
 

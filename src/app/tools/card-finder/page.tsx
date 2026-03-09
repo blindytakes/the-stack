@@ -5,7 +5,7 @@ import { ToolPageShell } from '@/components/layout/tool-page-shell';
 export const metadata: Metadata = {
   title: 'Payout Planner',
   description:
-    'Answer a few questions to build a personalized offer strategy based on your spending goals and credit profile.'
+    'Build a full bonus plan across cards and bank offers, or choose the shorter card-only path for welcome bonuses only.'
 };
 
 export default function CardFinderPage() {
@@ -16,7 +16,7 @@ export default function CardFinderPage() {
       tag="Tool 01"
       tagColorClassName="text-brand-teal"
       title="Payout Planner"
-      description="Answer a few questions to get a short list of high-fit offers for your spend, fee tolerance, and goals."
+      description="Build a full 12-month bonus plan across cards and bank offers, or switch to the shorter card-only path if you only want welcome bonuses."
     >
       <CardFinderTool />
     </ToolPageShell>

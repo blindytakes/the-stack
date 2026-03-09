@@ -27,6 +27,8 @@ function makeCard(overrides: Partial<CardRecord> = {}): CardRecord {
     annualFee: 0,
     creditTierMin: 'good',
     headline: 'A test card',
+    totalBenefitsValue: 0,
+    plannerBenefitsValue: 0,
     ...overrides
   };
 }
@@ -278,6 +280,7 @@ function makeDbCardRow(overrides: Partial<DbCardRow> = {}): DbCardRow {
     cons: [],
     rewards: [],
     signUpBonuses: [],
+    benefits: [],
     ...overrides
   };
 }
@@ -390,6 +393,148 @@ describe('toCardRecordFromDb', () => {
     expect(result.bestSignUpBonusValue).toBe(750);
     expect(result.bestSignUpBonusSpendRequired).toBe(4000);
     expect(result.bestSignUpBonusSpendPeriodDays).toBe(90);
+  });
+
+  it('derives separate total and conservative planner benefit values', () => {
+    const row = makeDbCardRow({
+      benefits: [
+        {
+          id: 'b1',
+          cardId: 'test-id',
+          category: 'TRAVEL_CREDITS',
+          name: 'Travel credit',
+          description: 'Annual travel credit',
+          estimatedValue: new Prisma.Decimal(300),
+          activationMethod: null,
+          finePrint: null
+        },
+        {
+          id: 'b2',
+          cardId: 'test-id',
+          category: 'OTHER',
+          name: 'Status benefit',
+          description: 'Elite status',
+          estimatedValue: new Prisma.Decimal(75.5),
+          activationMethod: null,
+          finePrint: null
+        },
+        {
+          id: 'b3',
+          cardId: 'test-id',
+          category: 'CELL_PHONE',
+          name: 'Cell Phone Protection',
+          description: 'Insurance benefit',
+          estimatedValue: new Prisma.Decimal(100),
+          activationMethod: null,
+          finePrint: null
+        },
+        {
+          id: 'b3',
+          cardId: 'test-id',
+          category: 'DINING_CREDITS',
+          name: 'DoorDash DashPass Membership',
+          description: 'Membership benefit',
+          estimatedValue: new Prisma.Decimal(96),
+          activationMethod: null,
+          finePrint: null
+        },
+        {
+          id: 'b4',
+          cardId: 'test-id',
+          category: 'OTHER',
+          name: 'Uber Cash',
+          description: 'Monthly Uber credit',
+          estimatedValue: new Prisma.Decimal(120),
+          activationMethod: null,
+          finePrint: null
+        },
+        {
+          id: 'b5',
+          cardId: 'test-id',
+          category: 'OTHER',
+          name: '$50 Annual Hotel Credit',
+          description: 'Portal hotel credit',
+          estimatedValue: new Prisma.Decimal(50),
+          activationMethod: null,
+          finePrint: null
+        },
+        {
+          id: 'b5',
+          cardId: 'test-id',
+          category: 'CONCIERGE',
+          name: 'Concierge',
+          description: 'Unpriced benefit',
+          estimatedValue: null,
+          activationMethod: null,
+          finePrint: null
+        }
+      ]
+    });
+
+    const result = toCardRecordFromDb(row);
+    expect(result.totalBenefitsValue).toBe(741.5);
+    expect(result.plannerBenefitsValue).toBe(396);
+  });
+
+  it('applies realization haircuts to restrictive planner benefits', () => {
+    const row = makeDbCardRow({
+      benefits: [
+        {
+          id: 'b1',
+          cardId: 'test-id',
+          category: 'TRAVEL_CREDITS',
+          name: '$200 Airline Fee Credit',
+          description: 'Incidental airline credit',
+          estimatedValue: new Prisma.Decimal(200),
+          activationMethod: null,
+          finePrint: null
+        },
+        {
+          id: 'b2',
+          cardId: 'test-id',
+          category: 'STREAMING_CREDITS',
+          name: '$300 Digital Entertainment Credit',
+          description: 'Streaming credit',
+          estimatedValue: new Prisma.Decimal(300),
+          activationMethod: null,
+          finePrint: null
+        },
+        {
+          id: 'b3',
+          cardId: 'test-id',
+          category: 'DINING_CREDITS',
+          name: '$400 Resy Credit',
+          description: 'Dining credit',
+          estimatedValue: new Prisma.Decimal(400),
+          activationMethod: null,
+          finePrint: null
+        },
+        {
+          id: 'b4',
+          cardId: 'test-id',
+          category: 'TSA_GLOBAL_ENTRY',
+          name: 'Global Entry Credit',
+          description: 'Application fee credit',
+          estimatedValue: new Prisma.Decimal(30),
+          activationMethod: null,
+          finePrint: null
+        },
+        {
+          id: 'b5',
+          cardId: 'test-id',
+          category: 'OTHER',
+          name: '10,000 Anniversary Bonus Miles',
+          description: 'Anniversary miles',
+          estimatedValue: new Prisma.Decimal(100),
+          activationMethod: null,
+          finePrint: null
+        }
+      ]
+    });
+
+    const result = toCardRecordFromDb(row);
+    expect(result.totalBenefitsValue).toBe(1030);
+    expect(result.plannerBenefitsValue).toBe(725);
   });
 });
 

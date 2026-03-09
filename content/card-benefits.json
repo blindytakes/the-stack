@@ -1,0 +1,1164 @@
+{
+  "cards": [
+    {
+      "slug": "amex-gold-card",
+      "benefits": [
+        {
+          "category": "DINING_CREDITS",
+          "name": "$100 Resy Credit",
+          "description": "Up to $50 in statement credits from January through June and again from July through December for eligible U.S. Resy purchases.",
+          "estimatedValue": 100,
+          "activationMethod": "Enroll and use the Gold Card at eligible U.S. Resy restaurants or other eligible Resy purchases.",
+          "finePrint": "Enrollment required. Semi-annual cap applies."
+        },
+        {
+          "category": "DINING_CREDITS",
+          "name": "$84 Dunkin' Credit",
+          "description": "Up to $7 in monthly statement credits at eligible U.S. Dunkin' locations.",
+          "estimatedValue": 84,
+          "activationMethod": "Enroll and use the Gold Card at eligible U.S. Dunkin' locations.",
+          "finePrint": "Enrollment required. Monthly cap applies."
+        },
+        {
+          "category": "DINING_CREDITS",
+          "name": "$120 Dining Credit",
+          "description": "Up to $10 in monthly statement credits at eligible partners such as Grubhub, The Cheesecake Factory, Goldbelly, Wine.com, and Five Guys.",
+          "estimatedValue": 120,
+          "activationMethod": "Enroll and use the Gold Card with participating dining partners.",
+          "finePrint": "Enrollment required. Monthly cap applies."
+        },
+        {
+          "category": "OTHER",
+          "name": "$120 Uber Cash",
+          "description": "Get $10 in Uber Cash each month for eligible Uber rides and orders in the U.S.",
+          "estimatedValue": 120,
+          "activationMethod": "Add the Gold Card to your Uber account and select an Amex Card for the transaction.",
+          "finePrint": "Monthly credits do not roll over and are limited to eligible U.S. rides and orders."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "The Hotel Collection Benefit",
+          "description": "Eligible bookings through Amex Travel include a property credit toward eligible charges at participating hotels.",
+          "activationMethod": "Book an eligible stay through Amex Travel using the Gold Card.",
+          "finePrint": "Two-night minimum stay required. Eligible charges vary by property."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Baggage Insurance Plan",
+          "description": "Coverage for eligible lost, damaged, or stolen baggage when covered travel is charged to the card.",
+          "activationMethod": "Charge eligible common-carrier travel to the Gold Card.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Car Rental Loss and Damage Insurance",
+          "description": "Coverage for eligible rental car damage or theft when the rental is reserved and paid for with the card.",
+          "activationMethod": "Reserve and pay for the full rental with the Gold Card and decline the rental company's collision damage waiver.",
+          "finePrint": "Coverage type, limits, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Insurance",
+          "description": "Can reimburse certain additional expenses when a covered trip is delayed beyond the stated threshold.",
+          "activationMethod": "Pay for an eligible round-trip fare with the Gold Card.",
+          "finePrint": "Coverage limits and claim conditions apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "Global Assist Hotline",
+          "description": "24/7 emergency coordination services when traveling more than 100 miles from home.",
+          "activationMethod": "Call the assistance line when traveling and support is needed.",
+          "finePrint": "Card Members are responsible for third-party service charges."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty",
+          "description": "Can extend the original manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the Gold Card for eligible purchases and retain supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible purchases against accidental damage, theft, or loss for a limited period after purchase.",
+          "activationMethod": "Use the Gold Card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        }
+      ]
+    },
+    {
+      "slug": "amex-blue-cash-everyday",
+      "benefits": [
+        {
+          "category": "STREAMING_CREDITS",
+          "name": "$84 Disney Bundle Credit",
+          "description": "Up to $7 back each month after spending at least the required amount on an eligible Disney Bundle subscription.",
+          "estimatedValue": 84,
+          "activationMethod": "Enroll and pay for an eligible Disney Bundle subscription with the card.",
+          "finePrint": "Enrollment required. Monthly threshold and eligible subscription terms apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible purchases against accidental damage, theft, or loss for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty",
+          "description": "Can extend the original manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and retain supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "RETURN_PROTECTION",
+          "name": "Return Protection",
+          "description": "Can help when an eligible merchant will not take back a qualifying purchase within the stated time window.",
+          "activationMethod": "Use the card for eligible purchases and submit a qualifying claim.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Car Rental Loss and Damage Insurance",
+          "description": "Coverage for eligible rental car damage or theft when the rental is reserved and paid for with the card.",
+          "activationMethod": "Reserve and pay for the full rental with the card and decline the rental company's collision damage waiver.",
+          "finePrint": "Coverage type, limits, exclusions, and territory rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "amex-blue-cash-preferred",
+      "benefits": [
+        {
+          "category": "STREAMING_CREDITS",
+          "name": "$120 Disney Bundle Credit",
+          "description": "Up to $10 back each month after spending at least the required amount on an eligible Disney Bundle subscription.",
+          "estimatedValue": 120,
+          "activationMethod": "Enroll and pay for an eligible Disney Bundle subscription with the card.",
+          "finePrint": "Enrollment required. Monthly threshold and eligible subscription terms apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible purchases against accidental damage, theft, or loss for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty",
+          "description": "Can extend the original manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and retain supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "RETURN_PROTECTION",
+          "name": "Return Protection",
+          "description": "Can help when an eligible merchant will not take back a qualifying purchase within the stated time window.",
+          "activationMethod": "Use the card for eligible purchases and submit a qualifying claim.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Car Rental Loss and Damage Insurance",
+          "description": "Coverage for eligible rental car damage or theft when the rental is reserved and paid for with the card.",
+          "activationMethod": "Reserve and pay for the full rental with the card and decline the rental company's collision damage waiver.",
+          "finePrint": "Coverage type, limits, exclusions, and territory rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "amex-platinum-card",
+      "benefits": [
+        {
+          "category": "LOUNGE_ACCESS",
+          "name": "American Express Global Lounge Collection",
+          "description": "Access to Centurion Lounges, select Delta Sky Club visits when flying Delta, Priority Pass Select enrollment, and other partner lounges.",
+          "activationMethod": "Use your eligible Platinum Card and enroll in partner programs where required.",
+          "finePrint": "Access rules, guest policies, and visit limits vary by lounge and partner."
+        },
+        {
+          "category": "OTHER",
+          "name": "$200 Uber Cash",
+          "description": "Get $15 in Uber Cash each month plus a $20 bonus in December for eligible Uber rides and orders in the U.S.",
+          "estimatedValue": 200,
+          "activationMethod": "Add the Platinum Card to your Uber account and select an Amex Card for the transaction.",
+          "finePrint": "Monthly credits do not roll over and are limited to eligible U.S. rides and orders."
+        },
+        {
+          "category": "OTHER",
+          "name": "$120 Uber One Credit",
+          "description": "Up to $120 in statement credits each calendar year after purchase of an eligible auto-renewing Uber One membership in the U.S.",
+          "activationMethod": "Pay for an eligible auto-renewing Uber One membership with the Platinum Card.",
+          "finePrint": "Available on eligible U.S. memberships."
+        },
+        {
+          "category": "STREAMING_CREDITS",
+          "name": "$300 Digital Entertainment Credit",
+          "description": "Up to $25 per month in statement credits for eligible purchases with select digital entertainment partners.",
+          "estimatedValue": 300,
+          "activationMethod": "Enroll and pay eligible providers directly with the Platinum Card.",
+          "finePrint": "Enrollment required. Eligible partners and terms may change."
+        },
+        {
+          "category": "DINING_CREDITS",
+          "name": "$400 Resy Credit",
+          "description": "Up to $100 in statement credits each quarter for eligible Resy purchases, including dining at eligible U.S. Resy restaurants.",
+          "estimatedValue": 400,
+          "activationMethod": "Enroll in the benefit and use the Platinum Card for eligible Resy purchases.",
+          "finePrint": "Enrollment required. Quarterly cap applies."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$600 Hotel Credit",
+          "description": "Up to $300 back semi-annually on prepaid Fine Hotels + Resorts or The Hotel Collection bookings through Amex Travel.",
+          "activationMethod": "Book eligible prepaid stays through Amex Travel and pay with the Platinum Card.",
+          "finePrint": "The Hotel Collection requires a two-night minimum stay."
+        },
+        {
+          "category": "OTHER",
+          "name": "Premium Hotel Status",
+          "description": "Complimentary hotel status and on-property benefits are available with participating programs.",
+          "activationMethod": "Enroll through the applicable Amex benefit portal.",
+          "finePrint": "Benefits vary by property and are subject to availability."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$200 Airline Fee Credit",
+          "description": "Up to $200 in statement credits per calendar year for incidental fees with one selected qualifying airline.",
+          "estimatedValue": 200,
+          "activationMethod": "Select one qualifying airline first, then pay eligible incidental fees with the Platinum Card.",
+          "finePrint": "Enrollment required. Airfare does not qualify."
+        },
+        {
+          "category": "OTHER",
+          "name": "$209 CLEAR Plus Credit",
+          "description": "Up to $209 in statement credits per calendar year for an eligible CLEAR Plus membership.",
+          "estimatedValue": 209,
+          "activationMethod": "Enroll and pay for CLEAR Plus with the Platinum Card.",
+          "finePrint": "Subject to auto-renewal and excludes applicable taxes and fees."
+        },
+        {
+          "category": "OTHER",
+          "name": "$200 Oura Ring Credit",
+          "description": "Up to $200 back in statement credits each calendar year on eligible Oura Ring purchases through ouraring.com.",
+          "activationMethod": "Enroll and use the Platinum Card for eligible purchases through ouraring.com.",
+          "finePrint": "Enrollment required."
+        },
+        {
+          "category": "OTHER",
+          "name": "Platinum Nights by Resy",
+          "description": "Special access to exclusive reservations on select nights at participating Resy restaurants in select markets.",
+          "activationMethod": "Access through eligible Resy or Amex channels.",
+          "finePrint": "Availability is limited and market-specific."
+        },
+        {
+          "category": "TSA_GLOBAL_ENTRY",
+          "name": "Global Entry or TSA PreCheck Application Credit",
+          "description": "Receive either a statement credit for Global Entry every 4 years or TSA PreCheck every 4.5 years when the application fee is charged to the card.",
+          "estimatedValue": 30,
+          "activationMethod": "Pay the eligible application fee with the Platinum Card.",
+          "finePrint": "Only one program credit is available during each eligibility window."
+        },
+        {
+          "category": "OTHER",
+          "name": "$100 Saks Fifth Avenue Credit",
+          "description": "Up to $50 in statement credits semi-annually for purchases at Saks Fifth Avenue or saks.com.",
+          "estimatedValue": 100,
+          "activationMethod": "Enroll and use the Platinum Card at Saks Fifth Avenue or saks.com.",
+          "finePrint": "Enrollment required. Semi-annual cap applies."
+        },
+        {
+          "category": "OTHER",
+          "name": "$300 Equinox Credit",
+          "description": "Up to $300 in statement credits each calendar year on an eligible Equinox club membership or Equinox+ digital subscription.",
+          "activationMethod": "Enroll and use the Platinum Card for eligible Equinox charges.",
+          "finePrint": "Enrollment required."
+        },
+        {
+          "category": "OTHER",
+          "name": "Walmart+ Monthly Membership Credit",
+          "description": "Monthly statement credit for one eligible Walmart+ membership paid with the Platinum Card.",
+          "estimatedValue": 155,
+          "activationMethod": "Pay for one eligible monthly Walmart+ membership with the Platinum Card.",
+          "finePrint": "Subject to auto-renewal. Excludes Plus Ups."
+        },
+        {
+          "category": "OTHER",
+          "name": "$300 lululemon Credit",
+          "description": "Up to $75 in statement credits each quarter for eligible U.S. lululemon store purchases.",
+          "activationMethod": "Enroll and use the Platinum Card for eligible lululemon purchases.",
+          "finePrint": "Enrollment required. Quarterly cap applies."
+        }
+      ]
+    },
+    {
+      "slug": "bilt-mastercard",
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "Earn Points on Rent with No Transaction Fee",
+          "description": "Earn points on eligible rent payments without the typical credit card transaction fee.",
+          "activationMethod": "Use the Bilt card or eligible Bilt payment rails for qualifying rent payments.",
+          "finePrint": "Program rules and minimum transaction requirements apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "BiltProtect",
+          "description": "Eligible rent payments can be pulled from a linked bank account while still earning Bilt points.",
+          "activationMethod": "Link an eligible bank account and enable BiltProtect in your Bilt account.",
+          "finePrint": "Subject to account eligibility and program terms."
+        },
+        {
+          "category": "OTHER",
+          "name": "Rent Day Benefits",
+          "description": "Special monthly offers, promotions, or boosted earnings are available on Rent Day.",
+          "activationMethod": "Use the Bilt app and eligible partners during Rent Day promotions.",
+          "finePrint": "Offers, markets, and participating partners can change."
+        },
+        {
+          "category": "OTHER",
+          "name": "Neighborhood Benefits",
+          "description": "Cardholders can unlock rotating local dining, fitness, and lifestyle offers in participating neighborhoods.",
+          "activationMethod": "Browse and activate eligible offers in the Bilt app.",
+          "finePrint": "Availability depends on market and participating merchants."
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-quicksilver",
+      "benefits": [
+        {
+          "category": "PRICE_PROTECTION",
+          "name": "Capital One Travel Protections",
+          "description": "Capital One Travel includes booking tools such as price monitoring, price drop protection, price match, and flexible booking features on eligible bookings.",
+          "activationMethod": "Book through Capital One Travel and use supported features where available.",
+          "finePrint": "Feature availability and terms vary by booking type."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Entertainment Access",
+          "description": "Access to eligible entertainment, sports, and dining events through Capital One Entertainment.",
+          "activationMethod": "Sign in with an eligible card account and purchase available event inventory.",
+          "finePrint": "Inventory is limited and event access varies."
+        },
+        {
+          "category": "OTHER",
+          "name": "Hertz Five Star Status",
+          "description": "Eligible cardholders can enroll in Hertz Five Star status for added rental benefits.",
+          "activationMethod": "Enroll through the eligible Capital One benefits portal.",
+          "finePrint": "Enrollment required. Terms and expiration windows apply."
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-savor-rewards",
+      "benefits": [
+        {
+          "category": "PRICE_PROTECTION",
+          "name": "Capital One Travel Protections",
+          "description": "Capital One Travel includes booking tools such as price monitoring, price drop protection, price match, and flexible booking features on eligible bookings.",
+          "activationMethod": "Book through Capital One Travel and use supported features where available.",
+          "finePrint": "Feature availability and terms vary by booking type."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Entertainment Access",
+          "description": "Access to eligible entertainment, sports, and dining events through Capital One Entertainment.",
+          "activationMethod": "Sign in with an eligible card account and purchase available event inventory.",
+          "finePrint": "Inventory is limited and event access varies."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Dining Access",
+          "description": "Access to select dining reservations and culinary experiences through Capital One Dining.",
+          "activationMethod": "Sign in with an eligible card account and book available offerings.",
+          "finePrint": "Availability varies by city and partner."
+        },
+        {
+          "category": "OTHER",
+          "name": "Hertz Five Star Status",
+          "description": "Eligible cardholders can enroll in Hertz Five Star status for added rental benefits.",
+          "activationMethod": "Enroll through the eligible Capital One benefits portal.",
+          "finePrint": "Enrollment required. Terms and expiration windows apply."
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-spark-cash-plus",
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "$150 Annual Travel Credit After $150,000 Spend",
+          "description": "An annual travel credit is available after meeting the stated annual spend threshold on the account.",
+          "activationMethod": "Meet the qualifying annual spend threshold and redeem through the eligible travel flow.",
+          "finePrint": "This benefit is contingent on meeting the issuer's spend requirement."
+        },
+        {
+          "category": "OTHER",
+          "name": "Flexible Spending Capacity",
+          "description": "The card has no preset spending limit and adapts based on account factors.",
+          "activationMethod": "Use the account normally and manage payments on time.",
+          "finePrint": "Available spending power is not unlimited and changes over time."
+        },
+        {
+          "category": "OTHER",
+          "name": "Employee and Virtual Cards",
+          "description": "Business tools include employee cards and virtual card numbers to help manage spending.",
+          "activationMethod": "Set up employee cards or virtual cards in your Capital One business account.",
+          "finePrint": "Feature availability can vary by account setup."
+        },
+        {
+          "category": "OTHER",
+          "name": "Downloadable Purchase Records",
+          "description": "Business account tools include downloadable purchase records and reporting features.",
+          "activationMethod": "Access reporting tools through your Capital One business account.",
+          "finePrint": "Available features can vary by account and platform."
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-venture-rewards",
+      "benefits": [
+        {
+          "category": "TSA_GLOBAL_ENTRY",
+          "name": "Global Entry or TSA PreCheck Credit",
+          "description": "Receive a statement credit for one qualifying Global Entry or TSA PreCheck application fee during the eligibility window.",
+          "estimatedValue": 30,
+          "activationMethod": "Pay the eligible application fee with the card.",
+          "finePrint": "Credit frequency is limited by the issuer's stated eligibility window."
+        },
+        {
+          "category": "OTHER",
+          "name": "$50 Lifestyle Collection Experience Credit",
+          "description": "Eligible Lifestyle Collection hotel stays can include a $50 experience credit.",
+          "activationMethod": "Book a qualifying stay through Capital One Travel and pay with the card.",
+          "finePrint": "Eligible properties and booking rules apply."
+        },
+        {
+          "category": "PRICE_PROTECTION",
+          "name": "Capital One Travel Protections",
+          "description": "Capital One Travel includes booking tools such as price monitoring, price drop protection, price match, and flexible booking features on eligible bookings.",
+          "activationMethod": "Book through Capital One Travel and use supported features where available.",
+          "finePrint": "Feature availability and terms vary by booking type."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Dining Access",
+          "description": "Access to select dining reservations and culinary experiences through Capital One Dining.",
+          "activationMethod": "Sign in with an eligible card account and book available offerings.",
+          "finePrint": "Availability varies by city and partner."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Entertainment Access",
+          "description": "Access to eligible entertainment, sports, and dining events through Capital One Entertainment.",
+          "activationMethod": "Sign in with an eligible card account and purchase available event inventory.",
+          "finePrint": "Inventory is limited and event access varies."
+        },
+        {
+          "category": "OTHER",
+          "name": "Hertz Five Star Status",
+          "description": "Eligible cardholders can enroll in Hertz Five Star status for added rental benefits.",
+          "activationMethod": "Enroll through the eligible Capital One benefits portal.",
+          "finePrint": "Enrollment required. Terms and expiration windows apply."
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-venture-x",
+      "benefits": [
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$300 Annual Travel Credit",
+          "description": "Receive up to $300 back annually on eligible travel bookings made through Capital One Travel.",
+          "estimatedValue": 300,
+          "activationMethod": "Book eligible travel through Capital One Travel with the card.",
+          "finePrint": "Issuer booking rules and eligible purchase terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "10,000 Anniversary Bonus Miles",
+          "description": "Receive 10,000 bonus miles each year starting on the first account anniversary.",
+          "estimatedValue": 100,
+          "activationMethod": "Keep the account open through the applicable anniversary date.",
+          "finePrint": "Miles are awarded after the anniversary according to issuer terms."
+        },
+        {
+          "category": "TSA_GLOBAL_ENTRY",
+          "name": "Global Entry or TSA PreCheck Credit",
+          "description": "Receive a statement credit for one qualifying Global Entry or TSA PreCheck application fee during the eligibility window.",
+          "estimatedValue": 30,
+          "activationMethod": "Pay the eligible application fee with the card.",
+          "finePrint": "Credit frequency is limited by the issuer's stated eligibility window."
+        },
+        {
+          "category": "LOUNGE_ACCESS",
+          "name": "Capital One Lounge Access",
+          "description": "Access to Capital One Lounges and eligible landing locations for cardholders and permitted guests.",
+          "activationMethod": "Present the eligible card or digital credentials where required.",
+          "finePrint": "Access terms and guest rules can change."
+        },
+        {
+          "category": "LOUNGE_ACCESS",
+          "name": "Priority Pass Select Membership",
+          "description": "Eligible cardholders can enroll in Priority Pass Select for participating airport lounge access.",
+          "activationMethod": "Enroll through the Capital One benefits portal and present active membership credentials.",
+          "finePrint": "Enrollment required. Participating lounges and rules vary."
+        },
+        {
+          "category": "OTHER",
+          "name": "Complimentary PRIOR Subscription",
+          "description": "Eligible cardholders receive a complimentary PRIOR subscription.",
+          "activationMethod": "Activate through the eligible Capital One benefit flow.",
+          "finePrint": "Enrollment or activation may be required."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "Premier Collection and Lifestyle Collection Benefits",
+          "description": "Eligible hotel bookings can include experience credits and space-available property perks.",
+          "activationMethod": "Book qualifying hotels through Capital One Travel and pay with the card.",
+          "finePrint": "Eligible properties and booking rules apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "Hertz President's Circle Status",
+          "description": "Eligible cardholders can enroll in Hertz President's Circle status for enhanced rental benefits.",
+          "activationMethod": "Enroll through the eligible Capital One benefits portal.",
+          "finePrint": "Enrollment required. Terms and expiration windows apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Dining Access",
+          "description": "Access to select dining reservations and culinary experiences through Capital One Dining.",
+          "activationMethod": "Sign in with an eligible card account and book available offerings.",
+          "finePrint": "Availability varies by city and partner."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Entertainment Access",
+          "description": "Access to eligible entertainment, sports, and dining events through Capital One Entertainment.",
+          "activationMethod": "Sign in with an eligible card account and purchase available event inventory.",
+          "finePrint": "Inventory is limited and event access varies."
+        }
+      ]
+    },
+    {
+      "slug": "chase-freedom-flex",
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "DashPass Membership and Quarterly Promos",
+          "description": "Cardholders can receive a complimentary DashPass membership window plus rotating non-restaurant DoorDash promos.",
+          "activationMethod": "Activate the offer with DoorDash using the eligible card.",
+          "finePrint": "Enrollment required. Promotional windows and terms can change."
+        },
+        {
+          "category": "OTHER",
+          "name": "Lyft Partner Offer",
+          "description": "Eligible Lyft purchases can qualify for an elevated partner offer during the issuer's promotional period.",
+          "activationMethod": "Pay eligible Lyft purchases with the card during the active promotion.",
+          "finePrint": "Offer terms and expiration dates apply."
+        },
+        {
+          "category": "CELL_PHONE",
+          "name": "Cell Phone Protection",
+          "description": "Can provide coverage for eligible cell phone damage or theft when the monthly bill is paid with the card.",
+          "activationMethod": "Pay the eligible monthly wireless bill with the card and file a qualifying claim when needed.",
+          "finePrint": "Coverage limits, deductibles, exclusions, and claim rules apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Auto Rental Collision Damage Waiver",
+          "description": "Can provide theft and collision coverage for eligible rental vehicles.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Insurance",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Reimbursement",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "chase-freedom-unlimited",
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "DashPass Membership and Quarterly Promos",
+          "description": "Cardholders can receive a complimentary DashPass membership window plus rotating non-restaurant DoorDash promos.",
+          "activationMethod": "Activate the offer with DoorDash using the eligible card.",
+          "finePrint": "Enrollment required. Promotional windows and terms can change."
+        },
+        {
+          "category": "OTHER",
+          "name": "Lyft Partner Offer",
+          "description": "Eligible Lyft purchases can qualify for an elevated partner offer during the issuer's promotional period.",
+          "activationMethod": "Pay eligible Lyft purchases with the card during the active promotion.",
+          "finePrint": "Offer terms and expiration dates apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Auto Rental Collision Damage Waiver",
+          "description": "Can provide theft and collision coverage for eligible rental vehicles.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Insurance",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Reimbursement",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "chase-sapphire-preferred",
+      "benefits": [
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$50 Annual Hotel Credit",
+          "description": "Receive up to $50 in statement credits each account anniversary year for eligible hotel stays booked through Chase Travel.",
+          "estimatedValue": 50,
+          "activationMethod": "Book eligible hotel stays through Chase Travel and pay with the card.",
+          "finePrint": "Eligible booking rules and Chase Travel terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "DashPass Membership",
+          "description": "Cardholders can receive a complimentary DashPass membership window with DoorDash benefits.",
+          "activationMethod": "Activate the offer with DoorDash using the eligible card.",
+          "finePrint": "Enrollment required. Promotional window and terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "DoorDash Monthly Promo",
+          "description": "Eligible cardholders can receive a monthly DoorDash promotional benefit during the active program window.",
+          "activationMethod": "Use the eligible card with DoorDash during the promotion period.",
+          "finePrint": "Promotional windows and merchant terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "10% Anniversary Points Boost",
+          "description": "Each account anniversary, you can receive bonus points equal to 10% of the total purchases made during the prior year.",
+          "activationMethod": "Keep the account open through the anniversary and meet issuer terms.",
+          "finePrint": "Points are awarded under the issuer's anniversary calculation rules."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Insurance",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Reimbursement",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Baggage Delay Insurance",
+          "description": "Can reimburse essential purchases when baggage is delayed on a covered trip.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Primary Auto Rental Coverage",
+          "description": "Can provide primary coverage for theft and collision damage on eligible rental cars.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "chase-sapphire-reserve",
+      "benefits": [
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$300 Annual Travel Credit",
+          "description": "Up to $300 in statement credits each account anniversary year for eligible travel purchases.",
+          "estimatedValue": 300,
+          "activationMethod": "Use the card for eligible travel purchases.",
+          "finePrint": "Purchases that qualify for the credit do not earn points."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$500 Credit for Stays with The Edit",
+          "description": "Up to $250 per prepaid booking, up to $500 annually, for eligible stays booked through The Edit by Chase Travel.",
+          "activationMethod": "Book eligible prepaid stays through The Edit by Chase Travel and pay with the card.",
+          "finePrint": "Two-night minimum required. Purchases that qualify do not earn points."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$250 Credit for Select Chase Travel Hotels",
+          "description": "Up to $250 in statement credits through December 31, 2026 on eligible prepaid Chase Travel hotel bookings at select hotel groups.",
+          "activationMethod": "Book eligible prepaid stays through Chase Travel and pay with the card.",
+          "finePrint": "Two-night minimum required. Benefit is limited to qualifying hotel groups and expires December 31, 2026."
+        },
+        {
+          "category": "LOUNGE_ACCESS",
+          "name": "Chase Sapphire Reserve Lounge Network",
+          "description": "Access to Chase Sapphire Lounges by The Club and Priority Pass airport lounges with permitted guests.",
+          "activationMethod": "Present the eligible card or activated lounge credentials where required.",
+          "finePrint": "Access rules, guest policies, and participating lounge availability may change."
+        },
+        {
+          "category": "TSA_GLOBAL_ENTRY",
+          "name": "Global Entry, TSA PreCheck, or NEXUS Fee Credit",
+          "description": "Receive one statement credit of up to the listed amount every four years for a qualifying application fee.",
+          "estimatedValue": 30,
+          "activationMethod": "Pay the eligible application fee with the card.",
+          "finePrint": "Only qualifying Global Entry, TSA PreCheck, or NEXUS application fees are eligible."
+        },
+        {
+          "category": "DINING_CREDITS",
+          "name": "$300 Dining Credit",
+          "description": "Up to $150 in statement credits from January through June and again from July through December at eligible Sapphire Exclusive Tables restaurants on OpenTable.",
+          "estimatedValue": 300,
+          "activationMethod": "Use the card at eligible Sapphire Exclusive Tables restaurants on OpenTable.",
+          "finePrint": "Semi-annual cap applies and eligible restaurants may change."
+        },
+        {
+          "category": "STREAMING_CREDITS",
+          "name": "$288 in Apple TV and Apple Music Subscriptions",
+          "description": "Statement credits for Apple TV+ and Apple Music subscriptions up to the issuer's stated annual limit.",
+          "estimatedValue": 288,
+          "activationMethod": "Activate the offer and pay eligible Apple subscriptions with the card.",
+          "finePrint": "Activation and partner terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "$120 DashPass Membership",
+          "description": "Cardholders can receive a complimentary DashPass membership window with DoorDash benefits.",
+          "activationMethod": "Activate the offer with DoorDash using the eligible card.",
+          "finePrint": "Enrollment required. Promotional window and terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "$300 in DoorDash Promos",
+          "description": "Eligible cardholders can receive a DoorDash promotional benefit during the active program window.",
+          "activationMethod": "Use the eligible card with DoorDash during the promotion period.",
+          "finePrint": "Promotional windows and merchant terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "$300 in StubHub Credits",
+          "description": "Eligible StubHub purchases can qualify for statement credits during the active program window.",
+          "activationMethod": "Use the card for eligible StubHub purchases during the promotion period.",
+          "finePrint": "Activation, merchant, and promotional terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "$120 in Lyft Credits",
+          "description": "Eligible Lyft purchases can receive statement credits during the active program window.",
+          "activationMethod": "Use the card for eligible Lyft purchases during the promotion period.",
+          "finePrint": "Activation, merchant, and promotional terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "IHG One Rewards Platinum Elite Status",
+          "description": "Eligible cardholders can enroll in hotel elite status benefits with IHG One Rewards.",
+          "activationMethod": "Complete the issuer's activation or enrollment flow.",
+          "finePrint": "Enrollment required. Hotel benefits vary by property and stay."
+        },
+        {
+          "category": "OTHER",
+          "name": "Reserve Travel Designers",
+          "description": "Cardholders can access travel planning assistance through the issuer's travel advisor program.",
+          "activationMethod": "Contact the eligible travel service channel.",
+          "finePrint": "Availability and service scope may vary."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Primary Auto Rental Coverage",
+          "description": "Can provide primary coverage for theft and collision damage on eligible rental cars.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Insurance",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Reimbursement",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Lost Luggage Reimbursement",
+          "description": "Can reimburse eligible losses when baggage is lost or damaged on a covered trip.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Baggage Delay Insurance",
+          "description": "Can reimburse essential purchases when baggage is delayed on a covered trip.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "chase-ink-business-cash",
+      "benefits": [
+        {
+          "category": "RENTAL_CAR",
+          "name": "Auto Rental Collision Damage Waiver",
+          "description": "Can provide theft and collision coverage for eligible rental vehicles used for business purposes.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Travel and Emergency Assistance Services",
+          "description": "Access to emergency referrals and support while traveling away from home.",
+          "activationMethod": "Call the eligible assistance line when support is needed.",
+          "finePrint": "Cardholders are responsible for charges from third-party service providers."
+        },
+        {
+          "category": "OTHER",
+          "name": "Roadside Dispatch",
+          "description": "Access to a pay-per-use roadside assistance dispatch service.",
+          "activationMethod": "Call the roadside dispatch number when eligible assistance is needed.",
+          "finePrint": "Service fees apply and coverage is subject to program terms."
+        }
+      ]
+    },
+    {
+      "slug": "chase-ink-business-preferred",
+      "benefits": [
+        {
+          "category": "CELL_PHONE",
+          "name": "Cell Phone Protection",
+          "description": "Can provide coverage for eligible cell phone damage or theft when the monthly bill is paid with the card.",
+          "activationMethod": "Pay the eligible monthly wireless bill with the card and file a qualifying claim when needed.",
+          "finePrint": "Coverage limits, deductibles, exclusions, and claim rules apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "DashPass Membership and Quarterly Promos",
+          "description": "Cardholders can receive a complimentary DashPass membership window plus rotating non-restaurant DoorDash promos.",
+          "activationMethod": "Activate the offer with DoorDash using the eligible card.",
+          "finePrint": "Enrollment required. Promotional windows and terms can change."
+        },
+        {
+          "category": "OTHER",
+          "name": "Lyft Partner Offer",
+          "description": "Eligible Lyft purchases can qualify for an elevated partner offer during the issuer's promotional period.",
+          "activationMethod": "Pay eligible Lyft purchases with the card during the active promotion.",
+          "finePrint": "Offer terms and expiration dates apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Primary Auto Rental Coverage",
+          "description": "Can provide primary coverage for theft and collision damage on eligible rental cars used for business purposes.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Insurance",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Reimbursement",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "chase-ink-business-unlimited",
+      "benefits": [
+        {
+          "category": "RENTAL_CAR",
+          "name": "Auto Rental Collision Damage Waiver",
+          "description": "Can provide theft and collision coverage for eligible rental vehicles used for business purposes.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Travel and Emergency Assistance Services",
+          "description": "Access to emergency referrals and support while traveling away from home.",
+          "activationMethod": "Call the eligible assistance line when support is needed.",
+          "finePrint": "Cardholders are responsible for charges from third-party service providers."
+        },
+        {
+          "category": "OTHER",
+          "name": "Roadside Dispatch",
+          "description": "Access to a pay-per-use roadside assistance dispatch service.",
+          "activationMethod": "Call the roadside dispatch number when eligible assistance is needed.",
+          "finePrint": "Service fees apply and coverage is subject to program terms."
+        }
+      ]
+    },
+    {
+      "slug": "citi-custom-cash-card",
+      "benefits": []
+    },
+    {
+      "slug": "citi-double-cash-card",
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "Citi Entertainment",
+          "description": "Eligible cardholders can access select tickets, experiences, and presales through Citi Entertainment.",
+          "activationMethod": "Use an eligible Citi card and follow the Citi Entertainment purchase flow.",
+          "finePrint": "Inventory is limited and terms vary by event."
+        },
+        {
+          "category": "OTHER",
+          "name": "Citi Travel Access",
+          "description": "Cardholders can book eligible travel through Citi Travel and access current portal offers.",
+          "activationMethod": "Sign in to Citi Travel with an eligible account and book through the platform.",
+          "finePrint": "Portal terms, inventory, and offer availability can change."
+        }
+      ]
+    },
+    {
+      "slug": "citi-strata-premier-card",
+      "benefits": [
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$100 Annual Hotel Benefit",
+          "description": "Eligible hotel stays booked through Citi Travel can receive a $100 benefit once per calendar year.",
+          "estimatedValue": 100,
+          "activationMethod": "Book an eligible hotel stay through Citi Travel and pay with the card.",
+          "finePrint": "Issuer minimum stay and booking rules apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "Citi Entertainment",
+          "description": "Eligible cardholders can access select tickets, experiences, and presales through Citi Entertainment.",
+          "activationMethod": "Use an eligible Citi card and follow the Citi Entertainment purchase flow.",
+          "finePrint": "Inventory is limited and terms vary by event."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Protection",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Protection",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Baggage Delay Protection",
+          "description": "Can reimburse essential purchases when baggage is delayed on a covered trip.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Car Rental Protection",
+          "description": "Can provide coverage for eligible rental car damage or theft on qualifying rentals.",
+          "activationMethod": "Pay for the full rental with the card and follow issuer claim requirements.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "discover-it-cash-back",
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "Free Social Security Number Alerts",
+          "description": "Discover can monitor for certain Social Security number activity and alert eligible cardholders when it finds matches.",
+          "activationMethod": "Activate the benefit through your Discover account.",
+          "finePrint": "Monitoring scope and alert terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "$0 Fraud Liability Guarantee",
+          "description": "Discover states you are not responsible for unauthorized purchases on your card account.",
+          "activationMethod": "Report suspected unauthorized charges to Discover.",
+          "finePrint": "Issuer fraud liability terms apply."
+        }
+      ]
+    },
+    {
+      "slug": "wells-fargo-active-cash",
+      "benefits": [
+        {
+          "category": "CELL_PHONE",
+          "name": "Cellular Telephone Protection",
+          "description": "Can provide coverage for eligible cell phone damage or theft when the monthly wireless bill is paid with the card.",
+          "activationMethod": "Pay the eligible monthly wireless bill with the card and file a qualifying claim when needed.",
+          "finePrint": "Coverage limits, deductibles, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "wells-fargo-autograph",
+      "benefits": [
+        {
+          "category": "CELL_PHONE",
+          "name": "Cellular Telephone Protection",
+          "description": "Can provide coverage for eligible cell phone damage or theft when the monthly wireless bill is paid with the card.",
+          "activationMethod": "Pay the eligible monthly wireless bill with the card and file a qualifying claim when needed.",
+          "finePrint": "Coverage limits, deductibles, exclusions, and claim rules apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Auto Rental Collision Damage Waiver",
+          "description": "Can provide coverage for eligible rental car damage or theft on qualifying rentals.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision damage waiver.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Travel and Emergency Assistance Services",
+          "description": "Access to referrals and coordination support while traveling away from home.",
+          "activationMethod": "Call the eligible assistance line when support is needed.",
+          "finePrint": "Cardholders are responsible for charges from third-party service providers."
+        },
+        {
+          "category": "OTHER",
+          "name": "Roadside Dispatch",
+          "description": "Access to a pay-per-use roadside assistance dispatch service.",
+          "activationMethod": "Call the roadside dispatch number when eligible assistance is needed.",
+          "finePrint": "Service fees apply and coverage is subject to program terms."
+        },
+        {
+          "category": "CONCIERGE",
+          "name": "Visa Signature Concierge",
+          "description": "Eligible cardholders can request concierge assistance for travel, dining, and event planning needs.",
+          "activationMethod": "Contact the concierge service with an eligible card account.",
+          "finePrint": "Service availability and scope can vary."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "Visa Signature Luxury Hotel Collection",
+          "description": "Eligible bookings can include space-available upgrades and on-property hotel benefits.",
+          "activationMethod": "Book qualifying stays through the Visa Signature Luxury Hotel Collection portal.",
+          "finePrint": "Eligible properties and booking rules apply."
+        }
+      ]
+    }
+  ]
+}

@@ -61,6 +61,8 @@ describe('plan-service', () => {
           annualFee: 0,
           creditTierMin: 'good',
           headline: 'Test headline',
+          totalBenefitsValue: 0,
+          plannerBenefitsValue: 0,
           bestSignUpBonusValue: 500,
           bestSignUpBonusSpendRequired: 3000,
           bestSignUpBonusSpendPeriodDays: 90

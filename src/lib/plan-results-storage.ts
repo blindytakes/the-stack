@@ -19,6 +19,15 @@ const plannerRecommendationSchema = z.object({
   title: z.string().min(1),
   provider: z.string().min(1),
   estimatedNetValue: z.number().finite(),
+  valueBreakdown: z
+    .object({
+      headlineValue: z.number().finite(),
+      headlineLabel: z.string().min(1),
+      benefitAdjustment: z.number().nonnegative().optional(),
+      annualFee: z.number().nonnegative().optional(),
+      estimatedFees: z.number().nonnegative().optional()
+    })
+    .optional(),
   priorityScore: z.number().finite().default(0),
   effort: z.enum(['low', 'medium', 'high']),
   detailPath: z.string().min(1),

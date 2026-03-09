@@ -75,6 +75,17 @@ npm run banking:import -- ./content/banking-bonuses.json
 npm run banking:import -- ./content/banking-bonuses.json --deactivate-missing
 ```
 
+### Card benefits import
+
+Use the manual import script to refresh card benefit rows from JSON.
+
+```bash
+# Refresh the checked-in card benefit file
+npm run card-benefits:import -- ./content/card-benefits.json
+```
+
+Keep `estimatedValue` conservative. Use it for recurring value you can defend; leave it blank for highly conditional, promotional, or hard-to-realize perks.
+
 ## Deliverability
 
 See [docs/deliverability.md](docs/deliverability.md) for SPF/DKIM/DMARC and monitoring setup.

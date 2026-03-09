@@ -34,7 +34,9 @@ const cardRecordSchema = z.object({
   longDescription: z.string().optional(),
   editorRating: z.number().finite().optional(),
   pros: z.array(z.string()).optional(),
-  cons: z.array(z.string()).optional()
+  cons: z.array(z.string()).optional(),
+  totalBenefitsValue: z.number().finite().default(0),
+  plannerBenefitsValue: z.number().finite().default(0)
 });
 
 const rewardDetailSchema = z.object({

@@ -1,10 +1,23 @@
-import type { CardRecord, CreditTierValue } from '@/lib/cards';
+import type { CardRecord } from '@/lib/cards';
 import type { QuizRequest, QuizResult } from '@/lib/quiz-engine';
 import {
   getBankingOfferRequirements,
   type BankingBonusListItem,
   type BankingBonusRecord
 } from '@/lib/banking-bonuses';
+import {
+  bankingDepositFits,
+  creditTierLabel,
+  estimateBankBonusNetValue,
+  estimateCardBenefitAdjustment,
+  estimateCardOpenValue,
+  getBankRecommendationEffort,
+  getCardRecommendationEffort,
+  isStateRestricted,
+  meetsCreditTier,
+  scoreBankingPriority,
+  scoreCardOpenPriority
+} from '@/lib/scoring-policy';
 import {
   buildPlanSchedule,
   type PlanScheduleIssue,
@@ -32,6 +45,14 @@ export type PlannerExcludedOffer = {
   reasons: PlannerExclusionReason[];
 };
 
+export type PlannerRecommendationValueBreakdown = {
+  headlineValue: number;
+  headlineLabel: string;
+  benefitAdjustment?: number;
+  annualFee?: number;
+  estimatedFees?: number;
+};
+
 export type PlannerRecommendation = {
   id: string;
   lane: PlannerRecommendationLane;
@@ -39,6 +60,7 @@ export type PlannerRecommendation = {
   title: string;
   provider: string;
   estimatedNetValue: number;
+  valueBreakdown?: PlannerRecommendationValueBreakdown;
   priorityScore: number;
   effort: PlannerRecommendationEffort;
   detailPath: string;
@@ -56,51 +78,10 @@ export type PlannerRecommendationBundle = {
 
 export type CardPlannerInput = Pick<CardRecord, 'slug' | 'name' | 'issuer' | 'annualFee' | 'creditTierMin'> & {
   bonusValue: number;
+  plannerBenefitsValue: number;
   spendRequired: number;
   spendPeriodDays: number;
 };
-
-const creditTierLabel: Record<CreditTierValue, string> = {
-  excellent: 'Excellent',
-  good: 'Good',
-  fair: 'Fair',
-  building: 'Building'
-};
-
-const creditRank: Record<CreditTierValue, number> = {
-  excellent: 4,
-  good: 3,
-  fair: 2,
-  building: 1
-};
-
-function cardEffortFromSpend(spendRequired: number): PlannerRecommendationEffort {
-  if (spendRequired <= 2000) return 'low';
-  if (spendRequired <= 5000) return 'medium';
-  return 'high';
-}
-
-function bankEffortFromOffer(offer: BankingBonusRecord): PlannerRecommendationEffort {
-  const score =
-    offer.requiredActions.length +
-    (offer.directDeposit.required ? 2 : 0) +
-    (typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit >= 10000 ? 1 : 0) +
-    (typeof offer.holdingPeriodDays === 'number' && offer.holdingPeriodDays >= 120 ? 1 : 0);
-
-  if (score <= 2) return 'low';
-  if (score <= 4) return 'medium';
-  return 'high';
-}
-
-function asNetValue(value: number): number {
-  return Number(value.toFixed(2));
-}
-
-function availableOpeningCash(input: QuizRequest): number {
-  if (input.openingCash === 'lt_2000') return 1999;
-  if (input.openingCash === 'from_2000_to_10000') return 10000;
-  return Number.POSITIVE_INFINITY;
-}
 
 function getCardExclusionReasons(card: QuizResult, input: QuizRequest): PlannerExclusionReason[] {
   const reasons: PlannerExclusionReason[] = [];
@@ -117,7 +98,7 @@ function getCardExclusionReasons(card: QuizResult, input: QuizRequest): PlannerE
     reasons.push('fee_preference');
   }
 
-  if (creditRank[card.creditTierMin] > creditRank[input.credit]) {
+  if (!meetsCreditTier(card.creditTierMin, input.credit)) {
     reasons.push('credit_tier');
   }
 
@@ -134,74 +115,24 @@ function getBankingExclusionReasons(
     reasons.push('direct_deposit_required');
   }
 
-  if (
-    offer.stateRestrictions &&
-    offer.stateRestrictions.length > 0 &&
-    !offer.stateRestrictions.includes(input.state)
-  ) {
+  if (isStateRestricted(offer, input.state)) {
     reasons.push('state_restricted');
   }
 
-  const availableCash = availableOpeningCash(input);
-  if (
-    typeof offer.minimumOpeningDeposit === 'number' &&
-    Number.isFinite(availableCash) &&
-    offer.minimumOpeningDeposit > availableCash
-  ) {
+  if (!bankingDepositFits(offer.minimumOpeningDeposit, input.openingCash)) {
     reasons.push('opening_deposit_too_high');
   }
 
   return reasons;
 }
 
-function cardPriorityScore(
-  card: QuizResult,
-  recommendation: PlannerRecommendation,
-  input: QuizRequest
-): number {
-  let score = recommendation.estimatedNetValue + card.score * 60;
-
-  if (recommendation.effort === 'low') score += 50;
-  if (recommendation.effort === 'medium') score += 15;
-  if (recommendation.effort === 'high') score -= 25;
-
-  if (recommendation.timelineDays && recommendation.timelineDays <= 90) score += 20;
-  else if (recommendation.timelineDays && recommendation.timelineDays <= 120) score += 10;
-
-  if (input.fee === 'no_fee' && card.annualFee === 0) score += 25;
-  if (input.fee === 'up_to_95' && card.annualFee <= 95) score += 15;
-
-  return Math.round(score);
-}
-
-function bankingPriorityScore(
-  offer: BankingBonusListItem,
-  recommendation: PlannerRecommendation,
-  input: QuizRequest
-): number {
-  let score = recommendation.estimatedNetValue;
-
-  if (recommendation.effort === 'low') score += 45;
-  if (recommendation.effort === 'medium') score += 15;
-  if (recommendation.effort === 'high') score -= 20;
-
-  if (recommendation.timelineDays && recommendation.timelineDays <= 90) score += 20;
-  else if (recommendation.timelineDays && recommendation.timelineDays <= 120) score += 10;
-
-  if (!offer.directDeposit.required) score += 20;
-  else if (input.directDeposit === 'yes') score += 8;
-
-  if (!offer.stateRestrictions || offer.stateRestrictions.length === 0) score += 10;
-
-  const deposit = offer.minimumOpeningDeposit ?? 0;
-  if (deposit <= 2000) score += 20;
-  else if (deposit <= 10000) score += 10;
-
-  return Math.round(score);
-}
-
 export function toPlannerRecommendationFromCard(input: CardPlannerInput): PlannerRecommendation {
-  const estimatedNetValue = asNetValue(input.bonusValue - input.annualFee);
+  const benefitAdjustment = estimateCardBenefitAdjustment(input.plannerBenefitsValue);
+  const estimatedNetValue = estimateCardOpenValue({
+    bonusValue: input.bonusValue,
+    plannerBenefitsValue: input.plannerBenefitsValue,
+    annualFee: input.annualFee
+  });
   const spendMonths = Math.max(1, Math.round(input.spendPeriodDays / 30));
 
   return {
@@ -211,8 +142,14 @@ export function toPlannerRecommendationFromCard(input: CardPlannerInput): Planne
     title: input.name,
     provider: input.issuer,
     estimatedNetValue,
+    valueBreakdown: {
+      headlineValue: input.bonusValue,
+      headlineLabel: 'Welcome bonus',
+      benefitAdjustment,
+      annualFee: input.annualFee
+    },
     priorityScore: estimatedNetValue,
-    effort: cardEffortFromSpend(input.spendRequired),
+    effort: getCardRecommendationEffort(input.spendRequired),
     detailPath: `/cards/${input.slug}`,
     timelineDays: input.spendPeriodDays,
     keyRequirements: [
@@ -231,7 +168,7 @@ export function toPlannerRecommendationFromCard(input: CardPlannerInput): Planne
 export function toPlannerRecommendationFromBankingBonus(
   input: BankingBonusRecord | BankingBonusListItem
 ): PlannerRecommendation {
-  const estimatedNetValue = asNetValue(input.bonusAmount - input.estimatedFees);
+  const estimatedNetValue = estimateBankBonusNetValue(input.bonusAmount, input.estimatedFees);
 
   return {
     id: `bank:${input.slug}`,
@@ -240,8 +177,13 @@ export function toPlannerRecommendationFromBankingBonus(
     title: input.offerName,
     provider: input.bankName,
     estimatedNetValue,
+    valueBreakdown: {
+      headlineValue: input.bonusAmount,
+      headlineLabel: 'Bank bonus',
+      estimatedFees: input.estimatedFees
+    },
     priorityScore: estimatedNetValue,
-    effort: bankEffortFromOffer(input),
+    effort: getBankRecommendationEffort(input),
     detailPath: `/banking/${input.slug}`,
     timelineDays: input.holdingPeriodDays,
     keyRequirements: getBankingOfferRequirements(input),
@@ -300,13 +242,21 @@ export function buildPlanRecommendationsFromQuiz(
       annualFee: card.annualFee,
       creditTierMin: card.creditTierMin,
       bonusValue: card.bestSignUpBonusValue ?? 0,
+      plannerBenefitsValue: card.plannerBenefitsValue,
       spendRequired: card.bestSignUpBonusSpendRequired ?? 3000,
       spendPeriodDays: card.bestSignUpBonusSpendPeriodDays ?? 90
     });
 
     eligibleCards.push({
       ...recommendation,
-      priorityScore: cardPriorityScore(card, recommendation, input)
+      priorityScore: scoreCardOpenPriority({
+        estimatedNetValue: recommendation.estimatedNetValue,
+        fitScore: card.score,
+        annualFee: card.annualFee,
+        feePreference: input.fee,
+        effort: recommendation.effort,
+        timelineDays: recommendation.timelineDays
+      })
     });
   }
 
@@ -327,7 +277,16 @@ export function buildPlanRecommendationsFromQuiz(
     const recommendation = toPlannerRecommendationFromBankingBonus(offer);
     eligibleBanking.push({
       ...recommendation,
-      priorityScore: bankingPriorityScore(offer, recommendation, input)
+      priorityScore: scoreBankingPriority({
+        estimatedNetValue: recommendation.estimatedNetValue,
+        effort: recommendation.effort,
+        timelineDays: recommendation.timelineDays,
+        directDepositRequired: offer.directDeposit.required,
+        stateRestricted: Boolean(offer.stateRestrictions && offer.stateRestrictions.length > 0),
+        minimumOpeningDeposit: offer.minimumOpeningDeposit,
+        directDepositAvailability: input.directDeposit,
+        openingCash: input.openingCash
+      })
     });
   }
 

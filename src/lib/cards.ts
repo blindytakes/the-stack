@@ -48,6 +48,8 @@ export type CardRecord = {
   bestSignUpBonusValue?: number;
   bestSignUpBonusSpendRequired?: number;
   bestSignUpBonusSpendPeriodDays?: number;
+  totalBenefitsValue: number;
+  plannerBenefitsValue: number;
 };
 
 export type RewardDetail = {
@@ -137,6 +139,7 @@ export type DbCardRow = Prisma.CardGetPayload<{
   include: {
     rewards: true;
     signUpBonuses: true;
+    benefits: true;
   };
 }>;
 
@@ -201,6 +204,92 @@ function assertCardsDatabaseConfigured() {
   }
 }
 
+function deriveTotalBenefitsValue(benefits: DbCardRow['benefits']): number {
+  return Number(
+    benefits
+      .reduce((sum, benefit) => sum + (benefit.estimatedValue != null ? Number(benefit.estimatedValue) : 0), 0)
+      .toFixed(2)
+  );
+}
+
+const plannerBenefitCategorySet = new Set<string>([
+  'TRAVEL_CREDITS',
+  'DINING_CREDITS',
+  'STREAMING_CREDITS',
+  'TSA_GLOBAL_ENTRY'
+]);
+
+const plannerBenefitNameAllowlist = [
+  /anniversary bonus miles/i,
+  /hotel credit/i,
+  /uber cash/i,
+  /resy/i,
+  /\bdunkin/i
+];
+
+const plannerBenefitNameBlocklist = [
+  /dashpass/i,
+  /membership/i,
+  /lyft pink/i,
+  /instacart/i,
+  /\blounge\b/i,
+  /priority pass/i,
+  /\bstatus\b/i,
+  /\belite\b/i,
+  /concierge/i
+];
+
+const plannerBenefitCategoryMultipliers: Record<string, number> = {
+  TRAVEL_CREDITS: 0.9,
+  DINING_CREDITS: 0.8,
+  STREAMING_CREDITS: 0.75,
+  TSA_GLOBAL_ENTRY: 1
+};
+
+const plannerBenefitNameMultipliers: Array<[RegExp, number]> = [
+  [/airline fee credit/i, 0.6],
+  [/hotel credit/i, 0.6],
+  [/resy/i, 0.65],
+  [/\bdunkin/i, 0.8],
+  [/uber cash/i, 0.8],
+  [/anniversary bonus miles/i, 0.9]
+];
+
+function derivePlannerBenefitRealizationMultiplier(category: string, benefitName: string): number {
+  const nameMultiplier = plannerBenefitNameMultipliers.find(([pattern]) => pattern.test(benefitName))?.[1];
+  if (typeof nameMultiplier === 'number') {
+    return nameMultiplier;
+  }
+
+  return plannerBenefitCategoryMultipliers[category] ?? 1;
+}
+
+function derivePlannerBenefitsValue(benefits: DbCardRow['benefits']): number {
+  return Number(
+    benefits
+      .reduce((sum, benefit) => {
+        const estimatedValue = benefit.estimatedValue != null ? Number(benefit.estimatedValue) : 0;
+        if (estimatedValue <= 0) return sum;
+
+        const benefitName = benefit.name.toLowerCase();
+        if (plannerBenefitNameBlocklist.some((pattern) => pattern.test(benefitName))) {
+          return sum;
+        }
+
+        if (plannerBenefitNameAllowlist.some((pattern) => pattern.test(benefitName))) {
+          return sum + estimatedValue * derivePlannerBenefitRealizationMultiplier(benefit.category, benefitName);
+        }
+
+        if (plannerBenefitCategorySet.has(benefit.category)) {
+          return sum + estimatedValue * derivePlannerBenefitRealizationMultiplier(benefit.category, benefitName);
+        }
+
+        return sum;
+      }, 0)
+      .toFixed(2)
+  );
+}
+
 // Map Prisma list-query rows into the compact CardRecord used by directory/search views.
 export function toCardRecordFromDb(row: DbCardRow): CardRecord {
   const bestSignUpBonus = deriveBestSignUpBonus(row.signUpBonuses);
@@ -222,7 +311,9 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
     cons: row.cons.length > 0 ? row.cons : undefined,
     bestSignUpBonusValue: bestSignUpBonus?.bonusValue,
     bestSignUpBonusSpendRequired: bestSignUpBonus?.spendRequired,
-    bestSignUpBonusSpendPeriodDays: bestSignUpBonus?.spendPeriodDays
+    bestSignUpBonusSpendPeriodDays: bestSignUpBonus?.spendPeriodDays,
+    totalBenefitsValue: deriveTotalBenefitsValue(row.benefits),
+    plannerBenefitsValue: derivePlannerBenefitsValue(row.benefits)
   };
 }
 
@@ -236,7 +327,7 @@ export async function getCardsData(): Promise<CardsDataResponse> {
 
   const rows = await db.card.findMany({
     where: { isActive: true },
-    include: { rewards: true, signUpBonuses: true },
+    include: { rewards: true, signUpBonuses: true, benefits: true },
     orderBy: [{ issuer: 'asc' }, { name: 'asc' }]
   });
 
