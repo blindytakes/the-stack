@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { instrumentedApi } from '@/lib/api-route';
+import { apiRateLimits } from '@/lib/api-rate-limits';
 import { badRequest, parseJsonBody } from '@/lib/api-helpers';
 import { applyIpRateLimit } from '@/lib/rate-limit';
 import { isValidOrigin, verifyTurnstileToken } from '@/lib/turnstile';
@@ -36,12 +37,7 @@ export async function POST(req: Request) {
     }
 
     // 2. Rate limiting — 3 requests per 10 minutes, sliding window
-    const rateLimited = await applyIpRateLimit(req, {
-      namespace: 'newsletter_subscribe',
-      limit: 3,
-      window: '10 m',
-      algorithm: 'sliding'
-    });
+    const rateLimited = await applyIpRateLimit(req, apiRateLimits.newsletterSubscribe);
     if (rateLimited) return rateLimited;
 
     const body = await parseJsonBody(req);

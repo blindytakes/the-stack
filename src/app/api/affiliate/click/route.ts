@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { instrumentedApi } from '@/lib/api-route';
+import { apiRateLimits } from '@/lib/api-rate-limits';
 import { badRequest } from '@/lib/api-helpers';
 import { applyIpRateLimit } from '@/lib/rate-limit';
 import { resolveAffiliateClickRedirect } from '@/lib/services/affiliate-service';
@@ -16,13 +17,7 @@ import { resolveAffiliateClickRedirect } from '@/lib/services/affiliate-service'
 
 export async function GET(req: Request) {
   return instrumentedApi('/api/affiliate/click', 'GET', async () => {
-    const rateLimited = await applyIpRateLimit(req, {
-      namespace: 'affiliate_click',
-      limit: 60,
-      window: '1 m',
-      algorithm: 'fixed',
-      message: 'Too many affiliate click requests. Please try again shortly.'
-    });
+    const rateLimited = await applyIpRateLimit(req, apiRateLimits.affiliateClick);
     if (rateLimited) return rateLimited;
 
     const resolution = resolveAffiliateClickRedirect(req.url);

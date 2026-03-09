@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { instrumentedApi } from '@/lib/api-route';
+import { apiRateLimits } from '@/lib/api-rate-limits';
 import { badRequest, parseJsonBody } from '@/lib/api-helpers';
+import { applyIpRateLimit } from '@/lib/rate-limit';
 import { scoreQuiz } from '@/lib/services/quiz-service';
 
 /**
@@ -14,6 +16,9 @@ import { scoreQuiz } from '@/lib/services/quiz-service';
  */
 export async function POST(req: Request) {
   return instrumentedApi('/api/quiz', 'POST', async () => {
+    const rateLimited = await applyIpRateLimit(req, apiRateLimits.quiz);
+    if (rateLimited) return rateLimited;
+
     const body = await parseJsonBody(req);
     const result = await scoreQuiz(body);
     if (!result.ok) {

@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { planResponseSchema } from '@/lib/plan-contract';
 
 const applyIpRateLimitMock = vi.fn();
-const buildPlanMock = vi.fn();
+const scoreQuizMock = vi.fn();
 
 vi.mock('@/lib/api-route', () => ({
   instrumentedApi: (
@@ -16,43 +15,52 @@ vi.mock('@/lib/rate-limit', () => ({
   applyIpRateLimit: (...args: unknown[]) => applyIpRateLimitMock(...args)
 }));
 
-vi.mock('@/lib/services/plan-service', () => ({
-  buildPlan: (...args: unknown[]) => buildPlanMock(...args)
+vi.mock('@/lib/services/quiz-service', () => ({
+  scoreQuiz: (...args: unknown[]) => scoreQuizMock(...args)
 }));
 
-import { POST } from '@/app/api/plan/route';
+import { POST } from '@/app/api/quiz/route';
 
-describe('/api/plan route contract', () => {
+describe('/api/quiz route contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     applyIpRateLimitMock.mockResolvedValue(null);
   });
 
-  it('returns generated plan data when service succeeds', async () => {
-    buildPlanMock.mockResolvedValue({
+  it('returns quiz results when service succeeds', async () => {
+    scoreQuizMock.mockResolvedValue({
       ok: true,
       data: {
-        generatedAt: 123,
-        recommendations: [],
-        exclusions: [],
-        schedule: [],
-        scheduleIssues: []
+        results: [
+          {
+            slug: 'test-card',
+            name: 'Test Card',
+            issuer: 'Test Bank',
+            cardType: 'personal',
+            rewardType: 'cashback',
+            topCategories: ['dining'],
+            annualFee: 0,
+            creditTierMin: 'good',
+            headline: 'Test headline',
+            totalBenefitsValue: 0,
+            plannerBenefitsValue: 0,
+            score: 7
+          }
+        ]
       }
     });
 
-    const req = new Request('http://localhost/api/plan', {
+    const req = new Request('http://localhost/api/quiz', {
       method: 'POST',
       body: JSON.stringify({
-        answers: {
-          goal: 'cashback',
-          spend: 'dining',
-          fee: 'no_fee',
-          credit: 'good',
-          directDeposit: 'yes',
-          state: 'NY',
-          monthlySpend: 'from_2500_to_5000',
-          pace: 'balanced'
-        }
+        goal: 'cashback',
+        spend: 'dining',
+        fee: 'no_fee',
+        credit: 'good',
+        directDeposit: 'yes',
+        state: 'NY',
+        monthlySpend: 'from_2500_to_5000',
+        pace: 'balanced'
       })
     });
 
@@ -60,18 +68,17 @@ describe('/api/plan route contract', () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(planResponseSchema.parse(body).generatedAt).toBe(123);
-    expect(buildPlanMock).toHaveBeenCalled();
+    expect(body.results[0].slug).toBe('test-card');
   });
 
   it('returns 400 when service rejects the request body', async () => {
-    buildPlanMock.mockResolvedValue({
+    scoreQuizMock.mockResolvedValue({
       ok: false,
       status: 400,
       error: 'Invalid payload'
     });
 
-    const req = new Request('http://localhost/api/plan', {
+    const req = new Request('http://localhost/api/quiz', {
       method: 'POST',
       body: JSON.stringify({})
     });
@@ -88,7 +95,7 @@ describe('/api/plan route contract', () => {
       Response.json({ error: 'Too many requests' }, { status: 429 })
     );
 
-    const req = new Request('http://localhost/api/plan', {
+    const req = new Request('http://localhost/api/quiz', {
       method: 'POST',
       body: JSON.stringify({})
     });
@@ -98,17 +105,17 @@ describe('/api/plan route contract', () => {
 
     expect(res.status).toBe(429);
     expect(body).toEqual({ error: 'Too many requests' });
-    expect(buildPlanMock).not.toHaveBeenCalled();
+    expect(scoreQuizMock).not.toHaveBeenCalled();
   });
 
   it('maps service failures to JSON 500 responses', async () => {
-    buildPlanMock.mockResolvedValue({
+    scoreQuizMock.mockResolvedValue({
       ok: false,
       status: 500,
-      error: 'Plan generation is temporarily unavailable'
+      error: 'Quiz scoring is temporarily unavailable'
     });
 
-    const req = new Request('http://localhost/api/plan', {
+    const req = new Request('http://localhost/api/quiz', {
       method: 'POST',
       body: JSON.stringify({})
     });
@@ -117,6 +124,6 @@ describe('/api/plan route contract', () => {
     const body = await res.json();
 
     expect(res.status).toBe(500);
-    expect(body).toEqual({ error: 'Plan generation is temporarily unavailable' });
+    expect(body).toEqual({ error: 'Quiz scoring is temporarily unavailable' });
   });
 });

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const applyIpRateLimitMock = vi.fn();
-const getBankingBonusesListMock = vi.fn();
+const getCardsListMock = vi.fn();
 
 vi.mock('@/lib/api-route', () => ({
   instrumentedApi: (
@@ -15,38 +15,37 @@ vi.mock('@/lib/rate-limit', () => ({
   applyIpRateLimit: (...args: unknown[]) => applyIpRateLimitMock(...args)
 }));
 
-vi.mock('@/lib/services/banking-service', () => ({
-  getBankingBonusesList: (...args: unknown[]) => getBankingBonusesListMock(...args)
+vi.mock('@/lib/services/cards-service', () => ({
+  getCardsList: (...args: unknown[]) => getCardsListMock(...args)
 }));
 
-import { GET } from '@/app/api/banking/route';
+import { GET } from '@/app/api/cards/route';
 
-describe('/api/banking route contract', () => {
+describe('/api/cards route contract', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     applyIpRateLimitMock.mockResolvedValue(null);
   });
 
   it('returns results and pagination when service succeeds', async () => {
-    getBankingBonusesListMock.mockResolvedValue({
+    getCardsListMock.mockResolvedValue({
       ok: true,
       data: {
         results: [
           {
-            slug: 'test-bonus',
-            bankName: 'Test Bank',
-            offerName: 'Test Offer',
-            accountType: 'checking',
+            slug: 'test-card',
+            name: 'Test Card',
+            issuer: 'Test Bank',
+            cardType: 'personal',
+            rewardType: 'cashback',
+            topCategories: ['dining'],
+            annualFee: 95,
+            creditTierMin: 'good',
             headline: 'Test headline',
-            bonusAmount: 300,
-            estimatedFees: 0,
-            directDeposit: { required: false },
-            requiredActions: ['Open account'],
-            isActive: true,
-            estimatedNetValue: 300
+            totalBenefitsValue: 0,
+            plannerBenefitsValue: 0
           }
         ],
-        source: 'seed',
         pagination: {
           total: 1,
           limit: 20,
@@ -55,30 +54,30 @@ describe('/api/banking route contract', () => {
       }
     });
 
-    const req = new Request('http://localhost/api/banking?limit=20&offset=0');
+    const req = new Request('http://localhost/api/cards?issuer=Test&limit=20&offset=0');
     const res = await GET(req);
     const body = await res.json();
 
     expect(res.status).toBe(200);
+    expect(body.results[0].slug).toBe('test-card');
     expect(body.pagination.total).toBe(1);
-    expect(body.results[0].slug).toBe('test-bonus');
-    expect(getBankingBonusesListMock).toHaveBeenCalledWith({
-      accountType: undefined,
-      requiresDirectDeposit: undefined,
-      state: undefined,
+    expect(getCardsListMock).toHaveBeenCalledWith({
+      issuer: 'Test',
+      category: undefined,
+      maxFee: undefined,
       limit: '20',
       offset: '0'
     });
   });
 
   it('returns 400 when service rejects query params', async () => {
-    getBankingBonusesListMock.mockResolvedValue({
+    getCardsListMock.mockResolvedValue({
       ok: false,
       status: 400,
       error: 'Invalid query params'
     });
 
-    const req = new Request('http://localhost/api/banking?limit=bad');
+    const req = new Request('http://localhost/api/cards?limit=bad');
     const res = await GET(req);
     const body = await res.json();
 
@@ -91,27 +90,27 @@ describe('/api/banking route contract', () => {
       Response.json({ error: 'Too many requests' }, { status: 429 })
     );
 
-    const req = new Request('http://localhost/api/banking');
+    const req = new Request('http://localhost/api/cards');
     const res = await GET(req);
     const body = await res.json();
 
     expect(res.status).toBe(429);
     expect(body).toEqual({ error: 'Too many requests' });
-    expect(getBankingBonusesListMock).not.toHaveBeenCalled();
+    expect(getCardsListMock).not.toHaveBeenCalled();
   });
 
-  it('maps service errors to non-400 JSON responses', async () => {
-    getBankingBonusesListMock.mockResolvedValue({
+  it('maps service failures to non-400 JSON responses', async () => {
+    getCardsListMock.mockResolvedValue({
       ok: false,
       status: 500,
-      error: 'Banking offer data is temporarily unavailable'
+      error: 'Card data is temporarily unavailable'
     });
 
-    const req = new Request('http://localhost/api/banking');
+    const req = new Request('http://localhost/api/cards');
     const res = await GET(req);
     const body = await res.json();
 
     expect(res.status).toBe(500);
-    expect(body).toEqual({ error: 'Banking offer data is temporarily unavailable' });
+    expect(body).toEqual({ error: 'Card data is temporarily unavailable' });
   });
 });

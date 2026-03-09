@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { instrumentedApi } from '@/lib/api-route';
+import { apiRateLimits } from '@/lib/api-rate-limits';
 import { badRequest, parseJsonBody } from '@/lib/api-helpers';
 import { applyIpRateLimit } from '@/lib/rate-limit';
 import { ingestWebVital } from '@/lib/services/vitals-service';
@@ -16,13 +17,7 @@ import { ingestWebVital } from '@/lib/services/vitals-service';
 
 export async function POST(req: Request) {
   return instrumentedApi('/api/vitals', 'POST', async () => {
-    const rateLimited = await applyIpRateLimit(req, {
-      namespace: 'web_vitals',
-      limit: 120,
-      window: '1 m',
-      algorithm: 'fixed',
-      message: 'Rate limit exceeded for vitals ingestion'
-    });
+    const rateLimited = await applyIpRateLimit(req, apiRateLimits.vitalsIngestion);
     if (rateLimited) return rateLimited;
 
     const body = await parseJsonBody(req);

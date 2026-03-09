@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { instrumentedApi } from '@/lib/api-route';
+import { apiRateLimits } from '@/lib/api-rate-limits';
 import { badRequest } from '@/lib/api-helpers';
+import { applyIpRateLimit } from '@/lib/rate-limit';
 import { getCardsList } from '@/lib/services/cards-service';
 
 /**
@@ -13,6 +15,9 @@ import { getCardsList } from '@/lib/services/cards-service';
  */
 export async function GET(req: Request) {
   return instrumentedApi('/api/cards', 'GET', async () => {
+    const rateLimited = await applyIpRateLimit(req, apiRateLimits.cardsList);
+    if (rateLimited) return rateLimited;
+
     const url = new URL(req.url);
     const result = await getCardsList({
       issuer: url.searchParams.get('issuer') ?? undefined,
