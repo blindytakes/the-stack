@@ -72,8 +72,8 @@ export default async function BlogArticlePage({ params }: Props) {
       <div className="mt-16 max-w-2xl rounded-2xl border border-white/10 bg-bg-surface p-6">
         <p className="text-sm text-text-muted">
           Want this translated into your specific setup?{' '}
-          <Link href="/tools/card-finder" className="text-brand-teal transition hover:underline">
-            Build your payout plan
+          <Link href="/tools/card-finder?mode=full" className="text-brand-teal transition hover:underline">
+            Build your bonus plan
           </Link>{' '}
           or{' '}
           <Link href="/tools/card-vs-card" className="text-brand-teal transition hover:underline">

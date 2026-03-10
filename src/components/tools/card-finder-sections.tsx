@@ -433,7 +433,7 @@ export function CardFinderActions({
       </Button>
       {isLastStep && isComplete ? (
         <Button onClick={onSubmit} disabled={loading}>
-          {loading ? (submittingLabel ?? 'Scoring...') : (submitLabel ?? 'See my payout plan')}
+          {loading ? (submittingLabel ?? 'Scoring...') : (submitLabel ?? 'See my bonus plan')}
         </Button>
       ) : (
         <Button onClick={onContinue} disabled={!canContinue || isLastStep}>

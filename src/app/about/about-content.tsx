@@ -84,7 +84,7 @@ export function AboutContent() {
         </p>
         <div className="mt-6">
           <Link
-            href="/tools/card-finder"
+            href="/tools/card-finder?mode=full"
             className="inline-flex items-center justify-center rounded-full bg-brand-teal px-6 py-3 text-sm font-semibold text-black transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
           >
             Start My Bonus Plan

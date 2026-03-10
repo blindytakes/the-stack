@@ -9,21 +9,6 @@ const LOGO_URL = `${SITE_URL}/icon.png`;
 const SITE_DESCRIPTION =
   'Build a personalized 12-month card and bank bonus plan with practical next-step guidance.';
 
-const planOutcomes = [
-  {
-    title: 'Ordered next steps',
-    description: 'Know what to do first, what comes next, and what can wait.'
-  },
-  {
-    title: '12-month value estimate',
-    description: 'See the grounded upside before you apply, not just the headline bonus.'
-  },
-  {
-    title: 'Realistic pace',
-    description: 'Move through offers on a timeline you can actually complete.'
-  }
-] as const;
-
 const faqs = [
   {
     question: 'Is The Stack free?',
@@ -185,19 +170,22 @@ export default function HomePage() {
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-6">
           <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold md:text-lg">
-            The Stack
+            The Stack Bonus Plan
           </p>
           <h1 className="font-heading text-4xl leading-tight text-text-primary md:text-6xl lg:text-[66px]">
-            Make the Banks Work for You.
+            <span className="block">Make the banks work for you.</span>
+            <span className="mt-2 block">Get a personalized card and bank bonus plan.</span>
           </h1>
-          <p className="max-w-[45ch] text-xl font-medium leading-relaxed text-text-secondary md:text-2xl">
-            Banks and card issuers are built to profit off you. The Stack flips that, for free.
-            Answer a few questions and get a personalized bonus plan that ranks the best next card
-            and bank offers for your profile, then shows you what to do first.
+          <p className="max-w-[48ch] text-xl font-medium leading-relaxed text-text-secondary md:text-2xl">
+            The Stack gives you a personalized 12-month bonus plan built around your profile,
+            shows you what to do first, and helps you stay on top of the timeline.
+          </p>
+          <p className="text-base leading-7 text-text-secondary md:text-lg">
+            Most sites rank cards. <span className="font-semibold text-text-primary">The Stack builds your plan.</span>
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
-              href="/tools/card-finder"
+              href="/tools/card-finder?mode=full"
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-teal px-7 py-3 text-base font-semibold text-black shadow-[0_12px_30px_rgba(45,212,191,0.18)] transition-all duration-200 hover:scale-105 hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg md:px-8 md:py-3.5 md:text-lg"
             >
               <span>Start My Bonus Plan</span>
@@ -279,7 +267,7 @@ export default function HomePage() {
             </div>
 
             <Link
-              href="/tools/card-finder"
+              href="/tools/card-finder?mode=full"
               className="inline-flex items-center gap-2 self-start text-sm font-semibold text-brand-teal transition hover:translate-x-1 hover:text-brand-teal/85 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
             >
               <span>Build your own plan</span>
@@ -304,86 +292,67 @@ export default function HomePage() {
 
       <ProofPoints className="mt-12" variant="trust-bar" />
 
-      <section className="mt-16 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
+      <section className="mt-16">
         <div className="max-w-3xl">
-          <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
-            How it works
+          <p className="text-base leading-7 text-text-secondary md:text-lg">
+            Card catalogs show you options.{' '}
+            <span className="font-semibold text-text-primary">The Stack shows you what to do next.</span>
           </p>
-          <div className="mt-3 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
-              Three steps to your first bonus.
+        </div>
+
+        <div className="mt-6 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
+          <div className="max-w-3xl">
+            <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
+              How it works
+            </p>
+            <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+              <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
+                Three steps to your first bonus.
+              </h2>
+              <p className="max-w-xl text-sm leading-7 text-text-secondary md:text-base">
+                Tell us what fits, get a ranked 12-month plan, and follow the right order.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+            {howItWorksSteps.map((item) => (
+              <div
+                key={item.step}
+                className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm md:p-6"
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <p className="font-heading text-4xl text-brand-teal">{item.step}</p>
+                  <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-text-muted">
+                    Step {item.step}
+                  </span>
+                </div>
+                <h3 className="mt-5 text-xl font-semibold text-text-primary">{item.title}</h3>
+                <p className="mt-3 max-w-sm text-sm leading-7 text-text-secondary">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-14 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(15,18,30,0.92),rgba(7,9,16,0.98))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
+              Real results
+            </p>
+            <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
+              Outcomes from real plans.
             </h2>
-            <p className="max-w-xl text-sm leading-7 text-text-secondary md:text-base">
-              The planner is meant to reduce guesswork. First it figures out what fits. Then it
-              gives you an ordered plan, a grounded value estimate, and a pace you can actually
-              follow.
+            <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
+              Real examples of what happened when people followed a clear order instead of guessing
+              their way through offers.
             </p>
           </div>
         </div>
-
-        <div className="mt-10 grid gap-4 lg:grid-cols-3">
-          {howItWorksSteps.map((item) => (
-            <div
-              key={item.step}
-              className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm"
-            >
-              <div className="flex items-center justify-between gap-4">
-                <p className="font-heading text-4xl text-brand-teal">{item.step}</p>
-                <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-text-muted">
-                  Step {item.step}
-                </span>
-              </div>
-              <h3 className="mt-6 text-xl font-semibold text-text-primary">{item.title}</h3>
-              <p className="mt-3 max-w-sm text-sm leading-7 text-text-secondary">
-                {item.description}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-6 rounded-[1.5rem] border border-brand-teal/15 bg-brand-teal/[0.05] p-5 md:p-6">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-xs">
-              <p className="text-xs uppercase tracking-[0.24em] text-brand-teal">
-                What you leave with
-              </p>
-              <p className="mt-3 text-sm leading-7 text-text-secondary">
-                A usable plan, not just a ranked list. The value is in the recommendation and the
-                order.
-              </p>
-            </div>
-            <div className="grid gap-4 md:grid-cols-3 lg:flex-1">
-              {planOutcomes.map((item) => (
-                <div
-                  key={item.title}
-                  className="rounded-[1.25rem] border border-white/10 bg-black/15 px-4 py-4"
-                >
-                  <p className="text-[11px] uppercase tracking-[0.22em] text-text-muted">Output</p>
-                  <h3 className="mt-2 text-base font-semibold text-text-primary">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-text-secondary">{item.description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-14">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl">
-              <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
-                Real results
-              </p>
-              <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-                Outcomes from real plans.
-              </h2>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
-                Real examples of what happened when people followed a clear order instead of
-                guessing their way through offers.
-              </p>
-            </div>
-          </div>
-          <ProofResultsRail stories={resultsStories} />
-        </div>
+        <ProofResultsRail stories={resultsStories} />
       </section>
 
       <section className="mt-20">
@@ -391,12 +360,8 @@ export default function HomePage() {
           <div className="text-center">
             <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">FAQ</p>
             <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-              Questions people usually have before they start.
+              Common questions
             </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
-              Short answers to the main objections: price, time, credit, and what kind of plan
-              you actually get at the end.
-            </p>
           </div>
           <div className="mt-10 space-y-3">
             {faqs.map((item) => (
@@ -404,11 +369,13 @@ export default function HomePage() {
                 key={item.question}
                 className="group rounded-2xl border border-white/10 bg-bg-surface p-5 open:border-brand-teal/30"
               >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-base font-semibold text-text-primary">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-lg font-semibold text-text-primary md:text-xl">
                   <span>{item.question}</span>
                   <span className="text-brand-teal transition group-open:rotate-45">+</span>
                 </summary>
-                <p className="mt-3 pr-8 text-sm leading-7 text-text-secondary">{item.answer}</p>
+                <p className="mt-3 pr-8 text-base leading-8 text-text-secondary md:text-lg">
+                  {item.answer}
+                </p>
               </details>
             ))}
           </div>
@@ -416,15 +383,26 @@ export default function HomePage() {
       </section>
 
       <section className="mt-16">
-        <div className="rounded-3xl border border-white/10 bg-bg-elevated p-8 md:p-10">
-          <NewsletterSignup
-            source="homepage"
-            heading="Get Weekly Bonus Plays."
-            description="Get the best offers worth your attention, practical strategy, and product updates in your inbox."
-            finePrint="Free. No spam. Unsubscribe anytime."
-            submitLabel="Join Free"
-          />
+        <div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center md:p-10">
+          <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
+            Get Weekly Bonus Plays
+          </h2>
+          <p className="mx-auto mt-3 max-w-none text-lg text-text-secondary md:text-xl lg:whitespace-nowrap">
+            Bonus offers, finance how-tos, and free tools. Delivered weekly. No Slop.
+          </p>
+          <div className="mx-auto mt-6 max-w-xl">
+            <NewsletterSignup source="homepage" compact size="large" submitLabel="Join Free" />
+          </div>
         </div>
+      </section>
+
+      <section className="mt-12 text-center">
+        <Link
+          href="/tools/card-finder?mode=full"
+          className="inline-flex items-center justify-center rounded-full bg-brand-teal px-7 py-3 text-base font-semibold text-black shadow-[0_12px_30px_rgba(45,212,191,0.18)] transition-all duration-200 hover:scale-105 hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg md:px-8 md:py-3.5 md:text-lg"
+        >
+          Start My Bonus Plan
+        </Link>
       </section>
     </div>
   );

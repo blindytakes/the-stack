@@ -130,7 +130,7 @@ export default async function BankingOfferDetailPage({ params }: Props) {
                 </a>
               )}
               <Link
-                href="/tools/card-finder"
+                href="/tools/card-finder?mode=full"
                 className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
               >
                 Build Full Bonus Plan

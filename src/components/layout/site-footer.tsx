@@ -5,11 +5,8 @@ import { usePathname } from 'next/navigation';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 
 const footerLinks = [
-  { href: '/about', label: 'About' },
-  { href: '/banking', label: 'Banking' },
-  { href: '/privacy', label: 'Privacy' },
-  { href: '/terms', label: 'Terms' },
   { href: '/affiliate-disclosure', label: 'Affiliate Disclosure' },
+  { href: '/privacy', label: 'Privacy' },
   { href: '/contact', label: 'Contact' }
 ];
 
@@ -39,7 +36,10 @@ export function SiteFooter() {
       <div className="container-page flex flex-col gap-4 py-10 text-sm text-text-muted md:flex-row md:items-center md:justify-between">
         <div>
           <div className="font-heading text-lg text-text-primary">The Stack</div>
-          <p>The rewards site that tells you exactly what to do next.</p>
+          <p>
+            The rewards site that tells you exactly what to do next, with personalized bonus plans
+            for cards and banking.
+          </p>
           <p className="mt-1 text-xs text-text-muted">© {year} The Stack. All rights reserved.</p>
         </div>
         <nav className="flex flex-wrap gap-6">

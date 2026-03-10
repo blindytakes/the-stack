@@ -71,7 +71,7 @@ export default async function CardsPage() {
             <Link href="/cards/plan">
               <Button>Build My Card Plan</Button>
             </Link>
-            <Link href="/tools/card-finder">
+            <Link href="/tools/card-finder?mode=full">
               <Button variant="ghost">Full Cards + Banking Planner</Button>
             </Link>
           </div>

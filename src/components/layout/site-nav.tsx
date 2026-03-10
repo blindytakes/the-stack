@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const navItems = [
-  { href: '/tools/card-finder', label: 'Start Here' },
+  { href: '/tools/card-finder?mode=full', activePath: '/tools/card-finder', label: 'Bonus Plan' },
   { href: '/cards', label: 'Cards' },
   { href: '/banking', label: 'Banking' },
   { href: '/blog', label: 'Blog' },
@@ -54,7 +54,7 @@ export function SiteNav() {
               key={item.href}
               href={item.href}
               className={`transition hover:text-text-primary ${
-                pathname.startsWith(item.href) ? 'text-text-primary' : ''
+                pathname.startsWith(item.activePath ?? item.href) ? 'text-text-primary' : ''
               }`}
             >
               {item.label}
@@ -64,7 +64,7 @@ export function SiteNav() {
 
         <div className="flex items-center gap-3">
           <Link
-            href="/tools/card-finder"
+            href="/tools/card-finder?mode=full"
             className="hidden rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90 sm:inline-flex"
           >
             Start My Bonus Plan
@@ -102,14 +102,16 @@ export function SiteNav() {
                 href={item.href}
                 onClick={() => setOpen(false)}
                 className={`rounded-xl px-4 py-3 text-sm transition hover:bg-bg-surface ${
-                  pathname.startsWith(item.href) ? 'text-text-primary bg-bg-surface' : 'text-text-secondary'
+                  pathname.startsWith(item.activePath ?? item.href)
+                    ? 'text-text-primary bg-bg-surface'
+                    : 'text-text-secondary'
                 }`}
               >
                 {item.label}
               </Link>
             ))}
             <Link
-              href="/tools/card-finder"
+              href="/tools/card-finder?mode=full"
               onClick={() => setOpen(false)}
               className="mt-2 rounded-full bg-brand-teal px-4 py-3 text-center text-sm font-semibold text-black transition hover:opacity-90"
             >
