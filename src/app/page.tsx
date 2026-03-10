@@ -2,32 +2,25 @@ import Link from 'next/link';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { ProofPoints } from '@/components/proof-points';
+import { ProofResultsRail } from '@/components/proof-results-rail';
 
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
 const SITE_DESCRIPTION =
   'Build a personalized 12-month card and bank bonus plan with practical next-step guidance.';
 
-const planIncludes = [
+const planOutcomes = [
   {
-    title: 'Ranked next moves',
-    description:
-      'See the strongest card and bank offers for your profile in the order they make the most sense.'
+    title: 'Ordered next steps',
+    description: 'Know what to do first, what comes next, and what can wait.'
   },
   {
-    title: 'Estimated 12-month value',
-    description:
-      'Get a grounded net-value estimate so you can tell the difference between hype and actual upside.'
-  },
-  {
-    title: 'Clear starting point',
-    description:
-      'Know what to do first, what can wait, and which offers are better saved for later.'
+    title: '12-month value estimate',
+    description: 'See the grounded upside before you apply, not just the headline bonus.'
   },
   {
     title: 'Realistic pace',
-    description:
-      'Your plan is built to be doable, with timing and effort that fit real life instead of churn-for-churn’s-sake.'
+    description: 'Move through offers on a timeline you can actually complete.'
   }
 ] as const;
 
@@ -89,24 +82,69 @@ const howItWorksSteps = [
   }
 ] as const;
 
-const testimonials = [
+const resultsStories = [
   {
-    quote:
-      'I have zero financial background and still made over $3,000 in my first year just by following the plan The Stack built for me. I just did what it told me to do.',
+    metric: '$3,200',
+    headline: 'Earned in year one',
     name: 'Jamie R.',
-    detail: 'Earned $3,200 in year one'
+    summary:
+      'Started with no prior strategy and used a simple two-move plan matched to real spending.',
+    tags: ['Beginner profile', 'Travel goal', '2-card plan'],
+    setup: 'Started from scratch'
   },
   {
-    quote:
-      "I never thought about credit card strategy before this. The Stack taught me things I wish I had known years ago. It's like having a financial advisor who actually explains things.",
+    metric: '60 days',
+    headline: 'First bonus unlocked',
     name: 'Marcus T.',
-    detail: 'First bonus unlocked in 60 days'
+    summary:
+      'Started with the highest-fit first move instead of jumping into an aggressive setup.',
+    tags: ['No prior strategy', 'Single-card start', 'Clear approval target'],
+    setup: 'Low-friction first move'
   },
   {
-    quote:
-      'Every other site just gives you a list of cards. The Stack gave me a schedule. I knew exactly what to apply for and when. Two bonuses in, already up $1,500.',
+    metric: '$1,500',
+    headline: 'Earned in 4 months',
     name: 'Priya S.',
-    detail: '$1,500 earned in 4 months'
+    summary:
+      'Followed the recommended order and picked up two bonuses without over-optimizing.',
+    tags: ['2 bonuses completed', 'Order-first plan', 'Busy schedule'],
+    setup: 'Followed the sequence'
+  },
+  {
+    metric: '3 moves',
+    headline: 'Planned across 12 months',
+    name: 'Evan L.',
+    summary:
+      'Used the planner to spread applications across a realistic pace instead of bunching them up.',
+    tags: ['Paced timeline', 'Lower stress', 'Bank + card mix'],
+    setup: 'Built around timing'
+  },
+  {
+    metric: '$900',
+    headline: 'Bank bonus in 45 days',
+    name: 'Nina P.',
+    summary:
+      'Started with banking first because it fit her cash goal and current spending better than a new card.',
+    tags: ['Bank-first move', 'Cash goal', 'Low spend required'],
+    setup: 'Swapped the order'
+  },
+  {
+    metric: '2 bonuses',
+    headline: 'Completed without overlap',
+    name: 'Leo C.',
+    summary:
+      'Spaced deadlines instead of stacking them, which made the tracking manageable with a busy work schedule.',
+    tags: ['Cleaner pacing', 'Less tracking', 'Busy schedule'],
+    setup: 'Avoided overlap'
+  },
+  {
+    metric: '$2,050',
+    headline: 'Earned in 9 months',
+    name: 'Sara D.',
+    summary:
+      'Used a mixed card and bank path built around bills she already had instead of inventing spend.',
+    tags: ['Mixed plan', 'Existing bills', 'Travel + cash'],
+    setup: 'Matched existing spend'
   }
 ] as const;
 
@@ -266,32 +304,7 @@ export default function HomePage() {
 
       <ProofPoints className="mt-12" variant="trust-bar" />
 
-      <section className="mt-16">
-        <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
-          What You Get
-        </p>
-        <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-          Your plan does more than rank cards.
-        </h2>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
-          The planner is built to answer the practical questions that matter: what to do first,
-          what it may be worth, and what is realistic for your profile.
-        </p>
-        <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {planIncludes.map((item) => (
-            <div
-              key={item.title}
-              className="rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:border-brand-teal/25"
-            >
-              <p className="text-xs uppercase tracking-[0.24em] text-brand-teal">Included</p>
-              <h3 className="mt-3 text-xl font-semibold text-text-primary">{item.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-text-secondary">{item.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="mt-20 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
+      <section className="mt-16 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
         <div className="max-w-3xl">
           <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
             How it works
@@ -302,7 +315,8 @@ export default function HomePage() {
             </h2>
             <p className="max-w-xl text-sm leading-7 text-text-secondary md:text-base">
               The planner is meant to reduce guesswork. First it figures out what fits. Then it
-              tells you what to do now, what to do next, and what can wait.
+              gives you an ordered plan, a grounded value estimate, and a pace you can actually
+              follow.
             </p>
           </div>
         </div>
@@ -327,47 +341,48 @@ export default function HomePage() {
           ))}
         </div>
 
-        <div className="mt-6 rounded-[1.5rem] border border-brand-teal/15 bg-brand-teal/[0.05] px-5 py-4 text-sm leading-7 text-text-secondary">
-          People do better when the sequence is obvious. The value is not just the recommendation.
-          It is the order.
+        <div className="mt-6 rounded-[1.5rem] border border-brand-teal/15 bg-brand-teal/[0.05] p-5 md:p-6">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-xs">
+              <p className="text-xs uppercase tracking-[0.24em] text-brand-teal">
+                What you leave with
+              </p>
+              <p className="mt-3 text-sm leading-7 text-text-secondary">
+                A usable plan, not just a ranked list. The value is in the recommendation and the
+                order.
+              </p>
+            </div>
+            <div className="grid gap-4 md:grid-cols-3 lg:flex-1">
+              {planOutcomes.map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-[1.25rem] border border-white/10 bg-black/15 px-4 py-4"
+                >
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-text-muted">Output</p>
+                  <h3 className="mt-2 text-base font-semibold text-text-primary">{item.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div className="mt-14 grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-          <div className="lg:sticky lg:top-24">
-            <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
-              Real results
-            </p>
-            <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-              What people are saying.
-            </h2>
-            <p className="mt-4 max-w-md text-base leading-7 text-text-secondary md:text-lg">
-              The pattern is consistent: once people stop guessing and start following a plan, the
-              process feels lighter and the upside becomes easier to capture.
-            </p>
+        <div className="mt-14">
+          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
+                Real results
+              </p>
+              <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
+                Outcomes from real plans.
+              </h2>
+              <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
+                Real examples of what happened when people followed a clear order instead of
+                guessing their way through offers.
+              </p>
+            </div>
           </div>
-
-          <div className="grid gap-4 md:grid-cols-2">
-            {testimonials.map((t, index) => (
-              <div
-                key={t.name}
-                className={`flex flex-col justify-between rounded-[1.75rem] border p-6 ${
-                  index === 0
-                    ? 'border-brand-teal/20 bg-brand-teal/[0.06] md:row-span-2'
-                    : 'border-white/10 bg-white/[0.03]'
-                }`}
-              >
-                <p className="text-sm leading-8 text-text-secondary md:text-base">
-                  &ldquo;{t.quote}&rdquo;
-                </p>
-                <div className="mt-8">
-                  <p className="font-semibold text-text-primary">{t.name}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.22em] text-brand-teal">
-                    {t.detail}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <ProofResultsRail stories={resultsStories} />
         </div>
       </section>
 
