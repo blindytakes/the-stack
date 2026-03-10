@@ -436,7 +436,7 @@ export default function HomePage() {
             What a plan looks like for you.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
-            Here's what a plan looks like for three common profiles.
+            Here&apos;s what a plan looks like for three common profiles.
           </p>
         </div>
         <div className="mt-6 grid gap-4 lg:grid-cols-3">
