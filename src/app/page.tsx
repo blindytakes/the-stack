@@ -50,19 +50,20 @@ const howItWorksSteps = [
   {
     step: '01',
     title: 'Answer a few questions',
-    description: 'Tell us about your spending habits and goals. Takes about 2 minutes.'
+    description:
+      'We ask about your monthly spend, credit range, and whether you prefer cash or travel rewards. Nothing sensitive.'
   },
   {
     step: '02',
-    title: 'Get your personalized plan',
+    title: 'Get a ranked plan',
     description:
-      'We rank the strongest card and bank offers you can realistically complete and put them in order.'
+      'You get a list of 3–5 moves with net bonus value, spend requirements, and the order to apply in.'
   },
   {
     step: '03',
-    title: 'Follow the order and execute',
+    title: 'Execute with confidence',
     description:
-      'Know what to apply for first, what can wait, and when to compare options before you move.'
+      'Each move shows the application link, the deadline window, and what to tackle next once you\u2019re approved.'
   }
 ] as const;
 
@@ -220,12 +221,11 @@ export default function HomePage() {
             The Stack Bonus Plan
           </p>
           <h1 className="font-heading text-4xl leading-tight text-text-primary md:text-6xl lg:text-[66px]">
-            <span className="block">Make the banks work for you.</span>
-            <span className="mt-2 block">Get a personalized card and bank bonus plan.</span>
+            Make the banks work for you.
           </h1>
           <p className="max-w-[48ch] text-xl font-medium leading-relaxed text-text-secondary md:text-2xl">
-            The Stack gives you a personalized 12-month bonus plan built around your profile,
-            shows you what to do first, and helps you stay on top of the timeline.
+            Take a 2-minute quiz and get a sequenced list of your top card and bank bonus moves —
+            with timing, value estimates, and where to apply first.
           </p>
           <p className="text-base leading-7 text-text-secondary md:text-lg">
             Most sites rank cards. <span className="font-semibold text-text-primary">The Stack builds your plan.</span>
@@ -394,8 +394,8 @@ export default function HomePage() {
             How The Stack works for you.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
-            No sponsored rankings. No affiliate-first sorting. Every recommendation is driven by
-            your actual profile.
+            Most reward sites rank cards by what pays them the highest commission. The Stack ranks
+            by what actually fits your profile — your spend, your goals, your approval odds.
           </p>
         </div>
         <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -497,10 +497,14 @@ export default function HomePage() {
       <section className="mt-16">
         <div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center md:p-10">
           <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
-            Get Bonus Plays
+            Get Bonus Plays — Weekly
           </h2>
-          <p className="mx-auto mt-3 max-w-none text-lg text-text-secondary md:text-xl lg:whitespace-nowrap">
-            Bonus offers, timing tips, and free tools. Curated, not sponsored.
+          <p className="mx-auto mt-3 max-w-lg text-lg text-text-secondary md:text-xl">
+            One email a week with the best live bonus offers, timing tips, and free tools.
+            Curated, not sponsored.
+          </p>
+          <p className="mx-auto mt-2 max-w-lg text-sm italic text-text-muted">
+            Recent example: &ldquo;Chase Sapphire Preferred just jumped to 80k points — here&apos;s whether to jump.&rdquo;
           </p>
           <div className="mx-auto mt-6 max-w-xl">
             <NewsletterSignup source="homepage" compact size="large" submitLabel="Join Free" />
