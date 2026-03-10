@@ -93,9 +93,9 @@ export function AboutContent() {
       </section>
 
       <section className="mx-auto mt-16 max-w-4xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center md:p-10">
-        <h2 className="font-heading text-3xl text-text-primary md:text-4xl">Get Weekly Payout Plays</h2>
+        <h2 className="font-heading text-3xl text-text-primary md:text-4xl">Get Bonus Plays</h2>
         <p className="mx-auto mt-3 max-w-none text-lg text-text-secondary md:text-xl lg:whitespace-nowrap">
-          Bonus offers, finance how-tos, and free tools. Delivered weekly. No Slop.
+          Bonus offers, timing tips, and free tools. Curated, not sponsored.
         </p>
         <div className="mx-auto mt-6 max-w-xl">
           <NewsletterSignup source="about" compact size="large" />

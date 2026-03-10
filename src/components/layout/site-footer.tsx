@@ -21,9 +21,9 @@ export function SiteFooter() {
       {showFooterNewsletter && (
         <div className="container-page border-b border-white/5 py-10">
           <div className="mx-auto max-w-lg text-center">
-            <p className="text-sm font-semibold text-text-primary">Get weekly bank payout plays</p>
+            <p className="text-sm font-semibold text-text-primary">Get bonus plays</p>
             <p className="mt-1 text-xs text-text-muted">
-              Bonus offers, APY opportunities, and fee traps to avoid.
+              Bonus offers, APY moves, and fee traps to avoid. Never sponsored.
             </p>
             <div className="mt-4">
               <NewsletterSignup source="footer" compact />

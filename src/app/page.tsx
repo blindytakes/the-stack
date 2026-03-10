@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { ProofPoints } from '@/components/proof-points';
-import { ProofResultsRail } from '@/components/proof-results-rail';
 
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
@@ -67,69 +66,117 @@ const howItWorksSteps = [
   }
 ] as const;
 
-const resultsStories = [
+const methodologyCards = [
   {
-    metric: '$3,200',
-    headline: 'Earned in year one',
-    name: 'Jamie R.',
-    summary:
-      'Started with no prior strategy and used a simple two-move plan matched to real spending.',
-    tags: ['Beginner profile', 'Travel goal', '2-card plan'],
-    setup: 'Started from scratch'
+    title: 'Profile-first ranking',
+    description:
+      'Your spending, goals, and credit profile drive the order — not a generic list. Two people get different plans.',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
+        <path d="M10 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM4.5 14.5c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M15.5 6.5 17 8l-1.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
   },
   {
-    metric: '60 days',
-    headline: 'First bonus unlocked',
-    name: 'Marcus T.',
-    summary:
-      'Started with the highest-fit first move instead of jumping into an aggressive setup.',
-    tags: ['No prior strategy', 'Single-card start', 'Clear approval target'],
-    setup: 'Low-friction first move'
+    title: 'Real net value',
+    description:
+      'Bonus value minus annual fee, weighted by what you\'d actually earn. No inflated point valuations.',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
+        <rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M10 8v4m-1.5-3h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    )
   },
   {
-    metric: '$1,500',
-    headline: 'Earned in 4 months',
-    name: 'Priya S.',
-    summary:
-      'Followed the recommended order and picked up two bonuses without over-optimizing.',
-    tags: ['2 bonuses completed', 'Order-first plan', 'Busy schedule'],
-    setup: 'Followed the sequence'
+    title: 'Sequenced for approval',
+    description:
+      'Cards ordered by approval likelihood and bonus deadlines so you don\'t waste a hard pull on a long shot.',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
+        <path d="M6 6h8M6 10h6M6 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M15 10l-1.5 1.5L15 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
   },
   {
-    metric: '3 moves',
-    headline: 'Planned across 12 months',
-    name: 'Evan L.',
-    summary:
-      'Used the planner to spread applications across a realistic pace instead of bunching them up.',
-    tags: ['Paced timeline', 'Lower stress', 'Bank + card mix'],
-    setup: 'Built around timing'
+    title: 'Cyclical offer tracking',
+    description:
+      'We track bonuses that come and go. When a strong offer returns or is about to expire, your plan reflects it.',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
+        <path d="M14.5 5.5A6 6 0 1 0 16 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M14.5 2.5v3h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  }
+] as const;
+
+const privacyPoints = [
+  {
+    label: 'No SSN Required',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+        <path d="M10 2.5 4 5.5v4c0 4.14 2.56 7.02 6 8 3.44-.98 6-3.86 6-8v-4L10 2.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        <path d="m7.5 10 1.5 1.5L12 8.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
   },
   {
-    metric: '$900',
-    headline: 'Bank bonus in 45 days',
-    name: 'Nina P.',
-    summary:
-      'Started with banking first because it fit her cash goal and current spending better than a new card.',
-    tags: ['Bank-first move', 'Cash goal', 'Low spend required'],
-    setup: 'Swapped the order'
+    label: 'No Bank Login',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+        <rect x="4.5" y="9" width="11" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M7 9V6.5a3 3 0 0 1 6 0V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    )
   },
   {
-    metric: '2 bonuses',
-    headline: 'Completed without overlap',
-    name: 'Leo C.',
-    summary:
-      'Spaced deadlines instead of stacking them, which made the tracking manageable with a busy work schedule.',
-    tags: ['Cleaner pacing', 'Less tracking', 'Busy schedule'],
-    setup: 'Avoided overlap'
+    label: 'No Credit Card #s',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+        <rect x="2.5" y="5.5" width="15" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M2.5 9h15" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M4 16 16 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    )
   },
   {
-    metric: '$2,050',
-    headline: 'Earned in 9 months',
-    name: 'Sara D.',
-    summary:
-      'Used a mixed card and bank path built around bills she already had instead of inventing spend.',
-    tags: ['Mixed plan', 'Existing bills', 'Travel + cash'],
-    setup: 'Matched existing spend'
+    label: 'No Data Shared',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-4 w-4" aria-hidden="true">
+        <path d="M3 10s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5Z" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M3 17 17 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    )
+  }
+] as const;
+
+const examplePlans = [
+  {
+    profile: 'The Starter',
+    metric: '$1,800',
+    period: 'Est. 12-month value',
+    description:
+      'First-time optimizer with moderate spend. One travel card bonus plus one bank bonus, paced over six months.',
+    tags: ['Beginner', 'Travel goal', '2 moves']
+  },
+  {
+    profile: 'The Travel Hacker',
+    metric: '$4,200',
+    period: 'Est. 12-month value',
+    description:
+      'Experienced with points and higher spend. Three card bonuses sequenced by approval windows and deadlines.',
+    tags: ['Experienced', 'Points maximizer', '4 moves']
+  },
+  {
+    profile: 'The Cash-Back Hunter',
+    metric: '$2,600',
+    period: 'Est. 12-month value',
+    description:
+      'Prefers cash over points. Mixed card and bank bonus plan built around bills already being paid.',
+    tags: ['Cash preference', 'Existing bills', '3 moves']
   }
 ] as const;
 
@@ -337,22 +384,87 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mt-14 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(15,18,30,0.92),rgba(7,9,16,0.98))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
-        <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-2xl">
-            <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
-              Real results
-            </p>
-            <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-              Outcomes from real plans.
-            </h2>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
-              Real examples of what happened when people followed a clear order instead of guessing
-              their way through offers.
-            </p>
-          </div>
+      {/* How We Rank */}
+      <section className="mt-14 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
+        <div className="max-w-3xl">
+          <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
+            Our Methodology
+          </p>
+          <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
+            How The Stack works for you.
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
+            No sponsored rankings. No affiliate-first sorting. Every recommendation is driven by
+            your actual profile.
+          </p>
         </div>
-        <ProofResultsRail stories={resultsStories} />
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {methodologyCards.map((card) => (
+            <div
+              key={card.title}
+              className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm md:p-6"
+            >
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] text-brand-teal">
+                {card.icon}
+              </div>
+              <h3 className="mt-4 text-lg font-semibold text-text-primary">{card.title}</h3>
+              <p className="mt-2 text-sm leading-7 text-text-secondary">{card.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Privacy reassurance */}
+      <div className="mt-10 flex items-center justify-center gap-x-10 gap-y-4">
+        {privacyPoints.map((point) => (
+          <div key={point.label} className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-teal/10 text-brand-teal">
+              {point.icon}
+            </div>
+            <p className="text-xl font-medium text-text-primary md:text-2xl">{point.label}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Example Plans */}
+      <section className="mt-14 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(15,18,30,0.92),rgba(7,9,16,0.98))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
+        <div className="max-w-2xl">
+          <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
+            Example Plans
+          </p>
+          <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
+            What a plan looks like for you.
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
+            Here's what a plan looks like for three common profiles.
+          </p>
+        </div>
+        <div className="mt-6 grid gap-4 lg:grid-cols-3">
+          {examplePlans.map((plan) => (
+            <div
+              key={plan.profile}
+              className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">
+                  Example plan
+                </p>
+                <span className="rounded-full border border-white/10 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.2em] text-text-muted">
+                  {plan.tags[0]}
+                </span>
+              </div>
+              <p className="mt-4 font-heading text-4xl text-text-primary">{plan.metric}</p>
+              <p className="mt-1 text-sm text-text-muted">{plan.period}</p>
+              <p className="mt-4 text-sm leading-7 text-text-secondary">{plan.description}</p>
+              <div className="mt-5 border-t border-white/10 pt-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-brand-teal">
+                  {plan.tags.slice(1).join(' · ')}
+                </p>
+                <p className="mt-1 text-sm font-semibold text-text-primary">{plan.profile}</p>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       <section className="mt-20">
@@ -385,10 +497,10 @@ export default function HomePage() {
       <section className="mt-16">
         <div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center md:p-10">
           <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
-            Get Weekly Bonus Plays
+            Get Bonus Plays
           </h2>
           <p className="mx-auto mt-3 max-w-none text-lg text-text-secondary md:text-xl lg:whitespace-nowrap">
-            Bonus offers, finance how-tos, and free tools. Delivered weekly. No Slop.
+            Bonus offers, timing tips, and free tools. Curated, not sponsored.
           </p>
           <div className="mx-auto mt-6 max-w-xl">
             <NewsletterSignup source="homepage" compact size="large" submitLabel="Join Free" />

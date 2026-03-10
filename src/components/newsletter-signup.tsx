@@ -38,8 +38,8 @@ const TURNSTILE_REQUIRED_MESSAGE = 'Please complete the security check to subscr
 export function NewsletterSignup({
   source = 'homepage',
   eyebrow,
-  heading = 'Stay in the loop',
-  description = 'Get weekly bonus plays, APY opportunities, and fee-avoidance strategy.',
+  heading = 'Get Bonus Plays',
+  description = 'Bonus offers, timing tips, and free tools. Curated, not sponsored.',
   compact = false,
   size = 'default',
   valueBullets = [],
