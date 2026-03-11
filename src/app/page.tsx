@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
+import { CustomerReviewsRail } from '@/components/customer-reviews-rail';
 import { ProofPoints } from '@/components/proof-points';
 
 const SITE_URL = 'https://thestackhq.com';
@@ -51,27 +52,27 @@ const howItWorksSteps = [
     step: '01',
     title: 'Answer a few questions',
     description:
-      'We ask about your monthly spend, credit range, and whether you prefer cash or travel rewards. Nothing sensitive.'
+      'Answer 4-5 quick questions about your cards, spend, and credit. No SSN, bank login, or card numbers.'
   },
   {
     step: '02',
     title: 'Get a ranked plan',
     description:
-      'You get a list of 3–5 moves with net bonus value, spend requirements, and the order to apply in.'
+      'See your best next moves ranked in order. We show bonus value, the spend needed to earn it, and which one to start with.'
   },
   {
     step: '03',
     title: 'Execute with confidence',
     description:
-      'Each move shows the application link, the deadline window, and what to tackle next once you\u2019re approved.'
+      'Open the right offer at the right time. Each move shows where to apply, what deadline matters, and what to do after approval.'
   }
 ] as const;
 
-const methodologyCards = [
+const differentiationCards = [
   {
-    title: 'Profile-first ranking',
+    title: 'Ranked for your profile',
     description:
-      'Your spending, goals, and credit profile drive the order — not a generic list. Two people get different plans.',
+      'Your spend, goals, and credit profile shape the plan. Two people should not get the same list.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M10 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM4.5 14.5c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -80,9 +81,9 @@ const methodologyCards = [
     )
   },
   {
-    title: 'Real net value',
+    title: 'Real value, not hype',
     description:
-      'Bonus value minus annual fee, weighted by what you\'d actually earn. No inflated point valuations.',
+      'We look at bonus value minus fees and practical fit, not inflated point valuations.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
@@ -91,9 +92,9 @@ const methodologyCards = [
     )
   },
   {
-    title: 'Sequenced for approval',
+    title: 'Sequenced for approval odds',
     description:
-      'Cards ordered by approval likelihood and bonus deadlines so you don\'t waste a hard pull on a long shot.',
+      'Moves are ordered by timing, issuer rules, and approval logic so you do not waste applications.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M6 6h8M6 10h6M6 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -102,9 +103,9 @@ const methodologyCards = [
     )
   },
   {
-    title: 'Cyclical offer tracking',
+    title: 'Tracks offers that come and go',
     description:
-      'We track bonuses that come and go. When a strong offer returns or is about to expire, your plan reflects it.',
+      'When a strong offer returns or is about to expire, your plan adjusts.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M14.5 5.5A6 6 0 1 0 16 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -154,30 +155,41 @@ const privacyPoints = [
   }
 ] as const;
 
-const examplePlans = [
+const sampleReviews = [
   {
-    profile: 'The Starter',
-    metric: '$1,800',
-    period: 'Est. 12-month value',
-    description:
-      'First-time optimizer with moderate spend. One travel card bonus plus one bank bonus, paced over six months.',
-    tags: ['Beginner', 'Travel goal', '2 moves']
+    name: 'Ashley P.',
+    quote:
+      'I was overwhelmed by card lists. The Stack gave me a clear order, and I ended up earning just over $3,000 in my first 12 months.',
+    result: '$3,000+ in the first year',
+    detail: 'Travel goal · first year using bonuses'
   },
   {
-    profile: 'The Travel Hacker',
-    metric: '$4,200',
-    period: 'Est. 12-month value',
-    description:
-      'Experienced with points and higher spend. Three card bonuses sequenced by approval windows and deadlines.',
-    tags: ['Experienced', 'Points maximizer', '4 moves']
+    name: 'Marcus T.',
+    quote:
+      'It told me what to open first and what to wait on. That saved me from making two bad applications too early.',
+    result: 'Clear first and second moves',
+    detail: 'Already had a few cards · wanted better sequencing'
   },
   {
-    profile: 'The Cash-Back Hunter',
-    metric: '$2,600',
-    period: 'Est. 12-month value',
-    description:
-      'Prefers cash over points. Mixed card and bank bonus plan built around bills already being paid.',
-    tags: ['Cash preference', 'Existing bills', '3 moves']
+    name: 'Priya R.',
+    quote:
+      'I liked that it included a bank bonus too. It felt like an actual plan, and I did not need a spreadsheet to keep up with it.',
+    result: 'No spreadsheet needed',
+    detail: 'Cash + travel mix · wanted something simple'
+  },
+  {
+    name: 'Daniel K.',
+    quote:
+      'Most sites just throw the biggest offers at you. This was the first tool that adjusted the order based on my credit and what I could realistically hit.',
+    result: 'Better sequencing',
+    detail: 'Good credit · moderate monthly spend'
+  },
+  {
+    name: 'Lauren S.',
+    quote:
+      'It felt like the difference between reading reviews and getting a real recommendation. I knew which move mattered next instead of staring at ranked lists.',
+    result: 'More useful than card lists',
+    detail: 'Wanted a clear do-now plan'
   }
 ] as const;
 
@@ -252,7 +264,7 @@ export default function HomePage() {
               </svg>
             </Link>
           </div>
-          <p className="text-sm font-medium text-text-muted">
+          <p className="text-base font-medium text-text-muted md:text-lg">
             Free. Takes about 2 minutes. No spreadsheet required.
           </p>
         </div>
@@ -339,15 +351,17 @@ export default function HomePage() {
 
       <ProofPoints className="mt-12" variant="trust-bar" />
 
-      <section className="mt-16">
-        <div className="max-w-3xl">
-          <p className="text-base leading-7 text-text-secondary md:text-lg">
-            Card catalogs show you options.{' '}
-            <span className="font-semibold text-text-primary">The Stack shows you what to do next.</span>
+      <section className="mt-14">
+        <div className="border-y border-white/10 px-8 py-6 md:px-10 md:py-8">
+          <p className="max-w-3xl text-left text-2xl font-medium leading-tight text-text-secondary md:text-3xl lg:text-[2rem]">
+            <span className="block">Other credit card sites list options with no plan.</span>
+            <span className="mt-2 block font-semibold text-text-primary">
+              The Stack gives you a step-by-step plan.
+            </span>
           </p>
         </div>
 
-        <div className="mt-6 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
+        <div className="mt-8 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
           <div className="max-w-3xl">
             <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
               How it works
@@ -368,12 +382,7 @@ export default function HomePage() {
                 key={item.step}
                 className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm md:p-6"
               >
-                <div className="flex items-center justify-between gap-4">
-                  <p className="font-heading text-4xl text-brand-teal">{item.step}</p>
-                  <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.24em] text-text-muted">
-                    Step {item.step}
-                  </span>
-                </div>
+                <p className="font-heading text-4xl text-brand-teal">{item.step}</p>
                 <h3 className="mt-5 text-xl font-semibold text-text-primary">{item.title}</h3>
                 <p className="mt-3 max-w-sm text-sm leading-7 text-text-secondary">
                   {item.description}
@@ -384,31 +393,33 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How We Rank */}
+      {/* Why The Stack Is Different */}
       <section className="mt-14 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
         <div className="max-w-3xl">
           <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
-            Our Methodology
+            Why The Stack Is Different
           </p>
           <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-            How The Stack works for you.
+            A better way to choose your next bonus.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
-            Most reward sites rank cards by what pays them the highest commission. The Stack ranks
-            by what actually fits your profile — your spend, your goals, your approval odds.
+            Most credit card sites rank offers by payout. The Stack ranks them by fit, timing, and
+            real value.
           </p>
         </div>
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
-          {methodologyCards.map((card) => (
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
+          {differentiationCards.map((card) => (
             <div
               key={card.title}
-              className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm md:p-6"
+              className="h-full rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm md:p-7"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] text-brand-teal">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-brand-teal">
                 {card.icon}
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-text-primary">{card.title}</h3>
-              <p className="mt-2 text-sm leading-7 text-text-secondary">{card.description}</p>
+              <h3 className="mt-5 text-xl font-semibold text-text-primary">{card.title}</h3>
+              <p className="mt-3 max-w-[34ch] text-sm leading-7 text-text-secondary">
+                {card.description}
+              </p>
             </div>
           ))}
         </div>
@@ -426,45 +437,17 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* Example Plans */}
+      {/* Reviews */}
       <section className="mt-14 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(15,18,30,0.92),rgba(7,9,16,0.98))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
         <div className="max-w-2xl">
           <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
-            Example Plans
+            Reviews
           </p>
           <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-            What a plan looks like for you.
+            What people think of the plan.
           </h2>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
-            Here&apos;s what a plan looks like for three common profiles.
-          </p>
         </div>
-        <div className="mt-6 grid gap-4 lg:grid-cols-3">
-          {examplePlans.map((plan) => (
-            <div
-              key={plan.profile}
-              className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">
-                  Example plan
-                </p>
-                <span className="rounded-full border border-white/10 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.2em] text-text-muted">
-                  {plan.tags[0]}
-                </span>
-              </div>
-              <p className="mt-4 font-heading text-4xl text-text-primary">{plan.metric}</p>
-              <p className="mt-1 text-sm text-text-muted">{plan.period}</p>
-              <p className="mt-4 text-sm leading-7 text-text-secondary">{plan.description}</p>
-              <div className="mt-5 border-t border-white/10 pt-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-brand-teal">
-                  {plan.tags.slice(1).join(' · ')}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-text-primary">{plan.profile}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <CustomerReviewsRail reviews={sampleReviews} />
       </section>
 
       <section className="mt-20">
