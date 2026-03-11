@@ -7,6 +7,9 @@ export type LearnArticle = {
   description: string;
   series?: LearnArticleSeries;
   featuredOrder?: number;
+  publishedAt: string;
+  author?: string;
+  keyTakeaway?: string;
   sections: { heading: string; body: string }[];
 };
 
@@ -17,6 +20,8 @@ export const learnArticles: Record<string, LearnArticle> = {
     readTime: '7 min',
     series: 'Evergreen Assets',
     featuredOrder: 1,
+    publishedAt: '2026-03-01',
+    keyTakeaway: 'A single welcome offer can be worth years of everyday category optimization.',
     description:
       'Category multipliers are nice. Welcome offers are where the real acceleration happens.',
     sections: [
@@ -48,6 +53,8 @@ export const learnArticles: Record<string, LearnArticle> = {
     readTime: '7 min',
     series: 'Evergreen Assets',
     featuredOrder: 2,
+    publishedAt: '2026-02-24',
+    keyTakeaway: 'A card can be excellent on paper and still overrated when most users capture only a fraction of the benefit stack.',
     description:
       'Great for a narrow profile, expensive for everyone else. The mismatch is the problem.',
     sections: [
@@ -79,6 +86,8 @@ export const learnArticles: Record<string, LearnArticle> = {
     readTime: '7 min',
     series: 'Evergreen Assets',
     featuredOrder: 3,
+    publishedAt: '2026-02-17',
+    keyTakeaway: 'Legacy reputation is doing most of the work. The competitive landscape has changed faster than most assumptions.',
     description:
       'Still a strong card, but no longer the automatic premium default it once was.',
     sections: [
@@ -110,6 +119,8 @@ export const learnArticles: Record<string, LearnArticle> = {
     readTime: '7 min',
     series: 'Evergreen Assets',
     featuredOrder: 4,
+    publishedAt: '2026-02-10',
+    keyTakeaway: 'Systems with lower operational friction usually outperform systems with higher theoretical upside.',
     description:
       'Its advantage is not hype. It is repeatable, low-friction value at portfolio scale.',
     sections: [
@@ -141,6 +152,8 @@ export const learnArticles: Record<string, LearnArticle> = {
     readTime: '6 min',
     series: 'Evergreen Assets',
     featuredOrder: 5,
+    publishedAt: '2026-02-03',
+    keyTakeaway: 'The best rewards strategy is not just about earning more. It is about losing less.',
     description:
       'When return windows fail you, this overlooked protection can quietly save real money.',
     sections: [
@@ -170,6 +183,7 @@ export const learnArticles: Record<string, LearnArticle> = {
     title: 'How Credit Card Rewards Actually Work',
     category: 'Fundamentals',
     readTime: '6 min',
+    publishedAt: '2026-01-27',
     description:
       'Points, miles, and cash back sound simple — until you try to use them.',
     sections: [
@@ -199,6 +213,7 @@ export const learnArticles: Record<string, LearnArticle> = {
     title: 'The Annual Fee Math Most People Get Wrong',
     category: 'Strategy',
     readTime: '5 min',
+    publishedAt: '2026-01-20',
     description:
       'A $550 card can cost less than a $0 card if the benefits offset the fee.',
     sections: [
@@ -224,6 +239,7 @@ export const learnArticles: Record<string, LearnArticle> = {
     title: 'Your First Credit Card: A No-Nonsense Playbook',
     category: 'Getting Started',
     readTime: '7 min',
+    publishedAt: '2026-01-13',
     description: 'Building credit from scratch? Here\'s exactly what to look for.',
     sections: [
       {
@@ -252,6 +268,7 @@ export const learnArticles: Record<string, LearnArticle> = {
     title: 'How to Maximize Sign-Up Bonuses Without Gaming the System',
     category: 'Strategy',
     readTime: '5 min',
+    publishedAt: '2026-01-06',
     description: 'Time your applications and meet spend requirements with normal purchases.',
     sections: [
       {
@@ -276,6 +293,7 @@ export const learnArticles: Record<string, LearnArticle> = {
     title: 'Bank Account Bonuses 101: How to Actually Keep the Money',
     category: 'Banking',
     readTime: '6 min',
+    publishedAt: '2026-02-14',
     description:
       'Checking and savings bonuses can be high-value, but only if you avoid fee clawbacks and missed requirements.',
     sections: [
@@ -305,6 +323,7 @@ export const learnArticles: Record<string, LearnArticle> = {
     title: 'Travel Points vs Cash Back: Which Is Actually Better?',
     category: 'Comparison',
     readTime: '8 min',
+    publishedAt: '2026-02-21',
     description: 'The answer depends on how you spend, how you redeem, and your complexity tolerance.',
     sections: [
       {
@@ -333,6 +352,7 @@ export const learnArticles: Record<string, LearnArticle> = {
     title: '5 Credit Score Myths That Cost You Money',
     category: 'Fundamentals',
     readTime: '4 min',
+    publishedAt: '2026-01-30',
     description: 'What actually matters for your credit score — and what doesn\'t.',
     sections: [
       {
@@ -377,6 +397,9 @@ export type LearnArticleCard = {
   description: string;
   series: LearnArticleSeries;
   featuredOrder: number | null;
+  publishedAt: string;
+  author: string;
+  keyTakeaway: string | null;
 };
 
 function getArticleSeries(article: LearnArticle): LearnArticleSeries {
@@ -391,7 +414,10 @@ const allLearnArticleCards: LearnArticleCard[] = Object.entries(learnArticles).m
     readTime: article.readTime,
     description: article.description,
     series: getArticleSeries(article),
-    featuredOrder: article.featuredOrder ?? null
+    featuredOrder: article.featuredOrder ?? null,
+    publishedAt: article.publishedAt,
+    author: article.author ?? 'The Stack',
+    keyTakeaway: article.keyTakeaway ?? null
   })
 );
 
@@ -425,3 +451,15 @@ export function getArticleBySlugAndSeries(
   if (!article) return null;
   return getArticleSeries(article) === series ? article : null;
 }
+
+export function formatArticleDate(isoDate: string): string {
+  return new Date(isoDate + 'T00:00:00').toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
+
+export const allBlogArticlesByDate = [...allLearnArticleCards].sort(
+  (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+);

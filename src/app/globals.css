@@ -23,6 +23,14 @@ body {
   @apply mx-auto w-full max-w-6xl px-5;
 }
 
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 .glow {
   background: radial-gradient(600px circle at 20% 20%, rgba(45, 212, 191, 0.18), transparent 40%),
               radial-gradient(800px circle at 80% 0%, rgba(212, 168, 83, 0.16), transparent 45%),
