@@ -3,7 +3,7 @@ import {
   MIN_VISIBLE_BENEFIT_ADJUSTMENT,
   formatSignedValue,
   formatValue,
-  whyThisIsFirst
+  recommendationRationale
 } from '@/components/plan/plan-results-utils';
 import type { PlannerRecommendation } from '@/lib/planner-recommendations';
 
@@ -102,14 +102,15 @@ export function RecommendationCard({
       )}
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-bg/50 px-4 py-3">
-        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Why this is first</p>
-        <p className="mt-1 text-base leading-7 text-text-secondary">{whyThisIsFirst(item)}</p>
+        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Why we recommend this</p>
+        <p className="mt-1 text-base leading-7 text-text-secondary">{recommendationRationale(item)}</p>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-3 text-sm text-text-muted">
-        <span>Effort: {item.effort}</span>
-        {item.timelineDays ? <span>Timeline: {item.timelineDays} days</span> : null}
-      </div>
+      {item.timelineDays ? (
+        <div className="mt-4 text-sm text-text-muted">
+          <span>Timeline: {item.timelineDays} days</span>
+        </div>
+      ) : null}
 
       <div className="mt-4 space-y-2">
         {item.keyRequirements.slice(0, 3).map((requirement) => (

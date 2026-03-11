@@ -1,15 +1,11 @@
-import type { BankingBonusListItem, BankingBonusRecord } from '@/lib/banking-bonuses';
+import type { BankingBonusRecord } from '@/lib/banking-bonuses';
 import type { CardRecord, CreditTierValue, SpendingCategoryValue } from '@/lib/cards';
 
-type RewardGoal = 'cashback' | 'travel' | 'flexibility';
-type FeePreference = 'no_fee' | 'up_to_95' | 'over_95_ok';
 type DirectDepositAvailability = 'yes' | 'no';
 type RecommendationEffort = 'low' | 'medium' | 'high';
 
 type CardFitInput = {
-  goal: RewardGoal;
   spend: SpendingCategoryValue;
-  fee: FeePreference;
 };
 
 type CardOpenValueInput = {
@@ -21,8 +17,6 @@ type CardOpenValueInput = {
 type CardPriorityInput = {
   estimatedNetValue: number;
   fitScore: number;
-  annualFee: number;
-  feePreference: FeePreference;
   effort: RecommendationEffort;
   timelineDays?: number;
 };
@@ -32,7 +26,6 @@ type BankingPriorityInput = {
   effort: RecommendationEffort;
   timelineDays?: number;
   directDepositRequired: boolean;
-  stateRestricted: boolean;
   minimumOpeningDeposit?: number;
   directDepositAvailability: DirectDepositAvailability;
 };
@@ -54,12 +47,6 @@ export const creditRank: Record<CreditTierValue, number> = {
   good: 3,
   fair: 2,
   building: 1
-};
-
-const goalRewardTypes: Record<RewardGoal, CardRecord['rewardType'][]> = {
-  cashback: ['cashback'],
-  travel: ['points', 'miles'],
-  flexibility: ['cashback', 'points', 'miles']
 };
 
 export const cardOpenScoringPolicy = {
@@ -84,10 +71,6 @@ export const cardPriorityScoringPolicy = {
   timelineAdjustment: {
     within90Days: 20,
     within120Days: 10
-  },
-  feePreferenceAdjustment: {
-    noFeeMatch: 25,
-    upTo95Match: 15
   }
 } as const;
 
@@ -95,8 +78,8 @@ export const cardPriorityScoringPolicy = {
  * Banking recommendation priority weights.
  *
  * Banking starts from estimated net value, then adjusts for operational effort,
- * payout timing, direct-deposit friction, geographic eligibility, and deposit
- * size so the ordering remains explicit and easy to tune.
+ * payout timing, direct-deposit friction, and deposit size so the ordering
+ * remains explicit and easy to tune.
  */
 export const bankingPriorityScoringPolicy = {
   effortAdjustment: {
@@ -111,9 +94,6 @@ export const bankingPriorityScoringPolicy = {
   directDepositAdjustment: {
     notRequired: 20,
     requiredAndAvailable: 8
-  },
-  eligibilityAdjustment: {
-    nationallyAvailable: 10
   },
   depositAdjustment: {
     upTo2000: 20,
@@ -130,27 +110,13 @@ export function meetsCreditTier(required: CreditTierValue, available: CreditTier
 }
 
 export function scoreCardFit(
-  card: Pick<CardRecord, 'rewardType' | 'topCategories' | 'annualFee'>,
+  card: Pick<CardRecord, 'topCategories'>,
   input: CardFitInput
 ): number {
   let score = 0;
 
-  if (!goalRewardTypes[input.goal].includes(card.rewardType)) {
-    score -= 1;
-  } else {
-    score += input.goal === 'flexibility' ? 2 : 3;
-  }
-
   if (card.topCategories.includes(input.spend) || card.topCategories.includes('all')) {
     score += 2;
-  }
-
-  if (input.fee === 'no_fee') {
-    score += card.annualFee === 0 ? 2 : -2;
-  } else if (input.fee === 'up_to_95') {
-    score += card.annualFee <= 95 ? 2 : -1;
-  } else {
-    score += card.annualFee > 95 ? 1 : 0;
   }
 
   return score;
@@ -199,13 +165,6 @@ export function scoreCardOpenPriority(input: CardPriorityInput): number {
     score += cardPriorityScoringPolicy.timelineAdjustment.within120Days;
   }
 
-  if (input.feePreference === 'no_fee' && input.annualFee === 0) {
-    score += cardPriorityScoringPolicy.feePreferenceAdjustment.noFeeMatch;
-  }
-  if (input.feePreference === 'up_to_95' && input.annualFee <= 95) {
-    score += cardPriorityScoringPolicy.feePreferenceAdjustment.upTo95Match;
-  }
-
   return Math.round(score);
 }
 
@@ -230,10 +189,6 @@ export function scoreBankingPriority(input: BankingPriorityInput): number {
     score += bankingPriorityScoringPolicy.directDepositAdjustment.requiredAndAvailable;
   }
 
-  if (!input.stateRestricted) {
-    score += bankingPriorityScoringPolicy.eligibilityAdjustment.nationallyAvailable;
-  }
-
   const deposit = input.minimumOpeningDeposit ?? 0;
   if (deposit <= 2000) {
     score += bankingPriorityScoringPolicy.depositAdjustment.upTo2000;
@@ -246,16 +201,4 @@ export function scoreBankingPriority(input: BankingPriorityInput): number {
 
 export function scoreScheduleContribution(input: ScheduleContributionInput): number {
   return Math.round(input.estimatedNetValue * 100) + input.priorityScore;
-}
-
-export function isStateRestricted(offer: Pick<BankingBonusListItem, 'stateRestrictions'>, state: string): boolean {
-  if (state === 'OT') {
-    return false;
-  }
-
-  return Boolean(
-    offer.stateRestrictions &&
-      offer.stateRestrictions.length > 0 &&
-      !offer.stateRestrictions.includes(state)
-  );
 }

@@ -32,7 +32,7 @@ export function formatSignedValue(value: number, tone: 'positive' | 'negative') 
   return `${tone === 'positive' ? '+' : '-'}${formatValue(value)}`;
 }
 
-export function whyThisIsFirst(item: PlannerRecommendation) {
+export function recommendationRationale(item: PlannerRecommendation) {
   const breakdown = item.valueBreakdown;
 
   if (item.kind === 'bank_bonus') {

@@ -8,7 +8,7 @@ import { meetsCreditTier, scoreCardFit } from '@/lib/scoring-policy';
  * Quiz ranking logic for card recommendations.
  *
  * The model is heuristic and deterministic: each eligible card gets
- * points/penalties for goal fit, spend-category fit, and fee tolerance.
+ * points for spend-category fit against user spending profile.
  */
 
 export const quizRequestSchema = z.object({

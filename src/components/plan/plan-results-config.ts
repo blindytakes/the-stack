@@ -46,10 +46,8 @@ export const chase524Options: Array<{
 
 export const exclusionActions: Record<PlannerExclusionReason, string> = {
   no_signup_bonus: 'Focus on offers with active welcome bonuses only.',
-  fee_preference: 'Loosen your annual-fee preference to see more high-upside card options.',
   credit_tier: 'Raise approval odds first with utilization and on-time payment improvements.',
   amex_lifetime_rule: 'Amex bonuses are usually once per lifetime per card, so prior Amex holdings can block those offers.',
   chase_5_24: 'Chase cards are hidden when you mark yourself at or above 5/24.',
-  direct_deposit_required: 'Routing payroll direct deposit unlocks most checking bonuses.',
-  state_restricted: 'Some bank bonuses are limited by state eligibility rules.'
+  direct_deposit_required: 'Routing payroll direct deposit unlocks most checking bonuses.'
 };

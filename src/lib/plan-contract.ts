@@ -37,12 +37,10 @@ export const plannerRecommendationSchema = z.object({
 
 export const plannerExclusionReasonSchema = z.enum([
   'no_signup_bonus',
-  'fee_preference',
   'credit_tier',
   'amex_lifetime_rule',
   'chase_5_24',
-  'direct_deposit_required',
-  'state_restricted'
+  'direct_deposit_required'
 ]);
 
 export const plannerExcludedOfferSchema = z.object({

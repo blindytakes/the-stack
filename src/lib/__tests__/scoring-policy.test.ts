@@ -6,7 +6,6 @@ import {
   estimateBankBonusNetValue,
   estimateCardBenefitAdjustment,
   estimateCardOpenValue,
-  isStateRestricted,
   meetsCreditTier,
   scoreBankingPriority,
   scoreCardFit,
@@ -29,67 +28,70 @@ describe('scoring-policy', () => {
     ).toBe(1055);
   });
 
-  it('scores card fit using goal, spend, and fee preference', () => {
+  it('scores card fit using spend-category match', () => {
+    // Spend match gives +2
     expect(
       scoreCardFit(
-        {
-          rewardType: 'cashback',
-          topCategories: ['dining'],
-          annualFee: 0
-        },
-        {
-          goal: 'cashback',
-          spend: 'dining',
-          fee: 'no_fee'
-        }
+        { topCategories: ['dining'] },
+        { spend: 'dining' }
       )
-    ).toBe(7);
+    ).toBe(2);
+
+    // No spend match gives 0
+    expect(
+      scoreCardFit(
+        { topCategories: ['travel'] },
+        { spend: 'dining' }
+      )
+    ).toBe(0);
+
+    // 'all' category always matches
+    expect(
+      scoreCardFit(
+        { topCategories: ['all'] },
+        { spend: 'dining' }
+      )
+    ).toBe(2);
   });
 
   it('builds card priority from open value plus fit and execution bonuses', () => {
     expect(cardPriorityScoringPolicy.fitWeight).toBe(60);
     expect(cardPriorityScoringPolicy.effortAdjustment.low).toBe(50);
+    // 755 + (2 * 60) + 15 (medium effort) + 20 (within 90 days) = 910
     expect(
       scoreCardOpenPriority({
         estimatedNetValue: 755,
-        fitScore: 7,
-        annualFee: 95,
-        feePreference: 'up_to_95',
+        fitScore: 2,
         effort: 'medium',
         timelineDays: 90
       })
-    ).toBe(1225);
+    ).toBe(910);
   });
 
   it('scores banking offers and scheduler contribution deterministically', () => {
     expect(estimateBankBonusNetValue(400, 12)).toBe(388);
     expect(bankingPriorityScoringPolicy.effortAdjustment.low).toBe(45);
+    // 388 + 45 (low effort) + 20 (within 90 days) + 20 (DD not required) + 20 (deposit ≤ 2000) = 493
     expect(
       scoreBankingPriority({
         estimatedNetValue: 388,
         effort: 'low',
         timelineDays: 90,
         directDepositRequired: false,
-        stateRestricted: false,
         minimumOpeningDeposit: 1000,
         directDepositAvailability: 'yes'
       })
-    ).toBe(503);
+    ).toBe(493);
     expect(
       scoreScheduleContribution({
         estimatedNetValue: 755,
-        priorityScore: 1225
+        priorityScore: 910
       })
-    ).toBe(76725);
+    ).toBe(76410);
   });
 
   it('shares credit-tier eligibility rules across quiz and planner flows', () => {
     expect(meetsCreditTier('good', 'excellent')).toBe(true);
     expect(meetsCreditTier('excellent', 'good')).toBe(false);
-  });
-
-  it('treats OT as unknown state instead of hard-restricting banking offers', () => {
-    expect(isStateRestricted({ stateRestrictions: ['NY', 'CA'] }, 'OT')).toBe(false);
-    expect(isStateRestricted({ stateRestrictions: ['NY', 'CA'] }, 'WA')).toBe(true);
   });
 });

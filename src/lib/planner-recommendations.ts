@@ -12,7 +12,6 @@ import {
   estimateCardOpenValue,
   getBankRecommendationEffort,
   getCardRecommendationEffort,
-  isStateRestricted,
   meetsCreditTier,
   scoreBankingPriority,
   scoreCardOpenPriority
@@ -31,12 +30,10 @@ export type PlannerRecommendationEffort = 'low' | 'medium' | 'high';
 
 export type PlannerExclusionReason =
   | 'no_signup_bonus'
-  | 'fee_preference'
   | 'credit_tier'
   | 'amex_lifetime_rule'
   | 'chase_5_24'
-  | 'direct_deposit_required'
-  | 'state_restricted';
+  | 'direct_deposit_required';
 
 export type PlannerExcludedOffer = {
   id: string;
@@ -92,13 +89,6 @@ function getCardExclusionReasons(card: QuizResult, input: QuizRequest): PlannerE
     reasons.push('no_signup_bonus');
   }
 
-  if (input.fee === 'no_fee' && card.annualFee > 0) {
-    reasons.push('fee_preference');
-  }
-  if (input.fee === 'up_to_95' && card.annualFee > 95) {
-    reasons.push('fee_preference');
-  }
-
   if (!meetsCreditTier(card.creditTierMin, input.credit)) {
     reasons.push('credit_tier');
   }
@@ -116,10 +106,6 @@ function getBankingExclusionReasons(
 
   if (input.directDeposit === 'no' && offer.directDeposit.required) {
     reasons.push('direct_deposit_required');
-  }
-
-  if (isStateRestricted(offer, input.state)) {
-    reasons.push('state_restricted');
   }
 
   return reasons;
@@ -147,7 +133,7 @@ export function toPlannerRecommendationFromCard(input: CardPlannerInput): Planne
       benefitAdjustment,
       annualFee: input.annualFee
     },
-    priorityScore: estimatedNetValue,
+    priorityScore: 0,
     effort: getCardRecommendationEffort(input.spendRequired),
     detailPath: `/cards/${input.slug}`,
     timelineDays: input.spendPeriodDays,
@@ -181,7 +167,7 @@ export function toPlannerRecommendationFromBankingBonus(
       headlineLabel: 'Bank bonus',
       estimatedFees: input.estimatedFees
     },
-    priorityScore: estimatedNetValue,
+    priorityScore: 0,
     effort: getBankRecommendationEffort(input),
     detailPath: `/banking/${input.slug}`,
     timelineDays: input.holdingPeriodDays,
@@ -256,8 +242,6 @@ export function buildPlanRecommendationsFromQuiz(
       priorityScore: scoreCardOpenPriority({
         estimatedNetValue: recommendation.estimatedNetValue,
         fitScore: card.score,
-        annualFee: card.annualFee,
-        feePreference: input.fee,
         effort: recommendation.effort,
         timelineDays: recommendation.timelineDays
       })
@@ -286,7 +270,6 @@ export function buildPlanRecommendationsFromQuiz(
         effort: recommendation.effort,
         timelineDays: recommendation.timelineDays,
         directDepositRequired: offer.directDeposit.required,
-        stateRestricted: Boolean(offer.stateRestrictions && offer.stateRestrictions.length > 0),
         minimumOpeningDeposit: offer.minimumOpeningDeposit,
         directDepositAvailability: input.directDeposit
       })

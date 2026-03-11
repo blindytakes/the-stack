@@ -176,7 +176,9 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     expect(bundle.recommendations.some((item) => item.lane === 'cards')).toBe(true);
     expect(bundle.recommendations.some((item) => item.lane === 'banking')).toBe(true);
     expect(bundle.schedule).toHaveLength(2);
-    expect(bundle.exclusions.some((item) => item.lane === 'banking')).toBe(true);
+    // Remaining banking bonuses that didn't make the cut appear in scheduleIssues
+    // rather than exclusions (no hard-filter exclusion reasons apply with directDeposit: 'yes')
+    expect(bundle.scheduleIssues.length).toBeGreaterThan(0);
   });
 
   it('applies banking hard filters and returns exclusion reasons', async () => {
@@ -239,12 +241,11 @@ describe('buildPlanRecommendationsFromQuiz', () => {
 
     const bundle = buildPlanRecommendationsFromQuiz(cards, [], {
       ...baseInput,
-      fee: 'no_fee',
       credit: 'good'
     });
 
-    expect(bundle.recommendations).toHaveLength(0);
-    expect(bundle.exclusions.some((item) => item.reasons.includes('fee_preference'))).toBe(true);
+    // Premium card excluded for credit tier (requires excellent, user has good)
+    // No-bonus card excluded for having no signup bonus
     expect(bundle.exclusions.some((item) => item.reasons.includes('credit_tier'))).toBe(true);
     expect(bundle.exclusions.some((item) => item.reasons.includes('no_signup_bonus'))).toBe(true);
   });

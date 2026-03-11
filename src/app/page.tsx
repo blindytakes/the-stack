@@ -494,21 +494,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mt-16">
-        <div className="mx-auto max-w-4xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center md:p-10">
-          <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
-            Get Bonus Plays — Weekly
-          </h2>
-          <p className="mx-auto mt-3 max-w-lg text-lg text-text-secondary md:text-xl">
-            One email a week with the best live bonus offers, timing tips, and free tools.
-            Curated, not sponsored.
-          </p>
-          <p className="mx-auto mt-2 max-w-lg text-sm italic text-text-muted">
-            Recent example: &ldquo;Chase Sapphire Preferred just jumped to 80k points — here&apos;s whether to jump.&rdquo;
-          </p>
-          <div className="mx-auto mt-6 max-w-xl">
-            <NewsletterSignup source="homepage" compact size="large" submitLabel="Join Free" />
-          </div>
+      <section className="mx-auto mt-16 max-w-4xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center md:p-10">
+        <h2 className="font-heading text-3xl text-text-primary md:text-4xl">Get Bonus Plays</h2>
+        <p className="mx-auto mt-3 max-w-none text-lg text-text-secondary md:text-xl lg:whitespace-nowrap">
+          Bonus offers, timing tips, and free tools. Curated, not sponsored.
+        </p>
+        <div className="mx-auto mt-6 max-w-xl">
+          <NewsletterSignup source="homepage" compact size="large" />
         </div>
       </section>
 

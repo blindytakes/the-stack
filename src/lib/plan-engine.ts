@@ -1,6 +1,10 @@
 import type { QuizRequest } from '@/lib/quiz-engine';
 import { scoreScheduleContribution } from '@/lib/scoring-policy';
 
+// Only the balanced pace is used — the quiz always hardcodes pace: 'balanced'.
+// Conservative and aggressive configs have been removed to keep the engine honest
+// about what it actually supports.
+
 export type PlanScheduleLane = 'cards' | 'banking';
 
 export type PlannerRecommendationScheduleConstraints = {
@@ -92,28 +96,12 @@ type OptimizerBestResult = {
 const DEFAULT_HORIZON_DAYS = 365;
 const DAYS_IN_MONTH = 30;
 
-const paceConfig: Record<QuizRequest['pace'], PlanPaceConfig> = {
-  conservative: {
-    maxCards: 2,
-    maxBanking: 1,
-    maxActiveCards: 1,
-    maxActiveBanking: 1,
-    maxDirectDepositBanking: 1
-  },
-  balanced: {
-    maxCards: 3,
-    maxBanking: 2,
-    maxActiveCards: 1,
-    maxActiveBanking: 1,
-    maxDirectDepositBanking: 1
-  },
-  aggressive: {
-    maxCards: 4,
-    maxBanking: 3,
-    maxActiveCards: 2,
-    maxActiveBanking: 2,
-    maxDirectDepositBanking: 1
-  }
+const defaultPaceConfig: PlanPaceConfig = {
+  maxCards: 3,
+  maxBanking: 2,
+  maxActiveCards: 1,
+  maxActiveBanking: 1,
+  maxDirectDepositBanking: 1
 };
 
 const reasonPriority: PlanScheduleIssueReason[] = [
@@ -158,8 +146,8 @@ function contributionScore(recommendation: SchedulablePlanRecommendation): numbe
   });
 }
 
-export function getPlanPaceConfig(pace: QuizRequest['pace']): PlanPaceConfig {
-  return paceConfig[pace];
+export function getPlanPaceConfig(_pace?: QuizRequest['pace']): PlanPaceConfig {
+  return defaultPaceConfig;
 }
 
 function dominantReason(reasonCounts: Record<PlanScheduleIssueReason, number>): PlanScheduleIssueReason {
