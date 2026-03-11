@@ -28,7 +28,7 @@ export async function buildPlan(rawBody: unknown | null): Promise<BuildPlanResul
 
   try {
     const generatedAt = Date.now();
-    const paceConfig = getPlanPaceConfig(parsed.data.answers.pace);
+    const paceConfig = getPlanPaceConfig();
     const maxCards = parsed.data.options?.maxCards ?? paceConfig.maxCards;
     const maxBanking = parsed.data.options?.maxBanking ?? paceConfig.maxBanking;
     const [{ cards }, { bonuses }] = await Promise.all([

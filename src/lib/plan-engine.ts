@@ -146,7 +146,7 @@ function contributionScore(recommendation: SchedulablePlanRecommendation): numbe
   });
 }
 
-export function getPlanPaceConfig(_pace?: QuizRequest['pace']): PlanPaceConfig {
+export function getPlanPaceConfig(): PlanPaceConfig {
   return defaultPaceConfig;
 }
 
@@ -518,7 +518,7 @@ export function buildPlanSchedule(
   input: QuizRequest,
   options: BuildPlanScheduleOptions = {}
 ): { scheduled: PlanScheduleItem[]; issues: PlanScheduleIssue[] } {
-  const config = getPlanPaceConfig(input.pace);
+  const config = getPlanPaceConfig();
   const startAt = options.startAt ?? Date.now();
   const horizonDays = options.horizonDays ?? DEFAULT_HORIZON_DAYS;
   const maxCards = options.maxCards ?? config.maxCards;
