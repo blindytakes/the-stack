@@ -108,6 +108,7 @@ function SignUpBonusRow({ a, b }: { a: CardDetail; b: CardDetail }) {
 
   function formatBonus(bonus: typeof bonusA) {
     if (!bonus) return '—';
+    if (bonus.displayHeadline) return bonus.displayHeadline;
     if (bonus.bonusType === 'statement_credit') return `$${bonus.bonusValue} credit`;
     if (bonus.bonusPoints) return `${bonus.bonusPoints.toLocaleString()} pts`;
     return `$${bonus.bonusValue} bonus`;
@@ -115,6 +116,7 @@ function SignUpBonusRow({ a, b }: { a: CardDetail; b: CardDetail }) {
 
   function formatSpend(bonus: typeof bonusA) {
     if (!bonus) return '';
+    if (bonus.displayDescription) return bonus.displayDescription;
     return `Spend $${bonus.spendRequired.toLocaleString()} in ${Math.round(bonus.spendPeriodDays / 30)} mo`;
   }
 

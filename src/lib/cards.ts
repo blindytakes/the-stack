@@ -34,6 +34,7 @@ export type CardRecord = {
   slug: string;
   name: string;
   issuer: string;
+  imageUrl?: string;
   cardType: CardTypeValue;
   rewardType: RewardTypeValue;
   topCategories: SpendingCategoryValue[];
@@ -65,6 +66,8 @@ export type RewardDetail = {
 export type SignUpBonusDetail = {
   bonusValue: number;
   bonusType: string;
+  displayHeadline?: string;
+  displayDescription?: string;
   bonusPoints?: number;
   spendRequired: number;
   spendPeriodDays: number;
@@ -300,6 +303,7 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
     slug: row.slug,
     name: row.name,
     issuer: row.issuer,
+    imageUrl: row.imageUrl ?? undefined,
     cardType: cardTypeFromDb[row.cardType],
     rewardType: deriveRewardType(row.rewards),
     topCategories: deriveTopCategories(row.rewards),
@@ -385,6 +389,8 @@ export function toCardDetailFromDb(row: DbCardDetailRow): CardDetail {
     signUpBonuses: row.signUpBonuses.map((b) => ({
       bonusValue: Number(b.bonusValue),
       bonusType: b.bonusType,
+      displayHeadline: b.displayHeadline ?? undefined,
+      displayDescription: b.displayDescription ?? undefined,
       bonusPoints: b.bonusPoints ?? undefined,
       spendRequired: Number(b.spendRequired),
       spendPeriodDays: b.spendPeriodDays,

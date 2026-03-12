@@ -298,31 +298,24 @@
       "benefits": [
         {
           "category": "OTHER",
-          "name": "Earn Points on Rent with No Transaction Fee",
-          "description": "Earn points on eligible rent payments without the typical credit card transaction fee.",
-          "activationMethod": "Use the Bilt card or eligible Bilt payment rails for qualifying rent payments.",
-          "finePrint": "Program rules and minimum transaction requirements apply."
+          "name": "Rewards on Eligible Housing Payments",
+          "description": "Bilt's current no-annual-fee card can earn rewards on eligible rent or mortgage payments made through the Bilt app or website without a transaction fee.",
+          "activationMethod": "Use the Bilt app or website for eligible housing payments and maintain an open Bilt card account.",
+          "finePrint": "Earning structure depends on the rewards option selected and Bilt program terms."
         },
         {
           "category": "OTHER",
-          "name": "BiltProtect",
-          "description": "Eligible rent payments can be pulled from a linked bank account while still earning Bilt points.",
-          "activationMethod": "Link an eligible bank account and enable BiltProtect in your Bilt account.",
-          "finePrint": "Subject to account eligibility and program terms."
+          "name": "Flexible Rewards Options",
+          "description": "Cardholders can choose between a Housing-only Option that earns Bilt Points on eligible housing payments or a Flexible Bilt Cash Option that earns Bilt Cash on everyday spend.",
+          "activationMethod": "Select your preferred rewards option in the Bilt experience and use the card for qualifying purchases.",
+          "finePrint": "Housing rewards and redemption mechanics vary by option and may depend on Everyday Spend Ratio thresholds."
         },
         {
           "category": "OTHER",
-          "name": "Rent Day Benefits",
-          "description": "Special monthly offers, promotions, or boosted earnings are available on Rent Day.",
-          "activationMethod": "Use the Bilt app and eligible partners during Rent Day promotions.",
-          "finePrint": "Offers, markets, and participating partners can change."
-        },
-        {
-          "category": "OTHER",
-          "name": "Neighborhood Benefits",
-          "description": "Cardholders can unlock rotating local dining, fitness, and lifestyle offers in participating neighborhoods.",
-          "activationMethod": "Browse and activate eligible offers in the Bilt app.",
-          "finePrint": "Availability depends on market and participating merchants."
+          "name": "Bilt Partner Rewards",
+          "description": "The broader Bilt Rewards ecosystem includes additional partner earning opportunities across Lyft, Bilt Dining, Bilt Travel, Bilt Fitness, Walgreens, Metropolis parking, and home delivery offers.",
+          "activationMethod": "Link and use participating partners through eligible Bilt channels.",
+          "finePrint": "Partner availability, earning rates, and offer terms can change by merchant and market."
         }
       ]
     },

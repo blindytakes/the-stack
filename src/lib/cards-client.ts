@@ -52,6 +52,8 @@ const rewardDetailSchema = z.object({
 const signUpBonusDetailSchema = z.object({
   bonusValue: z.number().finite(),
   bonusType: z.string().min(1),
+  displayHeadline: z.string().min(1).optional(),
+  displayDescription: z.string().min(1).optional(),
   bonusPoints: z.number().finite().optional(),
   spendRequired: z.number().finite(),
   spendPeriodDays: z.number().int(),

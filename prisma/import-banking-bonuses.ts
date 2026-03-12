@@ -65,6 +65,7 @@ function toUpsertData(record: BankingBonusSeedRecord) {
     offerName: record.offerName,
     accountType: accountTypeToDb[record.accountType],
     headline: record.headline,
+    imageUrl: record.imageUrl ?? null,
     bonusAmount: record.bonusAmount,
     estimatedFees: record.estimatedFees,
     directDepositRequired: record.directDeposit.required,

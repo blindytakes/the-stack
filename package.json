@@ -16,6 +16,7 @@
     "db:studio": "prisma studio",
     "banking:import": "tsx prisma/import-banking-bonuses.ts",
     "card-benefits:import": "tsx prisma/import-card-benefits.ts",
+    "entity-assets:import": "tsx prisma/import-entity-assets.ts",
     "postinstall": "prisma generate"
   },
   "dependencies": {

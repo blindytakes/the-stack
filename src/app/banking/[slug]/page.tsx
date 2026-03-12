@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { EntityImage } from '@/components/ui/entity-image';
 import {
   getAllBankingBonusSlugs,
   getBankingBonusBySlug,
@@ -64,6 +65,17 @@ export default async function BankingOfferDetailPage({ params }: Props) {
       <header className="rounded-3xl border border-white/10 bg-gradient-to-br from-bg-elevated via-bg-surface to-bg-elevated p-6 lg:p-8">
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
           <div>
+            <div className="mb-5 h-16 w-16">
+              <EntityImage
+                src={offer.imageUrl}
+                alt={`${offer.bankName} logo`}
+                label={offer.bankName}
+                className="aspect-square h-full w-full"
+                imgClassName="bg-black/10 p-3"
+                fallbackClassName="bg-black/10"
+                priority
+              />
+            </div>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-gold">{offer.bankName}</p>
             <h1 className="mt-2 font-heading text-4xl text-text-primary">{offer.offerName}</h1>
             <p className="mt-3 text-lg text-text-secondary">{offer.headline}</p>

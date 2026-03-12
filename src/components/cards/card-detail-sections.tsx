@@ -95,15 +95,18 @@ export function CardSignUpBonusSection({ bonuses }: { bonuses: SignUpBonusDetail
             className="rounded-2xl border border-brand-gold/20 bg-brand-gold/5 px-5 py-4"
           >
             <p className="text-lg font-semibold text-brand-gold">
-              {bonus.bonusType === 'statement_credit'
-                ? `$${bonus.bonusValue} statement credit`
-                : bonus.bonusPoints
-                  ? `${bonus.bonusPoints.toLocaleString()} points (~$${bonus.bonusValue.toLocaleString()} est.)`
-                  : `$${bonus.bonusValue} bonus`}
+              {bonus.displayHeadline ??
+                (bonus.bonusType === 'statement_credit'
+                  ? `$${bonus.bonusValue} statement credit`
+                  : bonus.bonusPoints
+                    ? `${bonus.bonusPoints.toLocaleString()} points (~$${bonus.bonusValue.toLocaleString()} est.)`
+                    : `$${bonus.bonusValue} bonus`)}
             </p>
             <p className="mt-1 text-sm text-text-secondary">
-              Spend ${bonus.spendRequired.toLocaleString()} in the first{' '}
-              {Math.round(bonus.spendPeriodDays / 30)} months
+              {bonus.displayDescription ??
+                `Spend $${bonus.spendRequired.toLocaleString()} in the first ${Math.round(
+                  bonus.spendPeriodDays / 30
+                )} months`}
             </p>
             <p className="mt-1 text-xs text-text-muted">
               Estimate only. Real value depends on eligibility and redemption choices.

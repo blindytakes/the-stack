@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { EntityImage } from '@/components/ui/entity-image';
 import {
   bankingBonusesQuerySchema,
   filterBankingBonuses,
@@ -184,6 +185,16 @@ export default async function BankingPage({ searchParams }: Props) {
             href={`/banking/${offer.slug}?src=banking_directory`}
             className="group rounded-2xl border border-white/10 bg-bg-surface p-5 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
           >
+            <div className="mb-4 h-14 w-14">
+              <EntityImage
+                src={offer.imageUrl}
+                alt={`${offer.bankName} logo`}
+                label={offer.bankName}
+                className="aspect-square h-full w-full"
+                imgClassName="bg-black/10 p-2.5"
+                fallbackClassName="bg-black/10"
+              />
+            </div>
             <p className="text-xs text-text-muted">{offer.bankName}</p>
             <h2 className="mt-1 text-base font-semibold text-text-primary transition group-hover:text-brand-teal">
               {offer.offerName}

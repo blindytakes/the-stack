@@ -1,0 +1,25 @@
+{
+  "assets": [
+    {
+      "entityType": "card",
+      "slug": "amex-gold-card",
+      "sourcePageUrl": "https://www.americanexpress.com/us/credit-cards/card/gold-card/",
+      "sourceImageUrl": "https://www.example.com/path/to/approved-card-art.png",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/gold-card/"
+    },
+    {
+      "entityType": "card",
+      "slug": "chase-sapphire-preferred",
+      "sourcePageUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/preferred",
+      "sourceImageUrl": "https://www.example.com/path/to/approved-card-art.webp",
+      "affiliateUrl": "https://partner.example.com/chase-sapphire-preferred"
+    },
+    {
+      "entityType": "banking_bonus",
+      "slug": "summit-national-checking-300",
+      "sourcePageUrl": "https://www.examplebank.com/checking/smart-checking-bonus",
+      "sourceImageUrl": "https://www.examplebank.com/assets/logo.svg",
+      "offerUrl": "https://www.examplebank.com/checking/smart-checking-bonus"
+    }
+  ]
+}

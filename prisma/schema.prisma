@@ -118,6 +118,8 @@ model SignUpBonus {
   card            Card      @relation(fields: [cardId], references: [id], onDelete: Cascade)
   bonusValue      Decimal
   bonusType       String
+  displayHeadline String?
+  displayDescription String?
   bonusPoints     Int?
   spendRequired   Decimal
   spendPeriodDays Int
@@ -212,6 +214,7 @@ model BankingBonus {
   offerName                  String
   accountType                BankingAccountType
   headline                   String
+  imageUrl                   String?
   bonusAmount                Decimal
   estimatedFees              Decimal                 @default(0)
   directDepositRequired      Boolean                 @default(false)

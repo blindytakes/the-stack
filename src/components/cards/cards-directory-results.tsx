@@ -7,6 +7,8 @@ import {
   formatSpendRequirement
 } from '@/lib/cards-directory-explorer';
 import { normalizeIssuerLabel } from '@/lib/cards-directory';
+import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import { EntityImage } from '@/components/ui/entity-image';
 
 type CardsDirectoryResultsProps = {
   cards: CardRecord[];
@@ -44,6 +46,8 @@ export function CardsDirectoryResults({
       {cards.map((card) => {
         const selectedForCompare = selectedCompare.includes(card.slug);
         const spendRequirement = formatSpendRequirement(card);
+        const imagePresentation = getCardImagePresentation(card.slug);
+        const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
 
         return (
           <article
@@ -54,6 +58,19 @@ export function CardsDirectoryResults({
                 : 'border-white/10 hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]'
             }`}
           >
+            <div className="mb-4">
+              <EntityImage
+                src={card.imageUrl}
+                alt={`${card.name} card art`}
+                label={card.name}
+                className="aspect-[1.586/1]"
+                imgClassName={imageClassName}
+                fallbackClassName="bg-black/10"
+                fit={imagePresentation?.fit}
+                position={imagePresentation?.position}
+                scale={imagePresentation?.scale}
+              />
+            </div>
             <p className="text-xs text-text-muted">{normalizeIssuerLabel(card.issuer)}</p>
             <Link
               href={`/cards/${card.slug}?src=cards_directory`}

@@ -128,6 +128,12 @@ describe('zero-value preservation in seed schema', () => {
 });
 
 describe('seed URL safety', () => {
+  it('rejects imageUrl values with non-http protocols', () => {
+    const seed = makeSeed({ imageUrl: 'ftp://example.com/card.png' });
+    const parsed = cardSeedRecordSchema.safeParse(seed);
+    expect(parsed.success).toBe(false);
+  });
+
   it('rejects applyUrl values with non-http protocols', () => {
     const seed = makeSeed({ applyUrl: 'javascript:alert(1)' });
     const parsed = cardSeedRecordSchema.safeParse(seed);
@@ -340,6 +346,12 @@ describe('toCardRecordFromDb', () => {
     expect(result.longDescription).toBeUndefined();
   });
 
+  it('maps imageUrl when present', () => {
+    const row = makeDbCardRow({ imageUrl: 'https://assets.example.com/test-card.png' });
+    const result = toCardRecordFromDb(row);
+    expect(result.imageUrl).toBe('https://assets.example.com/test-card.png');
+  });
+
   it('derives rewardType from first reward rateType', () => {
     const row = makeDbCardRow({
       rewards: [
@@ -368,6 +380,8 @@ describe('toCardRecordFromDb', () => {
           cardId: 'test-id',
           bonusValue: new Prisma.Decimal(500),
           bonusType: 'points',
+          displayHeadline: null,
+          displayDescription: null,
           bonusPoints: 50000,
           spendRequired: new Prisma.Decimal(3000),
           spendPeriodDays: 90,
@@ -380,6 +394,8 @@ describe('toCardRecordFromDb', () => {
           cardId: 'test-id',
           bonusValue: new Prisma.Decimal(750),
           bonusType: 'points',
+          displayHeadline: null,
+          displayDescription: null,
           bonusPoints: 75000,
           spendRequired: new Prisma.Decimal(4000),
           spendPeriodDays: 90,
@@ -403,6 +419,8 @@ describe('toCardRecordFromDb', () => {
           cardId: 'test-id',
           bonusValue: new Prisma.Decimal(750),
           bonusType: 'points',
+          displayHeadline: null,
+          displayDescription: null,
           bonusPoints: 75000,
           spendRequired: new Prisma.Decimal(5000),
           spendPeriodDays: 120,
@@ -415,6 +433,8 @@ describe('toCardRecordFromDb', () => {
           cardId: 'test-id',
           bonusValue: new Prisma.Decimal(750),
           bonusType: 'points',
+          displayHeadline: null,
+          displayDescription: null,
           bonusPoints: 75000,
           spendRequired: new Prisma.Decimal(4000),
           spendPeriodDays: 90,
@@ -706,5 +726,35 @@ describe('toCardDetailFromDb', () => {
     expect(result.transferPartners[0].partnerName).toBe('United');
     expect(result.transferPartners[0].partnerType).toBe('airline');
     expect(result.transferPartners[0].transferRatio).toBe(1);
+  });
+
+  it('maps sign-up bonus display overrides when present', () => {
+    const row = makeDbCardDetailRow({
+      signUpBonuses: [
+        {
+          id: 'bonus-display',
+          cardId: 'test-id',
+          bonusValue: new Prisma.Decimal(1750),
+          bonusType: 'points',
+          displayHeadline: 'Up to 175,000 Membership Rewards points',
+          displayDescription:
+            'Offer varies by channel and eligibility. See issuer site for your current welcome offer.',
+          bonusPoints: 175000,
+          spendRequired: new Prisma.Decimal(0),
+          spendPeriodDays: 90,
+          isCurrentOffer: true,
+          expiresAt: null,
+          createdAt: now
+        }
+      ]
+    });
+
+    const result = toCardDetailFromDb(row);
+
+    expect(result.signUpBonuses[0]).toMatchObject({
+      displayHeadline: 'Up to 175,000 Membership Rewards points',
+      displayDescription:
+        'Offer varies by channel and eligibility. See issuer site for your current welcome offer.'
+    });
   });
 });

@@ -31,6 +31,7 @@ export const bankingBonusSeedRecordSchema = z.object({
   offerName: z.string().trim().min(1),
   accountType: bankingAccountTypeSchema,
   headline: z.string().trim().min(1),
+  imageUrl: httpUrlSchema.optional(),
   bonusAmount: z.number().nonnegative(),
   estimatedFees: z.number().nonnegative().default(0),
   directDeposit: directDepositSchema.default({ required: false }),

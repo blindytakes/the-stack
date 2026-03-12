@@ -47,6 +47,13 @@ Analytics:
 - `NEXT_PUBLIC_POSTHOG_KEY`
 - `NEXT_PUBLIC_POSTHOG_HOST`
 
+Supabase Storage import tooling:
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_STORAGE_BUCKET` (default `entity-images`)
+- `SUPABASE_STORAGE_PUBLIC_BASE_URL` (optional custom CDN/public base)
+
 Health checks:
 
 - `HEALTH_CHECK_TOKEN` (required in production for `/api/health`)
@@ -86,6 +93,25 @@ npm run card-benefits:import -- ./content/card-benefits.json
 
 Keep `estimatedValue` conservative. Use it for recurring value you can defend; leave it blank for highly conditional, promotional, or hard-to-realize perks.
 
+### Entity assets import
+
+Use the entity asset import script to upload approved card art and bank logos into Supabase Storage, then write the resulting `imageUrl` back to the database. Card records can also update `applyUrl` / `affiliateUrl` in the same pass.
+
+If your database does not already include the latest `BankingBonus.imageUrl` column, run `npx prisma db push` first.
+
+```bash
+# 1) Start from the template
+cp content/entity-assets.template.json content/entity-assets.json
+
+# 2) Add approved source pages/image URLs and optional apply links
+
+# 3) Preview the updates
+npm run entity-assets:import -- ./content/entity-assets.json --dry-run
+
+# 4) Run the import for real
+npm run entity-assets:import -- ./content/entity-assets.json
+```
+
 ## Deliverability
 
 See [docs/deliverability.md](docs/deliverability.md) for SPF/DKIM/DMARC and monitoring setup.
@@ -103,6 +129,7 @@ See [docs/deliverability.md](docs/deliverability.md) for SPF/DKIM/DMARC and moni
 | `npm run db:migrate` | Run Prisma migrations |
 | `npm run db:studio` | Open Prisma Studio |
 | `npm run banking:import -- <file>` | Upsert banking offers from JSON |
+| `npm run entity-assets:import -- <file>` | Upload card/bank images to Supabase Storage and update DB URLs |
 
 ## Stack
 

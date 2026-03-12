@@ -170,6 +170,7 @@ function toRecordFromDb(row: DbBankingBonusRow): BankingBonusRecord {
     offerName: row.offerName,
     accountType: accountTypeFromDb[row.accountType],
     headline: row.headline,
+    imageUrl: row.imageUrl ?? undefined,
     bonusAmount: Number(row.bonusAmount),
     estimatedFees: Number(row.estimatedFees),
     directDeposit: {

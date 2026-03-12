@@ -5,6 +5,8 @@ import { getAllCardSlugs, getCardBySlug } from '@/lib/cards';
 import { formatCategory } from '@/lib/format';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { AffiliateLink } from '@/components/analytics/affiliate-link';
+import { EntityImage } from '@/components/ui/entity-image';
+import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { trackedSourceSchema } from '@/lib/tracking';
 import {
   CardBenefitsSection,
@@ -117,6 +119,8 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
       value: card.foreignTxFee === 0 ? 'No foreign transaction fee' : `${card.foreignTxFee}% fee`
     }
   ];
+  const imagePresentation = getCardImagePresentation(card.slug);
+  const detailImageClassName = imagePresentation?.imgClassName ?? 'bg-black/5 p-2';
 
   return (
     <div className="container-page pt-12 pb-16">
@@ -134,7 +138,7 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
       </nav>
 
       <header className="rounded-3xl border border-white/10 bg-gradient-to-br from-bg-elevated via-bg-surface to-bg-elevated p-6 lg:p-8">
-        <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_380px]">
           <div>
             <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">{card.issuer}</p>
             <h1 className="mt-2 font-heading text-4xl text-text-primary">{card.name}</h1>
@@ -175,41 +179,61 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
             </div>
           </div>
 
-          <aside className="rounded-2xl border border-white/10 bg-bg/60 p-5">
-            <p className="text-xs uppercase tracking-[0.3em] text-text-muted">Quick Verdict</p>
-            <p className="mt-3 text-sm leading-relaxed text-text-secondary">
-              {card.description ?? `${card.name} is strongest for people who can extract recurring value from its core perks and reward structure.`}
-            </p>
-            <div className="mt-4 space-y-2 rounded-xl border border-white/10 bg-bg-surface p-4">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Estimated First-Year Net Value</p>
-              <p
-                className={`text-2xl font-semibold ${
-                  estimatedFirstYearValue >= 0 ? 'text-brand-teal' : 'text-brand-coral'
-                }`}
-              >
-                {estimatedFirstYearValue >= 0 ? '+' : ''}${estimatedFirstYearValue.toLocaleString()}
-              </p>
-              <p className="text-xs text-text-muted">
-                Estimate = welcome offer + listed perks value - annual fee. Actual results vary.
-              </p>
+          <aside className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.03))] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.2)]">
+            <p className="text-xs uppercase tracking-[0.3em] text-text-muted">Card Snapshot</p>
+            <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-bg/70 p-3">
+              <EntityImage
+                src={card.imageUrl}
+                alt={`${card.name} card art`}
+                label={card.name}
+                className="aspect-[1.586/1] rounded-[1.25rem]"
+                imgClassName={detailImageClassName}
+                fallbackClassName="bg-black/10"
+                priority
+                fit={imagePresentation?.fit}
+                position={imagePresentation?.position}
+                scale={imagePresentation?.scale}
+              />
             </div>
-            <div className="mt-4 space-y-2">
-              {fitBullets.map((bullet) => (
-                <p key={bullet} className="text-sm text-text-secondary">
-                  <span className="mr-2 text-brand-teal">•</span>
-                  {bullet}
+            <div className="mt-4 grid gap-3">
+              <div className="rounded-2xl border border-white/10 bg-bg-surface p-4">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Best listed offer</p>
+                <p className="mt-2 text-xl font-semibold text-brand-gold">
+                  {estimatedBonusValue > 0 ? `$${estimatedBonusValue.toLocaleString()} est.` : 'See issuer site'}
                 </p>
-              ))}
+                <p className="mt-1 text-xs text-text-muted">
+                  {bestBonus ? 'Based on the strongest current offer in our data.' : 'Check the live page for the latest bonus.'}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-2xl border border-white/10 bg-bg-surface p-4">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Annual fee</p>
+                  <p className="mt-2 text-sm font-semibold text-text-primary">
+                    {formatCardCurrency(card.annualFee)}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-white/10 bg-bg-surface p-4">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Credit needed</p>
+                  <p className="mt-2 text-sm font-semibold text-text-primary">
+                    {formatCreditTierLabel(card.creditTierMin)}
+                  </p>
+                </div>
+              </div>
             </div>
             {applyHref && (
-              <AffiliateLink
-                href={applyHref}
-                cardSlug={card.slug}
-                source={source}
-                className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
-              >
-                Check Current Offer
-              </AffiliateLink>
+              <>
+                <AffiliateLink
+                  href={applyHref}
+                  cardSlug={card.slug}
+                  source={source}
+                  className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
+                >
+                  View Current Offer & Apply
+                </AffiliateLink>
+                <p className="mt-2 text-xs text-text-muted">
+                  Opens the live issuer or partner offer page so you can confirm terms before you apply.
+                </p>
+              </>
             )}
             <div className="mt-3 flex flex-col gap-2 text-sm">
               <Link href="/tools/card-vs-card" className="text-brand-teal transition hover:underline">
@@ -307,8 +331,24 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
 
         <aside className="space-y-4 lg:sticky lg:top-24 lg:h-fit">
           <section className="rounded-2xl border border-white/10 bg-bg-surface p-5">
-            <p className="text-xs uppercase tracking-[0.3em] text-text-muted">Is It a Fit?</p>
-            <p className="mt-3 text-sm font-semibold text-brand-teal">Good fit if:</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-text-muted">Quick Verdict</p>
+            <p className="mt-3 text-sm leading-relaxed text-text-secondary">
+              {card.description ?? `${card.name} is strongest for people who can extract recurring value from its core perks and reward structure.`}
+            </p>
+            <div className="mt-4 rounded-xl border border-white/10 bg-bg/40 p-4">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Estimated First-Year Net Value</p>
+              <p
+                className={`mt-2 text-2xl font-semibold ${
+                  estimatedFirstYearValue >= 0 ? 'text-brand-teal' : 'text-brand-coral'
+                }`}
+              >
+                {estimatedFirstYearValue >= 0 ? '+' : ''}${estimatedFirstYearValue.toLocaleString()}
+              </p>
+              <p className="mt-1 text-xs text-text-muted">
+                Estimate = welcome offer + listed perks value - annual fee. Actual results vary.
+              </p>
+            </div>
+            <p className="mt-4 text-sm font-semibold text-brand-teal">Good fit if:</p>
             <ul className="mt-2 space-y-2">
               {fitBullets.map((bullet) => (
                 <li key={bullet} className="text-sm text-text-secondary">

@@ -1,0 +1,165 @@
+{
+  "assets": [
+    {
+      "entityType": "card",
+      "slug": "amex-gold-card",
+      "sourcePageUrl": "https://www.americanexpress.com/us/credit-cards/card/gold-card/",
+      "sourceImageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/gold-card.png",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/gold-card/"
+    },
+    {
+      "entityType": "card",
+      "slug": "amex-blue-cash-everyday",
+      "sourcePageUrl": "https://www.americanexpress.com/us/credit-cards/card/blue-cash-everyday/",
+      "sourceImageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/blue-cash-everyday.png",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/blue-cash-everyday/"
+    },
+    {
+      "entityType": "card",
+      "slug": "amex-blue-cash-preferred",
+      "sourcePageUrl": "https://www.americanexpress.com/us/credit-cards/card/blue-cash-preferred/",
+      "sourceImageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/blue-cash-preferred.png",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/blue-cash-preferred/"
+    },
+    {
+      "entityType": "card",
+      "slug": "amex-platinum-card",
+      "sourcePageUrl": "https://www.americanexpress.com/us/credit-cards/card/platinum/",
+      "sourceImageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/platinum-card.png",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/platinum/"
+    },
+    {
+      "entityType": "card",
+      "slug": "bilt-mastercard",
+      "sourcePageUrl": "https://www.biltrewards.com/card",
+      "sourceImageUrl": "https://static.biltrewards.com/assets/seo/bilt_card2_coming_soon_seo.jpg",
+      "applyUrl": "https://www.biltrewards.com/card"
+    },
+    {
+      "entityType": "card",
+      "slug": "capital-one-quicksilver",
+      "sourcePageUrl": "https://www.capitalone.com/credit-cards/quicksilver/",
+      "sourceImageUrl": "https://ecm.capitalone.com/WCM/card/products/qs_cardart_prim_323x203.png",
+      "applyUrl": "https://www.capitalone.com/credit-cards/quicksilver/"
+    },
+    {
+      "entityType": "card",
+      "slug": "capital-one-savor-rewards",
+      "sourcePageUrl": "https://www.capitalone.com/credit-cards/savor/",
+      "sourceImageUrl": "https://ecm.capitalone.com/WCM/card/products/new-savor-card-art.png",
+      "applyUrl": "https://www.capitalone.com/credit-cards/savor/"
+    },
+    {
+      "entityType": "card",
+      "slug": "capital-one-spark-cash-plus",
+      "sourcePageUrl": "https://www.capitalone.com/small-business/credit-cards/spark-cash-plus/",
+      "sourceImageUrl": "https://ecm.capitalone.com/WCM/card/products/spark-cash-plus.png",
+      "applyUrl": "https://www.capitalone.com/small-business/credit-cards/spark-cash-plus/"
+    },
+    {
+      "entityType": "card",
+      "slug": "capital-one-venture-rewards",
+      "sourcePageUrl": "https://www.capitalone.com/credit-cards/venture/",
+      "sourceImageUrl": "https://ecm.capitalone.com/WCM/card/products/venture-card-art.png",
+      "applyUrl": "https://www.capitalone.com/credit-cards/venture/"
+    },
+    {
+      "entityType": "card",
+      "slug": "capital-one-venture-x",
+      "sourcePageUrl": "https://www.capitalone.com/credit-cards/venture-x/",
+      "sourceImageUrl": "https://ecm.capitalone.com/WCM/card/products/venture-x-card-art.png",
+      "applyUrl": "https://www.capitalone.com/credit-cards/venture-x/"
+    },
+    {
+      "entityType": "card",
+      "slug": "chase-freedom-flex",
+      "sourcePageUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/flex",
+      "sourceImageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/freedom_flex_card_alt.png",
+      "applyUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/flex"
+    },
+    {
+      "entityType": "card",
+      "slug": "chase-freedom-unlimited",
+      "sourcePageUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/unlimited",
+      "sourceImageUrl": "https://images.ctfassets.net/8qmz0ef3xzub/302fEMopacO8lPIOANH1Kr/92aa401d22ec4244b1521a02d9ea1e19/freedom_unlimited_card_alt.png",
+      "applyUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/unlimited"
+    },
+    {
+      "entityType": "card",
+      "slug": "chase-sapphire-preferred",
+      "sourcePageUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/preferred",
+      "sourceImageUrl": "https://images.ctfassets.net/8qmz0ef3xzub/7iFzyweepMTrfGn2VrDdL5/6adcc35d50cef1e3087ced153d3b7bee/sapphire_preferred_card.png",
+      "applyUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/preferred"
+    },
+    {
+      "entityType": "card",
+      "slug": "chase-sapphire-reserve",
+      "sourcePageUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/reserve",
+      "sourceImageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/sapphire_reserve_card_Halo.png",
+      "applyUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/reserve"
+    },
+    {
+      "entityType": "card",
+      "slug": "chase-ink-business-cash",
+      "sourcePageUrl": "https://creditcards.chase.com/business-credit-cards/ink/cash",
+      "sourceImageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/ink_cash_card.png",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/ink/cash"
+    },
+    {
+      "entityType": "card",
+      "slug": "chase-ink-business-preferred",
+      "sourcePageUrl": "https://creditcards.chase.com/business-credit-cards/ink/business-preferred",
+      "sourceImageUrl": "https://images.ctfassets.net/8qmz0ef3xzub/5MgLwpFlYyNXdq1uJK2RGS/2c9967d41c02902355130c832b249e71/ink_preferred_card.png",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/ink/business-preferred"
+    },
+    {
+      "entityType": "card",
+      "slug": "chase-ink-business-unlimited",
+      "sourcePageUrl": "https://creditcards.chase.com/business-credit-cards/ink/unlimited",
+      "sourceImageUrl": "https://images.ctfassets.net/8qmz0ef3xzub/4YXfIeQQuE30hdT533LXlJ/3b56d1c9eacdff6dd87077a224097f10/ink_unlimited_card.png",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/ink/unlimited"
+    },
+    {
+      "entityType": "card",
+      "slug": "citi-custom-cash-card",
+      "sourcePageUrl": "https://www.citi.com/credit-cards/citi-custom-cash-credit-card",
+      "sourceImageUrl": "https://aemapi.citi.com/content/dam/cfs/uspb/usmkt/cards/en/static/images/citi-custom-cash-credit-card/citi-custom-cash-credit-card_306x192.webp",
+      "applyUrl": "https://www.citi.com/credit-cards/citi-custom-cash-credit-card"
+    },
+    {
+      "entityType": "card",
+      "slug": "citi-double-cash-card",
+      "sourcePageUrl": "https://www.citi.com/credit-cards/citi-double-cash-credit-card",
+      "sourceImageUrl": "https://aemapi.citi.com/content/dam/cfs/uspb/usmkt/cards/en/static/images/citi-double-cash-credit-card/citi-double-cash-credit-card_306x192.webp",
+      "applyUrl": "https://www.citi.com/credit-cards/citi-double-cash-credit-card"
+    },
+    {
+      "entityType": "card",
+      "slug": "citi-strata-premier-card",
+      "sourcePageUrl": "https://www.citi.com/credit-cards/citi-strata-premier-credit-card",
+      "sourceImageUrl": "https://aemapi.citi.com/content/dam/cfs/uspb/usmkt/cards/en/static/images/citi-strata-premier-credit-card/citi-strata-premier-credit-card_306x192.webp",
+      "applyUrl": "https://www.citi.com/credit-cards/citi-strata-premier-credit-card"
+    },
+    {
+      "entityType": "card",
+      "slug": "discover-it-cash-back",
+      "sourcePageUrl": "https://www.discover.com/credit-cards/cash-back/it-card.html",
+      "sourceImageUrl": "https://www.discover.com/content/dam/discover/en_us/credit-cards/card-acquisitions/grey-redesign/global/images/background/bg-cards-itcards-388-350.png",
+      "applyUrl": "https://www.discover.com/credit-cards/cash-back/it-card.html"
+    },
+    {
+      "entityType": "card",
+      "slug": "wells-fargo-active-cash",
+      "sourcePageUrl": "https://creditcards.wellsfargo.com/active-cash-credit-card/",
+      "sourceImageUrl": "https://creditcards.wellsfargo.com/W-Card-MarketPlace/v3-10-26/images/Products/ActiveCash/WF_ActiveCash_VS_Collateral_Front_RGB.png",
+      "applyUrl": "https://creditcards.wellsfargo.com/active-cash-credit-card/"
+    },
+    {
+      "entityType": "card",
+      "slug": "wells-fargo-autograph",
+      "sourcePageUrl": "https://creditcards.wellsfargo.com/autograph-visa-credit-card/",
+      "sourceImageUrl": "https://creditcards.wellsfargo.com/W-Card-MarketPlace/v3-10-26/images/Products/Autograph/Autograph-No-Fee-Card-RGB_d.png",
+      "applyUrl": "https://creditcards.wellsfargo.com/autograph-visa-credit-card/"
+    }
+  ]
+}
