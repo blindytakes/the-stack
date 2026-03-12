@@ -5,6 +5,8 @@ type EntityImageProps = {
   className?: string;
   imgClassName?: string;
   fallbackClassName?: string;
+  fallbackTextClassName?: string;
+  fallbackVariant?: 'initials' | 'wordmark';
   priority?: boolean;
   fit?: 'contain' | 'cover';
   position?: string;
@@ -33,6 +35,8 @@ export function EntityImage({
   className,
   imgClassName,
   fallbackClassName,
+  fallbackTextClassName,
+  fallbackVariant = 'initials',
   priority = false,
   fit = 'contain',
   position,
@@ -73,9 +77,22 @@ export function EntityImage({
           )}
           aria-hidden="true"
         >
-          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-black/20 text-lg font-semibold uppercase tracking-[0.24em] text-text-primary">
-            {initials}
-          </div>
+          {fallbackVariant === 'wordmark' ? (
+            <div className="max-w-full px-6 text-center">
+              <p
+                className={buildClassName(
+                  'font-heading text-xl leading-tight text-text-primary sm:text-2xl',
+                  fallbackTextClassName
+                )}
+              >
+                {label}
+              </p>
+            </div>
+          ) : (
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-black/20 text-lg font-semibold uppercase tracking-[0.24em] text-text-primary">
+              {initials}
+            </div>
+          )}
         </div>
       )}
     </div>
