@@ -9,6 +9,7 @@ import {
   CardFinderActions,
   CardFinderProgress,
   CardFinderQuestion,
+  CardFinderSelectQuestion,
   type FinderQuestionStep
 } from '@/components/tools/card-finder-sections';
 import { submitPlanQuiz } from '@/lib/plan-client';
@@ -36,36 +37,10 @@ type CardOnlyStep = FinderQuestionStep & { id: CardOnlyQuestionId };
 
 const cardOnlySteps: CardOnlyStep[] = [
   {
-    id: 'ownedCardSlugs',
-    type: 'card_selection',
-    title: 'Which cards do you already have?',
-    description: 'Optional, but useful. We will exclude cards you already have from new-card recommendations.'
-  },
-  {
-    id: 'chase524Status',
-    type: 'options',
-    title: 'What is your Chase 5/24 status?',
-    options: [
-      { label: 'Under 5/24', value: 'under_5_24' },
-      { label: 'At or over 5/24', value: 'at_or_over_5_24' },
-      { label: 'Not sure', value: 'not_sure' }
-    ]
-  },
-  {
-    id: 'spend',
-    type: 'options',
-    title: 'Where does most of your monthly spend go?',
-    options: [
-      { label: 'Groceries', value: 'groceries' },
-      { label: 'Dining', value: 'dining' },
-      { label: 'Travel', value: 'travel' },
-      { label: 'General spending', value: 'all' }
-    ]
-  },
-  {
     id: 'monthlySpend',
     type: 'options',
     title: 'How much normal monthly spend can you put on a new card?',
+    description: 'This keeps minimum-spend targets grounded in what you can actually do.',
     options: [
       { label: 'Under $1,000', value: 'lt_1000' },
       { label: '$1,000 to $2,500', value: 'from_1000_to_2500' },
@@ -74,15 +49,45 @@ const cardOnlySteps: CardOnlyStep[] = [
     ]
   },
   {
+    id: 'spend',
+    type: 'options',
+    title: 'Where does most of your monthly spend go?',
+    description: 'We use this to break ties between otherwise similar welcome-bonus options.',
+    options: [
+      { label: 'Groceries', value: 'groceries' },
+      { label: 'Dining', value: 'dining' },
+      { label: 'Travel', value: 'travel' },
+      { label: 'General spending', value: 'all' }
+    ]
+  },
+  {
     id: 'credit',
     type: 'options',
     title: 'How would you describe your credit profile?',
+    description: 'This keeps the recommendations inside a realistic approval range.',
     options: [
       { label: 'Excellent', value: 'excellent' },
       { label: 'Good', value: 'good' },
       { label: 'Fair', value: 'fair' },
       { label: 'Building', value: 'building' }
     ]
+  },
+  {
+    id: 'chase524Status',
+    type: 'options',
+    title: 'What is your Chase 5/24 status?',
+    description: 'This mostly affects Chase cards, but it can change the top of the plan.',
+    options: [
+      { label: 'Under 5/24', value: 'under_5_24' },
+      { label: 'At or over 5/24', value: 'at_or_over_5_24' },
+      { label: 'Not sure', value: 'not_sure' }
+    ]
+  },
+  {
+    id: 'ownedCardSlugs',
+    type: 'card_selection',
+    title: 'Which cards do you already have?',
+    description: 'Optional, but useful. We will exclude cards you already have from new-card recommendations.'
   }
 ];
 
@@ -207,8 +212,8 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
           <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">Card-Only Path</p>
           <h2 className="mt-2 font-heading text-3xl text-text-primary">Build My 12-Month Card Plan</h2>
           <p className="mt-2 max-w-2xl text-sm text-text-secondary">
-            Start with the cards you already hold and your Chase status. Then answer a few quick
-            questions to get a focused roadmap based only on welcome bonuses.
+            Start with your spend capacity and credit profile, then layer in Chase status and
+            cards you already hold to get a focused roadmap based only on welcome bonuses.
           </p>
         </div>
         <Link href="/cards" className="text-sm text-text-secondary transition hover:text-text-primary">
@@ -221,6 +226,7 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
           stepIndex={stepIndex}
           totalSteps={cardOnlySteps.length}
           progress={progress}
+          currentStepTitle={currentStep.title}
         />
       </div>
 
@@ -241,11 +247,19 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
           emptySelectionText="Search for cards you already hold, or continue and add this later once you see your first draft."
         />
       ) : (
-        <CardFinderQuestion
-          step={currentStep}
-          selectedValue={typeof selectedValue === 'string' ? selectedValue : undefined}
-          onSelect={selectCurrentOption}
-        />
+        currentStep.type === 'select' ? (
+          <CardFinderSelectQuestion
+            step={currentStep}
+            selectedValue={typeof selectedValue === 'string' ? selectedValue : undefined}
+            onSelect={selectCurrentOption}
+          />
+        ) : (
+          <CardFinderQuestion
+            step={currentStep}
+            selectedValue={typeof selectedValue === 'string' ? selectedValue : undefined}
+            onSelect={selectCurrentOption}
+          />
+        )
       )}
 
       <CardFinderActions

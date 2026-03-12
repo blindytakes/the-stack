@@ -19,13 +19,81 @@ const popularOwnedCardSlugs = [
 ] as const;
 const commonCardLimit = popularOwnedCardSlugs.length;
 
+export const usStateOptions = [
+  { value: 'AL', label: 'Alabama' },
+  { value: 'AK', label: 'Alaska' },
+  { value: 'AZ', label: 'Arizona' },
+  { value: 'AR', label: 'Arkansas' },
+  { value: 'CA', label: 'California' },
+  { value: 'CO', label: 'Colorado' },
+  { value: 'CT', label: 'Connecticut' },
+  { value: 'DE', label: 'Delaware' },
+  { value: 'FL', label: 'Florida' },
+  { value: 'GA', label: 'Georgia' },
+  { value: 'HI', label: 'Hawaii' },
+  { value: 'ID', label: 'Idaho' },
+  { value: 'IL', label: 'Illinois' },
+  { value: 'IN', label: 'Indiana' },
+  { value: 'IA', label: 'Iowa' },
+  { value: 'KS', label: 'Kansas' },
+  { value: 'KY', label: 'Kentucky' },
+  { value: 'LA', label: 'Louisiana' },
+  { value: 'ME', label: 'Maine' },
+  { value: 'MD', label: 'Maryland' },
+  { value: 'MA', label: 'Massachusetts' },
+  { value: 'MI', label: 'Michigan' },
+  { value: 'MN', label: 'Minnesota' },
+  { value: 'MS', label: 'Mississippi' },
+  { value: 'MO', label: 'Missouri' },
+  { value: 'MT', label: 'Montana' },
+  { value: 'NE', label: 'Nebraska' },
+  { value: 'NV', label: 'Nevada' },
+  { value: 'NH', label: 'New Hampshire' },
+  { value: 'NJ', label: 'New Jersey' },
+  { value: 'NM', label: 'New Mexico' },
+  { value: 'NY', label: 'New York' },
+  { value: 'NC', label: 'North Carolina' },
+  { value: 'ND', label: 'North Dakota' },
+  { value: 'OH', label: 'Ohio' },
+  { value: 'OK', label: 'Oklahoma' },
+  { value: 'OR', label: 'Oregon' },
+  { value: 'PA', label: 'Pennsylvania' },
+  { value: 'RI', label: 'Rhode Island' },
+  { value: 'SC', label: 'South Carolina' },
+  { value: 'SD', label: 'South Dakota' },
+  { value: 'TN', label: 'Tennessee' },
+  { value: 'TX', label: 'Texas' },
+  { value: 'UT', label: 'Utah' },
+  { value: 'VT', label: 'Vermont' },
+  { value: 'VA', label: 'Virginia' },
+  { value: 'WA', label: 'Washington' },
+  { value: 'WV', label: 'West Virginia' },
+  { value: 'WI', label: 'Wisconsin' },
+  { value: 'WY', label: 'Wyoming' },
+  { value: 'DC', label: 'District of Columbia' },
+  { value: 'OT', label: 'Other / not listed' }
+] as const;
+
 export type CardSelectionQuestionId = 'ownedCardSlugs' | 'amexLifetimeBlockedSlugs';
+type FinderQuestionId = Exclude<keyof QuizRequest, CardSelectionQuestionId>;
+type FinderStepOption = { label: string; value: string };
 
 export type FinderOptionStep = {
-  id: Exclude<keyof QuizRequest, CardSelectionQuestionId>;
+  id: FinderQuestionId;
   type?: 'options';
   title: string;
-  options: Array<{ label: string; value: string }>;
+  description?: string;
+  options: ReadonlyArray<FinderStepOption>;
+};
+
+export type FinderSelectStep = {
+  id: FinderQuestionId;
+  type: 'select';
+  title: string;
+  description?: string;
+  placeholder?: string;
+  helperText?: string;
+  options: ReadonlyArray<FinderStepOption>;
 };
 
 export type FinderCardSelectionStep = {
@@ -35,24 +103,55 @@ export type FinderCardSelectionStep = {
   description: string;
 };
 
-export type FinderQuestionStep = FinderOptionStep | FinderCardSelectionStep;
+export type FinderQuestionStep = FinderOptionStep | FinderSelectStep | FinderCardSelectionStep;
 
 export function CardFinderProgress({
   stepIndex,
   totalSteps,
-  progress
+  progress,
+  currentStepTitle
 }: {
   stepIndex: number;
   totalSteps: number;
   progress: number;
+  currentStepTitle?: string;
 }) {
   return (
-    <div className="flex items-center justify-between">
-      <div className="text-xs uppercase tracking-[0.3em] text-text-muted">
-        Step {stepIndex + 1} of {totalSteps}
+    <div className="rounded-[1.75rem] border border-white/10 bg-bg/30 p-4 md:p-5">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-xs uppercase tracking-[0.3em] text-text-muted">
+            Step {stepIndex + 1} of {totalSteps}
+          </p>
+          {currentStepTitle && (
+            <p className="mt-2 text-lg font-semibold text-text-primary">{currentStepTitle}</p>
+          )}
+        </div>
+        <div className="text-right">
+          <p className="font-heading text-3xl text-text-primary">{Math.round(progress)}%</p>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-text-muted">Complete</p>
+        </div>
       </div>
-      <div className="h-2 w-36 rounded-full bg-bg-surface">
-        <div className="h-full rounded-full bg-brand-teal" style={{ width: `${progress}%` }} />
+
+      <div
+        className="mt-4 h-3 overflow-hidden rounded-full border border-white/10 bg-bg-surface"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={Math.round(progress)}
+        aria-label="Intake progress"
+      >
+        <motion.div
+          className="h-full rounded-full bg-[linear-gradient(90deg,rgba(212,168,83,0.9),rgba(45,212,191,0.95))]"
+          initial={false}
+          animate={{ width: `${progress}%` }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+        />
+      </div>
+
+      <div className="mt-2 flex items-center justify-between text-[11px] uppercase tracking-[0.2em] text-text-muted">
+        <span>Start</span>
+        <span>{totalSteps} total steps</span>
       </div>
     </div>
   );
@@ -78,6 +177,9 @@ export function CardFinderQuestion({
       >
         {step.title}
       </motion.h2>
+      {step.description && (
+        <p className="mt-3 max-w-2xl text-sm text-text-secondary">{step.description}</p>
+      )}
       <div className="mt-6 grid gap-3 md:grid-cols-2">
         {step.options.map((option) => {
           const active = selectedValue === option.value;
@@ -95,6 +197,53 @@ export function CardFinderQuestion({
             </button>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+export function CardFinderSelectQuestion({
+  step,
+  selectedValue,
+  onSelect
+}: {
+  step: FinderSelectStep;
+  selectedValue?: string;
+  onSelect: (value: string) => void;
+}) {
+  return (
+    <div className="mt-8">
+      <motion.div
+        key={step.id}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <h2 className="text-2xl font-semibold text-text-primary">{step.title}</h2>
+        {step.description && (
+          <p className="mt-3 max-w-2xl text-sm text-text-secondary">{step.description}</p>
+        )}
+      </motion.div>
+
+      <div className="mt-6 max-w-xl rounded-2xl border border-white/10 bg-bg-surface p-5">
+        <label className="block">
+          <span className="text-xs uppercase tracking-[0.22em] text-text-muted">Select one</span>
+          <select
+            value={selectedValue ?? ''}
+            onChange={(event) => onSelect(event.target.value)}
+            className="mt-3 w-full rounded-2xl border border-white/10 bg-bg px-4 py-3 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+          >
+            <option value="">{step.placeholder ?? 'Choose an option'}</option>
+            {step.options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        {step.helperText && (
+          <p className="mt-3 text-sm leading-6 text-text-muted">{step.helperText}</p>
+        )}
       </div>
     </div>
   );

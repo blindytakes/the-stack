@@ -50,6 +50,25 @@ describe('toPlannerRecommendationFromCard', () => {
     expect(recommendation.detailPath).toBe('/cards/sample-card');
     expect(recommendation.keyRequirements[0]).toContain('$4,000');
   });
+
+  it('falls back to default spend requirement metadata when source values are zero', () => {
+    const recommendation = toPlannerRecommendationFromCard({
+      slug: 'broken-card',
+      name: 'Broken Metadata Card',
+      issuer: 'Sample Bank',
+      annualFee: 0,
+      creditTierMin: 'good',
+      bonusValue: 500,
+      plannerBenefitsValue: 0,
+      spendRequired: 0,
+      spendPeriodDays: 0
+    });
+
+    expect(recommendation.timelineDays).toBe(90);
+    expect(recommendation.scheduleConstraints.activeDays).toBe(90);
+    expect(recommendation.scheduleConstraints.requiredSpend).toBe(3000);
+    expect(recommendation.keyRequirements[0]).toContain('$3,000');
+  });
 });
 
 describe('toPlannerRecommendationFromBankingBonus', () => {
@@ -198,6 +217,29 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     expect(bundle.recommendations.some((item) => item.lane === 'banking')).toBe(true);
     expect(
       bundle.exclusions.some((item) => item.reasons.includes('direct_deposit_required'))
+    ).toBe(true);
+  });
+
+  it('excludes bank offers that are not available in the selected state', async () => {
+    const cards: QuizResult[] = [];
+    const bankingBonuses = (await getBankingBonusesData()).bonuses;
+
+    const bundle = buildPlanRecommendationsFromQuiz(
+      cards,
+      bankingBonuses,
+      {
+        ...baseInput,
+        state: 'NY'
+      },
+      { maxBanking: 5 }
+    );
+
+    expect(
+      bundle.exclusions.some(
+        (item) =>
+          item.id === 'bank:maple-street-checking-225' &&
+          item.reasons.includes('state_restricted')
+      )
     ).toBe(true);
   });
 

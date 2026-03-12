@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Bonus Plan',
   description:
-    'Build a combined card-and-bank bonus plan. We ask about your current cards, Chase status, and direct deposit so the recommendations are actually doable.'
+    'Build a combined card-and-bank bonus plan using your spend capacity, credit profile, direct deposit access, and state.'
 };
 
 type Props = {
@@ -38,7 +38,7 @@ export default async function CardFinderPage({ searchParams }: Props) {
         showingChooser
           ? 'Choose whether you want the full card-and-bank planner or the shorter card-only path before you start answering questions.'
           : showingFullPlanner
-          ? 'This planner includes both card bonuses and bank bonuses. We ask about your current cards, Chase status, and direct deposit so the 12-month plan is grounded in offers you can actually complete.'
+          ? 'This planner includes both card bonuses and bank bonuses. We ask about spend capacity, credit, direct deposit, and state so the 12-month plan stays realistic.'
           : ''
       }
     >

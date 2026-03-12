@@ -33,7 +33,8 @@ export type PlannerExclusionReason =
   | 'credit_tier'
   | 'amex_lifetime_rule'
   | 'chase_5_24'
-  | 'direct_deposit_required';
+  | 'direct_deposit_required'
+  | 'state_restricted';
 
 export type PlannerExcludedOffer = {
   id: string;
@@ -108,17 +109,27 @@ function getBankingExclusionReasons(
     reasons.push('direct_deposit_required');
   }
 
+  if (
+    offer.stateRestrictions &&
+    offer.stateRestrictions.length > 0 &&
+    !offer.stateRestrictions.includes(input.state)
+  ) {
+    reasons.push('state_restricted');
+  }
+
   return reasons;
 }
 
 export function toPlannerRecommendationFromCard(input: CardPlannerInput): PlannerRecommendation {
+  const spendRequired = input.spendRequired > 0 ? input.spendRequired : 3000;
+  const spendPeriodDays = input.spendPeriodDays > 0 ? input.spendPeriodDays : 90;
   const benefitAdjustment = estimateCardBenefitAdjustment(input.plannerBenefitsValue);
   const estimatedNetValue = estimateCardOpenValue({
     bonusValue: input.bonusValue,
     plannerBenefitsValue: input.plannerBenefitsValue,
     annualFee: input.annualFee
   });
-  const spendMonths = Math.max(1, Math.round(input.spendPeriodDays / 30));
+  const spendMonths = Math.max(1, Math.round(spendPeriodDays / 30));
 
   return {
     id: `card:${input.slug}`,
@@ -134,18 +145,18 @@ export function toPlannerRecommendationFromCard(input: CardPlannerInput): Planne
       annualFee: input.annualFee
     },
     priorityScore: 0,
-    effort: getCardRecommendationEffort(input.spendRequired),
+    effort: getCardRecommendationEffort(spendRequired),
     detailPath: `/cards/${input.slug}`,
-    timelineDays: input.spendPeriodDays,
+    timelineDays: spendPeriodDays,
     keyRequirements: [
-      `Spend $${input.spendRequired.toLocaleString()} within ${spendMonths} months`,
+      `Spend $${spendRequired.toLocaleString()} within ${spendMonths} months`,
       `Typical approval profile: ${creditTierLabel[input.creditTierMin]} credit or higher`,
       'Pay statements in full to avoid interest drag'
     ],
     scheduleConstraints: {
-      activeDays: input.spendPeriodDays,
+      activeDays: spendPeriodDays,
       payoutLagDays: 30,
-      requiredSpend: input.spendRequired
+      requiredSpend: spendRequired
     }
   };
 }

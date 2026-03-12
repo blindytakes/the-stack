@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function PlanResultsPage() {
   return (
-    <div className="container-page pt-12 pb-16">
+    <div className="mx-auto w-full max-w-[80rem] px-5 pt-12 pb-16">
       <PlanResultsView />
     </div>
   );

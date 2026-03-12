@@ -49,5 +49,6 @@ export const exclusionActions: Record<PlannerExclusionReason, string> = {
   credit_tier: 'Raise approval odds first with utilization and on-time payment improvements.',
   amex_lifetime_rule: 'Amex bonuses are usually once per lifetime per card, so prior Amex holdings can block those offers.',
   chase_5_24: 'Chase cards are hidden when you mark yourself at or above 5/24.',
-  direct_deposit_required: 'Routing payroll direct deposit unlocks most checking bonuses.'
+  direct_deposit_required: 'Routing payroll direct deposit unlocks most checking bonuses.',
+  state_restricted: 'Switch your home state only if it is inaccurate, because some bank offers are region-limited.'
 };

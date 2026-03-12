@@ -10,6 +10,32 @@ export type TimelineEntry = {
   payoutDate: Date;
 };
 
+export type TimelineMilestoneKind = 'open' | 'complete' | 'payout';
+
+export type TimelineMilestone = {
+  id: string;
+  recommendationId: string;
+  lane: TimelineEntry['lane'];
+  title: string;
+  date: Date;
+  kind: TimelineMilestoneKind;
+  label: string;
+};
+
+export type TimelineMonthBucket = {
+  key: string;
+  label: string;
+  monthStart: Date;
+  items: TimelineMilestone[];
+};
+
+export type TimelineCalendarDay = {
+  key: string;
+  date: Date;
+  inCurrentMonth: boolean;
+  items: TimelineMilestone[];
+};
+
 export const TIMELINE_DAYS = 365;
 export const MIN_VISIBLE_BENEFIT_ADJUSTMENT = 25;
 
@@ -62,15 +88,72 @@ export function formatShortDate(date: Date) {
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date);
 }
 
+export function formatDetailedDate(date: Date) {
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric'
+  }).format(date);
+}
+
+export function formatMonthYear(date: Date) {
+  return new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(date);
+}
+
 export function addDays(date: Date, days: number) {
   const copy = new Date(date);
   copy.setDate(copy.getDate() + days);
   return copy;
 }
 
+export function startOfDay(date: Date) {
+  const copy = new Date(date);
+  copy.setHours(0, 0, 0, 0);
+  return copy;
+}
+
+export function startOfMonth(date: Date) {
+  const copy = startOfDay(date);
+  copy.setDate(1);
+  return copy;
+}
+
+export function addMonths(date: Date, months: number) {
+  const copy = new Date(date);
+  copy.setMonth(copy.getMonth() + months);
+  return copy;
+}
+
+export function isSameMonth(left: Date, right: Date) {
+  return left.getFullYear() === right.getFullYear() && left.getMonth() === right.getMonth();
+}
+
+export function isSameDay(left: Date, right: Date) {
+  return (
+    left.getFullYear() === right.getFullYear() &&
+    left.getMonth() === right.getMonth() &&
+    left.getDate() === right.getDate()
+  );
+}
+
+export function toTimelineDayKey(date: Date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export function diffDays(from: Date, to: Date) {
   const ms = to.getTime() - from.getTime();
   return Math.max(0, Math.round(ms / (1000 * 60 * 60 * 24)));
+}
+
+export function formatDaysUntil(date: Date, referenceDate: Date) {
+  const days = diffDays(referenceDate, date);
+
+  if (days === 0) return 'Today';
+  if (days === 1) return 'Tomorrow';
+  return `In ${days} days`;
 }
 
 export function toTimelinePercent(planStart: Date, date: Date) {
@@ -146,6 +229,212 @@ export function buildTimelineEntriesFallback(
   return [...scheduleLane(cards, planStart, 'cards'), ...scheduleLane(banking, planStart, 'banking')].sort(
     (a, b) => a.startDate.getTime() - b.startDate.getTime()
   );
+}
+
+const milestoneOrder: Record<TimelineMilestoneKind, number> = {
+  open: 0,
+  complete: 1,
+  payout: 2
+};
+
+export function buildTimelineMilestones(entries: TimelineEntry[]): TimelineMilestone[] {
+  return entries
+    .flatMap((entry) => [
+      {
+        id: `${entry.id}:open`,
+        recommendationId: entry.id,
+        lane: entry.lane,
+        title: entry.title,
+        date: new Date(entry.startDate),
+        kind: 'open' as const,
+        label: 'Apply/open by'
+      },
+      {
+        id: `${entry.id}:complete`,
+        recommendationId: entry.id,
+        lane: entry.lane,
+        title: entry.title,
+        date: new Date(entry.completeDate),
+        kind: 'complete' as const,
+        label: 'Complete by'
+      },
+      {
+        id: `${entry.id}:payout`,
+        recommendationId: entry.id,
+        lane: entry.lane,
+        title: entry.title,
+        date: new Date(entry.payoutDate),
+        kind: 'payout' as const,
+        label: 'Bonus expected'
+      }
+    ])
+    .sort(
+      (a, b) =>
+        a.date.getTime() - b.date.getTime() || milestoneOrder[a.kind] - milestoneOrder[b.kind]
+    );
+}
+
+export function getUpcomingTimelineMilestones(
+  milestones: TimelineMilestone[],
+  referenceDate: Date,
+  daysAhead = 30,
+  limit = 4
+) {
+  const windowStart = startOfDay(referenceDate);
+  const windowEnd = addDays(windowStart, daysAhead);
+  const futureMilestones = milestones.filter((item) => item.date.getTime() >= windowStart.getTime());
+  const inWindow = futureMilestones.filter((item) => item.date.getTime() <= windowEnd.getTime());
+
+  return (inWindow.length > 0 ? inWindow : futureMilestones).slice(0, limit);
+}
+
+export function buildTimelineMonthBuckets(
+  milestones: TimelineMilestone[],
+  planStart: Date,
+  monthWindow = 12
+): TimelineMonthBucket[] {
+  const normalizedPlanStart = startOfMonth(planStart);
+  const totalMonths = Math.max(1, monthWindow);
+
+  return Array.from({ length: totalMonths }, (_, index) => {
+    const monthStart = new Date(normalizedPlanStart);
+    monthStart.setMonth(monthStart.getMonth() + index);
+    const nextMonth = new Date(monthStart);
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+    return {
+      key: `${monthStart.getFullYear()}-${monthStart.getMonth() + 1}`,
+      label: formatMonthYear(monthStart),
+      monthStart,
+      items: milestones.filter(
+        (item) => item.date.getTime() >= monthStart.getTime() && item.date.getTime() < nextMonth.getTime()
+      )
+    };
+  });
+}
+
+export function findTimelineMonthIndex(
+  monthBuckets: TimelineMonthBucket[],
+  referenceDate: Date
+) {
+  if (monthBuckets.length === 0) return 0;
+
+  const currentMonthIndex = monthBuckets.findIndex(
+    (bucket) =>
+      bucket.monthStart.getFullYear() === referenceDate.getFullYear() &&
+      bucket.monthStart.getMonth() === referenceDate.getMonth()
+  );
+  if (currentMonthIndex >= 0) return currentMonthIndex;
+
+  const firstFutureMonthIndex = monthBuckets.findIndex(
+    (bucket) => bucket.items.some((item) => item.date.getTime() >= referenceDate.getTime())
+  );
+
+  return firstFutureMonthIndex >= 0 ? firstFutureMonthIndex : 0;
+}
+
+export function buildTimelineCalendarDays(
+  milestones: TimelineMilestone[],
+  monthStart: Date
+): TimelineCalendarDay[] {
+  const normalizedMonthStart = startOfMonth(monthStart);
+  const gridStart = addDays(normalizedMonthStart, -normalizedMonthStart.getDay());
+  const itemsByDay = new Map<string, TimelineMilestone[]>();
+
+  for (const milestone of milestones) {
+    const key = toTimelineDayKey(milestone.date);
+    const current = itemsByDay.get(key) ?? [];
+    current.push(milestone);
+    itemsByDay.set(key, current);
+  }
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = addDays(gridStart, index);
+    return {
+      key: toTimelineDayKey(date),
+      date,
+      inCurrentMonth: isSameMonth(date, normalizedMonthStart),
+      items: itemsByDay.get(toTimelineDayKey(date)) ?? []
+    };
+  });
+}
+
+export function timelineMilestoneActionCopy(
+  milestone: TimelineMilestone,
+  recommendation?: PlannerRecommendation
+) {
+  if (milestone.kind === 'open') {
+    return milestone.lane === 'cards'
+      ? 'Apply for this card and start the spend window.'
+      : 'Open the account and start the setup steps.';
+  }
+
+  if (milestone.kind === 'complete') {
+    return recommendation?.keyRequirements[0] ?? 'Finish the requirement window for this offer.';
+  }
+
+  return 'Check that the bonus posted and save the confirmation details.';
+}
+
+export function recommendationWarningFlags(recommendation?: PlannerRecommendation) {
+  if (!recommendation) return [];
+
+  const warnings: string[] = [];
+  if ((recommendation.scheduleConstraints.requiredDeposit ?? 0) >= 100000) {
+    warnings.push('High cash requirement');
+  }
+  if (recommendation.scheduleConstraints.requiresDirectDeposit) {
+    warnings.push('Direct deposit needed');
+  }
+  if ((recommendation.valueBreakdown?.annualFee ?? 0) > 0) {
+    warnings.push('Annual fee');
+  }
+  if (recommendation.effort === 'high') {
+    warnings.push('High effort');
+  }
+
+  return warnings;
+}
+
+export function buildPlanEmailSubject(totalValue: number, cardsOnlyMode: boolean) {
+  return cardsOnlyMode
+    ? `My The Stack card plan (${formatValue(totalValue)})`
+    : `My The Stack bonus plan (${formatValue(totalValue)})`;
+}
+
+export function buildPlanEmailBody(input: {
+  totalValue: number;
+  cardsOnlyMode: boolean;
+  recommendations: PlannerRecommendation[];
+  milestones: TimelineMilestone[];
+  referenceDate: Date;
+}) {
+  const upcomingMilestones = getUpcomingTimelineMilestones(input.milestones, input.referenceDate, 45, 5);
+  const moveLines = input.recommendations.slice(0, 5).map((recommendation, index) => {
+    const warnings = recommendationWarningFlags(recommendation);
+    const warningSuffix = warnings[0] ? `; ${warnings[0]}` : '';
+
+    return `${index + 1}. ${recommendation.provider} - ${recommendation.title} (${formatValue(recommendation.estimatedNetValue)} est${warningSuffix})`;
+  });
+
+  return [
+    `Here is my ${input.cardsOnlyMode ? 'card-only' : 'bonus'} plan from The Stack.`,
+    '',
+    `12-month estimate: ${formatValue(input.totalValue)}`,
+    '',
+    'Next actions:',
+    ...(upcomingMilestones.length > 0
+      ? upcomingMilestones.map(
+          (milestone) => `- ${formatShortDate(milestone.date)}: ${milestone.label} - ${milestone.title}`
+        )
+      : ['- No scheduled actions yet.']),
+    '',
+    'Planned moves:',
+    ...(moveLines.length > 0 ? moveLines : ['No recommendations yet.']),
+    '',
+    'Reminder:',
+    'Download the .ics calendar from the plan page if I want these dates in my calendar.'
+  ].join('\n');
 }
 
 export function toIcsDate(date: Date) {

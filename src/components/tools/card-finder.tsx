@@ -5,7 +5,8 @@ import {
   CardSelectionQuestion,
   CardFinderActions,
   CardFinderProgress,
-  CardFinderQuestion
+  CardFinderQuestion,
+  CardFinderSelectQuestion
 } from '@/components/tools/card-finder-sections';
 import { useCardFinderState } from '@/components/tools/card-finder-state';
 import type { CardRecord } from '@/lib/cards';
@@ -66,7 +67,12 @@ export function CardFinderTool({ cards }: { cards: CardRecord[] }) {
   return (
     <section className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
       <div>
-        <CardFinderProgress stepIndex={stepIndex} totalSteps={steps.length} progress={progress} />
+        <CardFinderProgress
+          stepIndex={stepIndex}
+          totalSteps={steps.length}
+          progress={progress}
+          currentStepTitle={currentStep.title}
+        />
       </div>
 
       {currentStep.type === 'card_selection' ? (
@@ -84,6 +90,12 @@ export function CardFinderTool({ cards }: { cards: CardRecord[] }) {
             `We’ll exclude ${count} current card${count === 1 ? '' : 's'} from new-card recommendations.`
           }
           emptySelectionText="Search for cards you already hold, or continue and add this later once you see your first draft."
+        />
+      ) : currentStep.type === 'select' ? (
+        <CardFinderSelectQuestion
+          step={currentStep}
+          selectedValue={typeof answers[currentStep.id] === 'string' ? answers[currentStep.id] : undefined}
+          onSelect={selectCurrentOption}
         />
       ) : (
         <CardFinderQuestion

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { EmptyLaneCard } from '@/components/plan/empty-lane-card';
-import { PlanTimeline } from '@/components/plan/plan-timeline';
+import { PlanExecutionBoard } from '@/components/plan/plan-execution-board';
 import { type EligibilityDraft } from '@/components/plan/plan-results-config';
 import {
   buildScheduledTimelineEntries,
@@ -14,7 +14,6 @@ import {
 } from '@/components/plan/plan-results-utils';
 import { RecommendationCard } from '@/components/plan/recommendation-card';
 import { ResultsEligibilityEditor } from '@/components/plan/results-eligibility-editor';
-import { SummaryStatCard } from '@/components/plan/summary-stat-card';
 import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import { submitPlanQuiz } from '@/lib/plan-client';
@@ -25,6 +24,7 @@ import {
   type PlanResultsLoadResult,
   type PlanResultsStoragePayload
 } from '@/lib/plan-results-storage';
+import { getDemoPlanPayload } from '@/lib/plan-demo-fixture';
 import { quizRequestSchema } from '@/lib/quiz-engine';
 import {
   rankPlannerRecommendationsByPriority,
@@ -36,18 +36,21 @@ function PlanSummary({
   payload,
   onClear,
   cardsOnlyMode,
-  onUpdateEligibility
+  onUpdateEligibility,
+  isDemo
 }: {
   payload: PlanResultsStoragePayload;
   onClear: () => void;
   cardsOnlyMode: boolean;
   onUpdateEligibility: (draft: EligibilityDraft) => Promise<string | null>;
+  isDemo: boolean;
 }) {
   const planStart = useMemo(() => {
     const d = new Date(payload.savedAt);
     return Number.isNaN(d.getTime()) ? new Date() : d;
   }, [payload.savedAt]);
   const { cards: availableCards, loading: cardsLoading, error: cardsError } = useCardsDirectory(100);
+  const [showOfferDetails, setShowOfferDetails] = useState(false);
   const labels = useMemo(() => monthLabels(planStart), [planStart]);
   const prioritizedRecommendations = useMemo(
     () => rankPlannerRecommendationsByPriority(payload.recommendations),
@@ -88,159 +91,143 @@ function PlanSummary({
   const cardLane = orderedRecommendations.filter((item) => item.lane === 'cards');
   const bankingLane = orderedRecommendations.filter((item) => item.lane === 'banking');
   const totalValue = orderedRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
-  const cardValue = cardLane.reduce((sum, item) => sum + item.estimatedNetValue, 0);
-  const bankingValue = bankingLane.reduce((sum, item) => sum + item.estimatedNetValue, 0);
   const ownedCardsCount = payload.answers.ownedCardSlugs.length;
   const amexLifetimeBlockedCount = payload.answers.amexLifetimeBlockedSlugs.length;
   const chase524Blocked = payload.answers.chase524Status === 'at_or_over_5_24';
-  const doNowLimit = 2;
-  const doNow = orderedRecommendations.slice(0, doNowLimit);
-  const doNext = orderedRecommendations.slice(doNowLimit);
-  const summaryFlags = [
-    ownedCardsCount > 0
-      ? `${ownedCardsCount} current card${ownedCardsCount === 1 ? '' : 's'} excluded`
-      : null,
-    amexLifetimeBlockedCount > 0
-      ? `${amexLifetimeBlockedCount} prior Amex card${amexLifetimeBlockedCount === 1 ? '' : 's'} blocked`
-      : null,
-    chase524Blocked ? 'Chase 5/24 applied' : null
-  ].filter((value): value is string => Boolean(value));
+  const summaryFacts = [
+    {
+      label: `${cardLane.length} card move${cardLane.length === 1 ? '' : 's'}`,
+      tone: 'gold' as const
+    },
+    ...(!cardsOnlyMode
+      ? [
+          {
+            label: `${bankingLane.length} bank move${bankingLane.length === 1 ? '' : 's'}`,
+            tone: 'teal' as const
+          }
+        ]
+      : []),
+    {
+      label: `${ownedCardsCount} current card${ownedCardsCount === 1 ? '' : 's'} excluded`,
+      tone: 'neutral' as const
+    }
+  ];
 
   return (
     <div>
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.18),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(212,168,83,0.1),transparent_40%),rgba(255,255,255,0.03)] p-6 md:p-8">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
-          <div>
-            <p className="text-xs uppercase tracking-[0.25em] text-text-muted">12-Month Bonus-First Estimate</p>
-            <p className="mt-3 font-heading text-5xl text-text-primary md:text-6xl">
+      <div className="pb-8">
+        <div className="max-w-4xl">
+          {isDemo ? (
+            <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-brand-teal">
+              Demo fixture
+            </span>
+          ) : null}
+          <div className="mt-3 flex flex-wrap items-end gap-x-5 gap-y-2">
+            <p className="font-heading text-5xl text-text-primary md:text-6xl">
               {formatValue(totalValue)}
             </p>
-            <p className="mt-4 max-w-2xl text-base leading-8 text-text-secondary md:text-lg">
-              {cardsOnlyMode
-                ? 'This draft ranks the strongest card bonuses first, then applies conservative fee and perk adjustments so the headline stays grounded.'
-                : 'This draft combines your strongest card and bank bonus moves into one 12-month plan, with conservative net-value assumptions and a sequence you can actually follow.'}
+            <p className="max-w-md pb-2 text-sm text-text-secondary">
+              Estimated total value across the next 12 months.
             </p>
-            {summaryFlags.length > 0 && (
-              <div className="mt-5 flex flex-wrap gap-2">
-                {summaryFlags.map((flag) => (
-                  <span
-                    key={flag}
-                    className="rounded-full border border-white/10 bg-bg/40 px-3 py-1.5 text-sm text-text-secondary"
-                  >
-                    {flag}
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
 
-          <div className={`grid gap-3 ${cardsOnlyMode ? 'sm:grid-cols-2' : 'sm:grid-cols-3 xl:grid-cols-1'}`}>
-            <SummaryStatCard
-              label="Card open-value est."
-              value={formatValue(cardValue)}
-              description={`${cardLane.length} card move${cardLane.length === 1 ? '' : 's'} in this draft`}
-              tone="gold"
-            />
-            {!cardsOnlyMode && (
-              <SummaryStatCard
-                label="Banking net est."
-                value={formatValue(bankingValue)}
-                description={`${bankingLane.length} bank move${bankingLane.length === 1 ? '' : 's'} in this draft`}
-                tone="teal"
-              />
-            )}
-            <SummaryStatCard
-              label="Start now"
-              value={String(doNow.length)}
-              description={doNow[0] ? `${doNow[0].title} leads the plan.` : 'No immediate moves yet.'}
-              tone="neutral"
-            />
+          <div className="mt-4 flex flex-wrap gap-x-6 gap-y-3 text-sm text-text-secondary">
+            {summaryFacts.map((item) => (
+              <span key={item.label} className="inline-flex items-center gap-2">
+                <span
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    item.tone === 'teal'
+                      ? 'bg-brand-teal'
+                      : item.tone === 'gold'
+                        ? 'bg-brand-gold'
+                        : 'bg-white/40'
+                  }`}
+                  aria-hidden
+                />
+                <span>{item.label}</span>
+              </span>
+            ))}
           </div>
         </div>
       </div>
 
-      <section className="mt-8 rounded-3xl border border-white/10 bg-bg-surface p-6">
-        <h2 className="font-heading text-2xl text-text-primary">Start Today</h2>
-        <p className="mt-2 text-base leading-7 text-text-secondary">
-          Open these highest-priority bonus moves first.
-        </p>
-        <div className={`mt-4 grid gap-4 ${doNow.length > 1 ? 'md:grid-cols-2' : ''}`}>
-          {doNow.length > 0 ? (
-            doNow.map((item) => <RecommendationCard key={item.id} item={item} variant="featured" />)
-          ) : (
-            <p className="text-sm text-text-muted">No do-now recommendations are available yet.</p>
-          )}
-        </div>
-      </section>
-      <PlanTimeline
+      <PlanExecutionBoard
         timelineEntries={timelineEntries}
         planStart={planStart}
         labels={labels}
+        recommendations={orderedRecommendations}
         scopedRecommendationsById={scopedRecommendationsById}
+        cardsOnlyMode={cardsOnlyMode}
+        totalValue={totalValue}
       />
 
-      <section className="mt-8 rounded-3xl border border-white/10 bg-bg-surface p-6">
-        <h2 className="font-heading text-2xl text-text-primary">
-          {cardsOnlyMode ? 'Card Bonus Track' : 'Lane Breakdown'}
-        </h2>
-        {cardsOnlyMode ? (
-          <div className="mt-4 space-y-4">
-            {cardLane.length === 0 ? (
-              <EmptyLaneCard
-                lane="cards"
-                exclusions={cardExclusions}
-                ownedCardsCount={ownedCardsCount}
-                amexLifetimeBlockedCount={amexLifetimeBlockedCount}
-                chase524Blocked={chase524Blocked}
-              />
-            ) : (
-              cardLane.map((item) => <RecommendationCard key={item.id} item={item} />)
-            )}
+      <section className="mt-14 border-t border-white/[0.06] pt-8">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="max-w-3xl">
+            <h2 className="font-heading text-2xl text-text-primary">
+              {cardsOnlyMode ? 'Card Bonus Details' : 'Offer Details'}
+            </h2>
+            <p className="mt-2 text-base leading-7 text-text-secondary">
+              Keep the roadmap above for timing. Open the full detail cards only when you want the deeper value math and requirement breakdown.
+            </p>
           </div>
+          <Button variant="ghost" onClick={() => setShowOfferDetails((current) => !current)}>
+            {showOfferDetails
+              ? `Hide ${cardsOnlyMode ? 'card' : 'offer'} details`
+              : `Show ${cardsOnlyMode ? 'card' : 'offer'} details`}
+          </Button>
+        </div>
+
+        {showOfferDetails ? (
+          cardsOnlyMode ? (
+            <div className="mt-6 space-y-4">
+              {cardLane.length === 0 ? (
+                <EmptyLaneCard
+                  lane="cards"
+                  exclusions={cardExclusions}
+                  ownedCardsCount={ownedCardsCount}
+                  amexLifetimeBlockedCount={amexLifetimeBlockedCount}
+                  chase524Blocked={chase524Blocked}
+                />
+              ) : (
+                cardLane.map((item) => <RecommendationCard key={item.id} item={item} />)
+              )}
+            </div>
+          ) : (
+            <div className="mt-6 grid gap-4 md:grid-cols-2">
+              <div className="rounded-xl bg-bg/18 p-5">
+                <h3 className="text-lg font-semibold text-text-primary">Card Bonus Track</h3>
+                <div className="mt-4 space-y-4">
+                  {cardLane.length === 0 ? (
+                    <EmptyLaneCard
+                      lane="cards"
+                      exclusions={cardExclusions}
+                      ownedCardsCount={ownedCardsCount}
+                      amexLifetimeBlockedCount={amexLifetimeBlockedCount}
+                      chase524Blocked={chase524Blocked}
+                    />
+                  ) : (
+                    cardLane.map((item) => <RecommendationCard key={item.id} item={item} />)
+                  )}
+                </div>
+              </div>
+              <div className="rounded-xl bg-bg/18 p-5">
+                <h3 className="text-lg font-semibold text-text-primary">Bank Bonus Track</h3>
+                <div className="mt-4 space-y-4">
+                  {bankingLane.length === 0 ? (
+                    <EmptyLaneCard lane="banking" exclusions={bankingExclusions} />
+                  ) : (
+                    bankingLane.map((item) => <RecommendationCard key={item.id} item={item} />)
+                  )}
+                </div>
+              </div>
+            </div>
+          )
         ) : (
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-bg/40 p-5">
-              <h3 className="text-lg font-semibold text-text-primary">Card Bonus Track</h3>
-              <div className="mt-4 space-y-4">
-                {cardLane.length === 0 ? (
-                  <EmptyLaneCard
-                    lane="cards"
-                    exclusions={cardExclusions}
-                    ownedCardsCount={ownedCardsCount}
-                    amexLifetimeBlockedCount={amexLifetimeBlockedCount}
-                    chase524Blocked={chase524Blocked}
-                  />
-                ) : (
-                  cardLane.map((item) => <RecommendationCard key={item.id} item={item} />)
-                )}
-              </div>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-bg/40 p-5">
-              <h3 className="text-lg font-semibold text-text-primary">Bank Bonus Track</h3>
-              <div className="mt-4 space-y-4">
-                {bankingLane.length === 0 ? (
-                  <EmptyLaneCard lane="banking" exclusions={bankingExclusions} />
-                ) : (
-                  bankingLane.map((item) => <RecommendationCard key={item.id} item={item} />)
-                )}
-              </div>
-            </div>
+          <div className="mt-5 rounded-2xl bg-white/[0.02] px-5 py-4 text-sm text-text-secondary">
+            {orderedRecommendations.length} move{orderedRecommendations.length === 1 ? '' : 's'} are in this draft. Keep the execution board as the main workspace, then open the full detail cards when you want to compare value math, fees, and requirements side by side.
           </div>
         )}
-      </section>
-
-      <section className="mt-8 rounded-3xl border border-white/10 bg-bg-surface p-6">
-        <h2 className="font-heading text-2xl text-text-primary">Do Next</h2>
-        <p className="mt-2 text-base leading-7 text-text-secondary">
-          Queue these after you complete the do-now steps and timeline requirements.
-        </p>
-        <div className={`mt-4 grid gap-4 ${doNext.length > 1 ? 'md:grid-cols-2' : ''}`}>
-          {doNext.length > 0 ? (
-            doNext.map((item) => <RecommendationCard key={item.id} item={item} />)
-          ) : (
-            <p className="text-sm text-text-muted">No follow-up actions yet.</p>
-          )}
-        </div>
       </section>
 
       <ResultsEligibilityEditor
@@ -257,13 +244,15 @@ function PlanSummary({
             {cardsOnlyMode ? 'Edit Full Card Intake' : 'Edit Full Planner'}
           </Button>
         </Link>
-        <button
-          type="button"
-          onClick={onClear}
-          className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-2 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
-        >
-          Clear Saved Plan
-        </button>
+        {!isDemo ? (
+          <button
+            type="button"
+            onClick={onClear}
+            className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-2 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
+          >
+            Clear Saved Plan
+          </button>
+        ) : null}
       </div>
     </div>
   );
@@ -272,6 +261,7 @@ function PlanSummary({
 export function PlanResultsView() {
   const searchParams = useSearchParams();
   const cardsOnlyMode = searchParams.get('mode') === 'cards_only';
+  const demoMode = searchParams.get('demo') === 'true';
   const [state, setState] = useState<LoadState>({ status: 'loading' });
 
   function handleClearPlan() {
@@ -314,6 +304,15 @@ export function PlanResultsView() {
   }
 
   useEffect(() => {
+    if (demoMode) {
+      setState({
+        status: 'fresh',
+        payload: getDemoPlanPayload({ cardsOnlyMode }),
+        source: 'session'
+      });
+      return;
+    }
+
     const loaded = loadPlanResults();
     setState(loaded);
 
@@ -328,7 +327,7 @@ export function PlanResultsView() {
         tool: cardsOnlyMode ? 'cards_only_path' : 'card_finder'
       });
     }
-  }, [cardsOnlyMode]);
+  }, [cardsOnlyMode, demoMode]);
 
   if (state.status === 'loading') {
     return (
@@ -365,11 +364,6 @@ export function PlanResultsView() {
       <h1 className="font-heading text-5xl text-text-primary md:text-6xl">
         {cardsOnlyMode ? 'Your 12-Month Card Plan' : 'Your 12-Month Bonus Plan'}
       </h1>
-      <p className="mt-4 text-base leading-8 text-text-secondary md:text-lg">
-        {cardsOnlyMode
-          ? 'We prioritize the biggest card bonuses you can realistically earn, then apply conservative perk and fee adjustments.'
-          : 'We prioritize the biggest card and bank bonuses you can realistically earn, with conservative fee and perk adjustments.'}
-      </p>
       {state.status === 'recovered' && (
         <p className="mt-3 text-base text-brand-gold">
           Recovered your latest saved plan from this browser.
@@ -380,6 +374,7 @@ export function PlanResultsView() {
         onClear={handleClearPlan}
         cardsOnlyMode={cardsOnlyMode}
         onUpdateEligibility={handleUpdateEligibility}
+        isDemo={demoMode}
       />
     </div>
   );

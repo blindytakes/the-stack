@@ -15,39 +15,24 @@ type PlanTimelineProps = {
   planStart: Date;
   labels: string[];
   scopedRecommendationsById: Map<string, PlannerRecommendation>;
+  compact?: boolean;
 };
 
 export function PlanTimeline({
   timelineEntries,
   planStart,
   labels,
-  scopedRecommendationsById
+  scopedRecommendationsById,
+  compact = false
 }: PlanTimelineProps) {
-  return (
-    <section className="mt-8 rounded-3xl border border-white/10 bg-bg-surface p-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="font-heading text-2xl text-text-primary">Execution Timeline</h2>
-          <p className="mt-2 text-base leading-7 text-text-secondary">
-            Work this plan in order. Open each move by the first date, finish the requirement
-            window by the second, and look for the payout around the third.
-          </p>
-        </div>
-        <Button
-          variant="ghost"
-          onClick={() => downloadTimelineCalendar(timelineEntries)}
-          disabled={timelineEntries.length === 0}
-        >
-          Add to Calendar
-        </Button>
-      </div>
-
-      <div className="mt-5 grid gap-3 lg:grid-cols-3">
+  const content = (
+    <>
+      <div className="grid gap-3 lg:grid-cols-3">
         <div className="rounded-2xl border border-brand-gold/20 bg-brand-gold/10 p-4">
           <p className="text-xs uppercase tracking-[0.2em] text-text-muted">1. Open</p>
           <p className="mt-2 text-lg font-semibold text-text-primary">Start the offer</p>
           <p className="mt-2 text-base leading-7 text-text-secondary">
-            Use the <span className="font-semibold text-text-primary">Open by</span> date as your
+            Use the <span className="font-semibold text-text-primary">Apply/open by</span> date as your
             target apply or account-opening date.
           </p>
         </div>
@@ -117,7 +102,7 @@ export function PlanTimeline({
                   <div className="rounded-2xl border border-white/10 bg-bg/30 p-4">
                     <div className="grid gap-3 sm:grid-cols-3">
                       <div className="rounded-2xl border border-brand-gold/20 bg-brand-gold/10 px-3 py-3">
-                        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Open by</p>
+                        <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Apply/open by</p>
                         <p className="mt-2 text-lg font-semibold text-text-primary">
                           {formatShortDate(entry.startDate)}
                         </p>
@@ -200,6 +185,33 @@ export function PlanTimeline({
           )}
         </div>
       </div>
+    </>
+  );
+
+  if (compact) {
+    return content;
+  }
+
+  return (
+    <section className="mt-8 rounded-3xl border border-white/10 bg-bg-surface p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-heading text-2xl text-text-primary">Execution Timeline</h2>
+          <p className="mt-2 text-base leading-7 text-text-secondary">
+            Work this plan in order. Open each move by the first date, finish the requirement
+            window by the second, and look for the payout around the third.
+          </p>
+        </div>
+        <Button
+          variant="ghost"
+          onClick={() => downloadTimelineCalendar(timelineEntries)}
+          disabled={timelineEntries.length === 0}
+        >
+          Download calendar (.ics)
+        </Button>
+      </div>
+
+      <div className="mt-5">{content}</div>
     </section>
   );
 }

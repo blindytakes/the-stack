@@ -28,11 +28,11 @@ export function RecommendationCard({
       : 'border-brand-teal/25 bg-brand-teal/10 text-brand-teal';
   const valuePanelClass =
     item.lane === 'cards'
-      ? 'border-brand-gold/20 bg-brand-gold/10'
-      : 'border-brand-teal/20 bg-brand-teal/10';
+      ? 'bg-brand-gold/10'
+      : 'bg-brand-teal/10';
   const articleClass = isFeatured
-    ? 'rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-6'
-    : 'rounded-2xl border border-white/10 bg-bg/40 p-5';
+    ? 'rounded-[1.75rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-6'
+    : 'rounded-xl bg-white/[0.03] p-5';
 
   return (
     <article className={articleClass}>
@@ -64,7 +64,7 @@ export function RecommendationCard({
             {formatValue(headlineValue)}
           </p>
         </div>
-        <div className={`rounded-2xl border px-4 py-3 ${valuePanelClass}`}>
+        <div className={`rounded-xl px-4 py-3 ${valuePanelClass}`}>
           <p className="text-xs uppercase tracking-[0.2em] text-text-muted">
             {item.kind === 'card_bonus' ? 'Open value est.' : 'Net value est.'}
           </p>
@@ -101,9 +101,9 @@ export function RecommendationCard({
         </p>
       )}
 
-      <div className="mt-4 rounded-2xl border border-white/10 bg-bg/50 px-4 py-3">
+      <div className="mt-5 border-l-2 border-brand-teal/30 pl-4">
         <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Why we recommend this</p>
-        <p className="mt-1 text-base leading-7 text-text-secondary">{recommendationRationale(item)}</p>
+        <p className="mt-2 text-base leading-7 text-text-secondary">{recommendationRationale(item)}</p>
       </div>
 
       {item.timelineDays ? (
@@ -114,11 +114,10 @@ export function RecommendationCard({
 
       <div className="mt-4 space-y-2">
         {item.keyRequirements.slice(0, 3).map((requirement) => (
-          <div
-            key={requirement}
-            className="flex items-start gap-3 rounded-2xl border border-white/10 bg-bg/30 px-3 py-2"
-          >
-            <span className="mt-1.5 h-2 w-2 rounded-full bg-brand-teal" aria-hidden />
+          <div key={requirement} className="flex items-start gap-3">
+            <span className="mt-2 text-brand-teal" aria-hidden>
+              •
+            </span>
             <p className="text-base leading-7 text-text-secondary">{requirement}</p>
           </div>
         ))}
