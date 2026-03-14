@@ -36,7 +36,7 @@ export type TimelineCalendarDay = {
   items: TimelineMilestone[];
 };
 
-export const TIMELINE_DAYS = 365;
+export const TIMELINE_DAYS = 180;
 export const MIN_VISIBLE_BENEFIT_ADJUSTMENT = 25;
 
 export function sameSlugSelections(left: string[], right: string[]) {
@@ -291,7 +291,7 @@ export function getUpcomingTimelineMilestones(
 export function buildTimelineMonthBuckets(
   milestones: TimelineMilestone[],
   planStart: Date,
-  monthWindow = 12
+  monthWindow = 6
 ): TimelineMonthBucket[] {
   const normalizedPlanStart = startOfMonth(planStart);
   const totalMonths = Math.max(1, monthWindow);
@@ -420,7 +420,7 @@ export function buildPlanEmailBody(input: {
   return [
     `Here is my ${input.cardsOnlyMode ? 'card-only' : 'bonus'} plan from The Stack.`,
     '',
-    `12-month estimate: ${formatValue(input.totalValue)}`,
+    `6-month estimate: ${formatValue(input.totalValue)}`,
     '',
     'Next actions:',
     ...(upcomingMilestones.length > 0

@@ -38,7 +38,7 @@ export default async function CardFinderPage({ searchParams }: Props) {
         showingChooser
           ? 'Choose whether you want the full card-and-bank planner or the shorter card-only path before you start answering questions.'
           : showingFullPlanner
-          ? 'This planner includes both card bonuses and bank bonuses. We ask about spend capacity, credit, direct deposit, and state so the 12-month plan stays realistic.'
+          ? 'This planner includes both card bonuses and bank bonuses. We ask about spend capacity, credit, direct deposit, and state so the 6-month plan stays realistic.'
           : ''
       }
     >

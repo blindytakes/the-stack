@@ -6,7 +6,7 @@ import { getCardsData } from '@/lib/cards';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: '12-Month Card Plan',
+  title: '6-Month Card Plan',
   description:
     'Build a shorter card-only plan using the cards you already have, Chase status, spend, and credit profile.'
 };

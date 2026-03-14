@@ -83,7 +83,7 @@ export function PlanEmailPanel({
           <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Take it with you</p>
           <h3 className="mt-2 text-xl font-semibold text-text-primary">Email this plan to yourself</h3>
           <p className="mt-2 text-sm leading-6 text-text-secondary">
-            This first pass opens a prefilled draft in your own email app. It includes the 12-month estimate,
+            This first pass opens a prefilled draft in your own email app. It includes the 6-month estimate,
             the next actions, and the planned move stack without tying it to newsletter signup.
           </p>
         </div>

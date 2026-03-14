@@ -205,6 +205,7 @@ export function ResultsEligibilityEditor({
               </span>
             </div>
             <p className="mt-3 max-w-2xl text-base leading-7 text-text-secondary">
+              5/24 is a Chase rule that limits you to 5 new credit card accounts every 24 months.
               If you are at or over 5/24, Chase cards stay out of the pool. If you are not sure,
               we leave them in for now.
             </p>

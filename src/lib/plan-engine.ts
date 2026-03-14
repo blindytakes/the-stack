@@ -93,7 +93,7 @@ type OptimizerBestResult = {
   scheduled: ScheduledWindow[];
 };
 
-const DEFAULT_HORIZON_DAYS = 365;
+const DEFAULT_HORIZON_DAYS = 180;
 const DAYS_IN_MONTH = 30;
 
 const defaultPaceConfig: PlanPaceConfig = {

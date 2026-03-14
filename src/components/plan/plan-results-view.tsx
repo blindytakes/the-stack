@@ -117,7 +117,7 @@ function PlanSummary({
           <SummaryStatCard
             label="Total value"
             value={formatValue(totalValue)}
-            description="Estimated across the next 12 months"
+            description="Estimated across the next 6 months"
             tone="teal"
           />
           <SummaryStatCard
@@ -314,7 +314,7 @@ export function PlanResultsView() {
   return (
     <div className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
       <h1 className="font-heading text-5xl text-text-primary md:text-6xl">
-        {cardsOnlyMode ? 'Your 12-Month Card Plan' : 'Your 12-Month Bonus Plan'}
+        {cardsOnlyMode ? 'Your 6-Month Card Plan' : 'Your 6-Month Bonus Plan'}
       </h1>
       {state.status === 'recovered' && (
         <p className="mt-3 text-base text-brand-gold">
