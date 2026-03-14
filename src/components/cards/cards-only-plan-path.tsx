@@ -210,7 +210,7 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">Card-Only Path</p>
-          <h2 className="mt-2 font-heading text-3xl text-text-primary">Build My 12-Month Card Plan</h2>
+          <h2 className="mt-2 font-heading text-3xl text-text-primary">Build My 6-Month Card Plan</h2>
           <p className="mt-2 max-w-2xl text-sm text-text-secondary">
             Start with your spend capacity and credit profile, then layer in Chase status and
             cards you already hold to get a focused roadmap based only on welcome bonuses.
@@ -273,7 +273,7 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
             ? 'Skip for now'
             : 'Continue'
         }
-        submitLabel="See my 12-month card plan"
+        submitLabel="See my 6-month card plan"
         submittingLabel="Building plan..."
         onBack={goBack}
         onContinue={goForward}

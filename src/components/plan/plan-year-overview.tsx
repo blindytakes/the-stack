@@ -37,7 +37,7 @@ export function PlanYearOverview({
         <div>
           <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Planning canvas</p>
           <div className="mt-2 flex flex-wrap items-center gap-3">
-            <h3 className="text-2xl font-semibold text-text-primary">12-month roadmap</h3>
+            <h3 className="text-2xl font-semibold text-text-primary">6-month roadmap</h3>
             <div className="inline-flex rounded-full bg-white/[0.03] p-1">
               <button
                 type="button"

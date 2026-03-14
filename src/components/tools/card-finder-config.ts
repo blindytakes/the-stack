@@ -19,7 +19,7 @@ export const cardFinderSteps: FinderQuestionStep[] = [
     id: 'directDeposit',
     type: 'options',
     title: 'Can you route direct deposit to a new bank account?',
-    description: 'This unlocks or removes most checking-bonus paths immediately.',
+    description: 'This unlocks or removes most checking account bonus paths, which can be stacked to earn over $3,000/year.',
     options: [
       { label: 'Yes, I can route direct deposit', value: 'yes' },
       { label: 'No, I cannot route direct deposit', value: 'no' }
@@ -41,7 +41,7 @@ export const cardFinderSteps: FinderQuestionStep[] = [
     id: 'chase524Status',
     type: 'options',
     title: 'What is your Chase 5/24 status?',
-    description: 'This only affects Chase cards, but it has a big impact on ranking.',
+    description: '5/24 is a Chase rule that limits you to 5 new credit card accounts every 24 months. This impacts which Chase cards you can open and how we sequence your plan.',
     options: [
       { label: 'Under 5/24', value: 'under_5_24' },
       { label: 'At or over 5/24', value: 'at_or_over_5_24' },

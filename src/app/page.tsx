@@ -7,23 +7,23 @@ import { ProofPoints } from '@/components/proof-points';
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
 const SITE_DESCRIPTION =
-  'Build a personalized 12-month card and bank bonus plan with practical next-step guidance.';
+  'Build a personalized 6-month card and bank bonus plan with practical next-step guidance.';
 
 const faqs = [
   {
     question: 'Is The Stack free?',
     answer:
-      'Yes. The planner and comparison tools are free to use. You can run the quiz, review your results, and explore the site without paying.'
+      'Yes, the site, the Bonus Planner, and the comparison tools are free to use. You can run the quiz, review your results, and explore the site without paying a fee.'
   },
   {
-    question: 'How long does the planner take?',
+    question: 'How long does the Bonus Planner take?',
     answer:
       'About 2 minutes for most people. We ask enough to make the recommendations useful without turning it into a long intake form.'
   },
   {
-    question: 'Does the planner cover bank bonuses too?',
+    question: 'Does the Bonus Planner cover bank bonuses too?',
     answer:
-      'Yes. The full planner can include both card bonuses and bank bonuses when they fit your profile and timing.'
+      'Yes. The full Bonus Planner can include both card bonuses and bank account bonuses when they fit your profile and timing.'
   },
   {
     question: 'Do I need excellent credit?',
@@ -38,12 +38,12 @@ const faqs = [
   {
     question: 'Will applying hurt my credit?',
     answer:
-      'New applications can create a small temporary dip, so this is best used by people who already pay on time and are comfortable opening accounts deliberately.'
+      'New applications can create a small temporary dip, so the Bonus Planner is best used by people who already pay on time and are comfortable opening accounts deliberately to earn sign-up bonuses and reward points.'
   },
   {
     question: 'Do I need a spreadsheet to use this?',
     answer:
-      'No. The point is to give you a clearer plan without making you build your own spreadsheet first.'
+      'No. The point of the Bonus Planner is to give you a clearer plan without having to maintain your own spreadsheet.'
   }
 ] as const;
 
@@ -70,20 +70,9 @@ const howItWorksSteps = [
 
 const differentiationCards = [
   {
-    title: 'Ranked for your profile',
+    title: 'Tangible value, not hype',
     description:
-      'Your spend, goals, and credit profile shape the plan. Two people should not get the same list.',
-    icon: (
-      <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
-        <path d="M10 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM4.5 14.5c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M15.5 6.5 17 8l-1.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    )
-  },
-  {
-    title: 'Real value, not hype',
-    description:
-      'We look at bonus value minus fees and practical fit, not inflated point valuations.',
+      'We show bonus value minus fees and realistic estimates — not inflated point valuations that never cash out.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
@@ -92,9 +81,20 @@ const differentiationCards = [
     )
   },
   {
-    title: 'Sequenced for approval odds',
+    title: 'Ranked for your profile',
     description:
-      'Moves are ordered by timing, issuer rules, and approval logic so you do not waste applications.',
+      'Your spend, goals, and credit profile shape the plan so it reflects what you can actually hit.',
+    icon: (
+      <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
+        <path d="M10 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM4.5 14.5c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M15.5 6.5 17 8l-1.5 1.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
+  },
+  {
+    title: 'Sequenced with timing in mind',
+    description:
+      'Moves are ordered by issuer rules, approval logic, and deadlines so you do not waste applications.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M6 6h8M6 10h6M6 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -166,9 +166,9 @@ const sampleReviews = [
   {
     name: 'Marcus T.',
     quote:
-      'It told me what to open first and what to wait on. That saved me from making two bad applications too early.',
-    result: 'Clear first and second moves',
-    detail: 'Already had a few cards · wanted better sequencing'
+      'I had a rough idea of what cards I wanted, but no idea what order to open them in. The Stack laid it out step by step with deadlines I could actually follow.',
+    result: 'Clear sequencing for 4 moves',
+    detail: 'Already had a few cards · wanted better order'
   },
   {
     name: 'Priya R.',
@@ -187,9 +187,9 @@ const sampleReviews = [
   {
     name: 'Lauren S.',
     quote:
-      'It felt like the difference between reading reviews and getting a real recommendation. I knew which move mattered next instead of staring at ranked lists.',
-    result: 'More useful than card lists',
-    detail: 'Wanted a clear do-now plan'
+      'I used to spend hours comparing cards in browser tabs. This just told me which one to get now and which to wait on. Saved me a ton of time.',
+    result: 'Replaced hours of research',
+    detail: 'First time stacking bonuses'
   }
 ] as const;
 
@@ -276,10 +276,10 @@ export default function HomePage() {
                 <p className="text-xs uppercase tracking-[0.3em] text-text-muted">Sample Plan</p>
                 <div>
                   <h2 className="text-2xl font-semibold text-text-primary md:text-3xl">
-                    See your next two moves.
+                    Plan your next moves.
                   </h2>
                   <p className="mt-2 max-w-sm text-sm leading-6 text-text-secondary md:text-base">
-                    A short quiz turns your profile into a ranked 12-month plan with cleaner math,
+                    A short quiz turns your profile into a ranked 6-month plan with cleaner math,
                     realistic timing, and a clear starting point.
                   </p>
                 </div>
@@ -292,7 +292,7 @@ export default function HomePage() {
             <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <p className="text-sm text-text-muted">12-month value est.</p>
+                  <p className="text-sm text-text-muted">6-month value est.</p>
                   <p className="mt-2 font-heading text-4xl text-text-primary">$2,150</p>
                 </div>
                 <div className="sm:text-right">
@@ -321,7 +321,7 @@ export default function HomePage() {
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/15 p-4">
                 <p className="text-xs uppercase tracking-[0.24em] text-text-muted">Pace</p>
-                <p className="mt-2 text-xl font-semibold text-text-primary">3 moves / 12 mo</p>
+                <p className="mt-2 text-xl font-semibold text-text-primary">3 moves / 6 mo</p>
               </div>
             </div>
 
@@ -371,7 +371,7 @@ export default function HomePage() {
                 Three steps to your first bonus.
               </h2>
               <p className="max-w-xl text-sm leading-7 text-text-secondary md:text-base">
-                Tell us what fits, get a ranked 12-month plan, and follow the right order.
+                Tell us what fits, get a ranked 6-month plan, and follow the right order.
               </p>
             </div>
           </div>
@@ -403,8 +403,8 @@ export default function HomePage() {
             A better way to choose your next bonus.
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
-            Most credit card sites rank offers by payout. The Stack ranks them by fit, timing, and
-            real value.
+            Most credit card sites rank offers by the biggest headline number. The Stack ranks them
+            by tangible value, fit, and timing.
           </p>
         </div>
         <div className="mt-8 grid gap-5 md:grid-cols-2">
