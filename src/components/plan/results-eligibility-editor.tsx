@@ -107,32 +107,55 @@ export function ResultsEligibilityEditor({
     setIsOpen(false);
   }
 
+  const ownedCount = payload.answers.ownedCardSlugs.length;
+  const chase524Label =
+    payload.answers.chase524Status === 'at_or_over_5_24'
+      ? 'At/over 5/24'
+      : payload.answers.chase524Status === 'under_5_24'
+        ? 'Under 5/24'
+        : 'Not sure';
+
   return (
     <section className="mt-8 rounded-2xl border border-white/10 bg-bg-surface p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Eligibility controls</p>
-          <h2 className="mt-2 font-heading text-2xl text-text-primary">
-            Update current cards and issuer rules
-          </h2>
-          <p className="mt-2 max-w-2xl text-base leading-7 text-text-secondary">
-            Change these high-impact inputs here and rerank without restarting the planner.
-          </p>
+      {!isOpen ? (
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-text-secondary">
+            <span className="text-xs uppercase tracking-[0.22em] text-text-muted">Eligibility</span>
+            <span>
+              Cards owned: <span className="font-semibold text-text-primary">{ownedCount}</span>
+            </span>
+            <span>
+              Chase 5/24: <span className="font-semibold text-text-primary">{chase524Label}</span>
+            </span>
+          </div>
+          <Button
+            variant="ghost"
+            onClick={() => setIsOpen(true)}
+            disabled={loading}
+          >
+            Edit
+          </Button>
         </div>
-        <Button
-          variant="ghost"
-          onClick={() => {
-            if (isOpen) {
-              closeEditor();
-              return;
-            }
-            setIsOpen(true);
-          }}
-          disabled={loading}
-        >
-          {isOpen ? 'Close editor' : 'Edit eligibility'}
-        </Button>
-      </div>
+      ) : (
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Eligibility controls</p>
+            <h2 className="mt-2 font-heading text-2xl text-text-primary">
+              Update current cards and issuer rules
+            </h2>
+            <p className="mt-2 max-w-2xl text-base leading-7 text-text-secondary">
+              Change these inputs and rerank without restarting the planner.
+            </p>
+          </div>
+          <Button
+            variant="ghost"
+            onClick={closeEditor}
+            disabled={loading}
+          >
+            Close
+          </Button>
+        </div>
+      )}
 
       {isOpen && (
         <div className="mt-6 border-t border-white/10 pt-2">
