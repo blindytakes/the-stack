@@ -15,6 +15,7 @@ import {
 import { PlanNextMove } from '@/components/plan/plan-next-move';
 import { PlanSequenceList } from '@/components/plan/plan-sequence-list';
 import { PlanCompactTimeline } from '@/components/plan/plan-compact-timeline';
+import { PlanEmailPanel } from '@/components/plan/plan-email-panel';
 import { ResultsEligibilityEditor } from '@/components/plan/results-eligibility-editor';
 import { SummaryStatCard } from '@/components/plan/summary-stat-card';
 import { Button } from '@/components/ui/button';
@@ -193,10 +194,22 @@ function PlanSummary({
         <section className="mt-10">
           <PlanCompactTimeline
             monthBuckets={monthBuckets}
+            timelineEntries={timelineEntries}
             referenceDate={referenceDate}
           />
         </section>
       ) : null}
+
+      {/* ── Email capture ── */}
+      <section className="mt-10">
+        <PlanEmailPanel
+          recommendations={orderedRecommendations}
+          milestones={milestones}
+          totalValue={totalValue}
+          cardsOnlyMode={cardsOnlyMode}
+          referenceDate={referenceDate}
+        />
+      </section>
 
       {/* ── Eligibility controls ── */}
       <ResultsEligibilityEditor
@@ -206,6 +219,39 @@ function PlanSummary({
         cardsError={cardsError}
         onUpdateEligibility={onUpdateEligibility}
       />
+
+      {/* ── Bottom CTA ── */}
+      <section className="mt-12 rounded-2xl border border-brand-teal/20 bg-[linear-gradient(180deg,rgba(45,212,191,0.06),transparent)] p-6 text-center md:p-8">
+        <h3 className="font-heading text-2xl text-text-primary md:text-3xl">
+          Ready to start?
+        </h3>
+        <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-text-secondary">
+          Your first move is{' '}
+          {firstRecommendation ? (
+            <span className="font-semibold text-text-primary">{firstRecommendation.title}</span>
+          ) : (
+            'waiting'
+          )}
+          . Apply today and start working toward{' '}
+          <span className="font-semibold text-brand-teal">{formatValue(totalValue)}</span> in
+          bonus value over the next 6 months.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <button
+            type="button"
+            onClick={() => downloadTimelineCalendar(timelineEntries)}
+            disabled={timelineEntries.length === 0}
+            className="inline-flex items-center gap-2 rounded-full border border-brand-teal/30 bg-brand-teal/10 px-5 py-2.5 text-sm font-semibold text-brand-teal transition hover:bg-brand-teal/20 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Add dates to calendar
+          </button>
+          <Link href={cardsOnlyMode ? '/cards/plan' : '/tools/card-finder?mode=full'}>
+            <Button variant="ghost">
+              Rebuild plan
+            </Button>
+          </Link>
+        </div>
+      </section>
     </div>
   );
 }
