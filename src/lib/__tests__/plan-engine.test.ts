@@ -101,7 +101,7 @@ describe('buildPlanSchedule', () => {
         monthlySpend: 'from_1000_to_2500',
         pace: 'aggressive'
       }),
-      { startAt, maxCards: 2, maxBanking: 0 }
+      { startAt, maxCards: 2, maxBanking: 0, horizonDays: 365 }
     );
 
     expect(result.scheduled).toHaveLength(2);
@@ -137,7 +137,7 @@ describe('buildPlanSchedule', () => {
         })
       ],
       makeInput({ pace: 'aggressive' }),
-      { startAt, maxCards: 0, maxBanking: 2 }
+      { startAt, maxCards: 0, maxBanking: 2, horizonDays: 365 }
     );
 
     expect(result.scheduled).toHaveLength(2);
