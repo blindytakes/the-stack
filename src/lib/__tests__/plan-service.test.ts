@@ -129,7 +129,7 @@ describe('plan-service', () => {
       }),
       expect.objectContaining({
         startAt: expect.any(Number),
-        maxCards: 3,
+        maxCards: 5,
         maxBanking: 0
       })
     );

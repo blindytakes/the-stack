@@ -143,6 +143,86 @@ const recommendations: PlannerRecommendation[] = [
       payoutLagDays: 30,
       requiredSpend: 500
     }
+  },
+  {
+    id: 'card:citi-premier-card',
+    lane: 'cards',
+    kind: 'card_bonus',
+    title: 'Citi Premier Card',
+    provider: 'Citi',
+    estimatedNetValue: 755,
+    valueBreakdown: {
+      headlineValue: 850,
+      headlineLabel: 'Welcome bonus',
+      annualFee: 95
+    },
+    priorityScore: 68,
+    effort: 'medium',
+    detailPath: '/cards/citi-premier-card',
+    timelineDays: 90,
+    keyRequirements: [
+      'Spend $4,000 within 3 months',
+      'ThankYou points transfer to airline and hotel partners',
+      'No 5/24 restriction — opens outside the Chase window'
+    ],
+    scheduleConstraints: {
+      activeDays: 90,
+      payoutLagDays: 30,
+      requiredSpend: 4000
+    }
+  },
+  {
+    id: 'card:capital-one-savor-rewards',
+    lane: 'cards',
+    kind: 'card_bonus',
+    title: 'Capital One SavorOne Rewards Card',
+    provider: 'Capital One',
+    estimatedNetValue: 200,
+    valueBreakdown: {
+      headlineValue: 200,
+      headlineLabel: 'Welcome bonus'
+    },
+    priorityScore: 60,
+    effort: 'low',
+    detailPath: '/cards/capital-one-savor-rewards',
+    timelineDays: 90,
+    keyRequirements: [
+      'Spend $500 within 3 months',
+      'No annual fee — low risk for a bonus slot',
+      'Good stacking pick for dining and entertainment'
+    ],
+    scheduleConstraints: {
+      activeDays: 90,
+      payoutLagDays: 30,
+      requiredSpend: 500
+    }
+  },
+  {
+    id: 'bank:coastal-credit-union-checking-200',
+    lane: 'banking',
+    kind: 'bank_bonus',
+    title: 'Coastal Credit Union Checking Bonus',
+    provider: 'Coastal Credit Union',
+    estimatedNetValue: 200,
+    valueBreakdown: {
+      headlineValue: 200,
+      headlineLabel: 'Bank bonus',
+      estimatedFees: 0
+    },
+    priorityScore: 65,
+    effort: 'low',
+    detailPath: '/banking/coastal-credit-union-checking-200',
+    timelineDays: 60,
+    keyRequirements: [
+      'Open with $25 minimum deposit',
+      'Set up direct deposit within 30 days',
+      'Keep the account open for 90 days'
+    ],
+    scheduleConstraints: {
+      activeDays: 60,
+      payoutLagDays: 14,
+      requiresDirectDeposit: true
+    }
   }
 ];
 
@@ -212,6 +292,27 @@ const schedule = [
     startAt: at('2026-10-05T09:00:00-04:00'),
     completeAt: at('2027-01-03T09:00:00-05:00'),
     payoutAt: at('2027-02-02T09:00:00-05:00')
+  },
+  {
+    recommendationId: 'card:citi-premier-card',
+    lane: 'cards' as const,
+    startAt: at('2026-04-15T09:00:00-04:00'),
+    completeAt: at('2026-07-14T09:00:00-04:00'),
+    payoutAt: at('2026-08-13T09:00:00-04:00')
+  },
+  {
+    recommendationId: 'card:capital-one-savor-rewards',
+    lane: 'cards' as const,
+    startAt: at('2026-07-20T09:00:00-04:00'),
+    completeAt: at('2026-10-18T09:00:00-04:00'),
+    payoutAt: at('2026-11-17T09:00:00-05:00')
+  },
+  {
+    recommendationId: 'bank:coastal-credit-union-checking-200',
+    lane: 'banking' as const,
+    startAt: at('2026-05-10T09:00:00-04:00'),
+    completeAt: at('2026-07-09T09:00:00-04:00'),
+    payoutAt: at('2026-07-23T09:00:00-04:00')
   }
 ];
 

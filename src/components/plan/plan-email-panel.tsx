@@ -27,7 +27,7 @@ export function PlanEmailPanel({
   referenceDate
 }: PlanEmailPanelProps) {
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'opened' | 'copied' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'fallback' | 'copied' | 'error'>('idle');
   const [message, setMessage] = useState('');
 
   const draft = useMemo(
@@ -48,17 +48,46 @@ export function PlanEmailPanel({
     return EMAIL_PATTERN.test(input.trim());
   }
 
-  function handleOpenEmailApp() {
+  async function handleSendEmail() {
     const normalizedEmail = email.trim();
     if (!validateEmail(normalizedEmail)) {
       setStatus('error');
-      setMessage('Enter a valid email address to open a draft.');
+      setMessage('Enter a valid email address.');
       return;
     }
 
+    setStatus('sending');
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/email-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: normalizedEmail,
+          subject: draft.subject,
+          body: draft.body
+        })
+      });
+
+      if (response.ok) {
+        setStatus('sent');
+        setMessage('Your plan has been emailed. Check your inbox.');
+        return;
+      }
+
+      // If the API isn't configured (503) or fails, fall back to mailto
+      openMailtoDraft(normalizedEmail);
+    } catch {
+      // Network error — fall back to mailto
+      openMailtoDraft(normalizedEmail);
+    }
+  }
+
+  function openMailtoDraft(normalizedEmail: string) {
     window.location.href = `mailto:${normalizedEmail}?subject=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`;
-    setStatus('opened');
-    setMessage('Opened a prefilled draft in your email app.');
+    setStatus('fallback');
+    setMessage('Opened a prefilled draft in your email app instead.');
   }
 
   async function handleCopySummary() {
@@ -83,8 +112,7 @@ export function PlanEmailPanel({
           <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Take it with you</p>
           <h3 className="mt-2 text-xl font-semibold text-text-primary">Email this plan to yourself</h3>
           <p className="mt-2 text-sm leading-6 text-text-secondary">
-            This first pass opens a prefilled draft in your own email app. It includes the 6-month estimate,
-            the next actions, and the planned move stack without tying it to newsletter signup.
+            Get the 6-month estimate, next actions, and move stack delivered straight to your inbox.
           </p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-bg/35 px-4 py-3 text-sm text-text-secondary">
@@ -107,8 +135,12 @@ export function PlanEmailPanel({
           placeholder="you@example.com"
           className="flex-1 rounded-full border border-white/10 bg-bg-surface px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none"
         />
-        <Button type="button" onClick={handleOpenEmailApp} disabled={recommendations.length === 0}>
-          Open email draft
+        <Button
+          type="button"
+          onClick={handleSendEmail}
+          disabled={recommendations.length === 0 || status === 'sending'}
+        >
+          {status === 'sending' ? 'Sending…' : 'Send to my inbox'}
         </Button>
         <Button
           type="button"
@@ -120,9 +152,6 @@ export function PlanEmailPanel({
         </Button>
       </div>
 
-      <p className="mt-3 text-xs text-text-muted">
-        Server-side inbox delivery comes next. This keeps the flow useful now while we define the send API and final email template.
-      </p>
       {message ? (
         <p className={`mt-3 text-sm ${status === 'error' ? 'text-brand-coral' : 'text-brand-teal'}`}>
           {message}

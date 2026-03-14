@@ -77,6 +77,26 @@ const affiliateEnvSchema = z.object({
 
 export type AffiliateEnv = z.infer<typeof affiliateEnvSchema>;
 
+const emailEnvSchema = z.object({
+  RESEND_API_KEY: resendApiKeySchema,
+  EMAIL_FROM_ADDRESS: z.string().email().default('plan@thestack.me')
+});
+
+export type EmailEnv = z.infer<typeof emailEnvSchema>;
+
+export function getEmailEnv():
+  | { ok: true; config: EmailEnv }
+  | { ok: false; errors: string[] } {
+  const parsed = emailEnvSchema.safeParse(process.env);
+  if (!parsed.success) {
+    return {
+      ok: false,
+      errors: parsed.error.issues.map((issue) => issue.message)
+    };
+  }
+  return { ok: true, config: parsed.data };
+}
+
 export function getNewsletterEnv():
   | { ok: true; config: NewsletterEnv }
   | { ok: false; errors: string[] } {

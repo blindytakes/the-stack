@@ -97,8 +97,8 @@ const DEFAULT_HORIZON_DAYS = 180;
 const DAYS_IN_MONTH = 30;
 
 const defaultPaceConfig: PlanPaceConfig = {
-  maxCards: 3,
-  maxBanking: 2,
+  maxCards: 5,
+  maxBanking: 3,
   maxActiveCards: 1,
   maxActiveBanking: 1,
   maxDirectDepositBanking: 1
