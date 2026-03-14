@@ -1,27 +1,22 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { type EligibilityDraft } from '@/components/plan/plan-results-config';
 import {
   buildScheduledTimelineEntries,
   buildTimelineEntriesFallback,
   buildTimelineMilestones,
-  buildTimelineMonthBuckets,
   downloadTimelineCalendar,
-  formatValue
+  formatShortDate,
+  formatValue,
+  diffDays,
+  type TimelineEntry
 } from '@/components/plan/plan-results-utils';
-import { PlanNextMove } from '@/components/plan/plan-next-move';
-import { PlanSequenceList } from '@/components/plan/plan-sequence-list';
-import { PlanCompactTimeline } from '@/components/plan/plan-compact-timeline';
 import { PlanEmailPanel } from '@/components/plan/plan-email-panel';
-import { ResultsEligibilityEditor } from '@/components/plan/results-eligibility-editor';
-import { SummaryStatCard } from '@/components/plan/summary-stat-card';
 import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
-import { submitPlanQuiz } from '@/lib/plan-client';
-import { useCardsDirectory } from '@/lib/cards-client';
+
 import {
   clearPlanResults,
   loadPlanResults,
@@ -29,7 +24,6 @@ import {
   type PlanResultsStoragePayload
 } from '@/lib/plan-results-storage';
 import { getDemoPlanPayload } from '@/lib/plan-demo-fixture';
-import { quizRequestSchema } from '@/lib/quiz-engine';
 import {
   rankPlannerRecommendationsByPriority,
   type PlannerRecommendation
@@ -37,24 +31,384 @@ import {
 
 type LoadState = { status: 'loading' } | PlanResultsLoadResult;
 
+/* ─────────────────────────────────────────────────────────
+ * Helper: plain-english "what to do" for any recommendation
+ * ───────────────────────────────────────────────────────── */
+
+function whatToDoText(item: PlannerRecommendation): string {
+  if (item.kind === 'card_bonus') {
+    const spend = item.scheduleConstraints.requiredSpend;
+    const days = item.scheduleConstraints.activeDays;
+    const months = days ? Math.round(days / 30) : 3;
+    if (spend) {
+      return `Apply → spend $${spend.toLocaleString()} in ${months} month${months === 1 ? '' : 's'} → earn your bonus`;
+    }
+    return `Apply → meet the spending requirement → earn your bonus`;
+  }
+
+  // Bank bonus
+  const deposit = item.scheduleConstraints.requiredDeposit;
+  const days = item.scheduleConstraints.activeDays;
+  const months = days ? Math.round(days / 30) : 3;
+  const needsDD = item.scheduleConstraints.requiresDirectDeposit;
+
+  if (deposit && needsDD) {
+    return `Open account → deposit $${deposit.toLocaleString()} → set up direct deposit → keep funds for ${months} month${months === 1 ? '' : 's'}`;
+  }
+  if (deposit) {
+    return `Open account → deposit $${deposit.toLocaleString()} → keep funds for ${months} month${months === 1 ? '' : 's'}`;
+  }
+  if (needsDD) {
+    return `Open account → set up direct deposit → meet requirements`;
+  }
+  return `Open account → meet the bonus requirements`;
+}
+
+function monthlySpendText(item: PlannerRecommendation): string | null {
+  if (item.kind !== 'card_bonus') return null;
+  const spend = item.scheduleConstraints.requiredSpend;
+  const days = item.scheduleConstraints.activeDays;
+  if (!spend || !days) return null;
+  const months = Math.max(1, Math.round(days / 30));
+  const monthly = Math.round(spend / months);
+  return `$${monthly.toLocaleString()}/mo`;
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Mini timeline — compact Gantt overview
+ * ───────────────────────────────────────────────────────── */
+
+function MiniTimeline({
+  entries,
+  recommendations
+}: {
+  entries: TimelineEntry[];
+  recommendations: PlannerRecommendation[];
+}) {
+  // Find the full date range across all entries
+  const earliest = entries.reduce(
+    (min, e) => (e.startDate < min ? e.startDate : min),
+    entries[0].startDate
+  );
+  const latest = entries.reduce(
+    (max, e) => (e.payoutDate > max ? e.payoutDate : max),
+    entries[0].payoutDate
+  );
+  const totalDays = Math.max(1, diffDays(earliest, latest));
+
+  // Build month labels along the axis
+  const monthLabels: { label: string; left: number }[] = [];
+  const cursor = new Date(earliest);
+  cursor.setDate(1);
+  cursor.setMonth(cursor.getMonth() + 1); // start from next full month
+  while (cursor <= latest) {
+    const pct = (diffDays(earliest, cursor) / totalDays) * 100;
+    monthLabels.push({
+      label: new Intl.DateTimeFormat('en-US', { month: 'short' }).format(cursor),
+      left: pct
+    });
+    cursor.setMonth(cursor.getMonth() + 1);
+  }
+
+  // Map recommendation IDs to step numbers
+  const stepNumbers = new Map(recommendations.map((r, i) => [r.id, i + 1]));
+  const recommendationsById = new Map(recommendations.map((r) => [r.id, r]));
+
+  return (
+    <div className="mt-5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-4">
+      {/* Month axis */}
+      <div className="relative mb-3 h-4">
+        {monthLabels.map((m) => (
+          <span
+            key={m.label}
+            className="absolute text-[10px] uppercase tracking-[0.15em] text-text-muted"
+            style={{ left: `${m.left}%`, transform: 'translateX(-50%)' }}
+          >
+            {m.label}
+          </span>
+        ))}
+      </div>
+
+      {/* Bars */}
+      <div className="space-y-1.5">
+        {entries.map((entry) => {
+          const startPct = (diffDays(earliest, entry.startDate) / totalDays) * 100;
+          const widthPct = Math.max(2, (diffDays(entry.startDate, entry.completeDate) / totalDays) * 100);
+          const rec = recommendationsById.get(entry.id);
+          const step = stepNumbers.get(entry.id) ?? 0;
+          const barColor = entry.lane === 'cards'
+            ? 'bg-brand-gold/40'
+            : 'bg-brand-teal/40';
+          const dotColor = entry.lane === 'cards'
+            ? 'bg-brand-gold'
+            : 'bg-brand-teal';
+
+          return (
+            <div key={entry.id} className="relative flex items-center gap-3">
+              {/* Step number */}
+              <span className="w-4 shrink-0 text-right text-[10px] font-semibold text-text-muted">
+                {step}
+              </span>
+
+              {/* Bar track */}
+              <div className="relative h-3 flex-1 rounded-full bg-white/[0.03]">
+                {/* Active period bar */}
+                <div
+                  className={`absolute top-0 h-3 rounded-full ${barColor}`}
+                  style={{ left: `${startPct}%`, width: `${widthPct}%` }}
+                />
+                {/* Payout dot */}
+                <span
+                  className={`absolute top-1/2 h-2 w-2 rounded-full ${dotColor}`}
+                  style={{
+                    left: `${(diffDays(earliest, entry.payoutDate) / totalDays) * 100}%`,
+                    transform: 'translate(-50%, -50%)'
+                  }}
+                />
+              </div>
+
+              {/* Short name */}
+              <span className="hidden w-24 truncate text-[10px] text-text-muted sm:inline">
+                {rec?.provider ?? ''}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Month grid lines */}
+      <div className="relative mt-1 h-px">
+        {monthLabels.map((m) => (
+          <span
+            key={`line-${m.label}`}
+            className="absolute top-0 h-px w-px bg-white/10"
+            style={{ left: `${m.left}%` }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Step Card — one move in the plan
+ * ───────────────────────────────────────────────────────── */
+
+function StepCard({
+  item,
+  entry,
+  stepNumber
+}: {
+  item: PlannerRecommendation;
+  entry: TimelineEntry | undefined;
+  stepNumber: number;
+}) {
+  const [expanded, setExpanded] = useState(false);
+
+  const breakdown = item.valueBreakdown;
+  const headlineValue = breakdown?.headlineValue ?? item.estimatedNetValue;
+  const netValue = item.estimatedNetValue;
+  const fee = breakdown?.annualFee ?? breakdown?.estimatedFees ?? 0;
+  const monthly = monthlySpendText(item);
+
+  const laneColor = item.lane === 'cards' ? 'brand-gold' : 'brand-teal';
+  const stepBg = item.lane === 'cards' ? 'bg-brand-gold/15 text-brand-gold' : 'bg-brand-teal/15 text-brand-teal';
+
+  return (
+    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] transition-colors hover:bg-white/[0.04]">
+      {/* Collapsed header — always visible */}
+      <button
+        type="button"
+        onClick={() => setExpanded((prev) => !prev)}
+        className="flex w-full items-center gap-4 px-5 py-4 text-left"
+      >
+        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${stepBg}`}>
+          {stepNumber}
+        </span>
+
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-base font-semibold text-text-primary">{item.title}</p>
+          <p className="text-sm text-text-muted">{item.provider}</p>
+        </div>
+
+        <span className="shrink-0 text-lg font-semibold text-text-primary">
+          {formatValue(netValue)}
+        </span>
+
+        {entry ? (
+          <span className="hidden shrink-0 text-sm text-text-muted sm:inline">
+            {formatShortDate(entry.startDate)} – {formatShortDate(entry.completeDate)}
+          </span>
+        ) : null}
+
+        <span
+          className={`shrink-0 text-sm text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
+          aria-hidden
+        >
+          ▾
+        </span>
+      </button>
+
+      {/* Expanded detail */}
+      {expanded ? (
+        <div className="border-t border-white/[0.06] px-5 pb-5 pt-4">
+          {/* Value row */}
+          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-text-muted">
+                {breakdown?.headlineLabel ?? 'Bonus value'}
+              </p>
+              <p className="mt-1 font-heading text-4xl text-text-primary">
+                {formatValue(headlineValue)}
+              </p>
+            </div>
+
+            {fee > 0 ? (
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-text-muted">
+                  {item.kind === 'card_bonus' ? 'Annual fee' : 'Est. fees'}
+                </p>
+                <p className="mt-1 text-xl font-semibold text-brand-coral">
+                  −{formatValue(fee)}
+                </p>
+              </div>
+            ) : null}
+
+            {headlineValue !== netValue ? (
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Net value</p>
+                <p className={`mt-1 text-xl font-semibold text-${laneColor}`}>
+                  {formatValue(netValue)}
+                </p>
+              </div>
+            ) : null}
+
+            {monthly ? (
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Monthly spend</p>
+                <p className="mt-1 text-xl font-semibold text-text-primary">{monthly}</p>
+              </div>
+            ) : null}
+          </div>
+
+          {/* What to do */}
+          <div className="mt-5 rounded-xl bg-white/[0.03] px-4 py-3">
+            <p className="text-xs uppercase tracking-[0.2em] text-text-muted">What to do</p>
+            <p className="mt-2 text-base leading-7 text-text-secondary">
+              {whatToDoText(item)}
+            </p>
+          </div>
+
+          {/* Timeline dates */}
+          {entry ? (
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-white/[0.06] px-3 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Start</p>
+                <p className="mt-1 text-base font-semibold text-text-primary">
+                  {formatShortDate(entry.startDate)}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/[0.06] px-3 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+                  Deadline
+                </p>
+                <p className="mt-1 text-base font-semibold text-text-primary">
+                  {formatShortDate(entry.completeDate)}
+                </p>
+              </div>
+              <div className="rounded-xl border border-white/[0.06] px-3 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+                  Bonus expected
+                </p>
+                <p className="mt-1 text-base font-semibold text-text-primary">
+                  {formatShortDate(entry.payoutDate)}
+                </p>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Effort badge */}
+          <div className="mt-4">
+            <span className="inline-flex rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+              {item.effort} effort
+            </span>
+          </div>
+
+          {/* Detail link */}
+          <Link
+            href={`${item.detailPath}${item.detailPath.includes('?') ? '&' : '?'}src=plan_results`}
+            className="mt-4 inline-flex items-center text-sm font-semibold text-brand-teal transition hover:underline"
+          >
+            View details →
+          </Link>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Save & Act bar
+ * ───────────────────────────────────────────────────────── */
+
+function SaveActBar({
+  recommendations,
+  milestones,
+  totalValue,
+  cardsOnlyMode,
+  timelineEntries,
+  referenceDate
+}: {
+  recommendations: PlannerRecommendation[];
+  milestones: ReturnType<typeof buildTimelineMilestones>;
+  totalValue: number;
+  cardsOnlyMode: boolean;
+  timelineEntries: TimelineEntry[];
+  referenceDate: Date;
+}) {
+  return (
+    <section className="mt-10">
+      <PlanEmailPanel
+        recommendations={recommendations}
+        milestones={milestones}
+        totalValue={totalValue}
+        cardsOnlyMode={cardsOnlyMode}
+        referenceDate={referenceDate}
+      />
+
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+        <button
+          type="button"
+          onClick={() => downloadTimelineCalendar(timelineEntries, recommendations)}
+          disabled={timelineEntries.length === 0}
+          className="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-2.5 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          📅 Add to calendar
+        </button>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────
+ * Main plan summary — the 3-section layout
+ * ───────────────────────────────────────────────────────── */
+
 function PlanSummary({
   payload,
   onClear,
   cardsOnlyMode,
-  onUpdateEligibility,
   isDemo
 }: {
   payload: PlanResultsStoragePayload;
   onClear: () => void;
   cardsOnlyMode: boolean;
-  onUpdateEligibility: (draft: EligibilityDraft) => Promise<string | null>;
   isDemo: boolean;
 }) {
   const planStart = useMemo(() => {
     const d = new Date(payload.savedAt);
     return Number.isNaN(d.getTime()) ? new Date() : d;
   }, [payload.savedAt]);
-  const { cards: availableCards, loading: cardsLoading, error: cardsError } = useCardsDirectory(100);
   const referenceDate = useMemo(() => new Date(), []);
 
   const prioritizedRecommendations = useMemo(
@@ -86,175 +440,107 @@ function PlanSummary({
     return [...scheduled, ...unscheduled];
   }, [scopedRecommendations, timelineEntries]);
 
-  const cardLane = orderedRecommendations.filter((item) => item.lane === 'cards');
-  const bankingLane = orderedRecommendations.filter((item) => item.lane === 'banking');
   const totalValue = orderedRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
-  const cardValue = cardLane.reduce((sum, item) => sum + item.estimatedNetValue, 0);
-  const bankValue = bankingLane.reduce((sum, item) => sum + item.estimatedNetValue, 0);
+  const moveCount = orderedRecommendations.length;
+
+  const cardCount = orderedRecommendations.filter((item) => item.lane === 'cards').length;
+  const bankCount = orderedRecommendations.filter((item) => item.lane === 'banking').length;
 
   const milestones = useMemo(() => buildTimelineMilestones(timelineEntries), [timelineEntries]);
-  const monthBuckets = useMemo(
-    () => buildTimelineMonthBuckets(milestones, planStart),
-    [milestones, planStart]
-  );
-  const activeMonthCount = monthBuckets.filter((bucket) => bucket.items.length > 0).length;
 
-  const firstRecommendation = orderedRecommendations[0] ?? null;
-  const firstTimelineEntry = firstRecommendation
-    ? timelineEntries.find((entry) => entry.id === firstRecommendation.id) ?? null
-    : null;
+  // Build subtitle
+  const parts: string[] = [];
+  if (cardCount > 0) parts.push(`${cardCount} card bonus${cardCount === 1 ? '' : 'es'}`);
+  if (bankCount > 0) parts.push(`${bankCount} bank bonus${bankCount === 1 ? '' : 'es'}`);
+
+  // Calculate duration from timeline
+  let durationText = '6 months';
+  if (timelineEntries.length > 0) {
+    const firstStart = timelineEntries[0].startDate;
+    const lastPayout = timelineEntries.reduce(
+      (latest, e) => (e.payoutDate > latest ? e.payoutDate : latest),
+      timelineEntries[0].payoutDate
+    );
+    const totalDays = diffDays(firstStart, lastPayout);
+    const months = Math.max(1, Math.round(totalDays / 30));
+    durationText = `${months} month${months === 1 ? '' : 's'}`;
+  }
+
+  const entriesById = useMemo(
+    () => new Map(timelineEntries.map((entry) => [entry.id, entry])),
+    [timelineEntries]
+  );
 
   return (
     <div>
-      {/* ── Hero summary stats ── */}
-      <div className="mt-8 pb-6">
+      {/* ── ① Hero ── */}
+      <section className="mt-8 text-center">
         {isDemo ? (
           <span className="mb-4 inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-brand-teal">
             Demo fixture
           </span>
         ) : null}
 
-        <div className={`grid gap-4 ${cardsOnlyMode ? 'sm:grid-cols-2 lg:grid-cols-3' : 'sm:grid-cols-2 lg:grid-cols-4'}`}>
-          <SummaryStatCard
-            label="Total value"
-            value={formatValue(totalValue)}
-            description="Estimated across the next 6 months"
-            tone="teal"
-          />
-          <SummaryStatCard
-            label={`${cardLane.length} card move${cardLane.length === 1 ? '' : 's'}`}
-            value={formatValue(cardValue)}
-            description="Welcome bonuses and perks"
-            tone="gold"
-          />
-          {!cardsOnlyMode ? (
-            <SummaryStatCard
-              label={`${bankingLane.length} bank move${bankingLane.length === 1 ? '' : 's'}`}
-              value={formatValue(bankValue)}
-              description="Cash bonuses from bank accounts"
-              tone="teal"
-            />
-          ) : null}
-          <SummaryStatCard
-            label="Plan duration"
-            value={`${activeMonthCount} mo`}
-            description={`${orderedRecommendations.length} moves across ${activeMonthCount} active months`}
-          />
-        </div>
-
-        {/* ── Utility buttons ── */}
-        <div className="mt-5 flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={() => downloadTimelineCalendar(timelineEntries)}
-            disabled={timelineEntries.length === 0}
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Download .ics
-          </button>
-          <Link href={cardsOnlyMode ? '/cards/plan' : '/tools/card-finder?mode=full'}>
-            <Button variant="ghost">
-              {cardsOnlyMode ? 'Edit card intake' : 'Edit planner inputs'}
-            </Button>
-          </Link>
-          {!isDemo ? (
-            <button
-              type="button"
-              onClick={onClear}
-              className="inline-flex items-center justify-center rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
-            >
-              Clear plan
-            </button>
-          ) : null}
-        </div>
-      </div>
-
-      {/* ── Your next move (featured first recommendation) ── */}
-      {firstRecommendation ? (
-        <section className="mt-2">
-          <PlanNextMove
-            recommendation={firstRecommendation}
-            timelineEntry={firstTimelineEntry}
-          />
-        </section>
-      ) : null}
-
-      {/* ── Full plan sequence ── */}
-      {orderedRecommendations.length > 1 ? (
-        <section className="mt-10">
-          <PlanSequenceList
-            orderedRecommendations={orderedRecommendations}
-            timelineEntries={timelineEntries}
-          />
-        </section>
-      ) : null}
-
-      {/* ── Compact month-by-month timeline ── */}
-      {monthBuckets.length > 0 ? (
-        <section className="mt-10">
-          <PlanCompactTimeline
-            monthBuckets={monthBuckets}
-            timelineEntries={timelineEntries}
-            referenceDate={referenceDate}
-          />
-        </section>
-      ) : null}
-
-      {/* ── Email capture ── */}
-      <section className="mt-10">
-        <PlanEmailPanel
-          recommendations={orderedRecommendations}
-          milestones={milestones}
-          totalValue={totalValue}
-          cardsOnlyMode={cardsOnlyMode}
-          referenceDate={referenceDate}
-        />
-      </section>
-
-      {/* ── Eligibility controls ── */}
-      <ResultsEligibilityEditor
-        payload={payload}
-        cards={availableCards}
-        cardsLoading={cardsLoading}
-        cardsError={cardsError}
-        onUpdateEligibility={onUpdateEligibility}
-      />
-
-      {/* ── Bottom CTA ── */}
-      <section className="mt-12 rounded-2xl border border-brand-teal/20 bg-[linear-gradient(180deg,rgba(45,212,191,0.06),transparent)] p-6 text-center md:p-8">
-        <h3 className="font-heading text-2xl text-text-primary md:text-3xl">
-          Ready to start?
-        </h3>
-        <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-text-secondary">
-          Your first move is{' '}
-          {firstRecommendation ? (
-            <span className="font-semibold text-text-primary">{firstRecommendation.title}</span>
-          ) : (
-            'waiting'
-          )}
-          . Apply today and start working toward{' '}
-          <span className="font-semibold text-brand-teal">{formatValue(totalValue)}</span> in
-          bonus value over the next 6 months.
+        <p className="font-heading text-6xl text-text-primary md:text-7xl">
+          {formatValue(totalValue)}
         </p>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <p className="mt-3 text-lg text-text-secondary">
+          {parts.join(' + ')} · {durationText}
+        </p>
+
+        {!isDemo ? (
           <button
             type="button"
-            onClick={() => downloadTimelineCalendar(timelineEntries)}
-            disabled={timelineEntries.length === 0}
-            className="inline-flex items-center gap-2 rounded-full border border-brand-teal/30 bg-brand-teal/10 px-5 py-2.5 text-sm font-semibold text-brand-teal transition hover:bg-brand-teal/20 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={onClear}
+            className="mt-4 text-sm text-text-muted transition hover:text-text-secondary"
           >
-            Add dates to calendar
+            Clear plan
           </button>
-          <Link href={cardsOnlyMode ? '/cards/plan' : '/tools/card-finder?mode=full'}>
-            <Button variant="ghost">
-              Rebuild plan
-            </Button>
-          </Link>
+        ) : null}
+      </section>
+
+      {/* ── ② Mini timeline + Step cards ── */}
+      <section className="mt-10">
+        <p className="text-xs uppercase tracking-[0.22em] text-text-muted">
+          Your plan · {moveCount} move{moveCount === 1 ? '' : 's'}
+        </p>
+
+        {/* Mini Gantt overview */}
+        {timelineEntries.length > 0 ? (
+          <MiniTimeline
+            entries={timelineEntries}
+            recommendations={orderedRecommendations}
+          />
+        ) : null}
+
+        <div className="mt-4 space-y-3">
+          {orderedRecommendations.map((item, index) => (
+            <StepCard
+              key={item.id}
+              item={item}
+              entry={entriesById.get(item.id)}
+              stepNumber={index + 1}
+            />
+          ))}
         </div>
       </section>
+
+      {/* ── ③ Save & Act ── */}
+      <SaveActBar
+        recommendations={orderedRecommendations}
+        milestones={milestones}
+        totalValue={totalValue}
+        cardsOnlyMode={cardsOnlyMode}
+        timelineEntries={timelineEntries}
+        referenceDate={referenceDate}
+      />
     </div>
   );
 }
+
+/* ─────────────────────────────────────────────────────────
+ * Page-level wrapper (loading / missing / results)
+ * ───────────────────────────────────────────────────────── */
 
 export function PlanResultsView() {
   const searchParams = useSearchParams();
@@ -265,40 +551,6 @@ export function PlanResultsView() {
   function handleClearPlan() {
     clearPlanResults();
     setState({ status: 'missing' });
-  }
-
-  async function handleUpdateEligibility(draft: EligibilityDraft) {
-    if (state.status !== 'fresh' && state.status !== 'recovered') {
-      return 'Your saved plan is not available right now.';
-    }
-
-    const parsedAnswers = quizRequestSchema.safeParse({
-      ...state.payload.answers,
-      ...draft
-    });
-    if (!parsedAnswers.success) {
-      return 'Could not update your plan inputs.';
-    }
-
-    try {
-      const nextPayload = await submitPlanQuiz({
-        answers: parsedAnswers.data,
-        options: cardsOnlyMode
-          ? {
-              maxBanking: 0
-            }
-          : undefined
-      });
-      setState({
-        status: 'fresh',
-        payload: nextPayload,
-        source: 'session'
-      });
-
-      return null;
-    } catch {
-      return 'Could not refresh your recommendations right now.';
-    }
   }
 
   useEffect(() => {
@@ -360,7 +612,7 @@ export function PlanResultsView() {
   return (
     <div className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
       <h1 className="font-heading text-5xl text-text-primary md:text-6xl">
-        {cardsOnlyMode ? 'Your 6-Month Card Plan' : 'Your 6-Month Bonus Plan'}
+        {cardsOnlyMode ? 'Your Card Plan' : 'Your Bonus Plan'}
       </h1>
       {state.status === 'recovered' && (
         <p className="mt-3 text-base text-brand-gold">
@@ -371,7 +623,6 @@ export function PlanResultsView() {
         payload={state.payload}
         onClear={handleClearPlan}
         cardsOnlyMode={cardsOnlyMode}
-        onUpdateEligibility={handleUpdateEligibility}
         isDemo={demoMode}
       />
     </div>

@@ -448,7 +448,81 @@ export function escapeIcsText(value: string) {
   return value.replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
 }
 
-export function buildTimelineIcs(entries: TimelineEntry[]) {
+type IcsMilestone = {
+  label: string;
+  date: Date;
+  description: string;
+  reminderDays: number;
+};
+
+function buildEntryMilestones(
+  entry: TimelineEntry,
+  recommendation?: PlannerRecommendation
+): IcsMilestone[] {
+  const spend = recommendation?.scheduleConstraints.requiredSpend;
+  const deposit = recommendation?.scheduleConstraints.requiredDeposit;
+  const needsDD = recommendation?.scheduleConstraints.requiresDirectDeposit;
+  const netValue = recommendation ? formatValue(recommendation.estimatedNetValue) : '';
+
+  // -- Open event --
+  let openDesc: string;
+  if (entry.lane === 'cards') {
+    openDesc = `Apply for ${entry.title}.`;
+    if (spend) openDesc += ` You'll need to spend $${spend.toLocaleString()} before your deadline.`;
+  } else {
+    openDesc = `Open ${entry.title}.`;
+    if (deposit) openDesc += ` Deposit $${deposit.toLocaleString()}.`;
+    if (needsDD) openDesc += ' Set up direct deposit.';
+  }
+
+  // -- Complete/deadline event --
+  let completeLabel: string;
+  let completeDesc: string;
+  if (entry.lane === 'cards') {
+    completeLabel = `DEADLINE: ${entry.title} spend`;
+    completeDesc = spend
+      ? `Last day to hit $${spend.toLocaleString()} in spending on ${entry.title}.`
+      : `Last day to meet the spending requirement for ${entry.title}.`;
+  } else {
+    completeLabel = `DEADLINE: ${entry.title} requirements`;
+    completeDesc = `Last day to meet the bonus requirements for ${entry.title}.`;
+  }
+
+  // -- Payout event --
+  const payoutDesc = netValue
+    ? `${netValue} bonus from ${entry.title} should post around this date. Check your account.`
+    : `Bonus from ${entry.title} should post around this date. Check your account.`;
+
+  return [
+    {
+      label: `Apply/open: ${entry.title}`,
+      date: entry.startDate,
+      description: openDesc,
+      reminderDays: 0
+    },
+    {
+      label: completeLabel,
+      date: entry.completeDate,
+      description: completeDesc,
+      reminderDays: 3
+    },
+    {
+      label: `Bonus expected: ${entry.title}`,
+      date: entry.payoutDate,
+      description: payoutDesc,
+      reminderDays: 0
+    }
+  ];
+}
+
+export function buildTimelineIcs(
+  entries: TimelineEntry[],
+  recommendations?: PlannerRecommendation[]
+) {
+  const recommendationsById = new Map(
+    (recommendations ?? []).map((item) => [item.id, item])
+  );
+
   const lines: string[] = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -458,11 +532,8 @@ export function buildTimelineIcs(entries: TimelineEntry[]) {
   ];
 
   for (const entry of entries) {
-    const milestones = [
-      { label: 'Open account/card', date: entry.startDate },
-      { label: 'Complete requirements', date: entry.completeDate },
-      { label: 'Bonus expected', date: entry.payoutDate }
-    ];
+    const recommendation = recommendationsById.get(entry.id);
+    const milestones = buildEntryMilestones(entry, recommendation);
 
     for (const milestone of milestones) {
       const start = toIcsDate(milestone.date);
@@ -472,8 +543,18 @@ export function buildTimelineIcs(entries: TimelineEntry[]) {
       lines.push(`DTSTAMP:${toIcsDate(new Date())}T000000Z`);
       lines.push(`DTSTART;VALUE=DATE:${start}`);
       lines.push(`DTEND;VALUE=DATE:${end}`);
-      lines.push(`SUMMARY:${escapeIcsText(`${milestone.label}: ${entry.title}`)}`);
-      lines.push(`DESCRIPTION:${escapeIcsText(`Lane: ${entry.lane}`)}`);
+      lines.push(`SUMMARY:${escapeIcsText(milestone.label)}`);
+      lines.push(`DESCRIPTION:${escapeIcsText(milestone.description)}`);
+
+      // Add reminder alarm for deadlines
+      if (milestone.reminderDays > 0) {
+        lines.push('BEGIN:VALARM');
+        lines.push('ACTION:DISPLAY');
+        lines.push(`DESCRIPTION:${escapeIcsText(milestone.label)} — ${milestone.reminderDays} days left`);
+        lines.push(`TRIGGER:-P${milestone.reminderDays}D`);
+        lines.push('END:VALARM');
+      }
+
       lines.push('END:VEVENT');
     }
   }
@@ -482,9 +563,12 @@ export function buildTimelineIcs(entries: TimelineEntry[]) {
   return lines.join('\r\n');
 }
 
-export function downloadTimelineCalendar(entries: TimelineEntry[]) {
+export function downloadTimelineCalendar(
+  entries: TimelineEntry[],
+  recommendations?: PlannerRecommendation[]
+) {
   if (entries.length === 0) return;
-  const ics = buildTimelineIcs(entries);
+  const ics = buildTimelineIcs(entries, recommendations);
   const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
