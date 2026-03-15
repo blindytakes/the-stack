@@ -204,6 +204,19 @@ model Subscriber {
 }
 
 // ---------------------------------------------------------------------------
+// Plan Snapshots
+// ---------------------------------------------------------------------------
+
+model PlanSnapshot {
+  id             String   @id @default(cuid())
+  totalValue     Float
+  cardsOnlyMode  Boolean  @default(false)
+  recommendations Json
+  milestones      Json
+  createdAt      DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------------
 // Banking Bonuses
 // ---------------------------------------------------------------------------
 

@@ -396,47 +396,6 @@ export function recommendationWarningFlags(recommendation?: PlannerRecommendatio
   return warnings;
 }
 
-export function buildPlanEmailSubject(totalValue: number, cardsOnlyMode: boolean) {
-  return cardsOnlyMode
-    ? `My The Stack card plan (${formatValue(totalValue)})`
-    : `My The Stack bonus plan (${formatValue(totalValue)})`;
-}
-
-export function buildPlanEmailBody(input: {
-  totalValue: number;
-  cardsOnlyMode: boolean;
-  recommendations: PlannerRecommendation[];
-  milestones: TimelineMilestone[];
-  referenceDate: Date;
-}) {
-  const upcomingMilestones = getUpcomingTimelineMilestones(input.milestones, input.referenceDate, 45, 5);
-  const moveLines = input.recommendations.slice(0, 5).map((recommendation, index) => {
-    const warnings = recommendationWarningFlags(recommendation);
-    const warningSuffix = warnings[0] ? `; ${warnings[0]}` : '';
-
-    return `${index + 1}. ${recommendation.provider} - ${recommendation.title} (${formatValue(recommendation.estimatedNetValue)} est${warningSuffix})`;
-  });
-
-  return [
-    `Here is my ${input.cardsOnlyMode ? 'card-only' : 'bonus'} plan from The Stack.`,
-    '',
-    `6-month estimate: ${formatValue(input.totalValue)}`,
-    '',
-    'Next actions:',
-    ...(upcomingMilestones.length > 0
-      ? upcomingMilestones.map(
-          (milestone) => `- ${formatShortDate(milestone.date)}: ${milestone.label} - ${milestone.title}`
-        )
-      : ['- No scheduled actions yet.']),
-    '',
-    'Planned moves:',
-    ...(moveLines.length > 0 ? moveLines : ['No recommendations yet.']),
-    '',
-    'Reminder:',
-    'Download the .ics calendar from the plan page if I want these dates in my calendar.'
-  ].join('\n');
-}
-
 export function toIcsDate(date: Date) {
   const y = date.getUTCFullYear();
   const m = String(date.getUTCMonth() + 1).padStart(2, '0');

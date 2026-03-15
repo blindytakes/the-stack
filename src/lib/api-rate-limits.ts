@@ -63,5 +63,19 @@ export const apiRateLimits = {
     window: '1 m',
     algorithm: 'sliding',
     message: 'Too many plan requests. Please try again soon.'
+  },
+  planSnapshot: {
+    namespace: 'plan_snapshot',
+    limit: 20,
+    window: '1 m',
+    algorithm: 'sliding',
+    message: 'Too many plan save requests. Please try again soon.'
+  },
+  emailPlan: {
+    namespace: 'email_plan',
+    limit: 3,
+    window: '10 m',
+    algorithm: 'sliding',
+    message: 'Too many plan email requests. Please try again soon.'
   }
 } satisfies Record<string, RateLimitConfig>;

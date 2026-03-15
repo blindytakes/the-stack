@@ -1,12 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type TimelineMilestone } from '@/components/plan/plan-results-utils';
+import { Turnstile, type TurnstileHandle } from '@/components/turnstile';
+import { Button } from '@/components/ui/button';
+import { getTurnstileSiteKey } from '@/lib/config/public';
 import {
   buildPlanEmailBody,
   buildPlanEmailSubject,
-  type TimelineMilestone
-} from '@/components/plan/plan-results-utils';
-import { Button } from '@/components/ui/button';
+  toPlanEmailContent,
+  type PlanSnapshotData
+} from '@/lib/plan-email';
 import type { PlannerRecommendation } from '@/lib/planner-recommendations';
 
 type PlanEmailPanelProps = {
@@ -18,6 +22,7 @@ type PlanEmailPanelProps = {
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const TURNSTILE_REQUIRED_MESSAGE = 'Please complete the security check to send your plan.';
 
 export function PlanEmailPanel({
   recommendations,
@@ -26,26 +31,99 @@ export function PlanEmailPanel({
   cardsOnlyMode,
   referenceDate
 }: PlanEmailPanelProps) {
+  const turnstileEnabled = Boolean(getTurnstileSiteKey());
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'fallback' | 'copied' | 'error'>('idle');
+  const [status, setStatus] = useState<
+    'idle' | 'sending' | 'sent' | 'copied' | 'error'
+  >('idle');
   const [message, setMessage] = useState('');
+  const [planId, setPlanId] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [showTurnstile, setShowTurnstile] = useState(false);
+  const turnstileRef = useRef<TurnstileHandle>(null);
+
+  const planSnapshot = useMemo<PlanSnapshotData>(
+    () => ({
+      totalValue,
+      cardsOnlyMode,
+      recommendations: recommendations.slice(0, 12).map((recommendation) => ({
+        provider: recommendation.provider,
+        title: recommendation.title,
+        estimatedNetValue: recommendation.estimatedNetValue,
+        effort: recommendation.effort,
+        valueBreakdown: recommendation.valueBreakdown
+          ? { annualFee: recommendation.valueBreakdown.annualFee }
+          : undefined,
+        scheduleConstraints: {
+          requiredDeposit: recommendation.scheduleConstraints.requiredDeposit,
+          requiresDirectDeposit:
+            recommendation.scheduleConstraints.requiresDirectDeposit
+        }
+      })),
+      milestones: milestones.slice(0, 60).map((milestone) => ({
+        label: milestone.label,
+        title: milestone.title,
+        date: milestone.date
+      }))
+    }),
+    [cardsOnlyMode, milestones, recommendations, totalValue]
+  );
+
+  const emailPlan = useMemo(
+    () => toPlanEmailContent(planSnapshot, referenceDate),
+    [planSnapshot, referenceDate]
+  );
 
   const draft = useMemo(
     () => ({
-      subject: buildPlanEmailSubject(totalValue, cardsOnlyMode),
-      body: buildPlanEmailBody({
-        totalValue,
-        cardsOnlyMode,
-        recommendations,
-        milestones,
-        referenceDate
-      })
+      subject: buildPlanEmailSubject(emailPlan.totalValue, emailPlan.cardsOnlyMode),
+      body: buildPlanEmailBody(emailPlan)
     }),
-    [cardsOnlyMode, milestones, recommendations, referenceDate, totalValue]
+    [emailPlan]
   );
+
+  useEffect(() => {
+    setPlanId(null);
+  }, [planSnapshot]);
 
   function validateEmail(input: string) {
     return EMAIL_PATTERN.test(input.trim());
+  }
+
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setStatus((current) => (current === 'error' ? 'idle' : current));
+    setMessage((current) =>
+      current === TURNSTILE_REQUIRED_MESSAGE ? '' : current
+    );
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
+  async function ensureSavedPlanId(): Promise<string> {
+    if (planId) return planId;
+
+    const response = await fetch('/api/plans', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(planSnapshot)
+    });
+
+    let data: { error?: string; planId?: string } = {};
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+
+    if (!response.ok || !data.planId) {
+      throw new Error(data.error ?? 'Could not save the plan right now.');
+    }
+
+    setPlanId(data.planId);
+    return data.planId;
   }
 
   async function handleSendEmail() {
@@ -56,38 +134,55 @@ export function PlanEmailPanel({
       return;
     }
 
+    if (turnstileEnabled && !turnstileToken) {
+      setShowTurnstile(true);
+      setStatus('error');
+      setMessage(TURNSTILE_REQUIRED_MESSAGE);
+      return;
+    }
+
     setStatus('sending');
     setMessage('');
 
     try {
+      const savedPlanId = await ensureSavedPlanId();
       const response = await fetch('/api/email-plan', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: normalizedEmail,
-          subject: draft.subject,
-          body: draft.body
+          planId: savedPlanId,
+          ...(turnstileToken ? { turnstileToken } : {})
         })
       });
 
+      let data: { error?: string; message?: string } = {};
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
       if (response.ok) {
         setStatus('sent');
-        setMessage('Your plan has been emailed. Check your inbox.');
+        setMessage(data.message ?? 'Your plan has been emailed. Check your inbox.');
+        setEmail('');
         return;
       }
 
-      // If the API isn't configured (503) or fails, fall back to mailto
-      openMailtoDraft(normalizedEmail);
-    } catch {
-      // Network error — fall back to mailto
-      openMailtoDraft(normalizedEmail);
+      setStatus('error');
+      setMessage(data.error ?? 'Could not send the plan email right now.');
+    } catch (error) {
+      setStatus('error');
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : 'Could not connect. Please try again.'
+      );
+    } finally {
+      setTurnstileToken(null);
+      turnstileRef.current?.reset();
     }
-  }
-
-  function openMailtoDraft(normalizedEmail: string) {
-    window.location.href = `mailto:${normalizedEmail}?subject=${encodeURIComponent(draft.subject)}&body=${encodeURIComponent(draft.body)}`;
-    setStatus('fallback');
-    setMessage('Opened a prefilled draft in your email app instead.');
   }
 
   async function handleCopySummary() {
@@ -151,6 +246,16 @@ export function PlanEmailPanel({
           Copy summary
         </Button>
       </div>
+
+      {showTurnstile ? (
+        <div className="mt-3">
+          <Turnstile
+            ref={turnstileRef}
+            onVerify={handleTurnstileVerify}
+            onExpire={handleTurnstileExpire}
+          />
+        </div>
+      ) : null}
 
       {message ? (
         <p className={`mt-3 text-sm ${status === 'error' ? 'text-brand-coral' : 'text-brand-teal'}`}>
