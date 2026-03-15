@@ -1,9 +1,9 @@
 import { CountUp } from '@/components/ui/count-up';
 
 const proofPoints = [
-  { end: 100, prefix: '$', suffix: 'k+', label: 'In bonuses earned' },
-  { end: 200, prefix: '', suffix: '+', label: 'Offers tracked' },
-  { end: 100, prefix: '', suffix: '%', label: 'Free to use' }
+  { end: 3500, prefix: '$', suffix: '', label: 'Avg plan value' },
+  { end: 2, prefix: '', suffix: ' min', label: 'Quiz' },
+  { end: 6, prefix: '', suffix: ' months', label: 'Planned for you' }
 ];
 
 type ProofPointsProps = {
@@ -15,7 +15,7 @@ export function ProofPoints({ className = '', variant = 'default' }: ProofPoints
   if (variant === 'trust-bar') {
     return (
       <section className={className}>
-        <div className="grid gap-4 border-y border-[#ffffff10] py-4 sm:grid-cols-3 sm:gap-6">
+        <div className="grid gap-4 py-4 sm:grid-cols-3 sm:gap-6" style={{ borderTop: '1px solid transparent', borderBottom: '1px solid transparent', borderImage: 'linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent) 1' }}>
           {proofPoints.map((stat) => (
             <div key={stat.label} className="text-center">
               <CountUp

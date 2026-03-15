@@ -4,6 +4,7 @@ import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { CustomerReviewsRail } from '@/components/customer-reviews-rail';
 import { ProofPoints } from '@/components/proof-points';
 import { SamplePlanTimeline } from '@/components/sample-plan-timeline';
+import { PlanComparison } from '@/components/plan-comparison';
 
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
@@ -272,17 +273,11 @@ export default function HomePage() {
       <ProofPoints className="mt-12" variant="trust-bar" />
 
       <section className="mt-14">
-        <div className="border-y border-white/10 px-8 py-6 md:px-10 md:py-8">
-          <p className="max-w-3xl text-left text-2xl font-medium leading-tight text-text-secondary md:text-3xl lg:text-[2rem]">
-            <span className="block">Other credit card sites list options with no plan.</span>
-            <span className="mt-2 block font-semibold text-text-primary">
-              The Stack gives you a step-by-step plan.
-            </span>
-          </p>
-        </div>
+        <PlanComparison />
 
-        <div className="mt-8 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
-          <div className="max-w-3xl">
+        <div className="relative mt-8 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 shadow-[0_8px_60px_rgba(45,212,191,0.06),0_2px_20px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-10">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.08),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(212,168,83,0.06),transparent_40%)]" />
+          <div className="relative max-w-3xl">
             <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
               How it works
             </p>
@@ -296,13 +291,13 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="mt-6 grid gap-4 lg:grid-cols-3">
+          <div className="relative mt-6 grid gap-4 lg:grid-cols-3">
             {howItWorksSteps.map((item) => (
               <div
                 key={item.step}
                 className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm md:p-6"
               >
-                <p className="font-heading text-4xl text-brand-teal">{item.step}</p>
+                <p className="font-heading text-4xl text-brand-teal drop-shadow-[0_0_10px_rgba(45,212,191,0.3)]">{item.step}</p>
                 <h3 className="mt-5 text-xl font-semibold text-text-primary">{item.title}</h3>
                 <p className="mt-3 max-w-sm text-sm leading-7 text-text-secondary">
                   {item.description}
@@ -314,8 +309,9 @@ export default function HomePage() {
       </section>
 
       {/* Why The Stack Is Different */}
-      <section className="mt-14 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,22,35,0.92),rgba(8,10,18,0.96))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
-        <div className="max-w-3xl">
+      <section className="relative mt-14 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 shadow-[0_8px_60px_rgba(45,212,191,0.06),0_2px_20px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-10">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(45,212,191,0.08),transparent_45%),radial-gradient(circle_at_top_right,rgba(212,168,83,0.06),transparent_40%)]" />
+        <div className="relative max-w-3xl">
           <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
             Why The Stack Is Different
           </p>
@@ -327,13 +323,13 @@ export default function HomePage() {
             by tangible value, fit, and timing.
           </p>
         </div>
-        <div className="mt-8 grid gap-5 md:grid-cols-2">
+        <div className="relative mt-8 grid gap-5 md:grid-cols-2">
           {differentiationCards.map((card) => (
             <div
               key={card.title}
               className="h-full rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm md:p-7"
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-brand-teal">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-brand-teal/10 text-brand-teal shadow-[0_0_12px_rgba(45,212,191,0.15)]">
                 {card.icon}
               </div>
               <h3 className="mt-5 text-xl font-semibold text-text-primary">{card.title}</h3>
@@ -349,7 +345,7 @@ export default function HomePage() {
       <div className="mt-10 flex items-center justify-center gap-x-10 gap-y-4">
         {privacyPoints.map((point) => (
           <div key={point.label} className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-teal/10 text-brand-teal">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-teal/10 text-brand-teal shadow-[0_0_12px_rgba(45,212,191,0.15)]">
               {point.icon}
             </div>
             <p className="text-xl font-medium text-text-primary md:text-2xl">{point.label}</p>
@@ -358,8 +354,9 @@ export default function HomePage() {
       </div>
 
       {/* Reviews */}
-      <section className="mt-14 rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(15,18,30,0.92),rgba(7,9,16,0.98))] p-8 shadow-[0_18px_60px_rgba(0,0,0,0.3)] md:p-10">
-        <div className="max-w-2xl">
+      <section className="relative mt-14 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 shadow-[0_8px_60px_rgba(45,212,191,0.06),0_2px_20px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-10">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.08),transparent_45%),radial-gradient(circle_at_bottom_left,rgba(212,168,83,0.06),transparent_40%)]" />
+        <div className="relative max-w-2xl">
           <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
             Reviews
           </p>
@@ -367,7 +364,9 @@ export default function HomePage() {
             What people think of the plan.
           </h2>
         </div>
-        <CustomerReviewsRail reviews={sampleReviews} />
+        <div className="relative">
+          <CustomerReviewsRail reviews={sampleReviews} />
+        </div>
       </section>
 
       <section className="mt-20">
@@ -382,7 +381,7 @@ export default function HomePage() {
             {faqs.map((item) => (
               <details
                 key={item.question}
-                className="group rounded-2xl border border-white/10 bg-bg-surface p-5 open:border-brand-teal/30"
+                className="group rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm open:border-brand-teal/30 open:shadow-[0_0_15px_rgba(45,212,191,0.06)]"
               >
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-lg font-semibold text-text-primary md:text-xl">
                   <span>{item.question}</span>
@@ -397,7 +396,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mx-auto mt-16 max-w-4xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center md:p-10">
+      <section className="relative mx-auto mt-16 max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-8 text-center shadow-[0_8px_60px_rgba(45,212,191,0.06),0_2px_20px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-10">
         <h2 className="font-heading text-3xl text-text-primary md:text-4xl">Get Bonus Plays</h2>
         <p className="mx-auto mt-3 max-w-none text-lg text-text-secondary md:text-xl lg:whitespace-nowrap">
           Bonus offers, timing tips, and free tools. Curated, not sponsored.

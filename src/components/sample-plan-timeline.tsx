@@ -9,13 +9,13 @@ interface TimelineStep {
 }
 
 const timelineSteps: TimelineStep[] = [
-  { month: 'Month 1', name: 'Chase Sapphire Preferred', type: 'card', detail: 'Spend $4k in 3 months', value: '$1,000' },
-  { month: 'Month 2', name: 'Chase Total Checking', type: 'bank', detail: 'Direct deposit × 2 months', value: '$300' },
-  { month: 'Month 4', name: 'Amex Gold Card', type: 'card', detail: 'Spend $6k in 6 months', value: '$1,000' },
-  { month: 'Month 6', name: 'SoFi Checking & Savings', type: 'bank', detail: 'Direct deposit $1k', value: '$325' },
+  { month: 'Month 1', name: 'Chase Sapphire Preferred', type: 'card', detail: 'Spend $4k in 3 months', value: '$1,250' },
+  { month: 'Month 2', name: 'Chase Total Checking', type: 'bank', detail: 'Direct deposit × 2 months', value: '$400' },
+  { month: 'Month 4', name: 'Amex Gold Card', type: 'card', detail: 'Spend $6k in 6 months', value: '$1,200' },
+  { month: 'Month 6', name: 'SoFi Checking & Savings', type: 'bank', detail: 'Direct deposit $1k', value: '$650' },
 ];
 
-const total = '$2,625';
+const total = '$3,500';
 
 export function SamplePlanTimeline() {
   return (
