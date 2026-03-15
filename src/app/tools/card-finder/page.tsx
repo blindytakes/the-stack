@@ -36,9 +36,9 @@ export default async function CardFinderPage({ searchParams }: Props) {
       title="Bonus Plan"
       description={
         showingChooser
-          ? 'Choose whether you want the full card-and-bank planner or the shorter card-only path before you start answering questions.'
+          ? 'Pick your path, then answer a few quick questions.'
           : showingFullPlanner
-          ? 'This planner includes both card bonuses and bank bonuses. We ask about spend capacity, credit, direct deposit, and state so the 6-month plan stays realistic.'
+          ? 'Answer a few questions and we\'ll build your 6-month bonus plan.'
           : ''
       }
     >

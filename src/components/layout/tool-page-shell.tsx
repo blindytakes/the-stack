@@ -21,15 +21,17 @@ export function ToolPageShell({
   children
 }: ToolPageShellProps) {
   return (
-    <div className="container-page pt-12">
+    <div className="container-page min-h-[calc(100vh-4rem)] pt-12">
       <TrackFunnelEventOnView
         event="tool_started"
         properties={{ source: 'page_view', tool, path }}
       />
-      <div className="mb-10 max-w-2xl">
+      <div className="mb-8 max-w-2xl">
         <p className={`text-xs uppercase tracking-[0.3em] ${tagColorClassName}`}>{tag}</p>
         <h1 className="mt-3 font-heading text-4xl text-text-primary">{title}</h1>
-        <p className="mt-4 text-lg text-text-secondary">{description}</p>
+        {description && (
+          <p className="mt-3 text-base text-text-secondary">{description}</p>
+        )}
       </div>
       {children}
     </div>

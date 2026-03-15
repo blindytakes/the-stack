@@ -124,7 +124,7 @@ export function CardFinderProgress({
             Step {stepIndex + 1} of {totalSteps}
           </p>
           {currentStepTitle && (
-            <p className="mt-2 text-lg font-semibold text-text-primary">{currentStepTitle}</p>
+            <p className="mt-2 text-xl font-semibold text-text-primary">{currentStepTitle}</p>
           )}
         </div>
         <div className="text-right">
@@ -173,21 +173,21 @@ export function CardFinderQuestion({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="text-2xl font-semibold"
+        className="text-3xl font-semibold md:text-4xl"
       >
         {step.title}
       </motion.h2>
       {step.description && (
-        <p className="mt-3 max-w-2xl text-sm text-text-secondary">{step.description}</p>
+        <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
       )}
-      <div className="mt-6 grid gap-3 md:grid-cols-2">
+      <div className="mt-8 grid gap-3 md:grid-cols-2">
         {step.options.map((option) => {
           const active = selectedValue === option.value;
           return (
             <button
               key={option.value}
               onClick={() => onSelect(option.value)}
-              className={`rounded-2xl border px-4 py-3 text-left text-sm transition ${
+              className={`rounded-2xl border px-5 py-4 text-left text-base transition ${
                 active
                   ? 'border-brand-teal bg-brand-teal/10 text-text-primary'
                   : 'border-white/10 bg-bg-surface text-text-secondary hover:border-white/30'
@@ -219,19 +219,19 @@ export function CardFinderSelectQuestion({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <h2 className="text-2xl font-semibold text-text-primary">{step.title}</h2>
+        <h2 className="text-3xl font-semibold text-text-primary md:text-4xl">{step.title}</h2>
         {step.description && (
-          <p className="mt-3 max-w-2xl text-sm text-text-secondary">{step.description}</p>
+          <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
         )}
       </motion.div>
 
-      <div className="mt-6 max-w-xl rounded-2xl border border-white/10 bg-bg-surface p-5">
+      <div className="mt-8 max-w-xl rounded-2xl border border-white/10 bg-bg-surface p-5">
         <label className="block">
           <span className="text-xs uppercase tracking-[0.22em] text-text-muted">Select one</span>
           <select
             value={selectedValue ?? ''}
             onChange={(event) => onSelect(event.target.value)}
-            className="mt-3 w-full rounded-2xl border border-white/10 bg-bg px-4 py-3 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+            className="mt-3 w-full rounded-2xl border border-white/10 bg-bg px-4 py-3 text-base text-text-primary focus:border-brand-teal focus:outline-none"
           >
             <option value="">{step.placeholder ?? 'Choose an option'}</option>
             {step.options.map((option) => (
@@ -339,15 +339,15 @@ export function CardSelectionQuestion({
         transition={{ duration: 0.3 }}
       >
         <div className="flex flex-wrap items-center gap-3">
-          <h2 className="text-2xl font-semibold text-text-primary">{step.title}</h2>
+          <h2 className="text-3xl font-semibold text-text-primary md:text-4xl">{step.title}</h2>
           <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-text-muted">
             Optional
           </span>
         </div>
-        <p className="mt-3 max-w-2xl text-sm text-text-secondary">{step.description}</p>
+        <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
       </motion.div>
 
-      <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.95fr)]">
+      <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.95fr)]">
         <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
           <label
             htmlFor={searchId}

@@ -12,7 +12,8 @@ const footerLinks = [
 
 export function SiteFooter() {
   const pathname = usePathname();
-  const showFooterNewsletter = pathname !== '/' && pathname !== '/about';
+  const showFooterNewsletter =
+    pathname !== '/' && pathname !== '/about' && !pathname.startsWith('/tools/card-finder');
   const year = new Date().getFullYear();
 
   return (
