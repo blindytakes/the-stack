@@ -3,6 +3,7 @@ import { NewsletterSignup } from '@/components/newsletter-signup';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { CustomerReviewsRail } from '@/components/customer-reviews-rail';
 import { ProofPoints } from '@/components/proof-points';
+import { SamplePlanCarousel } from '@/components/sample-plan-carousel';
 
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
@@ -239,9 +240,6 @@ export default function HomePage() {
             Take a 2-minute quiz and get a sequenced list of your top card and bank bonus moves —
             with timing, value estimates, and where to apply first.
           </p>
-          <p className="text-base leading-7 text-text-secondary md:text-lg">
-            Most sites rank cards. <span className="font-semibold text-text-primary">The Stack builds your plan.</span>
-          </p>
           <div className="flex flex-wrap gap-4">
             <Link
               href="/tools/card-finder?mode=full"
@@ -265,88 +263,10 @@ export default function HomePage() {
             </Link>
           </div>
           <p className="text-base font-medium text-text-muted md:text-lg">
-            Free. Takes about 2 minutes. No spreadsheet required.
+            Credit card and bank bonuses. One plan. The right order.
           </p>
         </div>
-        <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] p-6 shadow-[0_0_45px_rgba(45,212,191,0.08)] backdrop-blur-2xl md:p-8">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.18),transparent_32%),radial-gradient(circle_at_bottom_left,rgba(212,168,83,0.12),transparent_38%)]" />
-          <div className="relative space-y-6">
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-3">
-                <p className="text-xs uppercase tracking-[0.3em] text-text-muted">Sample Plan</p>
-                <div>
-                  <h2 className="text-2xl font-semibold text-text-primary md:text-3xl">
-                    Plan your next moves.
-                  </h2>
-                  <p className="mt-2 max-w-sm text-sm leading-6 text-text-secondary md:text-base">
-                    A short quiz turns your profile into a ranked 6-month plan with cleaner math,
-                    realistic timing, and a clear starting point.
-                  </p>
-                </div>
-              </div>
-              <div className="rounded-full border border-white/10 bg-black/20 px-3 py-1 text-sm font-semibold text-brand-teal shadow-[0_0_8px_rgba(16,185,129,0.4)]">
-                2 min quiz
-              </div>
-            </div>
-
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                  <p className="text-sm text-text-muted">6-month value est.</p>
-                  <p className="mt-2 font-heading text-4xl text-text-primary">$2,150</p>
-                </div>
-                <div className="sm:text-right">
-                  <p className="text-sm text-text-muted">Start now</p>
-                  <p className="mt-2 text-lg font-semibold text-text-primary">Travel card bonus</p>
-                </div>
-              </div>
-              <div className="mt-5 h-3 overflow-hidden rounded-full bg-white/10">
-                <div className="h-full w-2/3 rounded-full bg-gradient-to-r from-[#10B981] to-[#34D399] shadow-[0_0_24px_rgba(45,212,191,0.4)]" />
-              </div>
-              <div className="mt-3 flex items-center justify-between text-[11px] uppercase tracking-[0.22em] text-text-muted">
-                <span>Start now</span>
-                <span>Next</span>
-                <span>Later</span>
-              </div>
-            </div>
-
-            <div className="hidden gap-3 lg:grid lg:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-black/15 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-text-muted">First move</p>
-                <p className="mt-2 text-xl font-semibold text-text-primary">Card bonus</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-black/15 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-text-muted">Next move</p>
-                <p className="mt-2 text-xl font-semibold text-text-primary">Bank bonus</p>
-              </div>
-              <div className="rounded-2xl border border-white/10 bg-black/15 p-4">
-                <p className="text-xs uppercase tracking-[0.24em] text-text-muted">Pace</p>
-                <p className="mt-2 text-xl font-semibold text-text-primary">3 moves / 6 mo</p>
-              </div>
-            </div>
-
-            <Link
-              href="/tools/card-finder?mode=full"
-              className="inline-flex items-center gap-2 self-start text-sm font-semibold text-brand-teal transition hover:translate-x-1 hover:text-brand-teal/85 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-            >
-              <span>Build your own plan</span>
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 16 16"
-                className="h-4 w-4"
-                fill="none"
-              >
-                <path
-                  d="M3.5 8h8m0 0-3-3m3 3-3 3"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </Link>
-          </div>
-        </div>
+        <SamplePlanCarousel />
       </section>
 
       <ProofPoints className="mt-12" variant="trust-bar" />
