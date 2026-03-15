@@ -55,7 +55,9 @@ describe('/api/banking route contract', () => {
       }
     });
 
-    const req = new Request('http://localhost/api/banking?limit=20&offset=0');
+    const req = new Request(
+      'http://localhost/api/banking?accountType=checking&requiresDirectDeposit=no&difficulty=low&cashRequirement=light&timeline=fast&stateLimited=no&state=ny&sort=easy&limit=20&offset=0'
+    );
     const res = await GET(req);
     const body = await res.json();
 
@@ -63,9 +65,14 @@ describe('/api/banking route contract', () => {
     expect(body.pagination.total).toBe(1);
     expect(body.results[0].slug).toBe('test-bonus');
     expect(getBankingBonusesListMock).toHaveBeenCalledWith({
-      accountType: undefined,
-      requiresDirectDeposit: undefined,
-      state: undefined,
+      accountType: 'checking',
+      requiresDirectDeposit: 'no',
+      difficulty: 'low',
+      cashRequirement: 'light',
+      timeline: 'fast',
+      stateLimited: 'no',
+      state: 'ny',
+      sort: 'easy',
       limit: '20',
       offset: '0'
     });

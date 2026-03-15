@@ -3,6 +3,7 @@ import {
   filterBankingBonuses,
   getBankingBonusesData,
   paginateBankingBonuses,
+  sortBankingBonuses,
   type BankingBonusListItem,
   type BankingBonusesDataSource
 } from '@/lib/banking-bonuses';
@@ -25,7 +26,12 @@ export type BankingBonusesListResult =
 export type BankingBonusesListQueryInput = {
   accountType?: string;
   requiresDirectDeposit?: string;
+  difficulty?: string;
+  cashRequirement?: string;
+  timeline?: string;
+  stateLimited?: string;
   state?: string;
+  sort?: string;
   limit?: string;
   offset?: string;
 };
@@ -41,7 +47,8 @@ export async function getBankingBonusesList(
   try {
     const { bonuses, source } = await getBankingBonusesData();
     const filtered = filterBankingBonuses(bonuses, parsed.data);
-    const results = paginateBankingBonuses(filtered, parsed.data);
+    const sorted = sortBankingBonuses(filtered, parsed.data.sort);
+    const results = paginateBankingBonuses(sorted, parsed.data);
 
     return {
       ok: true,

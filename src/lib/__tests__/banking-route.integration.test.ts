@@ -1,0 +1,103 @@
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { BankingBonusListItem } from '@/lib/banking-bonuses';
+import { createBankingListItem } from '@/lib/__tests__/banking-test-helpers';
+
+const applyIpRateLimitMock = vi.fn();
+const getBankingBonusesDataMock = vi.fn();
+
+vi.mock('@/lib/api-route', () => ({
+  instrumentedApi: (
+    _route: string,
+    _method: string,
+    handler: () => Promise<Response>
+  ) => handler()
+}));
+
+vi.mock('@/lib/rate-limit', () => ({
+  applyIpRateLimit: (...args: unknown[]) => applyIpRateLimitMock(...args)
+}));
+
+vi.mock('@/lib/banking-bonuses', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/banking-bonuses')>();
+  return {
+    ...actual,
+    getBankingBonusesData: (...args: unknown[]) => getBankingBonusesDataMock(...args)
+  };
+});
+
+import { GET } from '@/app/api/banking/route';
+
+describe('/api/banking route integration', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    applyIpRateLimitMock.mockResolvedValue(null);
+    getBankingBonusesDataMock.mockResolvedValue({
+      source: 'seed',
+      bonuses: [
+        createBankingListItem({
+          slug: 'high-net-light-deposit',
+          bonusAmount: 250,
+          estimatedFees: 0,
+          estimatedNetValue: 250,
+          minimumOpeningDeposit: 1500,
+          holdingPeriodDays: 60
+        }),
+        createBankingListItem({
+          slug: 'low-net-no-deposit',
+          bonusAmount: 150,
+          estimatedFees: 0,
+          estimatedNetValue: 150,
+          minimumOpeningDeposit: undefined,
+          holdingPeriodDays: 45,
+          requiredActions: ['Complete five debit purchases']
+        }),
+        createBankingListItem({
+          slug: 'state-limited-offer',
+          bonusAmount: 180,
+          estimatedFees: 0,
+          estimatedNetValue: 180,
+          holdingPeriodDays: 45,
+          stateRestrictions: ['CA']
+        }),
+        createBankingListItem({
+          slug: 'direct-deposit-offer',
+          bonusAmount: 400,
+          estimatedFees: 0,
+          estimatedNetValue: 400,
+          directDeposit: { required: true, minimumAmount: 2000 },
+          holdingPeriodDays: 45
+        }),
+        createBankingListItem({
+          slug: 'savings-offer',
+          accountType: 'savings',
+          bonusAmount: 325,
+          estimatedFees: 0,
+          estimatedNetValue: 325,
+          minimumOpeningDeposit: 5000,
+          holdingPeriodDays: 45
+        })
+      ]
+    });
+  });
+
+  it('passes through the full query surface and returns actually sorted filtered results', async () => {
+    const req = new Request(
+      'http://localhost/api/banking?accountType=checking&requiresDirectDeposit=no&difficulty=low&timeline=fast&stateLimited=no&sort=low_cash&limit=10&offset=0'
+    );
+
+    const res = await GET(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(200);
+    expect(body.pagination).toEqual({
+      total: 2,
+      limit: 10,
+      offset: 0
+    });
+    expect(body.results.map((offer: BankingBonusListItem) => offer.slug)).toEqual([
+      'low-net-no-deposit',
+      'high-net-light-deposit'
+    ]);
+    expect(getBankingBonusesDataMock).toHaveBeenCalledTimes(1);
+  });
+});
