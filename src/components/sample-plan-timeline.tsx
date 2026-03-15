@@ -17,7 +17,7 @@ const timelineSteps: TimelineStep[] = [
 
 const total = '$2,625';
 
-export function SamplePlanCarousel() {
+export function SamplePlanTimeline() {
   return (
     <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] shadow-[0_0_45px_rgba(45,212,191,0.08)] backdrop-blur-2xl">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.14),transparent_40%)]" />

@@ -3,7 +3,7 @@ import { NewsletterSignup } from '@/components/newsletter-signup';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { CustomerReviewsRail } from '@/components/customer-reviews-rail';
 import { ProofPoints } from '@/components/proof-points';
-import { SamplePlanCarousel } from '@/components/sample-plan-carousel';
+import { SamplePlanTimeline } from '@/components/sample-plan-timeline';
 
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
@@ -266,7 +266,7 @@ export default function HomePage() {
             Credit card and bank bonuses. One plan. The right order.
           </p>
         </div>
-        <SamplePlanCarousel />
+        <SamplePlanTimeline />
       </section>
 
       <ProofPoints className="mt-12" variant="trust-bar" />
