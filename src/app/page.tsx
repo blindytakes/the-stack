@@ -248,21 +248,20 @@ export default function HomePage() {
         properties={{ source: 'homepage', path: '/' }}
       />
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-        <div className="space-y-6">
-          <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold md:text-lg">
-            The Stack Bonus Plan
+        <div className="space-y-5">
+          <p className="text-base font-medium uppercase tracking-[0.25em] text-brand-teal md:text-lg">
+            Free Personalized Plan
           </p>
           <h1 className="font-heading text-4xl leading-tight text-text-primary md:text-6xl lg:text-[66px]">
             Make the banks work for you.
           </h1>
-          <p className="max-w-[48ch] text-xl font-medium leading-relaxed text-text-secondary md:text-2xl">
-            Take a 2-minute quiz and get a sequenced list of your top card and bank bonus moves —
-            with timing, value estimates, and where to apply first.
+          <p className="max-w-[42ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl">
+            Take a 2-minute quiz and get a personalized plan for your best card and bank bonus moves — sequenced by timing, value, and where to apply first.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
               href="/tools/card-finder?mode=full"
-              className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-teal px-7 py-3 text-base font-semibold text-black shadow-[0_12px_30px_rgba(45,212,191,0.18)] transition-all duration-200 hover:scale-105 hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg md:px-8 md:py-3.5 md:text-lg"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-teal px-9 py-4 text-lg font-semibold text-black shadow-[0_12px_30px_rgba(45,212,191,0.25),0_0_60px_rgba(45,212,191,0.12)] transition-all duration-200 hover:scale-105 hover:shadow-[0_12px_40px_rgba(45,212,191,0.35),0_0_80px_rgba(45,212,191,0.18)] hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg md:px-10 md:py-5 md:text-xl"
             >
               <span>Start My Bonus Plan</span>
               <svg
@@ -281,9 +280,6 @@ export default function HomePage() {
               </svg>
             </Link>
           </div>
-          <p className="text-base font-medium text-text-muted md:text-lg">
-            Credit card and bank bonuses. One plan. The right order.
-          </p>
         </div>
         <SamplePlanTimeline />
       </section>
@@ -304,7 +300,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="relative mt-6 grid gap-4 lg:grid-cols-3">
+          <div className="relative mt-6 grid gap-4 sm:grid-cols-3">
             {howItWorksSteps.map((item) => (
               <div
                 key={item.step}
@@ -420,6 +416,7 @@ export default function HomePage() {
       </section>
 
       <section className="mt-12 text-center">
+        <h2 className="mb-5 font-heading text-3xl text-text-primary md:text-4xl">Ready to start?</h2>
         <Link
           href="/tools/card-finder?mode=full"
           className="inline-flex items-center justify-center rounded-full bg-brand-teal px-7 py-3 text-base font-semibold text-black shadow-[0_12px_30px_rgba(45,212,191,0.18)] transition-all duration-200 hover:scale-105 hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg md:px-8 md:py-3.5 md:text-lg"
