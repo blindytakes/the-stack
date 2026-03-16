@@ -5,6 +5,7 @@ import { CustomerReviewsRail } from '@/components/customer-reviews-rail';
 import { ProofPoints } from '@/components/proof-points';
 import { SamplePlanTimeline } from '@/components/sample-plan-timeline';
 import { PlanComparison } from '@/components/plan-comparison';
+import { HowItWorksSteps } from '@/components/how-it-works-steps';
 
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
@@ -53,8 +54,9 @@ const howItWorksSteps = [
   {
     step: '01',
     title: 'Answer a few questions',
+    summary: 'A 2-minute quiz about your spend, credit, and goals.',
     description:
-      'Quick questions about your spend, credit, and goals — no SSN or bank login needed.',
+      'We ask about your monthly spend, credit score range, and what you want from bonuses — cash back, travel, or both. No SSN, no bank login, no credit card numbers.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden="true">
         <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -65,9 +67,10 @@ const howItWorksSteps = [
   },
   {
     step: '02',
-    title: 'Get a ranked plan',
+    title: 'Get a personalized bonus plan',
+    summary: 'See your best card and bank bonuses in order.',
     description:
-      'See your best moves ranked by value, with the spend needed and which one to start first.',
+      'Your plan shows each bonus ranked by real dollar value, the spend or deposit needed to earn it, and which one to open first based on timing and issuer rules.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden="true">
         <path d="M3 17h4v4H3zM10 11h4v10h-4zM17 5h4v16h-4z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -77,9 +80,10 @@ const howItWorksSteps = [
   },
   {
     step: '03',
-    title: 'Execute with confidence',
+    title: 'Follow the plan and earn',
+    summary: 'Each move has dates, deadlines, and where to apply.',
     description:
-      'Follow each step with timing, deadlines, and where to apply — all laid out for you.',
+      'Your plan tells you exactly when to apply, how long you have to hit the spend or deposit requirement, and when to expect the bonus — so you never miss a deadline.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden="true">
         <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -90,9 +94,9 @@ const howItWorksSteps = [
 
 const differentiationCards = [
   {
-    title: 'Tangible value, not hype',
+    title: 'Real dollar amounts, not points math',
     description:
-      'We show bonus value minus fees and realistic estimates — not inflated point valuations that never cash out.',
+      'Every bonus is shown as a cash value after fees — no inflated point valuations or guesswork.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <rect x="3" y="5" width="14" height="10" rx="2" stroke="currentColor" strokeWidth="1.5" />
@@ -101,9 +105,9 @@ const differentiationCards = [
     )
   },
   {
-    title: 'Ranked for your profile',
+    title: 'Filtered to what you qualify for',
     description:
-      'Your spend, goals, and credit profile shape the plan so it reflects what you can actually hit.',
+      'Your monthly spend, credit score, and goals determine which bonuses show up — so every recommendation is one you can actually hit.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M10 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM4.5 14.5c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -112,9 +116,9 @@ const differentiationCards = [
     )
   },
   {
-    title: 'Sequenced with timing in mind',
+    title: 'Tells you what to open and when',
     description:
-      'Moves are ordered by issuer rules, approval logic, and deadlines so you do not waste applications.',
+      'Your plan is ordered so each application lands at the right time — respecting issuer rules, cooldown periods, and spend windows.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M6 6h8M6 10h6M6 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -123,9 +127,9 @@ const differentiationCards = [
     )
   },
   {
-    title: 'Tracks offers that come and go',
+    title: 'Updated when offers change',
     description:
-      'When a strong offer returns or is about to expire, your plan adjusts.',
+      'Sign-up bonuses appear and disappear. We track the current offers so your plan always reflects what is live right now.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M14.5 5.5A6 6 0 1 0 16 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -250,13 +254,13 @@ export default function HomePage() {
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
         <div className="space-y-5">
           <p className="text-base font-medium uppercase tracking-[0.25em] text-brand-teal md:text-lg">
-            Free Personalized Plan
+            Free Personalized Bonus Plan
           </p>
           <h1 className="font-heading text-4xl leading-tight text-text-primary md:text-6xl lg:text-[66px]">
-            Make the banks work for you.
+            The average American leaves $6,000/yr in bonuses on the table.
           </h1>
-          <p className="max-w-[42ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl">
-            Take a 2-minute quiz and get a personalized plan for your best card and bank bonus moves — sequenced by timing, value, and where to apply first.
+          <p className="max-w-[48ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl">
+            Credit card and bank sign-up bonuses are free money — if you know the right order and timing. The Stack builds you a personalized plan to capture them.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
@@ -300,20 +304,7 @@ export default function HomePage() {
             </h2>
           </div>
 
-          <div className="relative mt-6 grid gap-4 sm:grid-cols-3">
-            {howItWorksSteps.map((item) => (
-              <div
-                key={item.step}
-                className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm md:p-6"
-              >
-                <span className="text-xs font-medium uppercase tracking-[0.2em] text-brand-teal">Step {item.step.replace(/^0/, '')}</span>
-                <h3 className="mt-4 text-xl font-semibold text-text-primary">{item.title}</h3>
-                <p className="mt-2 max-w-sm text-sm leading-7 text-text-secondary">
-                  {item.description}
-                </p>
-              </div>
-            ))}
-          </div>
+          <HowItWorksSteps steps={howItWorksSteps} />
         </div>
       </section>
 
@@ -325,12 +316,8 @@ export default function HomePage() {
             Why The Stack Is Different
           </p>
           <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-            A better way to choose your next bonus.
+            How The Stack helps you earn more.
           </h2>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg">
-            Most credit card sites rank offers by the biggest headline number. The Stack ranks them
-            by tangible value, fit, and timing.
-          </p>
         </div>
         <div className="relative mt-8 grid gap-5 md:grid-cols-2">
           {differentiationCards.map((card) => (
@@ -370,7 +357,7 @@ export default function HomePage() {
             Reviews
           </p>
           <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-            What people think of the plan.
+            Reviews of The Stack.
           </h2>
         </div>
         <div className="relative">

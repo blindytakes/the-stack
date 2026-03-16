@@ -75,8 +75,8 @@ export function PlanComparison() {
         {ganttRows.map((row, i) => {
           const isCard = row.type === 'card';
           const dotColor = isCard
-            ? 'bg-brand-teal shadow-[0_0_10px_rgba(45,212,191,0.6)]'
-            : 'bg-brand-gold shadow-[0_0_10px_rgba(212,168,83,0.6)]';
+            ? 'bg-brand-teal shadow-[0_0_6px_rgba(45,212,191,0.3)]'
+            : 'bg-brand-gold shadow-[0_0_6px_rgba(212,168,83,0.3)]';
 
           // Bar styles with gradients
           const barGradient = isCard
@@ -86,7 +86,7 @@ export function PlanComparison() {
           const barGlow = isCard
             ? 'shadow-[inset_0_1px_0_rgba(45,212,191,0.2),0_0_20px_rgba(45,212,191,0.08)]'
             : 'shadow-[inset_0_1px_0_rgba(212,168,83,0.2),0_0_20px_rgba(212,168,83,0.08)]';
-          const valueColor = isCard ? 'text-brand-teal' : 'text-brand-gold';
+          const valueColor = 'text-white';
 
           return (
             <div
@@ -108,7 +108,6 @@ export function PlanComparison() {
                 <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${dotColor}`} />
                 <div className="min-w-0">
                   <p className="truncate text-xs font-semibold text-text-primary">{row.name}</p>
-                  <p className="mt-0.5 truncate text-[10px] text-text-muted">{row.action}</p>
                 </div>
               </div>
 
@@ -136,7 +135,7 @@ export function PlanComparison() {
                   <div className={`absolute inset-0 rounded-xl ${barGradient}`} />
                   {/* Shine effect */}
                   <div className="absolute inset-x-0 top-0 h-px rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-                  <span className={`relative z-10 text-sm font-bold ${valueColor} drop-shadow-[0_0_8px_currentColor]`}>
+                  <span className={`relative z-10 text-base font-bold ${valueColor}`}>
                     {row.value}
                   </span>
                 </div>
@@ -160,7 +159,7 @@ export function PlanComparison() {
           </div>
           <div className="col-span-6 flex items-center justify-end px-5 py-5">
             <span
-              className={`font-heading text-2xl text-brand-teal drop-shadow-[0_0_12px_rgba(45,212,191,0.4)] md:text-3xl transition-all duration-700 ${
+              className={`font-heading text-2xl text-brand-teal md:text-3xl transition-all duration-700 ${
                 isVisible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0'
               }`}
               style={{ transitionDelay: '800ms' }}

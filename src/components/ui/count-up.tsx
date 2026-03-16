@@ -47,9 +47,11 @@ export function CountUp({
             const progress = Math.min(elapsed / duration, 1);
             // Ease-out cubic for a satisfying deceleration
             const eased = 1 - Math.pow(1 - progress, 3);
-            setCount(Math.round(start + eased * delta));
 
-            if (progress < 1) {
+            if (progress >= 1) {
+              setCount(end);
+            } else {
+              setCount(Math.round(start + eased * delta));
               requestAnimationFrame(tick);
             }
           }

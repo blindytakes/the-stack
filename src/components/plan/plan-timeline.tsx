@@ -29,27 +29,27 @@ export function PlanTimeline({
     <>
       <div className="grid gap-3 lg:grid-cols-3">
         <div className="rounded-2xl border border-brand-gold/20 bg-brand-gold/10 p-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-text-muted">1. Open</p>
-          <p className="mt-2 text-lg font-semibold text-text-primary">Start the offer</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-text-muted">1. Apply or open</p>
+          <p className="mt-2 text-lg font-semibold text-text-primary">Open the card or account</p>
           <p className="mt-2 text-base leading-7 text-text-secondary">
-            Use the <span className="font-semibold text-text-primary">Apply/open by</span> date as your
-            target apply or account-opening date.
+            Apply for the card or open the bank account by the{' '}
+            <span className="font-semibold text-text-primary">Apply/open by</span> date shown below.
           </p>
         </div>
         <div className="rounded-2xl border border-white/10 bg-bg/40 p-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-text-muted">2. Complete</p>
-          <p className="mt-2 text-lg font-semibold text-text-primary">Finish the requirement window</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-text-muted">2. Hit the requirement</p>
+          <p className="mt-2 text-lg font-semibold text-text-primary">Spend or deposit the required amount</p>
           <p className="mt-2 text-base leading-7 text-text-secondary">
-            Hit the spend, funding, or direct-deposit requirement before the{' '}
+            Meet the spending, funding, or direct-deposit requirement before the{' '}
             <span className="font-semibold text-text-primary">Complete by</span> date.
           </p>
         </div>
         <div className="rounded-2xl border border-brand-teal/20 bg-brand-teal/10 p-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-text-muted">3. Get paid</p>
-          <p className="mt-2 text-lg font-semibold text-text-primary">Watch for the bonus</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-text-muted">3. Collect the bonus</p>
+          <p className="mt-2 text-lg font-semibold text-text-primary">The bonus posts to your account</p>
           <p className="mt-2 text-base leading-7 text-text-secondary">
-            The <span className="font-semibold text-text-primary">Bonus expected</span> date is your
-            rough payout target, not a guaranteed posting day.
+            After you complete the requirement, the bonus typically posts around the{' '}
+            <span className="font-semibold text-text-primary">Bonus expected</span> date.
           </p>
         </div>
       </div>

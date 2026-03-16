@@ -126,7 +126,7 @@ export function CustomerReviewsRail({ reviews }: CustomerReviewsRailProps) {
               ref={(node) => {
                 cardRefs.current[index] = node;
               }}
-              className="flex h-[470px] w-[320px] min-w-[320px] shrink-0 snap-start flex-col rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm md:w-[380px] md:min-w-[380px]"
+              className="flex min-h-[470px] w-[320px] min-w-[320px] shrink-0 snap-start flex-col rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-6 backdrop-blur-sm md:w-[380px] md:min-w-[380px]"
             >
               <div className="min-h-0 flex-1 overflow-hidden">
                 <p className="text-[1.55rem] leading-[1.4] text-text-primary md:text-[1.65rem] md:leading-[1.45]">
