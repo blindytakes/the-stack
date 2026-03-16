@@ -44,7 +44,7 @@ export function PlanComparison() {
           Other sites give you a list.
         </p>
         <p className="mt-1 text-xl font-semibold text-text-primary md:text-2xl">
-          The Stack gives you this.
+          The Stack gives you a step-by-step plan.
         </p>
       </div>
 
