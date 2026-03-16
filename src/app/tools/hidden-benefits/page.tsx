@@ -13,10 +13,8 @@ export default function HiddenBenefitsPage() {
     <ToolPageShell
       tool="hidden_benefits"
       path="/tools/hidden-benefits"
-      tag="Tool 02"
-      tagColorClassName="text-brand-gold"
       title="Hidden Benefits"
-      description="Select your card and uncover which protections and credits are worth real money."
+      description=""
     >
       <HiddenBenefitsTool />
     </ToolPageShell>

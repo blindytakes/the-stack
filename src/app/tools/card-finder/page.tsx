@@ -31,16 +31,8 @@ export default async function CardFinderPage({ searchParams }: Props) {
     <ToolPageShell
       tool="card_finder"
       path="/tools/card-finder"
-      tag="Tool 01"
-      tagColorClassName="text-brand-teal"
-      title="Bonus Plan"
-      description={
-        showingChooser
-          ? 'Pick your path, then answer a few quick questions.'
-          : showingFullPlanner
-          ? 'Answer a few questions and we\'ll build your 6-month bonus plan.'
-          : ''
-      }
+      title="The Stack Bonus Plan"
+      description=""
     >
       {showingChooser ? <CardFinderPathChooser /> : <CardFinderTool cards={cards} />}
     </ToolPageShell>

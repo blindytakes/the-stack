@@ -13,10 +13,8 @@ export default function CardVsCardPage() {
     <ToolPageShell
       tool="card_vs_card"
       path="/tools/card-vs-card"
-      tag="Tool 03"
-      tagColorClassName="text-brand-coral"
       title="Offer vs Offer"
-      description="Pick two options and see a head-to-head net-value breakdown on fees, rewards, and bonuses."
+      description=""
     >
       <CardVsCardTool />
     </ToolPageShell>

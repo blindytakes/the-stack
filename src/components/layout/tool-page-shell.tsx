@@ -4,8 +4,6 @@ import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 type ToolPageShellProps = {
   tool: 'card_finder' | 'hidden_benefits' | 'card_vs_card';
   path: '/tools/card-finder' | '/tools/hidden-benefits' | '/tools/card-vs-card';
-  tag: string;
-  tagColorClassName: string;
   title: string;
   description: string;
   children: ReactNode;
@@ -14,8 +12,6 @@ type ToolPageShellProps = {
 export function ToolPageShell({
   tool,
   path,
-  tag,
-  tagColorClassName,
   title,
   description,
   children
@@ -27,8 +23,7 @@ export function ToolPageShell({
         properties={{ source: 'page_view', tool, path }}
       />
       <div className="mb-8 max-w-2xl">
-        <p className={`text-xs uppercase tracking-[0.3em] ${tagColorClassName}`}>{tag}</p>
-        <h1 className="mt-3 font-heading text-4xl text-text-primary">{title}</h1>
+        <h1 className="font-heading text-4xl text-text-primary">{title}</h1>
         {description && (
           <p className="mt-3 text-base text-text-secondary">{description}</p>
         )}
