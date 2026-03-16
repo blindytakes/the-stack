@@ -71,7 +71,6 @@ export function CardFinderTool({ cards }: { cards: CardRecord[] }) {
           stepIndex={stepIndex}
           totalSteps={steps.length}
           progress={progress}
-          currentStepTitle={currentStep.title}
         />
       </div>
 

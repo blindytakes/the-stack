@@ -108,33 +108,19 @@ export type FinderQuestionStep = FinderOptionStep | FinderSelectStep | FinderCar
 export function CardFinderProgress({
   stepIndex,
   totalSteps,
-  progress,
-  currentStepTitle
+  progress
 }: {
   stepIndex: number;
   totalSteps: number;
   progress: number;
-  currentStepTitle?: string;
 }) {
   return (
-    <div className="rounded-[1.75rem] border border-white/10 bg-bg/30 p-4 md:p-5">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-text-muted">
-            Step {stepIndex + 1} of {totalSteps}
-          </p>
-          {currentStepTitle && (
-            <p className="mt-2 text-xl font-semibold text-text-primary">{currentStepTitle}</p>
-          )}
-        </div>
-        <div className="text-right">
-          <p className="font-heading text-3xl text-text-primary">{Math.round(progress)}%</p>
-          <p className="text-[11px] uppercase tracking-[0.22em] text-text-muted">Complete</p>
-        </div>
-      </div>
-
+    <div>
+      <p className="text-xs uppercase tracking-[0.3em] text-text-muted">
+        Step {stepIndex + 1} of {totalSteps}
+      </p>
       <div
-        className="mt-4 h-3 overflow-hidden rounded-full border border-white/10 bg-bg-surface"
+        className="mt-2 h-1.5 overflow-hidden rounded-full bg-bg-surface"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={100}
@@ -147,11 +133,6 @@ export function CardFinderProgress({
           animate={{ width: `${progress}%` }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
         />
-      </div>
-
-      <div className="mt-2 flex items-center justify-between text-[11px] uppercase tracking-[0.2em] text-text-muted">
-        <span>Start</span>
-        <span>{totalSteps} total steps</span>
       </div>
     </div>
   );
