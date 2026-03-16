@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const navItems = [
-  { href: '/tools/card-finder?mode=full', activePath: '/tools/card-finder', label: 'Bonus Plan' },
+  { href: '/tools/card-finder?mode=full', activePath: '/tools/card-finder', label: 'Get My Plan' },
   { href: '/cards', label: 'Cards' },
   { href: '/banking', label: 'Banking' },
   { href: '/blog', label: 'Blog' },

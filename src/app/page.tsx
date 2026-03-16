@@ -54,19 +54,37 @@ const howItWorksSteps = [
     step: '01',
     title: 'Answer a few questions',
     description:
-      'Answer 4-5 quick questions about your cards, spend, and credit. No SSN, bank login, or card numbers.'
+      'Quick questions about your spend, credit, and goals — no SSN or bank login needed.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden="true">
+        <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
   },
   {
     step: '02',
     title: 'Get a ranked plan',
     description:
-      'See your best next moves ranked in order. We show bonus value, the spend needed to earn it, and which one to start with.'
+      'See your best moves ranked by value, with the spend needed and which one to start first.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden="true">
+        <path d="M3 17h4v4H3zM10 11h4v10h-4zM17 5h4v16h-4z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M5 13l5-5 4 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
   },
   {
     step: '03',
     title: 'Execute with confidence',
     description:
-      'Open the right offer at the right time. Each move shows where to apply, what deadline matters, and what to do after approval.'
+      'Follow each step with timing, deadlines, and where to apply — all laid out for you.',
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden="true">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    )
   }
 ] as const;
 
@@ -230,21 +248,20 @@ export default function HomePage() {
         properties={{ source: 'homepage', path: '/' }}
       />
       <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-        <div className="space-y-6">
-          <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold md:text-lg">
-            The Stack Bonus Plan
+        <div className="space-y-5">
+          <p className="text-base font-medium uppercase tracking-[0.25em] text-brand-teal md:text-lg">
+            Free Personalized Plan
           </p>
           <h1 className="font-heading text-4xl leading-tight text-text-primary md:text-6xl lg:text-[66px]">
             Make the banks work for you.
           </h1>
-          <p className="max-w-[48ch] text-xl font-medium leading-relaxed text-text-secondary md:text-2xl">
-            Take a 2-minute quiz and get a sequenced list of your top card and bank bonus moves —
-            with timing, value estimates, and where to apply first.
+          <p className="max-w-[42ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl">
+            Take a 2-minute quiz and get a personalized plan for your best card and bank bonus moves — sequenced by timing, value, and where to apply first.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
               href="/tools/card-finder?mode=full"
-              className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-teal px-7 py-3 text-base font-semibold text-black shadow-[0_12px_30px_rgba(45,212,191,0.18)] transition-all duration-200 hover:scale-105 hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg md:px-8 md:py-3.5 md:text-lg"
+              className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-teal px-9 py-4 text-lg font-semibold text-black shadow-[0_12px_30px_rgba(45,212,191,0.25),0_0_60px_rgba(45,212,191,0.12)] transition-all duration-200 hover:scale-105 hover:shadow-[0_12px_40px_rgba(45,212,191,0.35),0_0_80px_rgba(45,212,191,0.18)] hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg md:px-10 md:py-5 md:text-xl"
             >
               <span>Start My Bonus Plan</span>
               <svg
@@ -263,9 +280,6 @@ export default function HomePage() {
               </svg>
             </Link>
           </div>
-          <p className="text-base font-medium text-text-muted md:text-lg">
-            Credit card and bank bonuses. One plan. The right order.
-          </p>
         </div>
         <SamplePlanTimeline />
       </section>
@@ -281,25 +295,20 @@ export default function HomePage() {
             <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
               How it works
             </p>
-            <div className="mt-3 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-              <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
-                Three steps to your first bonus.
-              </h2>
-              <p className="max-w-xl text-sm leading-7 text-text-secondary md:text-base">
-                Tell us what fits, get a ranked 6-month plan, and follow the right order.
-              </p>
-            </div>
+            <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
+              Three steps to your first bonus.
+            </h2>
           </div>
 
-          <div className="relative mt-6 grid gap-4 lg:grid-cols-3">
+          <div className="relative mt-6 grid gap-4 sm:grid-cols-3">
             {howItWorksSteps.map((item) => (
               <div
                 key={item.step}
                 className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm md:p-6"
               >
-                <p className="font-heading text-4xl text-brand-teal drop-shadow-[0_0_10px_rgba(45,212,191,0.3)]">{item.step}</p>
-                <h3 className="mt-5 text-xl font-semibold text-text-primary">{item.title}</h3>
-                <p className="mt-3 max-w-sm text-sm leading-7 text-text-secondary">
+                <span className="text-xs font-medium uppercase tracking-[0.2em] text-brand-teal">Step {item.step.replace(/^0/, '')}</span>
+                <h3 className="mt-4 text-xl font-semibold text-text-primary">{item.title}</h3>
+                <p className="mt-2 max-w-sm text-sm leading-7 text-text-secondary">
                   {item.description}
                 </p>
               </div>
@@ -407,6 +416,7 @@ export default function HomePage() {
       </section>
 
       <section className="mt-12 text-center">
+        <h2 className="mb-5 font-heading text-3xl text-text-primary md:text-4xl">Ready to start?</h2>
         <Link
           href="/tools/card-finder?mode=full"
           className="inline-flex items-center justify-center rounded-full bg-brand-teal px-7 py-3 text-base font-semibold text-black shadow-[0_12px_30px_rgba(45,212,191,0.18)] transition-all duration-200 hover:scale-105 hover:opacity-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg md:px-8 md:py-3.5 md:text-lg"
