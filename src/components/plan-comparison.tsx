@@ -30,7 +30,7 @@ export function PlanComparison() {
           observer.disconnect();
         }
       },
-      { threshold: 0.6 }
+      { threshold: 0.5 }
     );
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
