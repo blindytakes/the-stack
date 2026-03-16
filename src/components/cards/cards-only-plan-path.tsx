@@ -226,7 +226,6 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
           stepIndex={stepIndex}
           totalSteps={cardOnlySteps.length}
           progress={progress}
-          currentStepTitle={currentStep.title}
         />
       </div>
 
