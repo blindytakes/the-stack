@@ -123,8 +123,7 @@ function overlaps(startDay: number, completeDay: number, otherStartDay: number, 
 }
 
 function monthlySpendCapacity(input: QuizRequest): number {
-  if (input.monthlySpend === 'lt_1000') return 999;
-  if (input.monthlySpend === 'from_1000_to_2500') return 2500;
+  if (input.monthlySpend === 'lt_2500') return 2500;
   if (input.monthlySpend === 'from_2500_to_5000') return 5000;
   return Number.POSITIVE_INFINITY;
 }

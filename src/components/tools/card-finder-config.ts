@@ -9,8 +9,7 @@ export const cardFinderSteps: FinderQuestionStep[] = [
     title: 'How much normal monthly spend can you put on a new card?',
     description: 'This keeps the plan realistic when we sequence minimum-spend windows.',
     options: [
-      { label: 'Under $1,000', value: 'lt_1000' },
-      { label: '$1,000 to $2,500', value: 'from_1000_to_2500' },
+      { label: 'Under $2,500', value: 'lt_2500' },
       { label: '$2,500 to $5,000', value: 'from_2500_to_5000' },
       { label: '$5,000+', value: 'at_least_5000' }
     ]

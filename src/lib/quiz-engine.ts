@@ -35,7 +35,7 @@ export const quizRequestSchema = z.object({
     .transform((value) => value.toUpperCase())
     .default('OT'),
   monthlySpend: z
-    .enum(['lt_1000', 'from_1000_to_2500', 'from_2500_to_5000', 'at_least_5000'])
+    .enum(['lt_2500', 'from_2500_to_5000', 'at_least_5000'])
     .default('from_2500_to_5000'),
   pace: z.enum(['conservative', 'balanced', 'aggressive']).default('balanced')
 });

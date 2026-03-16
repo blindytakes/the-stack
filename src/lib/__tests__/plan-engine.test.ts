@@ -98,7 +98,7 @@ describe('buildPlanSchedule', () => {
         })
       ],
       makeInput({
-        monthlySpend: 'from_1000_to_2500',
+        monthlySpend: 'lt_2500',
         pace: 'aggressive'
       }),
       { startAt, maxCards: 2, maxBanking: 0, horizonDays: 365 }
