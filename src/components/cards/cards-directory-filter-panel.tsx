@@ -1,12 +1,10 @@
 import {
   bonusOptions,
   cardTypeOptions,
-  creditProfileOptions,
   feeOptions,
   sortOptions,
   type BonusFilterValue,
   type CardTypeFilterValue,
-  type CreditFilterValue,
   type FeeFilterValue,
   type IssuerOption,
   type SortValue
@@ -20,7 +18,6 @@ type CardsDirectoryFilterPanelProps = {
   issuer: string;
   bonusFilter: BonusFilterValue;
   maxFee: FeeFilterValue;
-  creditProfile: CreditFilterValue;
   cardType: CardTypeFilterValue;
   sortBy: SortValue;
   issuerOptions: IssuerOption[];
@@ -28,7 +25,6 @@ type CardsDirectoryFilterPanelProps = {
   onIssuerChange: (value: string) => void;
   onBonusFilterChange: (value: BonusFilterValue) => void;
   onMaxFeeChange: (value: FeeFilterValue) => void;
-  onCreditProfileChange: (value: CreditFilterValue) => void;
   onCardTypeChange: (value: CardTypeFilterValue) => void;
   onSortByChange: (value: SortValue) => void;
   onReset: () => void;
@@ -42,7 +38,6 @@ export function CardsDirectoryFilterPanel({
   issuer,
   bonusFilter,
   maxFee,
-  creditProfile,
   cardType,
   sortBy,
   issuerOptions,
@@ -50,7 +45,6 @@ export function CardsDirectoryFilterPanel({
   onIssuerChange,
   onBonusFilterChange,
   onMaxFeeChange,
-  onCreditProfileChange,
   onCardTypeChange,
   onSortByChange,
   onReset
@@ -116,7 +110,7 @@ export function CardsDirectoryFilterPanel({
         </label>
       </div>
 
-      <div className="mt-3 grid gap-3 md:grid-cols-3">
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
         <label className="block">
           <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Card Type</span>
           <select
@@ -140,21 +134,6 @@ export function CardsDirectoryFilterPanel({
             className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
           >
             {feeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="block">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">My Credit Profile</span>
-          <select
-            value={creditProfile}
-            onChange={(event) => onCreditProfileChange(event.target.value as CreditFilterValue)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-          >
-            {creditProfileOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

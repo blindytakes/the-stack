@@ -4,7 +4,6 @@ import { issuerKey, normalizeIssuerLabel } from '@/lib/cards-directory';
 export type SortValue = 'highest_bonus' | 'bonus_minus_fee' | 'lowest_fee' | 'highest_rating';
 export type BonusFilterValue = 'any' | 'has_bonus' | '500' | '750' | '1000';
 export type FeeFilterValue = 'any' | '0' | '95' | '250' | '10000';
-export type CreditFilterValue = 'all' | CardRecord['creditTierMin'];
 export type CardTypeFilterValue = 'all' | CardRecord['cardType'];
 export type IssuerOption = { value: string; label: string; count: number };
 
@@ -13,16 +12,8 @@ export type CardsDirectoryFilters = {
   issuer: string;
   bonusFilter: BonusFilterValue;
   maxFee: FeeFilterValue;
-  creditProfile: CreditFilterValue;
   cardType: CardTypeFilterValue;
   sortBy: SortValue;
-};
-
-const creditRank: Record<CardRecord['creditTierMin'], number> = {
-  building: 1,
-  fair: 2,
-  good: 3,
-  excellent: 4
 };
 
 export const defaultCardsDirectoryFilters: CardsDirectoryFilters = {
@@ -30,7 +21,6 @@ export const defaultCardsDirectoryFilters: CardsDirectoryFilters = {
   issuer: 'all',
   bonusFilter: 'any',
   maxFee: 'any',
-  creditProfile: 'all',
   cardType: 'all',
   sortBy: 'highest_bonus'
 };
@@ -65,21 +55,6 @@ export const cardTypeOptions: Array<{ value: CardTypeFilterValue; label: string 
   { value: 'student', label: 'Student' },
   { value: 'secured', label: 'Secured' }
 ];
-
-export const creditProfileOptions: Array<{ value: CreditFilterValue; label: string }> = [
-  { value: 'all', label: 'Any credit tier' },
-  { value: 'excellent', label: 'Excellent' },
-  { value: 'good', label: 'Good' },
-  { value: 'fair', label: 'Fair' },
-  { value: 'building', label: 'Building' }
-];
-
-export function formatCreditTier(value: CardRecord['creditTierMin']) {
-  if (value === 'excellent') return 'Excellent';
-  if (value === 'good') return 'Good+';
-  if (value === 'fair') return 'Fair+';
-  return 'Building';
-}
 
 export function formatCardType(value: CardRecord['cardType']) {
   if (value === 'personal') return 'Personal';
@@ -126,16 +101,6 @@ export function isFeeFilterValue(value: string | null): value is FeeFilterValue 
   );
 }
 
-export function isCreditFilterValue(value: string | null): value is CreditFilterValue {
-  return (
-    value === 'all' ||
-    value === 'excellent' ||
-    value === 'good' ||
-    value === 'fair' ||
-    value === 'building'
-  );
-}
-
 export function isCardTypeFilterValue(value: string | null): value is CardTypeFilterValue {
   return (
     value === 'all' ||
@@ -170,7 +135,6 @@ export function parseCardsDirectoryFilters(
   const issuerFromUrl = searchParams.get('issuer');
   const bonusFromUrl = searchParams.get('bonus');
   const feeFromUrl = searchParams.get('fee');
-  const creditFromUrl = searchParams.get('credit');
   const typeFromUrl = searchParams.get('type');
   const sortFromUrl = searchParams.get('sort');
 
@@ -187,9 +151,6 @@ export function parseCardsDirectoryFilters(
       ? bonusFromUrl
       : defaultCardsDirectoryFilters.bonusFilter,
     maxFee: isFeeFilterValue(feeFromUrl) ? feeFromUrl : defaultCardsDirectoryFilters.maxFee,
-    creditProfile: isCreditFilterValue(creditFromUrl)
-      ? creditFromUrl
-      : defaultCardsDirectoryFilters.creditProfile,
     cardType: isCardTypeFilterValue(typeFromUrl) ? typeFromUrl : defaultCardsDirectoryFilters.cardType,
     sortBy: isSortValue(sortFromUrl) ? sortFromUrl : defaultCardsDirectoryFilters.sortBy
   };
@@ -216,12 +177,6 @@ export function buildCardsDirectorySearchParams(
 
   if (filters.maxFee !== defaultCardsDirectoryFilters.maxFee) params.set('fee', filters.maxFee);
   else params.delete('fee');
-
-  if (filters.creditProfile !== defaultCardsDirectoryFilters.creditProfile) {
-    params.set('credit', filters.creditProfile);
-  } else {
-    params.delete('credit');
-  }
 
   if (filters.cardType !== defaultCardsDirectoryFilters.cardType) params.set('type', filters.cardType);
   else params.delete('type');
@@ -257,13 +212,6 @@ export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryF
     if (filters.maxFee === '95' && card.annualFee > 95) return false;
     if (filters.maxFee === '250' && card.annualFee > 250) return false;
     if (filters.maxFee === '10000' && card.annualFee <= 250) return false;
-
-    if (
-      filters.creditProfile !== 'all' &&
-      creditRank[card.creditTierMin] > creditRank[filters.creditProfile]
-    ) {
-      return false;
-    }
 
     return true;
   });
@@ -303,7 +251,6 @@ export function countActiveCardsDirectoryFilters(filters: CardsDirectoryFilters)
     filters.issuer !== defaultCardsDirectoryFilters.issuer,
     filters.bonusFilter !== defaultCardsDirectoryFilters.bonusFilter,
     filters.maxFee !== defaultCardsDirectoryFilters.maxFee,
-    filters.creditProfile !== defaultCardsDirectoryFilters.creditProfile,
     filters.cardType !== defaultCardsDirectoryFilters.cardType
   ].filter(Boolean).length;
 }

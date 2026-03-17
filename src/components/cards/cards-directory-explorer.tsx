@@ -19,7 +19,6 @@ export function CardsDirectoryExplorer({ cards, learnArticles }: CardsDirectoryE
     issuer,
     bonusFilter,
     maxFee,
-    creditProfile,
     cardType,
     sortBy,
     selectedCompare,
@@ -33,7 +32,6 @@ export function CardsDirectoryExplorer({ cards, learnArticles }: CardsDirectoryE
     setIssuer,
     setBonusFilter,
     setMaxFee,
-    setCreditProfile,
     setCardType,
     setSortBy,
     clearFilters,
@@ -51,7 +49,6 @@ export function CardsDirectoryExplorer({ cards, learnArticles }: CardsDirectoryE
         issuer={issuer}
         bonusFilter={bonusFilter}
         maxFee={maxFee}
-        creditProfile={creditProfile}
         cardType={cardType}
         sortBy={sortBy}
         issuerOptions={issuerOptions}
@@ -59,7 +56,6 @@ export function CardsDirectoryExplorer({ cards, learnArticles }: CardsDirectoryE
         onIssuerChange={setIssuer}
         onBonusFilterChange={setBonusFilter}
         onMaxFeeChange={setMaxFee}
-        onCreditProfileChange={setCreditProfile}
         onCardTypeChange={setCardType}
         onSortByChange={setSortBy}
         onReset={clearFilters}

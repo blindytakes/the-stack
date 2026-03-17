@@ -60,7 +60,6 @@ describe('cards-directory-explorer', () => {
         issuer: 'American Express',
         bonus: '750',
         fee: '95',
-        credit: 'good',
         type: 'personal',
         sort: 'bonus_minus_fee'
       }),
@@ -72,7 +71,7 @@ describe('cards-directory-explorer', () => {
       issuer: 'american-express',
       bonusFilter: '750',
       maxFee: '95',
-      creditProfile: 'good',
+
       cardType: 'personal',
       sortBy: 'bonus_minus_fee'
     });
@@ -134,7 +133,7 @@ describe('cards-directory-explorer', () => {
       issuer: 'all',
       bonusFilter: '500',
       maxFee: '95',
-      creditProfile: 'good',
+
       cardType: 'personal',
       sortBy: 'bonus_minus_fee'
     });
@@ -148,15 +147,14 @@ describe('cards-directory-explorer', () => {
       issuer: 'chase',
       bonusFilter: '750' as const,
       maxFee: '95' as const,
-      creditProfile: 'good' as const,
       cardType: 'personal' as const,
       sortBy: 'bonus_minus_fee' as const
     };
 
     expect(buildCardsDirectorySearchParams(new URLSearchParams(), filters).toString()).toBe(
-      'q=chase+sapphire&issuer=chase&bonus=750&fee=95&credit=good&type=personal&sort=bonus_minus_fee'
+      'q=chase+sapphire&issuer=chase&bonus=750&fee=95&type=personal&sort=bonus_minus_fee'
     );
-    expect(countActiveCardsDirectoryFilters(filters)).toBe(6);
+    expect(countActiveCardsDirectoryFilters(filters)).toBe(5);
   });
 
   it('builds compare links only when exactly two cards are selected', () => {

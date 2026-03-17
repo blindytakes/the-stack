@@ -13,7 +13,6 @@ import {
   parseCardsDirectoryFilters,
   type BonusFilterValue,
   type CardTypeFilterValue,
-  type CreditFilterValue,
   type FeeFilterValue,
   type SortValue
 } from '@/lib/cards-directory-explorer';
@@ -31,9 +30,6 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
     defaultCardsDirectoryFilters.bonusFilter
   );
   const [maxFee, setMaxFee] = useState<FeeFilterValue>(defaultCardsDirectoryFilters.maxFee);
-  const [creditProfile, setCreditProfile] = useState<CreditFilterValue>(
-    defaultCardsDirectoryFilters.creditProfile
-  );
   const [cardType, setCardType] = useState<CardTypeFilterValue>(defaultCardsDirectoryFilters.cardType);
   const [sortBy, setSortBy] = useState<SortValue>(defaultCardsDirectoryFilters.sortBy);
   const [selectedCompare, setSelectedCompare] = useState<string[]>([]);
@@ -47,11 +43,10 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
       issuer,
       bonusFilter,
       maxFee,
-      creditProfile,
       cardType,
       sortBy
     }),
-    [bonusFilter, cardType, creditProfile, issuer, maxFee, query, sortBy]
+    [bonusFilter, cardType, issuer, maxFee, query, sortBy]
   );
 
   useEffect(() => {
@@ -61,7 +56,6 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
     setIssuer(nextFilters.issuer);
     setBonusFilter(nextFilters.bonusFilter);
     setMaxFee(nextFilters.maxFee);
-    setCreditProfile(nextFilters.creditProfile);
     setCardType(nextFilters.cardType);
     setSortBy(nextFilters.sortBy);
 
@@ -105,7 +99,6 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
     setIssuer(defaultCardsDirectoryFilters.issuer);
     setBonusFilter(defaultCardsDirectoryFilters.bonusFilter);
     setMaxFee(defaultCardsDirectoryFilters.maxFee);
-    setCreditProfile(defaultCardsDirectoryFilters.creditProfile);
     setCardType(defaultCardsDirectoryFilters.cardType);
     setSortBy(defaultCardsDirectoryFilters.sortBy);
   }
@@ -137,7 +130,6 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
     issuer,
     bonusFilter,
     maxFee,
-    creditProfile,
     cardType,
     sortBy,
     selectedCompare,
@@ -151,7 +143,6 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
     setIssuer,
     setBonusFilter,
     setMaxFee,
-    setCreditProfile,
     setCardType,
     setSortBy,
     clearFilters,

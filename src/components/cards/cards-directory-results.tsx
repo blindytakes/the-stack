@@ -3,7 +3,6 @@ import type { CardRecord } from '@/lib/cards';
 import {
   formatBonusValue,
   formatCardType,
-  formatCreditTier,
   formatSpendRequirement
 } from '@/lib/cards-directory-explorer';
 import { normalizeIssuerLabel } from '@/lib/cards-directory';
@@ -88,8 +87,6 @@ export function CardsDirectoryResults({
               <span>{formatCardType(card.cardType)}</span>
               <span className="text-white/20">|</span>
               <span>{card.annualFee === 0 ? 'No fee' : `$${card.annualFee}/yr`}</span>
-              <span className="text-white/20">|</span>
-              <span>{formatCreditTier(card.creditTierMin)}</span>
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2">
