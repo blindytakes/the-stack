@@ -7,10 +7,10 @@ import type { BankingBonusListItem } from '@/lib/banking-bonuses';
 
 type BankingOffersGridProps = {
   offers: BankingBonusListItem[];
-  source: 'banking_directory' | 'banking_detail';
+  source?: string;
 };
 
-export function BankingOffersGrid({ offers, source }: BankingOffersGridProps) {
+export function BankingOffersGrid({ offers }: BankingOffersGridProps) {
   const [modalSlug, setModalSlug] = useState<string | null>(null);
   const [visibleSet, setVisibleSet] = useState<Set<number>>(new Set());
   const gridRef = useRef<HTMLDivElement>(null);
@@ -66,7 +66,6 @@ export function BankingOffersGrid({ offers, source }: BankingOffersGridProps) {
           >
             <BankingOfferCard
               offer={offer}
-              source={source}
               onOpenDetail={setModalSlug}
             />
           </div>

@@ -9,14 +9,12 @@ import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
 
 type BankingOfferCardProps = {
   offer: BankingBonusListItem;
-  source: 'banking_directory' | 'banking_detail';
   variant?: 'directory' | 'compact';
   onOpenDetail?: (slug: string) => void;
 };
 
 export function BankingOfferCard({
   offer,
-  source,
   variant = 'directory',
   onOpenDetail
 }: BankingOfferCardProps) {
@@ -84,21 +82,15 @@ export function BankingOfferCard({
         {offer.bankName}
       </p>
 
-      {/* Actions — side by side */}
-      <div className="mt-auto flex gap-2 border-t border-white/5 pt-4 mt-4">
+      {/* Action */}
+      <div className="mt-auto border-t border-white/5 pt-4 mt-4">
         <button
           type="button"
           onClick={() => onOpenDetail?.(offer.slug)}
-          className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
+          className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
         >
           Details
         </button>
-        <a
-          href={`/banking/${offer.slug}?src=${source}`}
-          className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-muted transition hover:border-brand-teal/40 hover:text-brand-teal"
-        >
-          View steps
-        </a>
       </div>
     </article>
   );

@@ -320,7 +320,6 @@ export default async function BankingOfferDetailPage({ params }: Props) {
                   <BankingOfferCard
                     key={item.slug}
                     offer={item}
-                    source="banking_detail"
                     variant="compact"
                   />
                 ))}
