@@ -3,9 +3,13 @@ import { NewsletterSignup } from '@/components/newsletter-signup';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { CustomerReviewsRail } from '@/components/customer-reviews-rail';
 import { ProofPoints } from '@/components/proof-points';
-import { SamplePlanTimeline } from '@/components/sample-plan-timeline';
+import { HeroOffersCarousel, type HeroOffer } from '@/components/hero-offers-carousel';
 import { PlanComparison } from '@/components/plan-comparison';
 import { HowItWorksSteps } from '@/components/how-it-works-steps';
+import { getCardsData } from '@/lib/cards';
+import { getBankingBonusesData } from '@/lib/banking-bonuses';
+import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
 
 const SITE_URL = 'https://thestackhq.com';
 const LOGO_URL = `${SITE_URL}/icon.png`;
@@ -240,7 +244,72 @@ const jsonLd = {
   ]
 };
 
-export default function HomePage() {
+export const dynamic = 'force-dynamic';
+
+async function getHeroOffers(): Promise<HeroOffer[]> {
+  const offers: HeroOffer[] = [];
+
+  try {
+    const { cards } = await getCardsData();
+    for (const card of cards) {
+      if (card.bestSignUpBonusValue && card.bestSignUpBonusValue > 0) {
+        const pres = getCardImagePresentation(card.slug);
+        offers.push({
+          name: card.name,
+          issuer: card.issuer,
+          type: 'card',
+          bonusValue: card.bestSignUpBonusValue,
+          requirement: card.bestSignUpBonusSpendRequired
+            ? `Spend $${(card.bestSignUpBonusSpendRequired / 1000).toFixed(0)}k in ${Math.round((card.bestSignUpBonusSpendPeriodDays ?? 90) / 30)} months`
+            : 'See requirements',
+          slug: card.slug,
+          imageUrl: card.imageUrl,
+          imagePresentation: pres ?? undefined,
+        });
+      }
+    }
+  } catch {
+    // Cards unavailable — continue with banking only
+  }
+
+  try {
+    const { bonuses } = await getBankingBonusesData();
+    for (const bonus of bonuses) {
+      if (bonus.bonusAmount > 0 && bonus.isActive) {
+        const pres = getBankingImagePresentation(bonus.bankName);
+        offers.push({
+          name: bonus.offerName,
+          issuer: bonus.bankName,
+          type: 'bank',
+          bonusValue: bonus.bonusAmount,
+          requirement: bonus.directDeposit.required
+            ? `Direct deposit${bonus.directDeposit.minimumAmount ? ` $${(bonus.directDeposit.minimumAmount / 1000).toFixed(0)}k` : ''}`
+            : bonus.requiredActions[0] ?? 'See requirements',
+          slug: bonus.slug,
+          imageUrl: bonus.imageUrl,
+          imagePresentation: pres ?? undefined,
+        });
+      }
+    }
+  } catch {
+    // Banking unavailable — continue with cards only
+  }
+
+  // Sort by bonus value descending, then interleave card/bank
+  const sortedCards = offers.filter(o => o.type === 'card').sort((a, b) => b.bonusValue - a.bonusValue);
+  const sortedBanks = offers.filter(o => o.type === 'bank').sort((a, b) => b.bonusValue - a.bonusValue);
+  const interleaved: HeroOffer[] = [];
+  const maxLen = Math.max(sortedCards.length, sortedBanks.length);
+  for (let i = 0; i < maxLen; i++) {
+    if (i < sortedCards.length) interleaved.push(sortedCards[i]);
+    if (i < sortedBanks.length) interleaved.push(sortedBanks[i]);
+  }
+
+  return interleaved;
+}
+
+export default async function HomePage() {
+  const heroOffers = await getHeroOffers();
   return (
     <div className="container-page pt-12">
       <script
@@ -285,7 +354,7 @@ export default function HomePage() {
             </Link>
           </div>
         </div>
-        <SamplePlanTimeline />
+        <HeroOffersCarousel offers={heroOffers} />
       </section>
 
       <ProofPoints className="mt-12" variant="trust-bar" />
