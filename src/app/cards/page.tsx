@@ -43,20 +43,26 @@ export default async function CardsPage() {
 
   return (
     <div className="container-page pt-12 pb-16">
-      <div className="mb-10 max-w-2xl">
-        <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">
-          {directoryCards.length} Cards
-        </p>
-        <h1 className="mt-3 font-heading text-4xl text-text-primary">
-          Card Directory
-        </h1>
-        <p className="mt-4 text-lg text-text-secondary">
-          Browse the full directory by sign-up bonus value, issuer, annual fee, and credit profile.
-          If you want recommendations instead of browsing, start with the shorter card-only plan.
-        </p>
+      {/* Compact hero */}
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">
+            {directoryCards.length} Cards
+          </p>
+          <h1 className="mt-2 font-heading text-4xl text-text-primary">
+            Card Directory
+          </h1>
+        </div>
+        <Link href="/cards/plan">
+          <Button size="sm">Build My Card Plan →</Button>
+        </Link>
       </div>
 
-      <section className="mb-10 rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-8">
+      {/* Cards immediately */}
+      <CardsDirectoryExplorer cards={directoryCards} learnArticles={featuredLearn} />
+
+      {/* Card-Only Planner CTA — below the directory */}
+      <section className="mt-14 rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="max-w-2xl">
             <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">Card-Only Planner</p>
@@ -78,7 +84,8 @@ export default async function CardsPage() {
         </div>
       </section>
 
-      <section className="mb-10 grid gap-3 md:grid-cols-3">
+      {/* Methodology, Disclosure, Data Snapshot */}
+      <section className="mt-8 grid gap-3 md:grid-cols-3">
         <Link
           href="/methodology"
           className="rounded-2xl border border-white/10 bg-bg-surface p-4 transition hover:border-brand-teal/35 hover:bg-bg-elevated"
@@ -105,13 +112,6 @@ export default async function CardsPage() {
           </p>
         </div>
       </section>
-
-      <div id="cards-directory" className="mb-4">
-        <p className="text-xs uppercase tracking-[0.25em] text-text-muted">
-          Browse Every Card
-        </p>
-      </div>
-      <CardsDirectoryExplorer cards={directoryCards} learnArticles={featuredLearn} />
     </div>
   );
 }
