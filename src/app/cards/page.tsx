@@ -45,14 +45,9 @@ export default async function CardsPage() {
     <div className="container-page pt-12 pb-16">
       {/* Compact hero */}
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">
-            {directoryCards.length} Cards
-          </p>
-          <h1 className="mt-2 font-heading text-4xl text-text-primary">
-            Card Directory
-          </h1>
-        </div>
+        <h1 className="font-heading text-4xl text-text-primary">
+          Card Directory
+        </h1>
         <Link href="/cards/plan">
           <Button>Build My Card Plan →</Button>
         </Link>
