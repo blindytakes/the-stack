@@ -3,12 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { CardRecord } from '@/lib/cards';
-import {
-  formatBonusValue,
-  formatCardType,
-  formatSpendRequirement
-} from '@/lib/cards-directory-explorer';
-import { normalizeIssuerLabel } from '@/lib/cards-directory';
+import { formatBonusValue } from '@/lib/cards-directory-explorer';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { EntityImage } from '@/components/ui/entity-image';
 
@@ -68,7 +63,6 @@ export function CardsDirectoryResults({
     <section ref={sectionRef} className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {cards.map((card, index) => {
         const selectedForCompare = selectedCompare.includes(card.slug);
-        const spendRequirement = formatSpendRequirement(card);
         const imagePresentation = getCardImagePresentation(card.slug);
         const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
 
@@ -84,10 +78,17 @@ export function CardsDirectoryResults({
             }`}
             style={{ transitionDelay: isVisible ? `${Math.min(index, 8) * 80}ms` : '0ms' }}
           >
-            {/* Fee badge */}
-            <div className="absolute top-3 right-3 z-10 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-semibold text-text-secondary backdrop-blur-sm">
-              {card.annualFee === 0 ? 'No fee' : `$${card.annualFee}/yr`}
-            </div>
+            {/* Badges — top corners */}
+            {card.cardType === 'business' && (
+              <div className="absolute top-3 left-3 z-10 rounded-full bg-amber-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
+                Business
+              </div>
+            )}
+            {card.annualFee === 0 && (
+              <div className="absolute top-3 right-3 z-10 rounded-full bg-emerald-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
+                No fee
+              </div>
+            )}
 
             {/* Card image */}
             <div className="mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02]">
@@ -109,37 +110,36 @@ export function CardsDirectoryResults({
               <p className="text-2xl font-bold text-brand-teal">
                 {formatBonusValue(card.bestSignUpBonusValue)}
               </p>
-              {spendRequirement && (
-                <p className="mt-1 text-xs text-text-muted">{spendRequirement}</p>
-              )}
             </div>
 
-            {/* Info */}
-            <div className="mt-3 flex items-center justify-center gap-2 text-xs text-text-muted">
-              <span>{normalizeIssuerLabel(card.issuer)}</span>
-              <span className="text-white/20">·</span>
-              <span>{formatCardType(card.cardType)}</span>
-            </div>
-
-            <Link
-              href={`/cards/${card.slug}?src=cards_directory`}
-              className="mt-1 block text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
-            >
-              {card.name}
-            </Link>
-
-            {/* Actions — stacked for separation */}
-            <div className="mt-auto flex flex-col gap-2 pt-4">
+            <div className="mt-3 min-h-[2.5rem] px-2">
               <Link
                 href={`/cards/${card.slug}?src=cards_directory`}
-                className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
+                className="block text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
               >
-                View details
+                {card.name}
+              </Link>
+            </div>
+
+            {/* Annual fee — only show text when there IS a fee (no-fee cards already have the badge) */}
+            {card.annualFee > 0 && (
+              <p className="mt-1.5 text-center text-xs text-text-muted">
+                ${card.annualFee}/yr annual fee
+              </p>
+            )}
+
+            {/* Actions — side by side */}
+            <div className="mt-auto flex gap-2 border-t border-white/5 pt-4 mt-4">
+              <Link
+                href={`/cards/${card.slug}?src=cards_directory`}
+                className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
+              >
+                Details
               </Link>
               <button
                 type="button"
                 onClick={() => onToggleCompare(card.slug)}
-                className={`inline-flex w-full items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition ${
+                className={`inline-flex flex-1 items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition ${
                   selectedForCompare
                     ? 'border-brand-teal/50 bg-brand-teal/15 text-brand-teal'
                     : 'border-white/10 text-text-muted hover:border-brand-teal/40 hover:text-brand-teal'

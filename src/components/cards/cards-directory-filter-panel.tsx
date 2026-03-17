@@ -59,19 +59,17 @@ export function CardsDirectoryFilterPanel({
 
   return (
     <section className="rounded-2xl border border-white/10 bg-bg-surface p-4 md:p-5">
-      {/* Primary row: Search · Issuer · Sort */}
-      <div className="grid gap-3 md:grid-cols-3">
-        <label className="block">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Search</span>
-          <input
-            type="text"
-            value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
-            placeholder="Card name or issuer"
-            className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
-          />
-        </label>
+      {/* Search — full width, prominent */}
+      <input
+        type="text"
+        value={query}
+        onChange={(event) => onQueryChange(event.target.value)}
+        placeholder="Search cards..."
+        className="w-full rounded-xl border border-white/10 bg-bg-elevated px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
+      />
 
+      {/* Issuer · Sort — side by side */}
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
         <label className="block">
           <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Issuer</span>
           <select
@@ -163,9 +161,6 @@ export function CardsDirectoryFilterPanel({
       {/* Footer: count · more filters · reset */}
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <p className="text-xs text-text-muted">
-            Showing {filteredCount} of {cardsCount} cards
-          </p>
           <button
             type="button"
             onClick={() => setShowMore((prev) => !prev)}
