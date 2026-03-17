@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import type { CardRecord } from '@/lib/cards';
 import { formatBonusValue } from '@/lib/cards-directory-explorer';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { EntityImage } from '@/components/ui/entity-image';
+import { CardDetailModal } from '@/components/cards/card-detail-modal';
 
 type CardsDirectoryResultsProps = {
   cards: CardRecord[];
@@ -22,6 +22,7 @@ export function CardsDirectoryResults({
 }: CardsDirectoryResultsProps) {
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [modalSlug, setModalSlug] = useState<string | null>(null);
 
   useEffect(() => {
     const element = sectionRef.current;
@@ -113,12 +114,13 @@ export function CardsDirectoryResults({
             </div>
 
             <div className="mt-3 min-h-[2.5rem] px-2">
-              <Link
-                href={`/cards/${card.slug}?src=cards_directory`}
-                className="block text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
+              <button
+                type="button"
+                onClick={() => setModalSlug(card.slug)}
+                className="block w-full text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
               >
                 {card.name}
-              </Link>
+              </button>
             </div>
 
             {/* Annual fee — only show text when there IS a fee (no-fee cards already have the badge) */}
@@ -130,12 +132,13 @@ export function CardsDirectoryResults({
 
             {/* Actions — side by side */}
             <div className="mt-auto flex gap-2 border-t border-white/5 pt-4 mt-4">
-              <Link
-                href={`/cards/${card.slug}?src=cards_directory`}
+              <button
+                type="button"
+                onClick={() => setModalSlug(card.slug)}
                 className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
               >
                 Details
-              </Link>
+              </button>
               <button
                 type="button"
                 onClick={() => onToggleCompare(card.slug)}
@@ -151,6 +154,11 @@ export function CardsDirectoryResults({
           </article>
         );
       })}
+
+      {/* Detail modal */}
+      {modalSlug && (
+        <CardDetailModal slug={modalSlug} onClose={() => setModalSlug(null)} />
+      )}
     </section>
   );
 }
