@@ -1,10 +1,8 @@
-import Link from 'next/link';
+'use client';
+
 import { EntityImage } from '@/components/ui/entity-image';
 import {
   formatBankingCurrency,
-  getBankingOfferPrimaryConstraint,
-  getBankingOfferPrimaryRequirement,
-  getBankingOfferTimeline,
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
@@ -13,165 +11,95 @@ type BankingOfferCardProps = {
   offer: BankingBonusListItem;
   source: 'banking_directory' | 'banking_detail';
   variant?: 'directory' | 'compact';
+  onOpenDetail?: (slug: string) => void;
 };
-
-function buildClassName(...parts: Array<string | false | null | undefined>) {
-  return parts.filter(Boolean).join(' ');
-}
-
-function getOfferHighlights(offer: BankingBonusListItem) {
-  const highlights: string[] = [];
-
-  if (!offer.directDeposit.required) {
-    highlights.push('No payroll');
-  }
-
-  if (offer.accountType !== 'checking') {
-    highlights.push(offer.accountType === 'bundle' ? 'Bundle' : 'Savings');
-  }
-
-  if (offer.stateRestrictions && offer.stateRestrictions.length > 0) {
-    highlights.push('State-limited');
-  }
-
-  return highlights.slice(0, 2);
-}
 
 export function BankingOfferCard({
   offer,
   source,
-  variant = 'directory'
+  variant = 'directory',
+  onOpenDetail
 }: BankingOfferCardProps) {
   const isCompact = variant === 'compact';
-  const highlights = getOfferHighlights(offer);
-  const primaryRequirement = getBankingOfferPrimaryRequirement(offer);
-  const primaryConstraint = getBankingOfferPrimaryConstraint(offer);
-  const timeline = getBankingOfferTimeline(offer);
   const imagePresentation = getBankingImagePresentation(offer.bankName);
+  const noPayroll = !offer.directDeposit.required;
+  const stateLimited =
+    offer.stateRestrictions && offer.stateRestrictions.length > 0;
 
   return (
-    <Link
-      href={`/banking/${offer.slug}?src=${source}`}
-      className={buildClassName(
-        'group flex h-full flex-col rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] p-4 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_24px_70px_rgba(0,0,0,0.24)]',
-        isCompact && 'rounded-[1.75rem] p-3.5'
-      )}
+    <article
+      className={`group relative flex flex-col rounded-2xl border bg-bg-surface p-5 transition-all duration-300 border-white/10 shadow-[0_0_16px_rgba(45,212,191,0.04)] hover:-translate-y-1.5 hover:border-brand-teal/30 hover:shadow-[0_4px_32px_rgba(45,212,191,0.14)] ${
+        isCompact ? 'p-4' : ''
+      }`}
     >
-      <div
-        className={buildClassName(
-          'rounded-[1.7rem] border border-white/10 bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.18),transparent_58%),radial-gradient(circle_at_85%_20%,rgba(250,204,21,0.12),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] p-3.5',
-          isCompact && 'rounded-[1.45rem] p-3'
-        )}
-      >
-        <div className="relative">
-          {highlights.length > 0 ? (
-            <div className="pointer-events-none absolute -top-2 left-3 z-10 flex max-w-[calc(100%-1.5rem)] flex-wrap gap-2">
-              {highlights.map((highlight, index) => (
-                <span
-                  key={highlight}
-                  className={buildClassName(
-                    'rounded-full border px-2.5 py-1 text-[10px] uppercase tracking-[0.18em] backdrop-blur-sm',
-                    index === 0 && highlight === 'No payroll'
-                      ? 'border-brand-teal/35 bg-brand-teal/10 text-brand-teal'
-                      : 'border-white/15 bg-black/30 text-text-secondary'
-                  )}
-                >
-                  {highlight}
-                </span>
-              ))}
-            </div>
-          ) : null}
-
-          <EntityImage
-            src={offer.imageUrl}
-            alt={`${offer.bankName} logo`}
-            label={offer.bankName}
-            className={buildClassName(
-              'h-[124px] w-full rounded-[1.45rem] sm:h-[132px]',
-              isCompact && 'h-[104px] sm:h-[108px]'
-            )}
-            imgClassName={imagePresentation?.imgClassName ?? 'bg-black/10 px-6 py-4'}
-            fallbackClassName="bg-black/10"
-            fallbackVariant="wordmark"
-            fallbackTextClassName={buildClassName(
-              'px-3 text-xl sm:text-2xl',
-              isCompact && 'text-lg sm:text-xl'
-            )}
-            fit={imagePresentation?.fit}
-            position={imagePresentation?.position}
-            scale={imagePresentation?.scale ?? 1.04}
-          />
+      {/* Badges — top corners */}
+      {noPayroll && (
+        <div className="absolute top-3 left-3 z-10 rounded-full bg-emerald-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
+          No payroll
         </div>
+      )}
+      {stateLimited && (
+        <div className="absolute top-3 right-3 z-10 rounded-full bg-amber-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
+          State-limited
+        </div>
+      )}
+
+      {/* Bank logo */}
+      <div className="mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02]">
+        <EntityImage
+          src={offer.imageUrl}
+          alt={`${offer.bankName} logo`}
+          label={offer.bankName}
+          className={isCompact ? 'h-[104px] w-full' : 'h-[124px] w-full sm:h-[132px]'}
+          imgClassName={imagePresentation?.imgClassName ?? 'bg-black/10 px-6 py-4'}
+          fallbackClassName="bg-black/10"
+          fallbackVariant="wordmark"
+          fallbackTextClassName={isCompact ? 'px-3 text-lg sm:text-xl' : 'px-3 text-xl sm:text-2xl'}
+          fit={imagePresentation?.fit}
+          position={imagePresentation?.position}
+          scale={imagePresentation?.scale ?? 1.04}
+        />
       </div>
 
-      <div className={buildClassName('mt-4 flex flex-1 flex-col', isCompact && 'mt-3.5')}>
-        <div
-          className={buildClassName(
-            'space-y-3',
-            isCompact && 'space-y-3'
-          )}
+      {/* Bonus — the hero */}
+      <div className="mt-1 text-center">
+        <p className={`font-bold text-brand-teal ${isCompact ? 'text-xl' : 'text-2xl'}`}>
+          +{formatBankingCurrency(offer.estimatedNetValue)} bonus
+        </p>
+      </div>
+
+      {/* Offer name */}
+      <div className="mt-3 min-h-[2.5rem] px-2">
+        <button
+          type="button"
+          onClick={() => onOpenDetail?.(offer.slug)}
+          className="block w-full text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
         >
-          <div className="min-w-0">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-text-muted">{offer.bankName}</p>
-            <h3
-              className={buildClassName(
-                'mt-2 font-semibold text-text-primary transition group-hover:text-brand-teal',
-                isCompact ? 'line-clamp-2 text-lg leading-7' : 'line-clamp-2 text-[1.75rem] leading-[1.08]'
-              )}
-            >
-              {offer.offerName}
-            </h3>
-          </div>
-
-          <div
-            className={buildClassName(
-              'rounded-[1.45rem] border border-white/10 bg-bg/45 px-3.5 py-3',
-              isCompact ? 'w-full' : ''
-            )}
-          >
-            <div className={buildClassName('items-end gap-3', isCompact ? 'space-y-2' : 'flex justify-between')}>
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Net est.</p>
-                <p
-                  className={buildClassName(
-                    'mt-2 font-semibold text-brand-teal',
-                    isCompact ? 'text-[2rem] leading-none' : 'text-[2.35rem] leading-none'
-                  )}
-                >
-                  +{formatBankingCurrency(offer.estimatedNetValue)}
-                </p>
-              </div>
-              <p
-                className={buildClassName(
-                  'text-[11px] leading-5 text-brand-gold',
-                  isCompact ? '' : 'max-w-[10rem] text-left'
-                )}
-              >
-                Bonus {formatBankingCurrency(offer.bonusAmount)} /{' '}
-                {timeline.isKnown ? timeline.shortLabel : 'Check terms'}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-3.5 space-y-2.5">
-          <div className="rounded-[1.4rem] border border-white/10 bg-bg/35 px-4 py-2.5">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-text-muted">What it takes</p>
-            <p className="mt-1.5 text-sm leading-6 text-text-primary line-clamp-2">{primaryRequirement}</p>
-          </div>
-          <div className="rounded-[1.4rem] border border-white/10 bg-bg/25 px-4 py-2.5">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-text-muted">Main constraint</p>
-            <p className="mt-1.5 text-sm leading-6 text-text-secondary line-clamp-2">{primaryConstraint}</p>
-          </div>
-        </div>
-
-        <div className="mt-4 flex items-center justify-between gap-3">
-          <span className="text-sm font-semibold text-brand-teal">View steps</span>
-          <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-bg/35 text-text-primary transition group-hover:border-brand-teal/30 group-hover:text-brand-teal">
-            -&gt;
-          </span>
-        </div>
+          {offer.offerName}
+        </button>
       </div>
-    </Link>
+
+      {/* Bank name */}
+      <p className="mt-1.5 text-center text-xs text-text-muted">
+        {offer.bankName}
+      </p>
+
+      {/* Actions — side by side */}
+      <div className="mt-auto flex gap-2 border-t border-white/5 pt-4 mt-4">
+        <button
+          type="button"
+          onClick={() => onOpenDetail?.(offer.slug)}
+          className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
+        >
+          Details
+        </button>
+        <a
+          href={`/banking/${offer.slug}?src=${source}`}
+          className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-muted transition hover:border-brand-teal/40 hover:text-brand-teal"
+        >
+          View steps
+        </a>
+      </div>
+    </article>
   );
 }

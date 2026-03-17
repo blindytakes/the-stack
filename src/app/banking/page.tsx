@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { BankingOfferCard } from '@/components/banking/banking-offer-card';
+import { BankingOffersGrid } from '@/components/banking/banking-offers-grid';
 import {
   bankingBonusesQuerySchema,
   filterBankingBonuses,
@@ -565,11 +565,7 @@ export default async function BankingPage({ searchParams }: Props) {
           </section>
 
           {offers.length > 0 ? (
-            <div className="mt-5 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-              {offers.map((offer) => (
-                <BankingOfferCard key={offer.slug} offer={offer} source="banking_directory" />
-              ))}
-            </div>
+            <BankingOffersGrid offers={offers} source="banking_directory" />
           ) : (
             <section className="mt-5 rounded-2xl border border-white/10 bg-bg-surface p-6">
               <h2 className="text-lg font-semibold text-text-primary">No offers match your filters</h2>
