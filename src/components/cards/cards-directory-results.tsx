@@ -79,8 +79,8 @@ export function CardsDirectoryResults({
               isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
             } ${
               selectedForCompare
-                ? 'border-brand-teal/45 shadow-[0_0_20px_rgba(45,212,191,0.1)]'
-                : 'border-white/10 hover:-translate-y-1.5 hover:border-brand-teal/30 hover:shadow-[0_4px_24px_rgba(45,212,191,0.12)]'
+                ? 'border-brand-teal/45 shadow-[0_0_24px_rgba(45,212,191,0.14)]'
+                : 'border-white/10 shadow-[0_0_16px_rgba(45,212,191,0.04)] hover:-translate-y-1.5 hover:border-brand-teal/30 hover:shadow-[0_4px_32px_rgba(45,212,191,0.14)]'
             }`}
             style={{ transitionDelay: isVisible ? `${Math.min(index, 8) * 80}ms` : '0ms' }}
           >
