@@ -65,7 +65,7 @@ export function formatCardType(value: CardRecord['cardType']) {
 
 export function formatBonusValue(value?: number) {
   if (!value || value <= 0) return 'No active bonus listed';
-  return `Welcome est. $${Math.round(value).toLocaleString()}`;
+  return `+$${Math.round(value).toLocaleString()} bonus`;
 }
 
 export function formatSpendRequirement(card: CardRecord) {

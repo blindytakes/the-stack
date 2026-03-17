@@ -1,3 +1,6 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { CardRecord } from '@/lib/cards';
 import {
@@ -22,12 +25,33 @@ export function CardsDirectoryResults({
   onToggleCompare,
   onClearFilters
 }: CardsDirectoryResultsProps) {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const element = sectionRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
   if (cards.length === 0) {
     return (
       <section className="mt-6 rounded-2xl border border-white/10 bg-bg-surface p-6">
         <h3 className="text-lg font-semibold text-text-primary">No cards match these filters</h3>
         <p className="mt-2 text-sm text-text-secondary">
-          Try broadening issuer, bonus threshold, annual fee, or credit profile filters.
+          Try broadening issuer, bonus threshold, or annual fee filters.
         </p>
         <button
           type="button"
@@ -41,8 +65,8 @@ export function CardsDirectoryResults({
   }
 
   return (
-    <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {cards.map((card) => {
+    <section ref={sectionRef} className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {cards.map((card, index) => {
         const selectedForCompare = selectedCompare.includes(card.slug);
         const spendRequirement = formatSpendRequirement(card);
         const imagePresentation = getCardImagePresentation(card.slug);
@@ -51,13 +75,22 @@ export function CardsDirectoryResults({
         return (
           <article
             key={card.slug}
-            className={`rounded-2xl border bg-bg-surface p-5 transition ${
+            className={`group relative flex flex-col rounded-2xl border bg-bg-surface p-5 transition-all duration-500 ${
+              isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+            } ${
               selectedForCompare
                 ? 'border-brand-teal/45 shadow-[0_0_20px_rgba(45,212,191,0.1)]'
-                : 'border-white/10 hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]'
+                : 'border-white/10 hover:-translate-y-1.5 hover:border-brand-teal/30 hover:shadow-[0_4px_24px_rgba(45,212,191,0.12)]'
             }`}
+            style={{ transitionDelay: isVisible ? `${Math.min(index, 8) * 80}ms` : '0ms' }}
           >
-            <div className="mb-4">
+            {/* Fee badge */}
+            <div className="absolute top-3 right-3 z-10 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-semibold text-text-secondary backdrop-blur-sm">
+              {card.annualFee === 0 ? 'No fee' : `$${card.annualFee}/yr`}
+            </div>
+
+            {/* Card image */}
+            <div className="mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02]">
               <EntityImage
                 src={card.imageUrl}
                 alt={`${card.name} card art`}
@@ -70,42 +103,47 @@ export function CardsDirectoryResults({
                 scale={imagePresentation?.scale}
               />
             </div>
-            <p className="text-xs text-text-muted">{normalizeIssuerLabel(card.issuer)}</p>
+
+            {/* Info */}
+            <div className="flex items-center gap-2 text-xs text-text-muted">
+              <span>{normalizeIssuerLabel(card.issuer)}</span>
+              <span className="text-white/20">·</span>
+              <span>{formatCardType(card.cardType)}</span>
+            </div>
+
             <Link
               href={`/cards/${card.slug}?src=cards_directory`}
-              className="mt-1 block text-base font-semibold text-text-primary transition hover:text-brand-teal"
+              className="mt-1.5 block text-base font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
             >
               {card.name}
             </Link>
-            <p className="mt-2 line-clamp-2 text-sm text-text-secondary">{card.headline}</p>
-            <p className="mt-3 text-lg font-bold text-brand-teal">
+
+            {/* Bonus — the hero of the card */}
+            <p className="mt-3 text-xl font-bold text-brand-teal">
               {formatBonusValue(card.bestSignUpBonusValue)}
             </p>
-            {spendRequirement && <p className="mt-1 text-xs text-text-muted">{spendRequirement}</p>}
+            {spendRequirement && (
+              <p className="mt-1 text-xs text-text-muted">{spendRequirement}</p>
+            )}
 
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-text-muted">
-              <span>{formatCardType(card.cardType)}</span>
-              <span className="text-white/20">|</span>
-              <span>{card.annualFee === 0 ? 'No fee' : `$${card.annualFee}/yr`}</span>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
+            {/* Actions — stacked for separation */}
+            <div className="mt-auto flex flex-col gap-2 pt-5">
               <Link
                 href={`/cards/${card.slug}?src=cards_directory`}
-                className="inline-flex items-center justify-center rounded-full border border-white/10 px-3 py-1.5 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
+                className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
               >
                 View details
               </Link>
               <button
                 type="button"
                 onClick={() => onToggleCompare(card.slug)}
-                className={`inline-flex items-center justify-center rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                className={`inline-flex w-full items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition ${
                   selectedForCompare
                     ? 'border-brand-teal/50 bg-brand-teal/15 text-brand-teal'
-                    : 'border-white/10 text-text-secondary hover:border-brand-teal/40 hover:text-brand-teal'
+                    : 'border-white/10 text-text-muted hover:border-brand-teal/40 hover:text-brand-teal'
                 }`}
               >
-                {selectedForCompare ? 'Selected to compare' : 'Select to compare'}
+                {selectedForCompare ? '✓ Selected to compare' : 'Compare'}
               </button>
             </div>
           </article>
