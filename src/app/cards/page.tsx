@@ -54,7 +54,7 @@ export default async function CardsPage() {
           </h1>
         </div>
         <Link href="/cards/plan">
-          <Button size="sm">Build My Card Plan →</Button>
+          <Button>Build My Card Plan →</Button>
         </Link>
       </div>
 
