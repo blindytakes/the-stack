@@ -3,7 +3,7 @@ import { CountUp } from '@/components/ui/count-up';
 const proofPoints = [
   { end: 3500, prefix: '$', suffix: '', label: 'Avg earned in bonuses', animate: true },
   { end: 2, prefix: '', suffix: ' min', label: 'Quiz', animate: false },
-  { end: 6, prefix: '', suffix: ' months', label: 'Planned for you', animate: false }
+  { end: 100, prefix: '', suffix: '% Free', label: 'Always', animate: false }
 ];
 
 type ProofPointsProps = {

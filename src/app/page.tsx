@@ -326,10 +326,10 @@ export default async function HomePage() {
             Free Personalized Bonus Plan
           </p>
           <h1 className="font-heading text-4xl leading-tight text-text-primary md:text-6xl lg:text-[66px]">
-            The average American leaves $6,000/yr in bonuses on the table.
+            Make Banks Work For You.
           </h1>
           <p className="max-w-[48ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl">
-            Credit card and bank sign-up bonuses are free money — if you know the right order and timing. The Stack builds you a personalized plan to capture them.
+            The Stack builds you a personalized plan to maximize credit card and bank sign-up bonuses — telling you exactly what to open, when to open it, and how to hit every bonus.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
