@@ -6,7 +6,6 @@ export type CustomerReview = {
   name: string;
   quote: string;
   result: string;
-  detail: string;
 };
 
 type CustomerReviewsRailProps = {
@@ -133,10 +132,9 @@ export function CustomerReviewsRail({ reviews }: CustomerReviewsRailProps) {
                   &ldquo;{review.quote}&rdquo;
                 </p>
               </div>
-              <div className="mt-6 min-h-[6.5rem] border-t border-white/10 pt-4">
+              <div className="mt-6 border-t border-white/10 pt-4">
                 <p className="text-xs uppercase tracking-[0.2em] text-brand-teal">{review.result}</p>
                 <p className="mt-2 text-base font-semibold text-text-primary">{review.name}</p>
-                <p className="mt-1 min-h-[3rem] text-sm text-text-secondary">{review.detail}</p>
               </div>
             </article>
           ))}

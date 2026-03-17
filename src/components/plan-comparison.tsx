@@ -14,9 +14,17 @@ interface GanttRow {
 const ganttRows: GanttRow[] = [
   { name: 'Chase Sapphire Preferred', type: 'card', action: 'Spend $4k in 3 months', value: '$1,250', startCol: 1, endCol: 4 },
   { name: 'Chase Total Checking', type: 'bank', action: 'Direct deposit × 2 months', value: '$400', startCol: 2, endCol: 4 },
-  { name: 'Amex Gold Card', type: 'card', action: 'Spend $6k in 6 months', value: '$1,200', startCol: 4, endCol: 7 },
-  { name: 'SoFi Checking & Savings', type: 'bank', action: 'Direct deposit $1k', value: '$650', startCol: 5, endCol: 7 },
+  { name: 'Amex Gold Card', type: 'card', action: 'Spend $6k in 6 months', value: '$1,200', startCol: 3, endCol: 6 },
+  { name: 'SoFi Checking & Savings', type: 'bank', action: 'Direct deposit $1k', value: '$650', startCol: 4, endCol: 6 },
+  { name: 'Capital One Venture X', type: 'card', action: 'Spend $4k in 3 months', value: '$1,500', startCol: 5, endCol: 7 },
 ];
+
+const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function getUpcomingMonths(count: number): string[] {
+  const now = new Date();
+  return Array.from({ length: count }, (_, i) => MONTH_LABELS[(now.getMonth() + i) % 12]);
+}
 
 export function PlanComparison() {
   const ref = useRef<HTMLDivElement>(null);
@@ -41,7 +49,7 @@ export function PlanComparison() {
       {/* Headline */}
       <div className="mb-10 text-center">
         <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
-          The Stack gives you a plan, not a random list.
+          The Stack tells you exactly which offers to grab — and when.
         </h2>
       </div>
 
@@ -57,10 +65,10 @@ export function PlanComparison() {
               Move
             </span>
           </div>
-          {[1, 2, 3, 4, 5, 6].map((m) => (
-            <div key={m} className="px-2 py-4 text-center">
+          {getUpcomingMonths(6).map((month, i) => (
+            <div key={i} className="px-2 py-4 text-center">
               <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-text-muted/50">
-                M{m}
+                {month}
               </span>
             </div>
           ))}

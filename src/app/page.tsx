@@ -50,7 +50,7 @@ const faqs = [
   {
     question: 'Do I need a spreadsheet to use this?',
     answer:
-      'No. The point of the Bonus Planner is to give you a clearer plan without having to maintain your own spreadsheet.'
+      'No. We built The Stack specifically to kill the manual spreadsheet. We handle the tracking, the rules, and the deadlines so you can focus on the profit.'
   }
 ] as const;
 
@@ -84,7 +84,7 @@ const howItWorksSteps = [
   },
   {
     step: '03',
-    title: 'Follow the plan and earn',
+    title: 'Execute and earn',
     summary: 'Each move has dates, deadlines, and where to apply.',
     description:
       'Your plan tells you exactly when to apply, how long you have to hit the spend or deposit requirement, and when to expect the bonus — so you never miss a deadline.',
@@ -122,7 +122,7 @@ const differentiationCards = [
   {
     title: 'Tells you what to open and when',
     description:
-      'Your plan is ordered so each application lands at the right time — respecting issuer rules, cooldown periods, and spend windows.',
+      'Your plan is ordered to maximize real dollar value while respecting issuer rules, cooldown periods, and spend windows.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M6 6h8M6 10h6M6 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -131,13 +131,14 @@ const differentiationCards = [
     )
   },
   {
-    title: 'Updated when offers change',
+    title: 'Optimize spend, don\u2019t increase it',
     description:
-      'Sign-up bonuses appear and disappear. We track the current offers so your plan always reflects what is live right now.',
+      'We don\u2019t want you to spend more — we want you to spend smarter. The Stack maps bonuses to your existing budget, not unnecessary purchases.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
-        <path d="M14.5 5.5A6 6 0 1 0 16 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        <path d="M14.5 2.5v3h3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M10 3v14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M6 7h8M6 13h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <circle cx="10" cy="10" r="7.5" stroke="currentColor" strokeWidth="1.5" />
       </svg>
     )
   }
@@ -188,36 +189,31 @@ const sampleReviews = [
     name: 'Ashley P.',
     quote:
       'I was overwhelmed by card lists. The Stack gave me a clear order, and I ended up earning just over $3,000 in my first 12 months.',
-    result: '$3,000+ in the first year',
-    detail: 'Travel goal · first year using bonuses'
+    result: '$3,000+ earned in the first year'
   },
   {
     name: 'Marcus T.',
     quote:
       'I had a rough idea of what cards I wanted, but no idea what order to open them in. The Stack laid it out step by step with deadlines I could actually follow.',
-    result: 'Clear sequencing for 4 moves',
-    detail: 'Already had a few cards · wanted better order'
+    result: '$2,400 in bonuses · clear sequencing strategy'
   },
   {
     name: 'Priya R.',
     quote:
       'I liked that it included a bank bonus too. It felt like an actual plan, and I did not need a spreadsheet to keep up with it.',
-    result: 'No spreadsheet needed',
-    detail: 'Cash + travel mix · wanted something simple'
+    result: '$1,800 across cards and bank bonuses'
   },
   {
     name: 'Daniel K.',
     quote:
-      'Most sites just throw the biggest offers at you. This was the first tool that adjusted the order based on my credit and what I could realistically hit.',
-    result: 'Better sequencing',
-    detail: 'Good credit · moderate monthly spend'
+      'I already knew the cards I wanted. What surprised me was the order — it flagged a Chase 5/24 conflict I hadn\'t considered.',
+    result: '$4,200 earned · avoided a 5/24 mistake'
   },
   {
     name: 'Lauren S.',
     quote:
       'I used to spend hours comparing cards in browser tabs. This just told me which one to get now and which to wait on. Saved me a ton of time.',
-    result: 'Replaced hours of research',
-    detail: 'First time stacking bonuses'
+    result: '$2,100 earned · replaced hours of research'
   }
 ] as const;
 

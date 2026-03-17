@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useRef, useState, useEffect } from 'react';
 import { EntityImage } from '@/components/ui/entity-image';
 
 export type HeroOffer = {
@@ -78,73 +78,125 @@ function OfferCard({ offer }: { offer: HeroOffer }) {
   );
 }
 
+function EdgeArrow({
+  direction,
+  onClick,
+  visible,
+}: {
+  direction: 'left' | 'right';
+  onClick: () => void;
+  visible: boolean;
+}) {
+  const isLeft = direction === 'left';
+  return (
+    <button
+      onClick={onClick}
+      aria-label={`Scroll ${direction}`}
+      className={`absolute top-0 ${isLeft ? 'left-0' : 'right-0'} z-10 flex h-full w-12 items-center justify-center transition-opacity duration-200 ${
+        visible ? 'opacity-100' : 'pointer-events-none opacity-0'
+      }`}
+      style={{
+        background: isLeft
+          ? 'linear-gradient(to right, rgba(0,0,0,0.6), transparent)'
+          : 'linear-gradient(to left, rgba(0,0,0,0.6), transparent)',
+      }}
+    >
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 16 16"
+        fill="none"
+        className={isLeft ? 'rotate-180' : ''}
+      >
+        <path
+          d="M6 3L11 8L6 13"
+          stroke="white"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </button>
+  );
+}
+
 export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const pausedRef = useRef(false);
-  const offsetRef = useRef(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const doubled = [...offers, ...offers];
+  const cardWidth = 280;
+  const gap = 16;
+  const scrollAmount = cardWidth + gap;
+
+  const updateScrollState = useCallback(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    setCanScrollLeft(track.scrollLeft > 2);
+    setCanScrollRight(
+      track.scrollLeft < track.scrollWidth - track.clientWidth - 2
+    );
+  }, []);
 
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
+    updateScrollState();
 
-    let rafId: number;
-    const speed = 0.4;
-    let started = false;
+    const observer = new ResizeObserver(updateScrollState);
+    observer.observe(track);
+    return () => observer.disconnect();
+  }, [updateScrollState]);
 
-    const delayId = setTimeout(() => {
-      started = true;
-    }, 2000);
-
-    function tick() {
-      if (started && !pausedRef.current) {
-        offsetRef.current += speed;
-        const halfWidth = track!.scrollWidth / 2;
-        if (offsetRef.current >= halfWidth) {
-          offsetRef.current -= halfWidth;
-        }
-        track!.style.transform = `translate3d(${-offsetRef.current}px, 0, 0)`;
-      }
-      rafId = requestAnimationFrame(tick);
-    }
-
-    rafId = requestAnimationFrame(tick);
-    return () => {
-      clearTimeout(delayId);
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
+  const scroll = useCallback(
+    (direction: 'left' | 'right') => {
+      const track = trackRef.current;
+      if (!track) return;
+      const delta = direction === 'left' ? -scrollAmount : scrollAmount;
+      track.scrollBy({ left: delta, behavior: 'smooth' });
+    },
+    [scrollAmount]
+  );
 
   return (
-    <div
-      className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] shadow-[0_0_45px_rgba(45,212,191,0.08)] backdrop-blur-2xl"
-      onMouseEnter={() => {
-        pausedRef.current = true;
-      }}
-      onMouseLeave={() => {
-        pausedRef.current = false;
-      }}
-    >
+    <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] shadow-[0_0_45px_rgba(45,212,191,0.08)] backdrop-blur-2xl">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.14),transparent_40%)]" />
 
       <div className="relative">
+        {/* Header */}
         <div className="border-b border-white/10 px-6 py-4 md:px-8">
           <p className="text-lg font-semibold leading-relaxed text-text-primary md:text-xl">
-            Hard to know which bonus is right for you?
+            Hard to know your next financial move?
           </p>
-          <p className="mt-1 text-sm text-brand-teal md:text-base">
+          <p className="mt-1 text-lg text-brand-teal md:text-xl">
             The Stack tells you.
           </p>
         </div>
 
-        <div className="overflow-hidden px-6 py-5 md:px-8">
+        {/* Scrollable track with edge arrows */}
+        <div className="relative">
+          <EdgeArrow
+            direction="left"
+            onClick={() => scroll('left')}
+            visible={canScrollLeft}
+          />
+          <EdgeArrow
+            direction="right"
+            onClick={() => scroll('right')}
+            visible={canScrollRight}
+          />
           <div
             ref={trackRef}
-            className="flex w-max gap-4 will-change-transform"
+            onScroll={updateScrollState}
+            className="flex gap-4 overflow-x-auto scroll-smooth px-6 py-5 md:px-8"
+            style={{
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch',
+            }}
           >
-            {doubled.map((offer, i) => (
-              <OfferCard key={`${offer.slug}-${i}`} offer={offer} />
+            {offers.map((offer) => (
+              <OfferCard key={offer.slug} offer={offer} />
             ))}
           </div>
         </div>
