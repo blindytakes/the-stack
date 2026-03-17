@@ -358,6 +358,18 @@ export default async function HomePage() {
       <section className="mt-14">
         <PlanComparison />
 
+        {/* Privacy reassurance */}
+        <div className="mt-10 flex items-center justify-center gap-x-10 gap-y-4">
+          {privacyPoints.map((point) => (
+            <div key={point.label} className="flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-teal/10 text-brand-teal shadow-[0_0_12px_rgba(45,212,191,0.15)]">
+                {point.icon}
+              </div>
+              <p className="text-xl font-medium text-text-primary md:text-2xl">{point.label}</p>
+            </div>
+          ))}
+        </div>
+
         <div className="relative mt-8 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 shadow-[0_8px_60px_rgba(45,212,191,0.06),0_2px_20px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-10">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.08),transparent_45%),radial-gradient(circle_at_bottom_right,rgba(212,168,83,0.06),transparent_40%)]" />
           <div className="relative max-w-3xl">
@@ -370,18 +382,6 @@ export default async function HomePage() {
           </div>
 
           <HowItWorksSteps steps={howItWorksSteps} />
-        </div>
-
-        {/* Privacy reassurance */}
-        <div className="mt-10 flex items-center justify-center gap-x-10 gap-y-4">
-          {privacyPoints.map((point) => (
-            <div key={point.label} className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-teal/10 text-brand-teal shadow-[0_0_12px_rgba(45,212,191,0.15)]">
-                {point.icon}
-              </div>
-              <p className="text-xl font-medium text-text-primary md:text-2xl">{point.label}</p>
-            </div>
-          ))}
         </div>
       </section>
 
