@@ -6,6 +6,7 @@ import { ProofPoints } from '@/components/proof-points';
 import { HeroOffersCarousel, type HeroOffer } from '@/components/hero-offers-carousel';
 import { PlanComparison } from '@/components/plan-comparison';
 import { HowItWorksSteps } from '@/components/how-it-works-steps';
+import { FaqAccordion } from '@/components/faq-accordion';
 import { getCardsData } from '@/lib/cards';
 import { getBankingBonusesData } from '@/lib/banking-bonuses';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
@@ -438,21 +439,8 @@ export default async function HomePage() {
               Common questions
             </h2>
           </div>
-          <div className="mt-10 space-y-3">
-            {faqs.map((item) => (
-              <details
-                key={item.question}
-                className="group rounded-2xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm open:border-brand-teal/30 open:shadow-[0_0_15px_rgba(45,212,191,0.06)]"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-lg font-semibold text-text-primary md:text-xl">
-                  <span>{item.question}</span>
-                  <span className="text-brand-teal transition group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-3 pr-8 text-base leading-8 text-text-secondary md:text-lg">
-                  {item.answer}
-                </p>
-              </details>
-            ))}
+          <div className="mt-10">
+            <FaqAccordion items={faqs} />
           </div>
         </div>
       </section>
