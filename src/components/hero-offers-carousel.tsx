@@ -91,9 +91,14 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
 
     let rafId: number;
     const speed = 0.4;
+    let started = false;
+
+    const delayId = setTimeout(() => {
+      started = true;
+    }, 2000);
 
     function tick() {
-      if (!pausedRef.current) {
+      if (started && !pausedRef.current) {
         offsetRef.current += speed;
         const halfWidth = track!.scrollWidth / 2;
         if (offsetRef.current >= halfWidth) {
@@ -105,7 +110,10 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
     }
 
     rafId = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafId);
+    return () => {
+      clearTimeout(delayId);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (
