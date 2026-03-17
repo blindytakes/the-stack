@@ -14,8 +14,6 @@ import {
 } from '@/lib/cards-directory-explorer';
 
 type CardsDirectoryFilterPanelProps = {
-  cardsCount: number;
-  filteredCount: number;
   activeFilterCount: number;
   query: string;
   issuer: string;
@@ -34,8 +32,6 @@ type CardsDirectoryFilterPanelProps = {
 };
 
 export function CardsDirectoryFilterPanel({
-  cardsCount,
-  filteredCount,
   activeFilterCount,
   query,
   issuer,

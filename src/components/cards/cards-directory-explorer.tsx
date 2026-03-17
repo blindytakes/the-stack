@@ -42,8 +42,6 @@ export function CardsDirectoryExplorer({ cards, learnArticles }: CardsDirectoryE
   return (
     <div>
       <CardsDirectoryFilterPanel
-        cardsCount={cards.length}
-        filteredCount={filteredSortedCards.length}
         activeFilterCount={activeFilterCount}
         query={query}
         issuer={issuer}
