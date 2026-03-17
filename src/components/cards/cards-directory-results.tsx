@@ -65,7 +65,7 @@ export function CardsDirectoryResults({
   }
 
   return (
-    <section ref={sectionRef} className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <section ref={sectionRef} className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {cards.map((card, index) => {
         const selectedForCompare = selectedCompare.includes(card.slug);
         const spendRequirement = formatSpendRequirement(card);
@@ -104,8 +104,18 @@ export function CardsDirectoryResults({
               />
             </div>
 
+            {/* Bonus — the hero of the card */}
+            <div className="mt-1 text-center">
+              <p className="text-2xl font-bold text-brand-teal">
+                {formatBonusValue(card.bestSignUpBonusValue)}
+              </p>
+              {spendRequirement && (
+                <p className="mt-1 text-xs text-text-muted">{spendRequirement}</p>
+              )}
+            </div>
+
             {/* Info */}
-            <div className="flex items-center gap-2 text-xs text-text-muted">
+            <div className="mt-3 flex items-center justify-center gap-2 text-xs text-text-muted">
               <span>{normalizeIssuerLabel(card.issuer)}</span>
               <span className="text-white/20">·</span>
               <span>{formatCardType(card.cardType)}</span>
@@ -113,21 +123,13 @@ export function CardsDirectoryResults({
 
             <Link
               href={`/cards/${card.slug}?src=cards_directory`}
-              className="mt-1.5 block text-base font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
+              className="mt-1 block text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
             >
               {card.name}
             </Link>
 
-            {/* Bonus — the hero of the card */}
-            <p className="mt-3 text-xl font-bold text-brand-teal">
-              {formatBonusValue(card.bestSignUpBonusValue)}
-            </p>
-            {spendRequirement && (
-              <p className="mt-1 text-xs text-text-muted">{spendRequirement}</p>
-            )}
-
             {/* Actions — stacked for separation */}
-            <div className="mt-auto flex flex-col gap-2 pt-5">
+            <div className="mt-auto flex flex-col gap-2 pt-4">
               <Link
                 href={`/cards/${card.slug}?src=cards_directory`}
                 className="inline-flex w-full items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
