@@ -78,7 +78,7 @@ export function CardsDirectoryResults({
               {card.name}
             </Link>
             <p className="mt-2 line-clamp-2 text-sm text-text-secondary">{card.headline}</p>
-            <p className="mt-3 text-xs font-semibold text-brand-gold">
+            <p className="mt-3 text-lg font-bold text-brand-teal">
               {formatBonusValue(card.bestSignUpBonusValue)}
             </p>
             {spendRequirement && <p className="mt-1 text-xs text-text-muted">{spendRequirement}</p>}
