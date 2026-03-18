@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { getCardsData } from '@/lib/cards';
 import {
   allBlogArticles,
@@ -45,29 +44,6 @@ export default async function CardsPage() {
     <div className="container-page pt-12 pb-16">
       {/* Cards immediately */}
       <CardsDirectoryExplorer cards={directoryCards} learnArticles={featuredLearn} />
-
-      {/* Card-Only Planner CTA — below the directory */}
-      <section className="mt-14 rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-8">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="max-w-2xl">
-            <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">Card-Only Planner</p>
-            <h2 className="mt-2 font-heading text-3xl text-text-primary">Want a ranked card plan instead?</h2>
-            <p className="mt-3 text-sm text-text-secondary">
-              Use the dedicated planner page to enter the cards you already have, your Chase
-              status, and a few spend and credit inputs. Then we will build a focused bonus-first
-              card plan without crowding the directory.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/cards/plan">
-              <Button>Build My Card Plan</Button>
-            </Link>
-            <Link href="/tools/card-finder?mode=full">
-              <Button variant="ghost">Full Cards + Banking Planner</Button>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       {/* Methodology, Disclosure, Data Snapshot */}
       <section className="mt-8 grid gap-3 md:grid-cols-3">

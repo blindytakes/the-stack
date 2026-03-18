@@ -166,7 +166,7 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
         {/* Header */}
         <div className="border-b border-white/10 px-6 py-4 md:px-8">
           <p className="text-lg font-semibold leading-relaxed text-text-primary md:text-xl">
-            Hard to know your next financial move?
+            Which of these is actually right for you?
           </p>
           <p className="mt-1 text-lg text-brand-teal md:text-xl">
             The Stack tells you.
