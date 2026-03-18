@@ -1,5 +1,6 @@
 import type { CardRecord } from '@/lib/cards';
 import type { QuizRequest, QuizResult } from '@/lib/quiz-engine';
+import type { AvailableCash } from '@/lib/quiz-engine';
 import {
   getBankingOfferRequirements,
   type BankingBonusListItem,
@@ -34,7 +35,9 @@ export type PlannerExclusionReason =
   | 'amex_lifetime_rule'
   | 'chase_5_24'
   | 'direct_deposit_required'
-  | 'state_restricted';
+  | 'state_restricted'
+  | 'existing_bank'
+  | 'insufficient_cash';
 
 export type PlannerExcludedOffer = {
   id: string;
@@ -82,6 +85,16 @@ export type CardPlannerInput = Pick<CardRecord, 'slug' | 'name' | 'issuer' | 'an
   spendPeriodDays: number;
 };
 
+function normalizeBankName(name: string): string {
+  return name.trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+const availableCashCeiling: Record<AvailableCash, number> = {
+  up_to_2500: 2500,
+  from_2501_to_9999: 9999,
+  at_least_10000: 25000
+};
+
 function getCardExclusionReasons(card: QuizResult, input: QuizRequest): PlannerExclusionReason[] {
   const reasons: PlannerExclusionReason[] = [];
 
@@ -115,6 +128,20 @@ function getBankingExclusionReasons(
     !offer.stateRestrictions.includes(input.state)
   ) {
     reasons.push('state_restricted');
+  }
+
+  if (input.ownedBankNames.length > 0) {
+    const ownedNormalized = new Set(input.ownedBankNames.map(normalizeBankName));
+    if (ownedNormalized.has(normalizeBankName(offer.bankName))) {
+      reasons.push('existing_bank');
+    }
+  }
+
+  if (
+    typeof offer.minimumOpeningDeposit === 'number' &&
+    offer.minimumOpeningDeposit > availableCashCeiling[input.availableCash]
+  ) {
+    reasons.push('insufficient_cash');
   }
 
   return reasons;
@@ -282,7 +309,9 @@ export function buildPlanRecommendationsFromQuiz(
         timelineDays: recommendation.timelineDays,
         directDepositRequired: offer.directDeposit.required,
         minimumOpeningDeposit: offer.minimumOpeningDeposit,
-        directDepositAvailability: input.directDeposit
+        directDepositAvailability: input.directDeposit,
+        accountType: offer.accountType,
+        bankAccountPreference: input.bankAccountPreference
       })
     });
   }

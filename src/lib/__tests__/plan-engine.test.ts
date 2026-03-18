@@ -15,6 +15,9 @@ function makeInput(overrides: Partial<QuizRequest> = {}): QuizRequest {
     state: 'NY',
     monthlySpend: 'from_2500_to_5000',
     pace: 'balanced',
+    availableCash: 'from_2501_to_9999',
+    bankAccountPreference: 'no_preference',
+    ownedBankNames: [],
     ...overrides
   };
 }

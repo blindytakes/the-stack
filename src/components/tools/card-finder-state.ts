@@ -6,7 +6,7 @@ import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
 import { submitPlanQuiz } from '@/lib/plan-client';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import { cardFinderSteps } from '@/components/tools/card-finder-config';
-import type { CardSelectionQuestionId } from '@/components/tools/card-finder-sections';
+import type { CardSelectionQuestionId, BankSelectionQuestionId } from '@/components/tools/card-finder-sections';
 
 type QuizAnswers = Partial<QuizRequest>;
 
@@ -20,17 +20,19 @@ export function useCardFinderState() {
   const currentStep = cardFinderSteps[stepIndex];
   const isLastStep = stepIndex === cardFinderSteps.length - 1;
   const canContinue =
-    currentStep.type === 'card_selection' ? true : Boolean(answers[currentStep.id]);
+    currentStep.type === 'card_selection' || currentStep.type === 'bank_selection'
+      ? true
+      : Boolean(answers[currentStep.id]);
   const progress = useMemo(
     () => (stepIndex / cardFinderSteps.length) * 100,
     [stepIndex]
   );
   const isComplete = cardFinderSteps.every((step) =>
-    step.type === 'card_selection' ? true : Boolean(answers[step.id])
+    step.type === 'card_selection' || step.type === 'bank_selection' ? true : Boolean(answers[step.id])
   );
 
   function selectCurrentOption(value: string) {
-    if (currentStep.type === 'card_selection') {
+    if (currentStep.type === 'card_selection' || currentStep.type === 'bank_selection') {
       return;
     }
 
@@ -67,6 +69,38 @@ export function useCardFinderState() {
     }
 
     updateCardSelection(currentStep.id, []);
+  }
+
+  function updateBankSelection(selectionId: BankSelectionQuestionId, nextValues: string[]) {
+    setAnswers((prev) => ({
+      ...prev,
+      [selectionId]: nextValues
+    }));
+  }
+
+  function toggleBankSelection(name: string) {
+    if (currentStep.type !== 'bank_selection') {
+      return;
+    }
+
+    const selectionId = currentStep.id;
+    const currentValues = answers[selectionId] ?? [];
+    const next = new Set(currentValues);
+    if (next.has(name)) {
+      next.delete(name);
+    } else {
+      next.add(name);
+    }
+
+    updateBankSelection(selectionId, Array.from(next));
+  }
+
+  function clearBankSelection() {
+    if (currentStep.type !== 'bank_selection') {
+      return;
+    }
+
+    updateBankSelection(currentStep.id, []);
   }
 
   function goBack() {
@@ -132,6 +166,8 @@ export function useCardFinderState() {
     selectCurrentOption,
     toggleCardSelection,
     clearCardSelection,
+    toggleBankSelection,
+    clearBankSelection,
     goBack,
     goForward,
     submitQuiz,

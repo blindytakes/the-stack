@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import {
+  BankSelectionQuestion,
   CardSelectionQuestion,
   CardFinderActions,
   CardFinderProgress,
@@ -43,7 +44,7 @@ export function CardFinderPathChooser() {
   );
 }
 
-export function CardFinderTool({ cards }: { cards: CardRecord[] }) {
+export function CardFinderTool({ cards, bankNames = [] }: { cards: CardRecord[]; bankNames?: string[] }) {
   const {
     steps,
     stepIndex,
@@ -58,11 +59,18 @@ export function CardFinderTool({ cards }: { cards: CardRecord[] }) {
     selectCurrentOption,
     toggleCardSelection,
     clearCardSelection,
+    toggleBankSelection,
+    clearBankSelection,
     goBack,
     goForward,
     submitQuiz
   } = useCardFinderState();
   const selectionCards = currentStep.type !== 'card_selection' ? [] : cards;
+
+  const isOptionalStep =
+    currentStep.type === 'card_selection' || currentStep.type === 'bank_selection';
+  const optionalStepEmpty =
+    isOptionalStep && (answers[currentStep.id]?.length ?? 0) === 0;
 
   return (
     <section className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
@@ -86,6 +94,14 @@ export function CardFinderTool({ cards }: { cards: CardRecord[] }) {
           searchPlaceholder="Search by card name or issuer"
           selectedHeading="Already open"
         />
+      ) : currentStep.type === 'bank_selection' ? (
+        <BankSelectionQuestion
+          step={currentStep}
+          bankNames={bankNames}
+          selectedNames={answers[currentStep.id] ?? []}
+          onToggle={toggleBankSelection}
+          onClear={clearBankSelection}
+        />
       ) : currentStep.type === 'select' ? (
         <CardFinderSelectQuestion
           step={currentStep}
@@ -108,11 +124,7 @@ export function CardFinderTool({ cards }: { cards: CardRecord[] }) {
         isComplete={isComplete}
         loading={loading}
         hideContinue={currentStep.type === 'options'}
-        continueLabel={
-          currentStep.type === 'card_selection' && (answers[currentStep.id]?.length ?? 0) === 0
-            ? 'Skip for now'
-            : 'Continue'
-        }
+        continueLabel={optionalStepEmpty ? 'Skip for now' : 'Continue'}
         onBack={goBack}
         onContinue={goForward}
         onSubmit={submitQuiz}

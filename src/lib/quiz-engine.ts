@@ -11,6 +11,12 @@ import { meetsCreditTier, scoreCardFit } from '@/lib/scoring-policy';
  * points for spend-category fit against user spending profile.
  */
 
+export const availableCashValues = ['up_to_2500', 'from_2501_to_9999', 'at_least_10000'] as const;
+export type AvailableCash = (typeof availableCashValues)[number];
+
+export const bankAccountPreferenceValues = ['checking', 'savings', 'no_preference'] as const;
+export type BankAccountPreference = (typeof bankAccountPreferenceValues)[number];
+
 export const quizRequestSchema = z.object({
   goal: z.enum(['cashback', 'travel', 'flexibility']),
   spend: z.enum(spendingCategoryValues),
@@ -37,7 +43,14 @@ export const quizRequestSchema = z.object({
   monthlySpend: z
     .enum(['lt_2500', 'from_2500_to_5000', 'at_least_5000'])
     .default('from_2500_to_5000'),
-  pace: z.enum(['conservative', 'balanced', 'aggressive']).default('balanced')
+  pace: z.enum(['conservative', 'balanced', 'aggressive']).default('balanced'),
+  availableCash: z.enum(availableCashValues).default('from_2501_to_9999'),
+  bankAccountPreference: z.enum(bankAccountPreferenceValues).default('no_preference'),
+  ownedBankNames: z
+    .array(z.string().trim().min(1))
+    .max(50)
+    .default([])
+    .transform((names) => Array.from(new Set(names)))
 });
 
 export type QuizRequest = z.infer<typeof quizRequestSchema>;

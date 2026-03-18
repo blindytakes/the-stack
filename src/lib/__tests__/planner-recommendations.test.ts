@@ -20,7 +20,10 @@ const baseInput: QuizRequest = {
   directDeposit: 'yes',
   state: 'NY',
   monthlySpend: 'from_2500_to_5000',
-  pace: 'balanced'
+  pace: 'balanced',
+  availableCash: 'from_2501_to_9999',
+  bankAccountPreference: 'no_preference',
+  ownedBankNames: []
 };
 
 describe('toPlannerRecommendationFromCard', () => {
@@ -396,5 +399,76 @@ describe('buildPlanRecommendationsFromQuiz', () => {
 
     expect(bundle.recommendations).toHaveLength(0);
     expect(bundle.exclusions.some((item) => item.reasons.includes('chase_5_24'))).toBe(true);
+  });
+
+  it('excludes banking offers when the user already banks there', async () => {
+    const bankingBonuses = (await getBankingBonusesData()).bonuses;
+    const summitOffer = bankingBonuses.find((b) => b.slug === 'summit-national-checking-300');
+    expect(summitOffer).toBeDefined();
+
+    const bundle = buildPlanRecommendationsFromQuiz(
+      [],
+      bankingBonuses,
+      {
+        ...baseInput,
+        ownedBankNames: ['Summit National Bank']
+      },
+      { maxBanking: 5 }
+    );
+
+    expect(
+      bundle.exclusions.some(
+        (item) =>
+          item.id === 'bank:summit-national-checking-300' &&
+          item.reasons.includes('existing_bank')
+      )
+    ).toBe(true);
+  });
+
+  it('excludes banking offers when opening deposit exceeds available cash', async () => {
+    const bankingBonuses = (await getBankingBonusesData()).bonuses;
+    // atlas-online-savings-250 requires $15,000 opening deposit
+    const atlasOffer = bankingBonuses.find((b) => b.slug === 'atlas-online-savings-250');
+    expect(atlasOffer).toBeDefined();
+
+    const bundle = buildPlanRecommendationsFromQuiz(
+      [],
+      bankingBonuses,
+      {
+        ...baseInput,
+        availableCash: 'from_2501_to_9999'
+      },
+      { maxBanking: 5 }
+    );
+
+    expect(
+      bundle.exclusions.some(
+        (item) =>
+          item.id === 'bank:atlas-online-savings-250' &&
+          item.reasons.includes('insufficient_cash')
+      )
+    ).toBe(true);
+  });
+
+  it('does not exclude banking offers when available cash covers the deposit', async () => {
+    const bankingBonuses = (await getBankingBonusesData()).bonuses;
+
+    const bundle = buildPlanRecommendationsFromQuiz(
+      [],
+      bankingBonuses,
+      {
+        ...baseInput,
+        availableCash: 'at_least_10000'
+      },
+      { maxBanking: 5 }
+    );
+
+    expect(
+      bundle.exclusions.some(
+        (item) =>
+          item.id === 'bank:atlas-online-savings-250' &&
+          item.reasons.includes('insufficient_cash')
+      )
+    ).toBe(false);
   });
 });

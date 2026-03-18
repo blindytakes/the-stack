@@ -61,5 +61,33 @@ export const cardFinderSteps: FinderQuestionStep[] = [
     type: 'card_selection',
     title: 'Which cards do you already have?',
     description: 'Optional, but useful. We will exclude cards you already have from new-card recommendations.'
+  },
+  {
+    id: 'availableCash',
+    type: 'options',
+    title: 'How much cash can you set aside for bank bonuses?',
+    description: 'Some bank bonuses require a minimum opening deposit. This keeps offers you can fund in the plan.',
+    options: [
+      { label: 'Up to $2,500', value: 'up_to_2500' },
+      { label: '$2,501 – $9,999', value: 'from_2501_to_9999' },
+      { label: '$10,000+', value: 'at_least_10000' }
+    ]
+  },
+  {
+    id: 'bankAccountPreference',
+    type: 'options',
+    title: 'Do you prefer checking or savings bonuses?',
+    description: 'We will boost offers that match your preference, but we will not hide the other type.',
+    options: [
+      { label: 'Checking accounts', value: 'checking' },
+      { label: 'Savings accounts', value: 'savings' },
+      { label: 'No preference', value: 'no_preference' }
+    ]
+  },
+  {
+    id: 'ownedBankNames',
+    type: 'bank_selection',
+    title: 'Which banks do you already have accounts with?',
+    description: 'Optional. We will exclude banks you already use from new-account recommendations.'
   }
 ];

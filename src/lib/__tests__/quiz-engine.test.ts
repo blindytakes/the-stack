@@ -33,6 +33,9 @@ function makeInput(overrides: Partial<QuizRequest> = {}): QuizRequest {
     state: 'NY',
     monthlySpend: 'from_2500_to_5000',
     pace: 'balanced',
+    availableCash: 'from_2501_to_9999',
+    bankAccountPreference: 'no_preference',
+    ownedBankNames: [],
     ...overrides
   };
 }
@@ -276,5 +279,42 @@ describe('quizRequestSchema', () => {
   it('rejects missing fields', () => {
     const parsed = quizRequestSchema.safeParse({ goal: 'cashback' });
     expect(parsed.success).toBe(false);
+  });
+
+  it('defaults new banking fields when omitted', () => {
+    const parsed = quizRequestSchema.safeParse({
+      goal: 'cashback',
+      spend: 'dining',
+      fee: 'no_fee',
+      credit: 'good',
+      directDeposit: 'yes',
+      state: 'NY',
+      monthlySpend: 'from_2500_to_5000',
+      pace: 'balanced'
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.availableCash).toBe('from_2501_to_9999');
+      expect(parsed.data.bankAccountPreference).toBe('no_preference');
+      expect(parsed.data.ownedBankNames).toEqual([]);
+    }
+  });
+
+  it('deduplicates owned bank name selections', () => {
+    const parsed = quizRequestSchema.safeParse({
+      goal: 'cashback',
+      spend: 'dining',
+      fee: 'no_fee',
+      credit: 'good',
+      directDeposit: 'yes',
+      state: 'NY',
+      monthlySpend: 'from_2500_to_5000',
+      pace: 'balanced',
+      ownedBankNames: ['Chase', 'Chase', 'Wells Fargo']
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.ownedBankNames).toEqual(['Chase', 'Wells Fargo']);
+    }
   });
 });

@@ -38,7 +38,10 @@ const baseAnswers: QuizRequest = {
   directDeposit: 'yes',
   state: 'NY',
   monthlySpend: 'from_2500_to_5000',
-  pace: 'balanced'
+  pace: 'balanced',
+  availableCash: 'from_2501_to_9999',
+  bankAccountPreference: 'no_preference',
+  ownedBankNames: []
 };
 
 describe('plan-client', () => {

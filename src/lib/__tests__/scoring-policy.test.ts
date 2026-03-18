@@ -94,4 +94,64 @@ describe('scoring-policy', () => {
     expect(meetsCreditTier('good', 'excellent')).toBe(true);
     expect(meetsCreditTier('excellent', 'good')).toBe(false);
   });
+
+  it('boosts banking priority when account type matches user preference', () => {
+    const base = {
+      estimatedNetValue: 388,
+      effort: 'low' as const,
+      timelineDays: 90,
+      directDepositRequired: false,
+      minimumOpeningDeposit: 1000,
+      directDepositAvailability: 'yes' as const
+    };
+
+    const withoutPreference = scoreBankingPriority({
+      ...base,
+      accountType: 'checking',
+      bankAccountPreference: 'no_preference'
+    });
+    const withMatchingPreference = scoreBankingPriority({
+      ...base,
+      accountType: 'checking',
+      bankAccountPreference: 'checking'
+    });
+    const withMismatchedPreference = scoreBankingPriority({
+      ...base,
+      accountType: 'checking',
+      bankAccountPreference: 'savings'
+    });
+
+    expect(withMatchingPreference).toBe(withoutPreference + bankingPriorityScoringPolicy.accountPreferenceBoost);
+    expect(withMismatchedPreference).toBe(withoutPreference);
+  });
+
+  it('treats bundle as matching both checking and savings preferences', () => {
+    const base = {
+      estimatedNetValue: 475,
+      effort: 'medium' as const,
+      timelineDays: 120,
+      directDepositRequired: true,
+      minimumOpeningDeposit: 2500,
+      directDepositAvailability: 'yes' as const
+    };
+
+    const checkingMatch = scoreBankingPriority({
+      ...base,
+      accountType: 'bundle',
+      bankAccountPreference: 'checking'
+    });
+    const savingsMatch = scoreBankingPriority({
+      ...base,
+      accountType: 'bundle',
+      bankAccountPreference: 'savings'
+    });
+    const noPreference = scoreBankingPriority({
+      ...base,
+      accountType: 'bundle',
+      bankAccountPreference: 'no_preference'
+    });
+
+    expect(checkingMatch).toBe(noPreference + bankingPriorityScoringPolicy.accountPreferenceBoost);
+    expect(savingsMatch).toBe(noPreference + bankingPriorityScoringPolicy.accountPreferenceBoost);
+  });
 });

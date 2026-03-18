@@ -74,7 +74,8 @@ export const usStateOptions = [
 ] as const;
 
 export type CardSelectionQuestionId = 'ownedCardSlugs' | 'amexLifetimeBlockedSlugs';
-type FinderQuestionId = Exclude<keyof QuizRequest, CardSelectionQuestionId>;
+export type BankSelectionQuestionId = 'ownedBankNames';
+type FinderQuestionId = Exclude<keyof QuizRequest, CardSelectionQuestionId | BankSelectionQuestionId>;
 type FinderStepOption = { label: string; value: string };
 
 export type FinderOptionStep = {
@@ -102,7 +103,14 @@ export type FinderCardSelectionStep = {
   description: string;
 };
 
-export type FinderQuestionStep = FinderOptionStep | FinderSelectStep | FinderCardSelectionStep;
+export type FinderBankSelectionStep = {
+  id: BankSelectionQuestionId;
+  type: 'bank_selection';
+  title: string;
+  description: string;
+};
+
+export type FinderQuestionStep = FinderOptionStep | FinderSelectStep | FinderCardSelectionStep | FinderBankSelectionStep;
 
 export function CardFinderProgress({
   stepIndex,
@@ -559,6 +567,124 @@ export function CardSelectionQuestion({
           </motion.div>
         </motion.div>
       )}
+    </div>
+  );
+}
+
+export function BankSelectionQuestion({
+  step,
+  bankNames,
+  selectedNames,
+  onToggle,
+  onClear
+}: {
+  step: FinderBankSelectionStep;
+  bankNames: string[];
+  selectedNames: string[];
+  onToggle: (name: string) => void;
+  onClear: () => void;
+}) {
+  const [query, setQuery] = useState('');
+  const trimmedQuery = query.trim().toLowerCase();
+  const selectedSet = new Set(selectedNames);
+  const available = bankNames.filter((name) => !selectedSet.has(name));
+  const filtered = trimmedQuery
+    ? available.filter((name) => name.toLowerCase().includes(trimmedQuery))
+    : available;
+
+  return (
+    <div className="mt-8">
+      <motion.div
+        key={step.id}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 className="text-3xl font-semibold text-text-primary md:text-4xl">{step.title}</h2>
+          <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-text-muted">
+            Optional
+          </span>
+        </div>
+        <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
+      </motion.div>
+
+      <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,0.75fr)]">
+        <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
+          <label
+            htmlFor="bank-name-search"
+            className="text-xs uppercase tracking-[0.22em] text-text-muted"
+          >
+            Search banks
+          </label>
+          <input
+            id="bank-name-search"
+            type="text"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search by bank name"
+            className="mt-3 w-full rounded-2xl border border-white/10 bg-bg px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none"
+          />
+
+          <div className="mt-4">
+            <p className="text-xs uppercase tracking-[0.22em] text-text-muted">
+              {trimmedQuery ? 'Matches' : 'All banks'}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {filtered.length > 0 ? (
+                filtered.map((name) => (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => {
+                      onToggle(name);
+                      setQuery('');
+                    }}
+                    className="rounded-full border border-white/10 bg-bg px-3 py-2 text-sm text-text-secondary transition hover:border-brand-teal/40 hover:bg-brand-teal/5 hover:text-text-primary"
+                  >
+                    {name}
+                  </button>
+                ))
+              ) : (
+                <p className="rounded-2xl border border-dashed border-white/10 px-4 py-3 text-sm text-text-muted">
+                  {trimmedQuery ? 'No banks matched that search.' : 'No banks available.'}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Already banked with</p>
+            {selectedNames.length > 0 && (
+              <Button variant="ghost" onClick={onClear}>
+                Clear all
+              </Button>
+            )}
+          </div>
+
+          {selectedNames.length > 0 ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {selectedNames.map((name) => (
+                <button
+                  key={name}
+                  type="button"
+                  onClick={() => onToggle(name)}
+                  className="rounded-full border border-brand-teal/30 bg-brand-teal/10 px-3 py-2 text-sm text-text-primary transition hover:border-brand-teal/50"
+                >
+                  {name}
+                  <span className="ml-2 text-text-muted">×</span>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="mt-3 text-sm text-text-muted">
+              None selected yet
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
