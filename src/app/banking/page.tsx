@@ -4,7 +4,7 @@ import { BankingOffersGrid } from '@/components/banking/banking-offers-grid';
 import {
   bankingBonusesQuerySchema,
   filterBankingBonuses,
-  formatBankingAccountType,
+
   getBankingBonusesData,
   paginateBankingBonuses,
   sortBankingBonuses,
@@ -75,11 +75,7 @@ function bankingFiltersHref(current: BankingFilterState, updates: Partial<Bankin
   return query ? `/banking?${query}` : '/banking';
 }
 
-const difficultyLabels = {
-  low: 'Low friction',
-  medium: 'Moderate friction',
-  high: 'High friction'
-} as const;
+
 const cashLabels = {
   none: 'No minimum listed',
   light: 'Up to $2.5k',
