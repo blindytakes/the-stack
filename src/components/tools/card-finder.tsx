@@ -85,10 +85,6 @@ export function CardFinderTool({ cards }: { cards: CardRecord[] }) {
           searchLabel="Search cards"
           searchPlaceholder="Search by card name or issuer"
           selectedHeading="Already open"
-          selectedSummary={(count) =>
-            `We’ll exclude ${count} current card${count === 1 ? '' : 's'} from new-card recommendations.`
-          }
-          emptySelectionText="Search for cards you already hold, or continue and add this later once you see your first draft."
         />
       ) : currentStep.type === 'select' ? (
         <CardFinderSelectQuestion

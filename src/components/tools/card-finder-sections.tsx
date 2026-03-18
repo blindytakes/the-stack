@@ -271,7 +271,9 @@ export function CardSelectionQuestion({
   searchLabel = 'Search cards',
   searchPlaceholder = 'Search by card name or issuer',
   selectedHeading,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectedSummary,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   emptySelectionText,
   loading = false,
   error = '',
@@ -286,8 +288,8 @@ export function CardSelectionQuestion({
   searchLabel?: string;
   searchPlaceholder?: string;
   selectedHeading: string;
-  selectedSummary: (count: number) => string;
-  emptySelectionText: string;
+  selectedSummary?: (count: number) => string;
+  emptySelectionText?: string;
   loading?: boolean;
   error?: string;
   errorMessage?: string;
