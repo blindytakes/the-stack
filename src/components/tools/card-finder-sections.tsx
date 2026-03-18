@@ -359,7 +359,7 @@ export function CardSelectionQuestion({
         <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
       </motion.div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,0.95fr)]">
+      <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,0.75fr)]">
         <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
           <label
             htmlFor={searchId}
@@ -445,15 +445,8 @@ export function CardSelectionQuestion({
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-xs uppercase tracking-[0.22em] text-text-muted">{selectedHeading}</p>
-              <p className="mt-2 text-sm text-text-secondary">
-                {selectedCards.length > 0
-                  ? selectedSummary(selectedCards.length)
-                  : 'No cards selected yet. You can skip this for now.'}
-              </p>
-            </div>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-xs uppercase tracking-[0.22em] text-text-muted">{selectedHeading}</p>
             {selectedCards.length > 0 && (
               <Button variant="ghost" onClick={onClear}>
                 Clear all
@@ -462,7 +455,7 @@ export function CardSelectionQuestion({
           </div>
 
           {selectedCards.length > 0 ? (
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               {selectedCards.map((card) => (
                 <button
                   key={card.slug}
@@ -476,8 +469,8 @@ export function CardSelectionQuestion({
               ))}
             </div>
           ) : (
-            <p className="mt-4 rounded-2xl border border-dashed border-white/10 px-4 py-3 text-sm text-text-muted">
-              {emptySelectionText}
+            <p className="mt-3 text-sm text-text-muted">
+              None selected yet
             </p>
           )}
         </div>
