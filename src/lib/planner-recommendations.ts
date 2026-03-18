@@ -96,9 +96,12 @@ const availableCashCeiling: Record<AvailableCash, number> = {
   from_2501_to_9999: 9999,
   at_least_10000: 25000
 };
-// A selected offer should survive normal value-based competition when it is
-// otherwise eligible. Hard exclusions and schedule constraints still apply.
-const selectedOfferPriorityBoost = 250000;
+// Typical priority scores from scoreCardOpenPriority / scoreBankingPriority
+// land in the low hundreds to low thousands. 250 000 guarantees the selected
+// offer wins any value-based lane competition when it is otherwise eligible.
+// Hard exclusions and schedule constraints still apply — this boost only
+// affects sort order among eligible candidates.
+const selectedOfferPriorityBoost = 250_000;
 
 function getCardExclusionReasons(card: QuizResult, input: QuizRequest): PlannerExclusionReason[] {
   const reasons: PlannerExclusionReason[] = [];

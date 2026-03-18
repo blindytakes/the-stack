@@ -1,4 +1,5 @@
 import type { FinderCardSelectionStep } from '@/components/tools/card-finder-sections';
+import type { PlanScheduleIssueReason } from '@/lib/plan-engine';
 import type { QuizRequest } from '@/lib/quiz-engine';
 import type { PlannerExclusionReason } from '@/lib/planner-recommendations';
 
@@ -53,4 +54,12 @@ export const exclusionActions: Record<PlannerExclusionReason, string> = {
   state_restricted: 'Switch your home state only if it is inaccurate, because some bank offers are region-limited.',
   existing_bank: 'Banks you already use are excluded because most bonuses are for new customers only.',
   insufficient_cash: 'This offer requires a larger opening deposit than your available cash tier allows.'
+};
+
+export const scheduleIssueActions: Record<PlanScheduleIssueReason, string> = {
+  lane_limit: 'Stronger offers in the same lane took the available plan slots first.',
+  spend_capacity: 'Your current spend capacity fit better elsewhere in the sequence.',
+  direct_deposit_slot: 'Your direct-deposit bandwidth was already committed to higher-priority banking moves.',
+  pace_limit: 'Adding it would have pushed the plan past your selected pace.',
+  timeline_overflow: 'It did not fit cleanly inside the current planning window.'
 };

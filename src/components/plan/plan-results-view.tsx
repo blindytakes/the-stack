@@ -15,7 +15,7 @@ import {
   type TimelineEntry
 } from '@/components/plan/plan-results-utils';
 import { PlanEmailPanel } from '@/components/plan/plan-email-panel';
-import { exclusionActions } from '@/components/plan/plan-results-config';
+import { exclusionActions, scheduleIssueActions } from '@/components/plan/plan-results-config';
 import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 
@@ -30,7 +30,10 @@ import {
   rankPlannerRecommendationsByPriority,
   type PlannerRecommendation
 } from '@/lib/planner-recommendations';
-import { getSelectedOfferIntentStatus } from '@/lib/selected-offer-intent';
+import {
+  getSelectedOfferIntentStatus,
+  type SelectedOfferIntentStatus
+} from '@/lib/selected-offer-intent';
 
 type LoadState = { status: 'loading' } | PlanResultsLoadResult;
 
@@ -100,14 +103,6 @@ function monthlySpendText(item: PlannerRecommendation): string | null {
   const monthly = Math.round(spend / months);
   return `$${monthly.toLocaleString()}/mo`;
 }
-
-const scheduleIssueActions: Record<PlanResultsStoragePayload['scheduleIssues'][number]['reason'], string> = {
-  lane_limit: 'Stronger offers in the same lane took the available plan slots first.',
-  spend_capacity: 'Your current spend capacity fit better elsewhere in the sequence.',
-  direct_deposit_slot: 'Your direct-deposit bandwidth was already committed to higher-priority banking moves.',
-  pace_limit: 'Adding it would have pushed the plan past your selected pace.',
-  timeline_overflow: 'It did not fit cleanly inside the current planning window.'
-};
 
 /* ─────────────────────────────────────────────────────────
  * Mini timeline — compact Gantt overview
@@ -434,25 +429,24 @@ function SaveActBar({
   );
 }
 
-function SelectedOfferSummary({ payload }: { payload: PlanResultsStoragePayload }) {
-  const selectedOfferStatus = useMemo(() => getSelectedOfferIntentStatus(payload), [payload]);
-
-  if (!selectedOfferStatus) {
-    return null;
-  }
+function SelectedOfferSummary({ selectedOfferStatus }: { selectedOfferStatus: SelectedOfferIntentStatus }) {
 
   const bannerTone =
     selectedOfferStatus.status === 'included'
       ? 'border-brand-teal/20 bg-brand-teal/10'
       : selectedOfferStatus.status === 'excluded'
         ? 'border-brand-coral/20 bg-brand-coral/10'
-        : 'border-brand-gold/20 bg-brand-gold/10';
+        : selectedOfferStatus.status === 'deferred'
+          ? 'border-brand-gold/20 bg-brand-gold/10'
+          : 'border-white/10 bg-white/[0.03]';
   const eyebrowTone =
     selectedOfferStatus.status === 'included'
       ? 'text-brand-teal'
       : selectedOfferStatus.status === 'excluded'
         ? 'text-brand-coral'
-        : 'text-brand-gold';
+        : selectedOfferStatus.status === 'deferred'
+          ? 'text-brand-gold'
+          : 'text-text-muted';
 
   let headline = `Selected offer reviewed: ${selectedOfferStatus.intent.title}`;
   let detail = `${selectedOfferStatus.intent.provider} stayed in view while we built the plan.`;
@@ -591,7 +585,7 @@ function PlanSummary({
 
   return (
     <div>
-      <SelectedOfferSummary payload={payload} />
+      {selectedOfferStatus ? <SelectedOfferSummary selectedOfferStatus={selectedOfferStatus} /> : null}
 
       {/* ── ① Hero ── */}
       <motion.section

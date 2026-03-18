@@ -35,10 +35,13 @@ const basePayload = buildPlanResultsPayload({
 });
 
 describe('selected-offer-intent', () => {
-  it('builds a planner href that preserves the selected offer slug', () => {
+  it('builds planner hrefs that preserve the selected offer lane and slug', () => {
     expect(
       buildSelectedOfferIntentHref({ lane: 'cards', slug: 'amex-gold-card' })
     ).toBe('/tools/card-finder?mode=full&selectedLane=cards&selectedSlug=amex-gold-card');
+    expect(
+      buildSelectedOfferIntentHref({ lane: 'banking', slug: 'summit-national-checking-300' })
+    ).toBe('/tools/card-finder?mode=full&selectedLane=banking&selectedSlug=summit-national-checking-300');
   });
 
   it('returns included status when the selected offer is in recommendations', () => {
