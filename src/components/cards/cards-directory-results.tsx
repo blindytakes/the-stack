@@ -1,23 +1,23 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import type { CardRecord } from '@/lib/cards';
 import { formatBonusValue } from '@/lib/cards-directory-explorer';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { EntityImage } from '@/components/ui/entity-image';
 import { CardDetailModal } from '@/components/cards/card-detail-modal';
+import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type CardsDirectoryResultsProps = {
   cards: CardRecord[];
   selectedCompare: string[];
-  onToggleCompare: (slug: string) => void;
   onClearFilters: () => void;
 };
 
 export function CardsDirectoryResults({
   cards,
   selectedCompare,
-  onToggleCompare,
   onClearFilters
 }: CardsDirectoryResultsProps) {
   const sectionRef = useRef<HTMLElement>(null);
@@ -139,17 +139,12 @@ export function CardsDirectoryResults({
               >
                 Details
               </button>
-              <button
-                type="button"
-                onClick={() => onToggleCompare(card.slug)}
-                className={`inline-flex flex-1 items-center justify-center rounded-xl border px-3 py-2 text-xs font-semibold transition ${
-                  selectedForCompare
-                    ? 'border-brand-teal/50 bg-brand-teal/15 text-brand-teal'
-                    : 'border-white/10 text-text-muted hover:border-brand-teal/40 hover:text-brand-teal'
-                }`}
+              <Link
+                href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
+                className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-xs font-semibold text-black transition hover:opacity-90"
               >
-                {selectedForCompare ? '✓ Selected to compare' : 'Compare'}
-              </button>
+                Build Full Plan
+              </Link>
             </div>
           </article>
         );

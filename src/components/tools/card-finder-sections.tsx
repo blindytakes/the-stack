@@ -317,7 +317,7 @@ export function CardSelectionQuestion({
         <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
       </motion.div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,0.75fr)]">
+      <div className="mt-8 space-y-4">
         <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
           <label
             htmlFor={searchId}
@@ -404,7 +404,12 @@ export function CardSelectionQuestion({
 
         <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs uppercase tracking-[0.22em] text-text-muted">{selectedHeading}</p>
+            <div className="flex items-center gap-3">
+              <p className="text-xs uppercase tracking-[0.22em] text-text-muted">{selectedHeading}</p>
+              <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-text-muted">
+                {selectedCards.length}
+              </span>
+            </div>
             {selectedCards.length > 0 && (
               <Button variant="ghost" onClick={onClear}>
                 Clear all
@@ -428,7 +433,7 @@ export function CardSelectionQuestion({
             </div>
           ) : (
             <p className="mt-3 text-sm text-text-muted">
-              None selected yet
+              No cards selected yet. Add any cards you already have from the box above.
             </p>
           )}
         </div>
@@ -557,7 +562,7 @@ export function BankSelectionQuestion({
         <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
       </motion.div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,0.75fr)]">
+      <div className="mt-8 space-y-4">
         <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
           <label
             htmlFor="bank-name-search"
@@ -604,7 +609,12 @@ export function BankSelectionQuestion({
 
         <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Already banked with</p>
+            <div className="flex items-center gap-3">
+              <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Banks you already use</p>
+              <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-text-muted">
+                {selectedNames.length}
+              </span>
+            </div>
             {selectedNames.length > 0 && (
               <Button variant="ghost" onClick={onClear}>
                 Clear all
@@ -628,7 +638,7 @@ export function BankSelectionQuestion({
             </div>
           ) : (
             <p className="mt-3 text-sm text-text-muted">
-              None selected yet
+              No banks selected yet. Add any banks you already use from the box above.
             </p>
           )}
         </div>

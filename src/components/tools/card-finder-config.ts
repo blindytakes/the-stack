@@ -6,7 +6,7 @@ export const cardFinderSteps: FinderQuestionStep[] = [
   {
     id: 'monthlySpend',
     type: 'options',
-    title: 'How much normal monthly spend can you put on a new card?',
+    title: 'How much monthly spend can you shift to a new card?',
     description: 'This keeps the plan realistic when we sequence minimum-spend windows.',
     options: [
       { label: 'Under $2,500', value: 'lt_2500' },
@@ -22,18 +22,6 @@ export const cardFinderSteps: FinderQuestionStep[] = [
     options: [
       { label: 'Yes, I can route direct deposit', value: 'yes' },
       { label: 'No, I cannot route direct deposit', value: 'no' }
-    ]
-  },
-  {
-    id: 'credit',
-    type: 'options',
-    title: 'How would you describe your credit profile?',
-    description: 'We use this to keep recommendations inside a realistic approval band.',
-    options: [
-      { label: 'Excellent', value: 'excellent' },
-      { label: 'Good', value: 'good' },
-      { label: 'Fair', value: 'fair' },
-      { label: 'Building', value: 'building' }
     ]
   },
   {
@@ -71,17 +59,6 @@ export const cardFinderSteps: FinderQuestionStep[] = [
       { label: 'Up to $2,500', value: 'up_to_2500' },
       { label: '$2,501 – $9,999', value: 'from_2501_to_9999' },
       { label: '$10,000+', value: 'at_least_10000' }
-    ]
-  },
-  {
-    id: 'bankAccountPreference',
-    type: 'options',
-    title: 'Do you prefer checking or savings bonuses?',
-    description: 'We will boost offers that match your preference, but we will not hide the other type.',
-    options: [
-      { label: 'Checking accounts', value: 'checking' },
-      { label: 'Savings accounts', value: 'savings' },
-      { label: 'No preference', value: 'no_preference' }
     ]
   },
   {

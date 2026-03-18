@@ -35,7 +35,6 @@ export function CardsDirectoryExplorer({ cards, learnArticles }: CardsDirectoryE
     setCardType,
     setSortBy,
     clearFilters,
-    toggleCompare,
     clearCompare
   } = useCardsDirectoryState(cards);
 
@@ -64,7 +63,6 @@ export function CardsDirectoryExplorer({ cards, learnArticles }: CardsDirectoryE
       <CardsDirectoryResults
         cards={filteredSortedCards}
         selectedCompare={selectedCompare}
-        onToggleCompare={toggleCompare}
         onClearFilters={clearFilters}
       />
 

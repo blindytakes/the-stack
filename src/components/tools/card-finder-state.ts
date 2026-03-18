@@ -135,6 +135,7 @@ export function useCardFinderState(initialSelectedOfferIntent: SelectedOfferInte
       goal: 'flexibility',
       spend: 'all',
       fee: 'over_95_ok',
+      credit: 'good',
       pace: 'balanced'
     });
     if (!parsedAnswers.success) {
