@@ -94,8 +94,20 @@ export function getBankingOfferPrimaryRequirement(offer: BankingBonusRecord) {
       : 'Route qualifying payroll direct deposit.';
   }
 
-  if (offer.accountType === 'savings' && typeof offer.minimumOpeningDeposit === 'number') {
+  if (
+    offer.accountType === 'savings' &&
+    typeof offer.minimumOpeningDeposit === 'number' &&
+    offer.minimumOpeningDeposit > 0
+  ) {
     return `Move ${formatBankingCurrency(offer.minimumOpeningDeposit)} in fresh funds.`;
+  }
+
+  if (offer.accountType === 'savings') {
+    if (offer.requiredActions.some((action) => /deposit|fund|balance|new funds/i.test(action))) {
+      return 'Fund with qualifying new money and maintain balance.';
+    }
+
+    return 'Fund the account and maintain the required balance.';
   }
 
   if (offer.requiredActions.some((action) => /debit/i.test(action))) {

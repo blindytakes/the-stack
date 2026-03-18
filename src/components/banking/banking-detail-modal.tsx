@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useCallback } from 'react';
 import { EntityImage } from '@/components/ui/entity-image';
 import {
@@ -134,11 +135,11 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
               </p>
             </div>
             <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-              <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Min. Deposit</p>
+              <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Opening Deposit</p>
               <p className="mt-1 text-sm font-semibold text-text-primary">
                 {offer.minimumOpeningDeposit
                   ? formatBankingCurrency(offer.minimumOpeningDeposit)
-                  : 'None'}
+                  : 'No minimum listed'}
               </p>
             </div>
             <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
@@ -214,23 +215,31 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
           </div>
 
           {/* Bottom actions */}
-          <div className="mt-6 flex flex-col gap-2 border-t border-white/5 pt-4 sm:flex-row sm:justify-between">
-            <a
+          <div className="mt-6 flex flex-col gap-3 border-t border-white/5 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <Link
               href={`/banking/${offer.slug}`}
               className="text-sm text-text-muted transition hover:text-brand-teal"
             >
               View full steps →
-            </a>
-            {(offer.affiliateUrl || offer.offerUrl) && (
-              <a
-                href={offer.affiliateUrl || offer.offerUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-sm font-semibold text-brand-teal transition hover:text-brand-teal/80"
+            </Link>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Link
+                href="/tools/card-finder?mode=full"
+                className="inline-flex items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
               >
-                Open Account →
-              </a>
-            )}
+                Build Full Plan
+              </Link>
+              {(offer.affiliateUrl || offer.offerUrl) && (
+                <a
+                  href={offer.affiliateUrl || offer.offerUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-brand-teal transition hover:border-brand-teal/40 hover:text-brand-teal/80"
+                >
+                  Open Account
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </div>

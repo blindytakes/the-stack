@@ -55,13 +55,23 @@ export function CardsDirectoryFilterPanel({
 
   return (
     <section className="rounded-2xl border border-white/10 bg-bg-surface p-4 md:p-5">
+      <div className="max-w-[44rem]">
+        <p className="text-[11px] uppercase tracking-[0.28em] text-brand-gold">Card Directory</p>
+        <h1 className="mt-2 font-heading text-[2.85rem] leading-[0.94] text-text-primary md:text-[3.35rem]">
+          Credit card offers you can actually use.
+        </h1>
+        <p className="mt-2.5 max-w-[38rem] text-[15px] leading-7 text-text-secondary">
+          Browse top card offers, then let The Stack help you find the right fit.
+        </p>
+      </div>
+
       {/* Search — full width, prominent */}
       <input
         type="text"
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
         placeholder="Search cards..."
-        className="w-full rounded-xl border border-white/10 bg-bg-elevated px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
+        className="mt-4 w-full rounded-xl border border-white/10 bg-bg-elevated px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
       />
 
       {/* Issuer · Sort — side by side */}
