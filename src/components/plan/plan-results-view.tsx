@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { motion } from 'framer-motion';
 import {
   buildScheduledTimelineEntries,
   buildTimelineEntriesFallback,
@@ -30,6 +31,30 @@ import {
 } from '@/lib/planner-recommendations';
 
 type LoadState = { status: 'loading' } | PlanResultsLoadResult;
+
+function useCountUp(target: number, duration = 1200) {
+  const [value, setValue] = useState(0);
+  const rafRef = useRef<number>(0);
+
+  useEffect(() => {
+    if (target === 0) return;
+    const start = performance.now();
+    function tick(now: number) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setValue(Math.round(eased * target));
+      if (progress < 1) {
+        rafRef.current = requestAnimationFrame(tick);
+      }
+    }
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [target, duration]);
+
+  return value;
+}
 
 /* ─────────────────────────────────────────────────────────
  * Helper: plain-english "what to do" for any recommendation
@@ -471,10 +496,17 @@ function PlanSummary({
     [timelineEntries]
   );
 
+  const animatedTotal = useCountUp(totalValue);
+
   return (
     <div>
       {/* ── ① Hero ── */}
-      <section className="mt-8 text-center">
+      <motion.section
+        className="mt-8 text-center"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
         {isDemo ? (
           <span className="mb-4 inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-brand-teal">
             Demo fixture
@@ -482,11 +514,16 @@ function PlanSummary({
         ) : null}
 
         <p className="font-heading text-6xl text-text-primary md:text-7xl">
-          {formatValue(totalValue)}
+          {formatValue(animatedTotal)}
         </p>
-        <p className="mt-3 text-lg text-text-secondary">
+        <motion.p
+          className="mt-3 text-lg text-text-secondary"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.4 }}
+        >
           {parts.join(' + ')} · {durationText}
-        </p>
+        </motion.p>
 
         {!isDemo ? (
           <button
@@ -497,30 +534,47 @@ function PlanSummary({
             Clear plan
           </button>
         ) : null}
-      </section>
+      </motion.section>
 
       {/* ── ② Mini timeline + Step cards ── */}
       <section className="mt-10">
-        <p className="text-xs uppercase tracking-[0.22em] text-text-muted">
+        <motion.p
+          className="text-xs uppercase tracking-[0.22em] text-text-muted"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0, duration: 0.3 }}
+        >
           Your plan · {moveCount} move{moveCount === 1 ? '' : 's'}
-        </p>
+        </motion.p>
 
         {/* Mini Gantt overview */}
         {timelineEntries.length > 0 ? (
-          <MiniTimeline
-            entries={timelineEntries}
-            recommendations={orderedRecommendations}
-          />
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1, duration: 0.4 }}
+          >
+            <MiniTimeline
+              entries={timelineEntries}
+              recommendations={orderedRecommendations}
+            />
+          </motion.div>
         ) : null}
 
         <div className="mt-4 space-y-3">
           {orderedRecommendations.map((item, index) => (
-            <StepCard
+            <motion.div
               key={item.id}
-              item={item}
-              entry={entriesById.get(item.id)}
-              stepNumber={index + 1}
-            />
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 + index * 0.12, duration: 0.4, ease: 'easeOut' }}
+            >
+              <StepCard
+                item={item}
+                entry={entriesById.get(item.id)}
+                stepNumber={index + 1}
+              />
+            </motion.div>
           ))}
         </div>
       </section>

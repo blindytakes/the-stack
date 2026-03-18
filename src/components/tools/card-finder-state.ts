@@ -22,7 +22,7 @@ export function useCardFinderState() {
   const canContinue =
     currentStep.type === 'card_selection' ? true : Boolean(answers[currentStep.id]);
   const progress = useMemo(
-    () => ((stepIndex + 1) / cardFinderSteps.length) * 100,
+    () => (stepIndex / cardFinderSteps.length) * 100,
     [stepIndex]
   );
   const isComplete = cardFinderSteps.every((step) =>

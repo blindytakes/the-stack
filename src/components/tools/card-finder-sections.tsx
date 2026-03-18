@@ -1,11 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import type { CardRecord } from '@/lib/cards';
-import type { QuizRequest, QuizResult } from '@/lib/quiz-engine';
+import type { QuizRequest } from '@/lib/quiz-engine';
 
 const popularOwnedCardSlugs = [
   'amex-gold-card',
@@ -141,11 +140,13 @@ export function CardFinderProgress({
 export function CardFinderQuestion({
   step,
   selectedValue,
-  onSelect
+  onSelect,
+  onAutoAdvance
 }: {
   step: FinderOptionStep;
   selectedValue?: string;
   onSelect: (value: string) => void;
+  onAutoAdvance?: () => void;
 }) {
   return (
     <div className="mt-8">
@@ -161,24 +162,54 @@ export function CardFinderQuestion({
       {step.description && (
         <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
       )}
-      <div className="mt-8 grid gap-3 md:grid-cols-2">
+      <motion.div
+        key={step.id + '-options'}
+        className="mt-8 grid gap-3 md:grid-cols-2"
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.06 } }
+        }}
+      >
         {step.options.map((option) => {
           const active = selectedValue === option.value;
           return (
-            <button
+            <motion.button
               key={option.value}
-              onClick={() => onSelect(option.value)}
-              className={`rounded-2xl border px-5 py-4 text-left text-base transition ${
+              variants={{
+                hidden: { opacity: 0, y: 8 },
+                visible: { opacity: 1, y: 0 }
+              }}
+              onClick={() => {
+                onSelect(option.value);
+                if (onAutoAdvance) {
+                  setTimeout(onAutoAdvance, 350);
+                }
+              }}
+              whileTap={{ scale: 0.97 }}
+              className={`flex items-center gap-3 rounded-2xl border px-5 py-4 text-left text-base transition-all duration-200 ${
                 active
-                  ? 'border-brand-teal bg-brand-teal/10 text-text-primary'
+                  ? 'border-brand-teal bg-brand-teal/10 text-text-primary scale-[1.02]'
                   : 'border-white/10 bg-bg-surface text-text-secondary hover:border-white/30'
               }`}
             >
-              {option.label}
-            </button>
+              <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-all duration-200 ${
+                active
+                  ? 'border-brand-teal bg-brand-teal'
+                  : 'border-white/20'
+              }`}>
+                {active && (
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                    <path d="M2.5 6L5 8.5L9.5 3.5" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                )}
+              </span>
+              <span>{option.label}</span>
+            </motion.button>
           );
         })}
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -440,7 +471,7 @@ export function CardSelectionQuestion({
                   className="rounded-full border border-brand-teal/30 bg-brand-teal/10 px-3 py-2 text-sm text-text-primary transition hover:border-brand-teal/50"
                 >
                   {card.name}
-                  <span className="ml-2 text-text-muted">Remove</span>
+                  <span className="ml-2 text-text-muted">×</span>
                 </button>
               ))}
             </div>
@@ -453,13 +484,19 @@ export function CardSelectionQuestion({
       </div>
 
       {showAllCards && (
-        <div
+        <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
           onClick={() => setShowAllCards(false)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
         >
-          <div
+          <motion.div
             className="w-full max-w-4xl rounded-3xl border border-white/10 bg-bg-elevated p-6 shadow-[0_24px_80px_rgba(0,0,0,0.45)] md:p-8"
             onClick={(event) => event.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
           >
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
@@ -524,8 +561,8 @@ export function CardSelectionQuestion({
                 </p>
               )}
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );
@@ -574,44 +611,3 @@ export function CardFinderActions({
   );
 }
 
-export function CardFinderResults({
-  results,
-  onRestart
-}: {
-  results: QuizResult[];
-  onRestart: () => void;
-}) {
-  return (
-    <div className="mt-10 space-y-4">
-      <div className="rounded-2xl border border-brand-teal/40 bg-brand-teal/10 p-4">
-        <p className="text-sm text-text-secondary">Top payout matches based on your inputs</p>
-        <p className="mt-1 text-xs text-text-muted">
-          Estimated value only. Outcomes vary by approvals, spend, and redemption choices.
-        </p>
-      </div>
-      <div className="grid gap-4 md:grid-cols-3">
-        {results.map((card) => (
-          <Link
-            key={card.slug}
-            href={`/cards/${card.slug}?src=card_finder`}
-            className="group rounded-2xl border border-white/10 bg-bg-surface p-4 transition hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-[0_0_20px_rgba(45,212,191,0.08)]"
-          >
-            <p className="text-xs uppercase tracking-[0.25em] text-text-muted">{card.issuer}</p>
-            <h3 className="mt-3 text-lg font-semibold text-text-primary transition group-hover:text-brand-teal">
-              {card.name}
-            </h3>
-            <p className="mt-2 text-sm text-text-secondary">{card.headline}</p>
-            <div className="mt-3 text-xs text-text-muted">
-              Annual fee: {card.annualFee === 0 ? '$0' : `$${card.annualFee}`}
-            </div>
-          </Link>
-        ))}
-      </div>
-      <div className="flex flex-wrap gap-4">
-        <Button variant="ghost" onClick={onRestart}>
-          Restart plan
-        </Button>
-      </div>
-    </div>
-  );
-}

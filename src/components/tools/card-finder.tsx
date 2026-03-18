@@ -6,7 +6,7 @@ import {
   CardFinderActions,
   CardFinderProgress,
   CardFinderQuestion,
-  CardFinderSelectQuestion
+  CardFinderSelectQuestion,
 } from '@/components/tools/card-finder-sections';
 import { useCardFinderState } from '@/components/tools/card-finder-state';
 import type { CardRecord } from '@/lib/cards';
@@ -101,6 +101,7 @@ export function CardFinderTool({ cards }: { cards: CardRecord[] }) {
           step={currentStep}
           selectedValue={typeof answers[currentStep.id] === 'string' ? answers[currentStep.id] : undefined}
           onSelect={selectCurrentOption}
+          onAutoAdvance={goForward}
         />
       )}
 
