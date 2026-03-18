@@ -574,6 +574,7 @@ export function CardFinderActions({
   isLastStep,
   isComplete,
   loading,
+  hideContinue,
   continueLabel,
   submitLabel,
   submittingLabel,
@@ -586,6 +587,7 @@ export function CardFinderActions({
   isLastStep: boolean;
   isComplete: boolean;
   loading: boolean;
+  hideContinue?: boolean;
   continueLabel?: string;
   submitLabel?: string;
   submittingLabel?: string;
@@ -595,14 +597,16 @@ export function CardFinderActions({
 }) {
   return (
     <div className="mt-8 flex flex-wrap justify-between gap-4">
-      <Button variant="ghost" onClick={onBack} disabled={!canGoBack}>
-        Back
-      </Button>
+      {canGoBack ? (
+        <Button variant="ghost" onClick={onBack}>
+          Back
+        </Button>
+      ) : <span />}
       {isLastStep && isComplete ? (
         <Button onClick={onSubmit} disabled={loading}>
           {loading ? (submittingLabel ?? 'Scoring...') : (submitLabel ?? 'See my bonus plan')}
         </Button>
-      ) : (
+      ) : hideContinue ? null : (
         <Button onClick={onContinue} disabled={!canContinue || isLastStep}>
           {continueLabel ?? 'Continue'}
         </Button>

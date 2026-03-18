@@ -111,6 +111,7 @@ export function CardFinderTool({ cards }: { cards: CardRecord[] }) {
         isLastStep={isLastStep}
         isComplete={isComplete}
         loading={loading}
+        hideContinue={currentStep.type === 'options'}
         continueLabel={
           currentStep.type === 'card_selection' && (answers[currentStep.id]?.length ?? 0) === 0
             ? 'Skip for now'
