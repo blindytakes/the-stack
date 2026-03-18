@@ -8,6 +8,7 @@ import {
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
+import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type BankingOfferCardProps = {
   offer: BankingBonusListItem;
@@ -110,7 +111,7 @@ export function BankingOfferCard({
               Details
             </button>
             <Link
-              href="/tools/card-finder?mode=full"
+              href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
               className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-xs font-semibold text-black transition hover:opacity-90"
             >
               Build Full Plan

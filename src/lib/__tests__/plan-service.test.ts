@@ -108,6 +108,14 @@ describe('plan-service', () => {
       },
       options: {
         maxBanking: 0
+      },
+      selectedOfferIntent: {
+        lane: 'cards',
+        slug: 'test-card',
+        title: 'Test Card',
+        provider: 'Test Bank',
+        detailPath: '/cards/test-card',
+        sourcePath: '/cards'
       }
     });
 
@@ -130,7 +138,11 @@ describe('plan-service', () => {
       expect.objectContaining({
         startAt: expect.any(Number),
         maxCards: 5,
-        maxBanking: 0
+        maxBanking: 0,
+        selectedOfferIntent: expect.objectContaining({
+          lane: 'cards',
+          slug: 'test-card'
+        })
       })
     );
   });

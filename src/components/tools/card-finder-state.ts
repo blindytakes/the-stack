@@ -4,16 +4,20 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
 import { submitPlanQuiz } from '@/lib/plan-client';
+import type { SelectedOfferIntent } from '@/lib/plan-contract';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import { cardFinderSteps } from '@/components/tools/card-finder-config';
 import type { CardSelectionQuestionId, BankSelectionQuestionId } from '@/components/tools/card-finder-sections';
 
 type QuizAnswers = Partial<QuizRequest>;
 
-export function useCardFinderState() {
+export function useCardFinderState(initialSelectedOfferIntent: SelectedOfferIntent | null = null) {
   const router = useRouter();
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>({});
+  const [selectedOfferIntent, setSelectedOfferIntent] = useState<SelectedOfferIntent | null>(
+    initialSelectedOfferIntent
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -117,6 +121,10 @@ export function useCardFinderState() {
     setStepIndex(0);
   }
 
+  function clearSelectedOfferIntent() {
+    setSelectedOfferIntent(null);
+  }
+
   async function submitQuiz() {
     setLoading(true);
     setError('');
@@ -137,7 +145,8 @@ export function useCardFinderState() {
 
     try {
       await submitPlanQuiz({
-        answers: parsedAnswers.data
+        answers: parsedAnswers.data,
+        selectedOfferIntent: selectedOfferIntent ?? undefined
       });
 
       trackFunnelEvent('quiz_completed', {
@@ -157,6 +166,7 @@ export function useCardFinderState() {
     stepIndex,
     currentStep,
     answers,
+    selectedOfferIntent,
     loading,
     error,
     progress,
@@ -168,6 +178,7 @@ export function useCardFinderState() {
     clearCardSelection,
     toggleBankSelection,
     clearBankSelection,
+    clearSelectedOfferIntent,
     goBack,
     goForward,
     submitQuiz,

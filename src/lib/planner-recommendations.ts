@@ -1,6 +1,7 @@
 import type { CardRecord } from '@/lib/cards';
 import type { QuizRequest, QuizResult } from '@/lib/quiz-engine';
 import type { AvailableCash } from '@/lib/quiz-engine';
+import type { SelectedOfferIntent } from '@/lib/plan-contract';
 import {
   getBankingOfferRequirements,
   type BankingBonusListItem,
@@ -24,6 +25,7 @@ import {
   type PlannerRecommendationScheduleConstraints
 } from '@/lib/plan-engine';
 import { getCardIssuerEligibilityReasons } from '@/lib/issuer-rules';
+import { getSelectedOfferIntentRecommendationId } from '@/lib/selected-offer-intent';
 
 export type PlannerRecommendationLane = 'cards' | 'banking';
 export type PlannerRecommendationKind = 'card_bonus' | 'bank_bonus';
@@ -94,6 +96,9 @@ const availableCashCeiling: Record<AvailableCash, number> = {
   from_2501_to_9999: 9999,
   at_least_10000: 25000
 };
+// A selected offer should survive normal value-based competition when it is
+// otherwise eligible. Hard exclusions and schedule constraints still apply.
+const selectedOfferPriorityBoost = 250000;
 
 function getCardExclusionReasons(card: QuizResult, input: QuizRequest): PlannerExclusionReason[] {
   const reasons: PlannerExclusionReason[] = [];
@@ -237,11 +242,19 @@ export function buildPlanRecommendationsFromQuiz(
   cardResults: QuizResult[],
   bankingBonuses: BankingBonusListItem[],
   input: QuizRequest,
-  options: { maxCards?: number; maxBanking?: number; startAt?: number } = {}
+  options: {
+    maxCards?: number;
+    maxBanking?: number;
+    startAt?: number;
+    selectedOfferIntent?: SelectedOfferIntent;
+  } = {}
 ): PlannerRecommendationBundle {
   const maxCards = options.maxCards ?? 3;
   const maxBanking = options.maxBanking ?? 3;
   const ownedCardSlugSet = new Set(input.ownedCardSlugs);
+  const selectedRecommendationId = options.selectedOfferIntent
+    ? getSelectedOfferIntentRecommendationId(options.selectedOfferIntent)
+    : null;
 
   const exclusions: PlannerExcludedOffer[] = [];
 
@@ -277,12 +290,13 @@ export function buildPlanRecommendationsFromQuiz(
 
     eligibleCards.push({
       ...recommendation,
-      priorityScore: scoreCardOpenPriority({
-        estimatedNetValue: recommendation.estimatedNetValue,
-        fitScore: card.score,
-        effort: recommendation.effort,
-        timelineDays: recommendation.timelineDays
-      })
+      priorityScore:
+        scoreCardOpenPriority({
+          estimatedNetValue: recommendation.estimatedNetValue,
+          fitScore: card.score,
+          effort: recommendation.effort,
+          timelineDays: recommendation.timelineDays
+        }) + (recommendation.id === selectedRecommendationId ? selectedOfferPriorityBoost : 0)
     });
   }
 
@@ -303,16 +317,17 @@ export function buildPlanRecommendationsFromQuiz(
     const recommendation = toPlannerRecommendationFromBankingBonus(offer);
     eligibleBanking.push({
       ...recommendation,
-      priorityScore: scoreBankingPriority({
-        estimatedNetValue: recommendation.estimatedNetValue,
-        effort: recommendation.effort,
-        timelineDays: recommendation.timelineDays,
-        directDepositRequired: offer.directDeposit.required,
-        minimumOpeningDeposit: offer.minimumOpeningDeposit,
-        directDepositAvailability: input.directDeposit,
-        accountType: offer.accountType,
-        bankAccountPreference: input.bankAccountPreference
-      })
+      priorityScore:
+        scoreBankingPriority({
+          estimatedNetValue: recommendation.estimatedNetValue,
+          effort: recommendation.effort,
+          timelineDays: recommendation.timelineDays,
+          directDepositRequired: offer.directDeposit.required,
+          minimumOpeningDeposit: offer.minimumOpeningDeposit,
+          directDepositAvailability: input.directDeposit,
+          accountType: offer.accountType,
+          bankAccountPreference: input.bankAccountPreference
+        }) + (recommendation.id === selectedRecommendationId ? selectedOfferPriorityBoost : 0)
     });
   }
 

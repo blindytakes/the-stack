@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { submitPlanQuiz } from '../plan-client';
+import type { SelectedOfferIntent } from '../plan-contract';
 import type { QuizRequest } from '../quiz-engine';
 
 function createMemoryStorage() {
@@ -44,6 +45,15 @@ const baseAnswers: QuizRequest = {
   ownedBankNames: []
 };
 
+const selectedOfferIntent: SelectedOfferIntent = {
+  lane: 'banking',
+  slug: 'summit-national-checking-300',
+  title: 'Summit National Checking Bonus',
+  provider: 'Summit National Bank',
+  detailPath: '/banking/summit-national-checking-300',
+  sourcePath: '/banking'
+};
+
 describe('plan-client', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -56,7 +66,8 @@ describe('plan-client', () => {
         generatedAt: 123,
         recommendations: [],
         exclusions: [],
-        schedule: []
+        schedule: [],
+        scheduleIssues: []
       })
     });
     vi.stubGlobal('fetch', fetchMock);
@@ -66,7 +77,8 @@ describe('plan-client', () => {
       answers: baseAnswers,
       options: {
         maxBanking: 0
-      }
+      },
+      selectedOfferIntent
     });
 
     expect(fetchMock).toHaveBeenCalledWith('/api/plan', {
@@ -76,10 +88,13 @@ describe('plan-client', () => {
         answers: baseAnswers,
         options: {
           maxBanking: 0
-        }
+        },
+        selectedOfferIntent
       })
     });
     expect(payload.savedAt).toBe(123);
+    expect(payload.selectedOfferIntent).toEqual(selectedOfferIntent);
+    expect(payload.scheduleIssues).toEqual([]);
     expect(JSON.parse(sessionStorage.getItem('thestack.plan.results.v1')!)).toEqual(payload);
     expect(JSON.parse(localStorage.getItem('thestack.plan.results.backup.v1')!)).toEqual(payload);
   });
@@ -109,7 +124,8 @@ describe('plan-client', () => {
           generatedAt: 123,
           recommendations: 'bad',
           exclusions: [],
-          schedule: []
+          schedule: [],
+          scheduleIssues: []
         })
       })
     );

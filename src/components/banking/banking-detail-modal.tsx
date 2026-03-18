@@ -11,6 +11,7 @@ import {
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
+import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type BankingDetailModalProps = {
   offer: BankingBonusListItem;
@@ -224,7 +225,7 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
             </Link>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Link
-                href="/tools/card-finder?mode=full"
+                href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
                 className="inline-flex items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
               >
                 Build Full Plan

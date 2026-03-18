@@ -1,9 +1,11 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import type { CardDetail } from '@/lib/cards';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { EntityImage } from '@/components/ui/entity-image';
+import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type CardDetailModalProps = {
   slug: string;
@@ -287,23 +289,31 @@ export function CardDetailModal({ slug, onClose }: CardDetailModalProps) {
             )}
 
             {/* Bottom actions */}
-            <div className="mt-6 flex flex-col gap-2 border-t border-white/5 pt-4 sm:flex-row sm:justify-between">
-              <a
+            <div className="mt-6 flex flex-col gap-3 border-t border-white/5 pt-4 sm:flex-row sm:items-center sm:justify-between">
+              <Link
                 href={`/cards/${card.slug}`}
                 className="text-sm text-text-muted transition hover:text-brand-teal"
               >
                 View full details →
-              </a>
-              {(card.affiliateUrl || card.applyUrl) && (
-                <a
-                  href={card.affiliateUrl || card.applyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm font-semibold text-brand-teal transition hover:text-brand-teal/80"
+              </Link>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Link
+                  href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
+                  className="inline-flex items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
                 >
-                  Apply Now →
-                </a>
-              )}
+                  Build Full Plan
+                </Link>
+                {(card.affiliateUrl || card.applyUrl) && (
+                  <a
+                    href={card.affiliateUrl || card.applyUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-brand-teal transition hover:border-brand-teal/40 hover:text-brand-teal/80"
+                  >
+                    Apply Now
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         )}

@@ -471,4 +471,58 @@ describe('buildPlanRecommendationsFromQuiz', () => {
       )
     ).toBe(false);
   });
+
+  it('prioritizes a selected eligible offer within the same lane', () => {
+    const cards: QuizResult[] = [
+      {
+        slug: 'top-card',
+        name: 'Top Card',
+        issuer: 'Sample Bank',
+        cardType: 'personal',
+        rewardType: 'cashback',
+        topCategories: ['dining'],
+        annualFee: 0,
+        creditTierMin: 'good',
+        headline: 'Top',
+        score: 10,
+        bestSignUpBonusValue: 700,
+        bestSignUpBonusSpendRequired: 3000,
+        bestSignUpBonusSpendPeriodDays: 90,
+        totalBenefitsValue: 0,
+        plannerBenefitsValue: 0
+      },
+      {
+        slug: 'selected-card',
+        name: 'Selected Card',
+        issuer: 'Sample Bank',
+        cardType: 'personal',
+        rewardType: 'cashback',
+        topCategories: ['dining'],
+        annualFee: 0,
+        creditTierMin: 'good',
+        headline: 'Selected',
+        score: 4,
+        bestSignUpBonusValue: 400,
+        bestSignUpBonusSpendRequired: 1000,
+        bestSignUpBonusSpendPeriodDays: 90,
+        totalBenefitsValue: 0,
+        plannerBenefitsValue: 0
+      }
+    ];
+
+    const bundle = buildPlanRecommendationsFromQuiz(cards, [], baseInput, {
+      maxCards: 1,
+      maxBanking: 0,
+      selectedOfferIntent: {
+        lane: 'cards',
+        slug: 'selected-card',
+        title: 'Selected Card',
+        provider: 'Sample Bank',
+        detailPath: '/cards/selected-card',
+        sourcePath: '/cards'
+      }
+    });
+
+    expect(bundle.recommendations.map((item) => item.id)).toEqual(['card:selected-card']);
+  });
 });

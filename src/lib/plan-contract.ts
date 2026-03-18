@@ -4,6 +4,14 @@ import { quizRequestSchema } from '@/lib/quiz-engine';
 const plannerRecommendationLaneSchema = z.enum(['cards', 'banking']);
 const plannerRecommendationKindSchema = z.enum(['card_bonus', 'bank_bonus']);
 const plannerRecommendationEffortSchema = z.enum(['low', 'medium', 'high']);
+export const selectedOfferIntentSchema = z.object({
+  lane: plannerRecommendationLaneSchema,
+  slug: z.string().min(1),
+  title: z.string().min(1),
+  provider: z.string().min(1),
+  detailPath: z.string().min(1),
+  sourcePath: z.string().min(1).optional()
+});
 
 export const plannerRecommendationSchema = z.object({
   id: z.string().min(1),
@@ -83,7 +91,8 @@ export const planRequestOptionsSchema = z.object({
 
 export const planRequestSchema = z.object({
   answers: quizRequestSchema,
-  options: planRequestOptionsSchema.optional()
+  options: planRequestOptionsSchema.optional(),
+  selectedOfferIntent: selectedOfferIntentSchema.optional()
 });
 
 export const planResponseSchema = z.object({
@@ -95,5 +104,6 @@ export const planResponseSchema = z.object({
 });
 
 export type PlanRequestOptions = z.infer<typeof planRequestOptionsSchema>;
+export type SelectedOfferIntent = z.infer<typeof selectedOfferIntentSchema>;
 export type PlanBuildRequest = z.infer<typeof planRequestSchema>;
 export type PlanApiResponse = z.infer<typeof planResponseSchema>;

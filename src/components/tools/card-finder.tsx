@@ -11,6 +11,7 @@ import {
 } from '@/components/tools/card-finder-sections';
 import { useCardFinderState } from '@/components/tools/card-finder-state';
 import type { CardRecord } from '@/lib/cards';
+import type { SelectedOfferIntent } from '@/lib/plan-contract';
 
 export function CardFinderPathChooser() {
   return (
@@ -44,12 +45,21 @@ export function CardFinderPathChooser() {
   );
 }
 
-export function CardFinderTool({ cards, bankNames = [] }: { cards: CardRecord[]; bankNames?: string[] }) {
+export function CardFinderTool({
+  cards,
+  bankNames = [],
+  selectedOfferIntent = null
+}: {
+  cards: CardRecord[];
+  bankNames?: string[];
+  selectedOfferIntent?: SelectedOfferIntent | null;
+}) {
   const {
     steps,
     stepIndex,
     currentStep,
     answers,
+    selectedOfferIntent: activeSelectedOfferIntent,
     loading,
     error,
     progress,
@@ -61,10 +71,11 @@ export function CardFinderTool({ cards, bankNames = [] }: { cards: CardRecord[];
     clearCardSelection,
     toggleBankSelection,
     clearBankSelection,
+    clearSelectedOfferIntent,
     goBack,
     goForward,
     submitQuiz
-  } = useCardFinderState();
+  } = useCardFinderState(selectedOfferIntent);
   const selectionCards = currentStep.type !== 'card_selection' ? [] : cards;
 
   const isOptionalStep =
@@ -74,6 +85,31 @@ export function CardFinderTool({ cards, bankNames = [] }: { cards: CardRecord[];
 
   return (
     <section className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
+      {activeSelectedOfferIntent ? (
+        <div className="mb-6 rounded-2xl border border-brand-teal/20 bg-brand-teal/10 px-4 py-4 md:px-5">
+          <p className="text-xs uppercase tracking-[0.22em] text-brand-teal">Selected offer</p>
+          <p className="mt-2 max-w-3xl text-sm leading-7 text-text-primary md:text-base">
+            Building around <span className="font-semibold">{activeSelectedOfferIntent.title}</span> from{' '}
+            {activeSelectedOfferIntent.provider} if it still fits your profile, pace, and timeline.
+          </p>
+          <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
+            <Link
+              href={activeSelectedOfferIntent.detailPath}
+              className="font-semibold text-brand-teal transition hover:underline"
+            >
+              View offer
+            </Link>
+            <button
+              type="button"
+              onClick={clearSelectedOfferIntent}
+              className="text-text-muted transition hover:text-text-primary"
+            >
+              Clear selection
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       <div>
         <CardFinderProgress
           stepIndex={stepIndex}

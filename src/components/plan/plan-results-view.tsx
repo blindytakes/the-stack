@@ -15,6 +15,7 @@ import {
   type TimelineEntry
 } from '@/components/plan/plan-results-utils';
 import { PlanEmailPanel } from '@/components/plan/plan-email-panel';
+import { exclusionActions } from '@/components/plan/plan-results-config';
 import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 
@@ -29,6 +30,7 @@ import {
   rankPlannerRecommendationsByPriority,
   type PlannerRecommendation
 } from '@/lib/planner-recommendations';
+import { getSelectedOfferIntentStatus } from '@/lib/selected-offer-intent';
 
 type LoadState = { status: 'loading' } | PlanResultsLoadResult;
 
@@ -98,6 +100,14 @@ function monthlySpendText(item: PlannerRecommendation): string | null {
   const monthly = Math.round(spend / months);
   return `$${monthly.toLocaleString()}/mo`;
 }
+
+const scheduleIssueActions: Record<PlanResultsStoragePayload['scheduleIssues'][number]['reason'], string> = {
+  lane_limit: 'Stronger offers in the same lane took the available plan slots first.',
+  spend_capacity: 'Your current spend capacity fit better elsewhere in the sequence.',
+  direct_deposit_slot: 'Your direct-deposit bandwidth was already committed to higher-priority banking moves.',
+  pace_limit: 'Adding it would have pushed the plan past your selected pace.',
+  timeline_overflow: 'It did not fit cleanly inside the current planning window.'
+};
 
 /* ─────────────────────────────────────────────────────────
  * Mini timeline — compact Gantt overview
@@ -222,11 +232,13 @@ function MiniTimeline({
 function StepCard({
   item,
   entry,
-  stepNumber
+  stepNumber,
+  isSelectedOffer = false
 }: {
   item: PlannerRecommendation;
   entry: TimelineEntry | undefined;
   stepNumber: number;
+  isSelectedOffer?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -253,7 +265,14 @@ function StepCard({
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-base font-semibold text-text-primary">{item.title}</p>
-          <p className="text-sm text-text-muted">{item.provider}</p>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <p className="text-sm text-text-muted">{item.provider}</p>
+            {isSelectedOffer ? (
+              <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-teal">
+                Selected offer
+              </span>
+            ) : null}
+          </div>
         </div>
 
         <span className="shrink-0 text-lg font-semibold text-text-primary">
@@ -415,6 +434,77 @@ function SaveActBar({
   );
 }
 
+function SelectedOfferSummary({ payload }: { payload: PlanResultsStoragePayload }) {
+  const selectedOfferStatus = useMemo(() => getSelectedOfferIntentStatus(payload), [payload]);
+
+  if (!selectedOfferStatus) {
+    return null;
+  }
+
+  const bannerTone =
+    selectedOfferStatus.status === 'included'
+      ? 'border-brand-teal/20 bg-brand-teal/10'
+      : selectedOfferStatus.status === 'excluded'
+        ? 'border-brand-coral/20 bg-brand-coral/10'
+        : 'border-brand-gold/20 bg-brand-gold/10';
+  const eyebrowTone =
+    selectedOfferStatus.status === 'included'
+      ? 'text-brand-teal'
+      : selectedOfferStatus.status === 'excluded'
+        ? 'text-brand-coral'
+        : 'text-brand-gold';
+
+  let headline = `Selected offer reviewed: ${selectedOfferStatus.intent.title}`;
+  let detail = `${selectedOfferStatus.intent.provider} stayed in view while we built the plan.`;
+  let support: string | null = null;
+
+  if (selectedOfferStatus.status === 'included') {
+    headline = `Included your selected offer: ${selectedOfferStatus.intent.title}`;
+    detail = `${selectedOfferStatus.intent.provider} made the final plan and is marked in your move list below.`;
+  } else if (selectedOfferStatus.status === 'excluded') {
+    headline = `Left out your selected offer: ${selectedOfferStatus.intent.title}`;
+    detail = `${selectedOfferStatus.intent.provider} did not fit your current profile or hard constraints.`;
+    support = exclusionActions[selectedOfferStatus.reasons[0]];
+  } else if (selectedOfferStatus.status === 'deferred') {
+    headline = `Deferred your selected offer: ${selectedOfferStatus.intent.title}`;
+    detail = `${selectedOfferStatus.intent.provider} stayed eligible, but it did not fit the final sequence.`;
+    support = scheduleIssueActions[selectedOfferStatus.reason];
+  } else {
+    detail = `${selectedOfferStatus.intent.provider} was considered, but it did not land in the final result set.`;
+  }
+
+  return (
+    <section className={`rounded-2xl border px-5 py-5 ${bannerTone}`}>
+      <p className={`text-xs uppercase tracking-[0.22em] ${eyebrowTone}`}>Selected offer</p>
+      <h2 className="mt-2 text-xl font-semibold text-text-primary">{headline}</h2>
+      <p className="mt-2 max-w-3xl text-sm leading-7 text-text-secondary md:text-base">
+        {detail}
+      </p>
+      {support ? (
+        <p className="mt-2 max-w-3xl text-sm leading-7 text-text-secondary">
+          {support}
+        </p>
+      ) : null}
+      <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
+        <Link
+          href={selectedOfferStatus.intent.detailPath}
+          className="font-semibold text-brand-teal transition hover:underline"
+        >
+          View offer
+        </Link>
+        {selectedOfferStatus.intent.sourcePath ? (
+          <Link
+            href={selectedOfferStatus.intent.sourcePath}
+            className="text-text-muted transition hover:text-text-primary"
+          >
+            Back to {selectedOfferStatus.intent.lane === 'cards' ? 'cards' : 'banking'}
+          </Link>
+        ) : null}
+      </div>
+    </section>
+  );
+}
+
 /* ─────────────────────────────────────────────────────────
  * Main plan summary — the 3-section layout
  * ───────────────────────────────────────────────────────── */
@@ -495,11 +585,14 @@ function PlanSummary({
     () => new Map(timelineEntries.map((entry) => [entry.id, entry])),
     [timelineEntries]
   );
+  const selectedOfferStatus = useMemo(() => getSelectedOfferIntentStatus(payload), [payload]);
 
   const animatedTotal = useCountUp(totalValue);
 
   return (
     <div>
+      <SelectedOfferSummary payload={payload} />
+
       {/* ── ① Hero ── */}
       <motion.section
         className="mt-8 text-center"
@@ -573,6 +666,10 @@ function PlanSummary({
                 item={item}
                 entry={entriesById.get(item.id)}
                 stepNumber={index + 1}
+                isSelectedOffer={
+                  selectedOfferStatus?.status === 'included' &&
+                  selectedOfferStatus.recommendationId === item.id
+                }
               />
             </motion.div>
           ))}

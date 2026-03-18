@@ -75,6 +75,14 @@ const basePayload = buildPlanResultsPayload({
     }
   ],
   exclusions: [],
+  selectedOfferIntent: {
+    lane: 'cards',
+    slug: 'test',
+    title: 'Test Card',
+    provider: 'Test Bank',
+    detailPath: '/cards/test',
+    sourcePath: '/cards'
+  },
   schedule: [
     {
       recommendationId: 'card:test',
@@ -82,6 +90,13 @@ const basePayload = buildPlanResultsPayload({
       startAt: Date.now(),
       completeAt: Date.now() + 1000,
       payoutAt: Date.now() + 2000
+    }
+  ],
+  scheduleIssues: [
+    {
+      recommendationId: 'card:test',
+      lane: 'cards',
+      reason: 'lane_limit'
     }
   ]
 });
@@ -101,6 +116,8 @@ describe('plan-results-storage', () => {
     if (loaded.status === 'fresh') {
       expect(loaded.source).toBe('session');
       expect(loaded.payload.answers.goal).toBe('cashback');
+      expect(loaded.payload.selectedOfferIntent?.slug).toBe('test');
+      expect(loaded.payload.scheduleIssues[0]?.reason).toBe('lane_limit');
     }
   });
 

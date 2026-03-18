@@ -20,6 +20,7 @@ import {
   getBankingOfferWhyInteresting,
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
+import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -359,7 +360,7 @@ export default async function BankingOfferDetailPage({ params }: Props) {
             </p>
             <div className="mt-4 space-y-2">
               <Link
-                href="/tools/card-finder?mode=full"
+                href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
                 className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
               >
                 Build Full Bonus Plan

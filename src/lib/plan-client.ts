@@ -29,9 +29,11 @@ export async function submitPlanQuiz(input: PlanBuildRequest): Promise<PlanResul
   const payload = buildPlanResultsPayload({
     savedAt: data.generatedAt,
     answers: request.answers,
+    selectedOfferIntent: request.selectedOfferIntent,
     recommendations: data.recommendations,
     exclusions: data.exclusions,
-    schedule: data.schedule
+    schedule: data.schedule,
+    scheduleIssues: data.scheduleIssues
   });
 
   savePlanResults(payload);

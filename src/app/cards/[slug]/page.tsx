@@ -7,6 +7,7 @@ import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { AffiliateLink } from '@/components/analytics/affiliate-link';
 import { EntityImage } from '@/components/ui/entity-image';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 import { trackedSourceSchema } from '@/lib/tracking';
 import {
   CardBenefitsSection,
@@ -385,10 +386,10 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
                 Compare Cards
               </Link>
               <Link
-                href="/tools/card-finder?mode=full"
+                href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
                 className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
               >
-                Find Better-Fit Cards
+                Build Full Bonus Plan
               </Link>
             </div>
           </section>

@@ -43,7 +43,8 @@ export async function buildPlan(rawBody: unknown | null): Promise<BuildPlanResul
       {
         startAt: generatedAt,
         maxCards,
-        maxBanking
+        maxBanking,
+        selectedOfferIntent: parsed.data.selectedOfferIntent
       }
     );
     const responsePayload = planResponseSchema.safeParse({
