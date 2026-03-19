@@ -155,7 +155,7 @@ export function NewsletterSignup({
       )}
       <form
         onSubmit={handleSubmit}
-        className={compact ? 'flex gap-3' : 'mt-4 flex flex-col gap-3 sm:flex-row'}
+        className={compact ? 'flex flex-col gap-3 sm:flex-row' : 'mt-4 flex flex-col gap-3 sm:flex-row'}
       >
           <input
             type="email"
@@ -170,7 +170,7 @@ export function NewsletterSignup({
           <Button
             type="submit"
             disabled={status === 'loading'}
-            className={`${compact ? '' : 'sm:self-start'} ${largeSize ? 'px-7 py-3.5 text-lg md:text-xl' : ''}`}
+            className={`${compact ? 'w-full sm:w-auto' : 'sm:self-start'} ${largeSize ? 'px-7 py-3.5 text-lg md:text-xl' : ''}`}
           >
             {status === 'loading' ? 'Joining...' : submitLabel}
           </Button>

@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
-import { CustomerReviewsRail } from '@/components/customer-reviews-rail';
 import { ProofPoints } from '@/components/proof-points';
 import { HeroOffersCarousel, type HeroOffer } from '@/components/hero-offers-carousel';
 import { PlanComparison } from '@/components/plan-comparison';
@@ -307,6 +306,9 @@ async function getHeroOffers(): Promise<HeroOffer[]> {
 
 export default async function HomePage() {
   const heroOffers = await getHeroOffers();
+  const featuredReview = sampleReviews[0];
+  const supportingReviews = sampleReviews.slice(1, 4);
+
   return (
     <div className="container-page pt-12">
       <script
@@ -406,7 +408,9 @@ export default async function HomePage() {
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-brand-teal/10 text-brand-teal shadow-[0_0_12px_rgba(45,212,191,0.15)]">
                 {card.icon}
               </div>
-              <h3 className="mt-5 text-xl font-semibold text-text-primary">{card.title}</h3>
+              <h3 className="mt-5 text-xl font-semibold text-text-primary">
+                {card.title}
+              </h3>
               <p className="mt-3 max-w-[34ch] text-sm leading-7 text-text-secondary">
                 {card.description}
               </p>
@@ -415,19 +419,47 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Reviews */}
-      <section className="relative mt-14 overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.04] p-8 shadow-[0_8px_60px_rgba(45,212,191,0.06),0_2px_20px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-10">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.08),transparent_45%),radial-gradient(circle_at_bottom_left,rgba(212,168,83,0.06),transparent_40%)]" />
-        <div className="relative max-w-2xl">
-          <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
-            Reviews
-          </p>
-          <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-            Reviews of The Stack.
-          </h2>
-        </div>
-        <div className="relative">
-          <CustomerReviewsRail reviews={sampleReviews} />
+      {/* Proof Band */}
+      <section className="relative mt-16 overflow-hidden rounded-[2.25rem] border border-white/10 bg-[linear-gradient(135deg,rgba(29,18,20,0.96),rgba(12,12,18,0.94))] px-6 py-8 shadow-[0_20px_80px_rgba(0,0,0,0.32)] md:px-10 md:py-10">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(232,99,74,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(212,168,83,0.16),transparent_40%)]" />
+        <div className="relative grid gap-8 lg:grid-cols-[1.08fr_0.92fr] lg:items-start">
+          <div className="max-w-2xl">
+            <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">
+              Proof
+            </p>
+            <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
+              What people actually got from it.
+            </h2>
+            <blockquote className="mt-8 max-w-[24ch] font-heading text-3xl leading-tight text-text-primary md:text-5xl">
+              &ldquo;{featuredReview.quote}&rdquo;
+            </blockquote>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-brand-coral/30 bg-brand-coral/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand-coral">
+                {featuredReview.result}
+              </span>
+              <span className="text-sm font-medium text-text-secondary">
+                {featuredReview.name}
+              </span>
+            </div>
+          </div>
+          <div className="grid gap-4">
+            {supportingReviews.map((review) => (
+              <article
+                key={review.name}
+                className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5 backdrop-blur-sm"
+              >
+                <p className="text-xs uppercase tracking-[0.2em] text-brand-gold">
+                  {review.result}
+                </p>
+                <p className="mt-3 text-lg leading-8 text-text-primary">
+                  &ldquo;{review.quote}&rdquo;
+                </p>
+                <p className="mt-4 text-sm font-medium text-text-secondary">
+                  {review.name}
+                </p>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -445,13 +477,25 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="relative mx-auto mt-16 max-w-4xl overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-8 text-center shadow-[0_8px_60px_rgba(45,212,191,0.06),0_2px_20px_rgba(0,0,0,0.3)] backdrop-blur-xl md:p-10">
-        <h2 className="font-heading text-3xl text-text-primary md:text-4xl">Get Bonus Plays</h2>
-        <p className="mx-auto mt-3 max-w-none text-lg text-text-secondary md:text-xl lg:whitespace-nowrap">
-          Bonus offers, timing tips, and free tools. Curated, not sponsored.
-        </p>
-        <div className="mx-auto mt-6 max-w-xl">
-          <NewsletterSignup source="homepage" compact size="large" />
+      <section className="relative mx-auto mt-16 max-w-5xl overflow-hidden rounded-[2.25rem] bg-[linear-gradient(135deg,#2DD4BF_0%,#8BE3D4_42%,#D4A853_100%)] px-6 py-8 shadow-[0_24px_90px_rgba(45,212,191,0.18)] md:px-10 md:py-10">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.35),transparent_36%)]" />
+        <div className="relative grid gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+          <div className="max-w-xl">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-black/60">
+              Newsletter
+            </p>
+            <h2 className="mt-3 font-heading text-3xl text-black md:text-4xl">
+              Get bonus plays without living in spreadsheets.
+            </h2>
+            <p className="mt-3 text-base leading-7 text-black/70 md:text-lg">
+              Bonus offers, timing tips, and practical strategy. Curated, not sponsored.
+            </p>
+          </div>
+          <div className="rounded-[1.8rem] border border-black/10 bg-black/10 p-3 backdrop-blur-sm">
+            <div className="rounded-[1.4rem] bg-bg/92 p-4 md:p-5">
+              <NewsletterSignup source="homepage" compact size="large" submitLabel="Join the list" />
+            </div>
+          </div>
         </div>
       </section>
 
