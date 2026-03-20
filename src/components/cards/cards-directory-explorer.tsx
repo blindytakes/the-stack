@@ -72,7 +72,6 @@ export function CardsDirectoryExplorer({ cards, learnArticles }: CardsDirectoryE
 
       <CardsDirectoryResults
         cards={filteredSortedCards}
-        totalCards={cards.length}
         activeFilterCount={activeFilterCount}
         selectedCompare={selectedCompare}
         onClearFilters={clearFilters}

@@ -66,72 +66,121 @@ export function CardsDirectoryFilterPanel({
     Boolean
   ).length;
   const [showMore, setShowMore] = useState(moreFilterCount > 0);
+  const summaryCards = [
+    {
+      label: 'Showing',
+      value: filteredCardsCount.toLocaleString(),
+      context: `of ${totalCards}`,
+      description: 'Cards in the current view.',
+      valueClassName: 'text-white',
+      barClassName: 'bg-white/80',
+      percent: totalCards > 0 ? (filteredCardsCount / totalCards) * 100 : 0
+    },
+    {
+      label: 'No Annual Fee',
+      value: noAnnualFeeCount.toLocaleString(),
+      context: totalCards > 0 ? `${Math.round((noAnnualFeeCount / totalCards) * 100)}%` : '0%',
+      description: 'Lower-commitment keepers.',
+      valueClassName: 'text-emerald-300',
+      barClassName: 'bg-emerald-400/80',
+      percent: totalCards > 0 ? (noAnnualFeeCount / totalCards) * 100 : 0
+    },
+    {
+      label: 'Bonus-Ready',
+      value: activeBonusCount.toLocaleString(),
+      context: totalCards > 0 ? `${Math.round((activeBonusCount / totalCards) * 100)}%` : '0%',
+      description: 'Cards with active welcome value.',
+      valueClassName: 'text-brand-gold',
+      barClassName: 'bg-brand-gold/85',
+      percent: totalCards > 0 ? (activeBonusCount / totalCards) * 100 : 0
+    }
+  ] as const;
 
   useEffect(() => {
     if (moreFilterCount > 0) setShowMore(true);
   }, [moreFilterCount]);
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-bg-surface p-4 md:p-5">
-      <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.16),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-5 md:p-6">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_320px] lg:items-start">
-          <div className="max-w-[46rem]">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-brand-gold">Card Directory</p>
-            <h1 className="mt-2 font-heading text-[2.6rem] leading-[0.94] text-text-primary md:text-[3.2rem]">
-              Find the card that matches how you actually spend.
-            </h1>
-            <p className="mt-3 max-w-[39rem] text-[15px] leading-7 text-text-secondary">
-              Compare welcome value, annual fee, issuer, and best spend fit without opening a dozen
-              tabs. Filter for grocery, travel, gas, dining, or general-spend cards first, then
-              drill down.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {[
-                'Welcome bonus value',
-                'Annual fee exposure',
-                'Best spend categories',
-                'Issuer and card type'
-              ].map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-white/10 bg-bg/50 px-3 py-1 text-xs text-text-secondary"
-                >
-                  {item}
-                </span>
-              ))}
+    <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,32,0.96),rgba(12,13,22,0.98))] p-4 shadow-[0_24px_90px_rgba(0,0,0,0.24)] md:p-5">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.14),transparent_26%),radial-gradient(circle_at_85%_18%,rgba(212,168,83,0.12),transparent_18%),linear-gradient(180deg,transparent,rgba(255,255,255,0.02))]"
+      />
+
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(125deg,rgba(36,76,81,0.46),rgba(31,33,49,0.94)_38%,rgba(19,20,32,0.98)_100%)] p-5 md:p-7">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_0%_100%,rgba(45,212,191,0.08),transparent_34%),radial-gradient(circle_at_100%_100%,rgba(255,255,255,0.04),transparent_28%)]"
+        />
+        <div className="relative">
+          <div className="max-w-none">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand-gold/20 bg-brand-gold/10 px-3 py-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" aria-hidden="true" />
+              <span className="text-[10px] uppercase tracking-[0.32em] text-brand-gold">
+                Card Directory
+              </span>
             </div>
+            <h1 className="mt-4 w-full font-heading text-[clamp(2.15rem,2.9vw,3.35rem)] leading-[1] tracking-[-0.035em] text-white md:whitespace-nowrap">
+              Find the right card for your spend.
+            </h1>
+            <p className="mt-4 w-full text-base leading-7 text-text-secondary md:text-lg md:leading-8">
+              When you find a card you like, The Stack builds your bonus plan around it.
+            </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-            <div className="rounded-2xl border border-white/10 bg-bg/55 p-4">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Showing</p>
-              <p className="mt-2 text-2xl font-semibold text-text-primary">
-                {filteredCardsCount}
-                <span className="ml-1 text-base font-medium text-text-muted">of {totalCards}</span>
-              </p>
-              <p className="mt-1 text-xs text-text-muted">Cards in the current view.</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-bg/55 p-4">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">No Annual Fee</p>
-              <p className="mt-2 text-2xl font-semibold text-text-primary">{noAnnualFeeCount}</p>
-              <p className="mt-1 text-xs text-text-muted">Cards you can keep with less friction.</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-bg/55 p-4">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Bonus-Ready</p>
-              <p className="mt-2 text-2xl font-semibold text-text-primary">{activeBonusCount}</p>
-              <p className="mt-1 text-xs text-text-muted">Cards with active welcome value in data.</p>
-            </div>
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            {summaryCards.map((card) => (
+              <div
+                key={card.label}
+                className="rounded-[1.45rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,10,18,0.78),rgba(12,13,22,0.96))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.26em] text-text-muted">
+                      {card.label}
+                    </p>
+                    <div className="mt-2 flex items-end gap-2">
+                      <p className={`text-3xl font-semibold leading-none ${card.valueClassName}`}>
+                        {card.value}
+                      </p>
+                      <p className="pb-0.5 text-base text-text-muted">{card.context}</p>
+                    </div>
+                  </div>
+                  <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-text-muted">
+                    {Math.round(card.percent)}%
+                  </div>
+                </div>
+                <p className="mt-2 text-sm text-text-secondary">{card.description}</p>
+                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/6">
+                  <div
+                    className={`h-full rounded-full ${card.barClassName}`}
+                    style={{ width: `${Math.max(card.percent, 8)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      <input
-        type="text"
-        value={query}
-        onChange={(event) => onQueryChange(event.target.value)}
-        placeholder="Search card, issuer, perk, or reward style..."
-        className="mt-4 w-full rounded-xl border border-white/10 bg-bg-elevated px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
-      />
+      <div className="relative mt-5">
+        <svg
+          viewBox="0 0 20 20"
+          fill="none"
+          className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-text-muted"
+          aria-hidden="true"
+        >
+          <circle cx="9" cy="9" r="5.75" stroke="currentColor" strokeWidth="1.5" />
+          <path d="m13.5 13.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <input
+          type="text"
+          value={query}
+          onChange={(event) => onQueryChange(event.target.value)}
+          placeholder="Search card, issuer, perk, or reward style..."
+          className="w-full rounded-2xl border border-white/10 bg-bg-elevated/90 py-3 pr-4 pl-11 text-sm text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
+        />
+      </div>
 
       <div className="mt-3 grid gap-3 md:grid-cols-2">
         <label className="block">
@@ -184,7 +233,7 @@ export function CardsDirectoryFilterPanel({
             </button>
           )}
         </div>
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-6">
           {spendCategoryOptions.map((option) => {
             const isActive = spendCategory === option.value;
 
@@ -193,7 +242,7 @@ export function CardsDirectoryFilterPanel({
                 key={option.value}
                 type="button"
                 onClick={() => onSpendCategoryChange(option.value)}
-                className={`rounded-full px-3.5 py-2 text-sm font-medium transition ${
+                className={`inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-medium transition ${
                   isActive
                     ? 'border border-brand-teal/30 bg-brand-teal text-black'
                     : 'border border-white/10 bg-bg text-text-secondary hover:border-brand-teal/35 hover:text-brand-teal'

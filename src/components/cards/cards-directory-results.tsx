@@ -15,7 +15,6 @@ import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type CardsDirectoryResultsProps = {
   cards: CardRecord[];
-  totalCards: number;
   activeFilterCount: number;
   selectedCompare: string[];
   onClearFilters: () => void;
@@ -23,7 +22,6 @@ type CardsDirectoryResultsProps = {
 
 export function CardsDirectoryResults({
   cards,
-  totalCards,
   activeFilterCount,
   selectedCompare,
   onClearFilters
@@ -56,6 +54,11 @@ export function CardsDirectoryResults({
     return 'Points';
   }
 
+  function formatBestCategoryLabel(category: CardRecord['topCategories'][number]) {
+    if (category === 'all') return 'General spend';
+    return formatSpendCategoryLabel(category);
+  }
+
   if (cards.length === 0) {
     return (
       <section className="mt-6 rounded-2xl border border-white/10 bg-bg-surface p-6">
@@ -76,19 +79,8 @@ export function CardsDirectoryResults({
 
   return (
     <section ref={sectionRef} className="mt-6">
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">Card Matches</p>
-          <h2 className="mt-1 text-2xl font-semibold text-text-primary">
-            {cards.length} cards ready to compare
-          </h2>
-          <p className="mt-1 text-sm text-text-secondary">
-            {activeFilterCount > 0
-              ? `Showing ${cards.length} of ${totalCards} cards after your current filters.`
-              : 'Start with spend fit, then use fee and bonus filters to narrow the list.'}
-          </p>
-        </div>
-        {activeFilterCount > 0 && (
+      {activeFilterCount > 0 && (
+        <div className="mb-4 flex justify-end">
           <button
             type="button"
             onClick={onClearFilters}
@@ -96,8 +88,8 @@ export function CardsDirectoryResults({
           >
             Clear filters
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {cards.map((card, index) => {
@@ -106,9 +98,9 @@ export function CardsDirectoryResults({
           const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
           const spendRequirement = formatSpendRequirement(card);
           const topCategories = card.topCategories.filter((category) => category !== 'other');
-          const categoryChips = (
-            topCategories.length > 0 ? topCategories : (['all'] as const)
-          ).slice(0, 3);
+          const annualFeeLabel =
+            card.annualFee === 0 ? 'No annual fee' : `Annual fee: $${card.annualFee}/yr`;
+          const bestCategory = (topCategories.length > 0 ? topCategories : (['all'] as const))[0];
 
           return (
             <article
@@ -128,12 +120,12 @@ export function CardsDirectoryResults({
               />
 
               {card.cardType === 'business' && (
-                <div className="absolute top-3 left-3 z-10 rounded-full bg-amber-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
+                <div className="absolute top-3 left-3 z-20 rounded-full bg-amber-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
                   Business
                 </div>
               )}
               {card.annualFee === 0 && (
-                <div className="absolute top-3 right-3 z-10 rounded-full bg-emerald-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
+                <div className="absolute top-3 right-3 z-20 rounded-full bg-emerald-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
                   No fee
                 </div>
               )}
@@ -168,33 +160,25 @@ export function CardsDirectoryResults({
                 </button>
               </div>
 
-              <p className="relative z-10 mt-2 min-h-[2.75rem] text-center text-xs leading-5 text-text-muted">
-                {card.headline}
+              <p className="relative z-10 mt-2 min-h-[1.5rem] text-center text-xs font-medium leading-5 text-text-muted">
+                {annualFeeLabel}
+              </p>
+
+              <p className="relative z-10 mt-1 text-center text-xs text-text-muted">
+                {spendRequirement ?? 'See issuer terms for the latest spend requirement.'}
               </p>
 
               <div className="relative z-10 mt-3 flex flex-wrap justify-center gap-2">
                 <span className="rounded-full border border-brand-gold/20 bg-brand-gold/10 px-2.5 py-1 text-[11px] text-brand-gold">
                   {formatRewardTypeLabel(card.rewardType)}
                 </span>
-                <span className="rounded-full border border-white/10 bg-bg-elevated px-2.5 py-1 text-[11px] text-text-secondary">
-                  {card.annualFee === 0 ? 'No annual fee' : `$${card.annualFee}/yr fee`}
+              </div>
+
+              <div className="relative z-10 mt-3 flex justify-center">
+                <span className="inline-flex items-center whitespace-nowrap rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-text-secondary">
+                  {formatBestCategoryLabel(bestCategory)}
                 </span>
               </div>
-
-              <div className="relative z-10 mt-3 flex min-h-[3.5rem] flex-wrap justify-center gap-2">
-                {categoryChips.map((category) => (
-                  <span
-                    key={`${card.slug}-${category}`}
-                    className="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-text-secondary"
-                  >
-                    Best for {formatSpendCategoryLabel(category)}
-                  </span>
-                ))}
-              </div>
-
-              <p className="relative z-10 mt-2 text-center text-xs text-text-muted">
-                {spendRequirement ?? 'See issuer terms for the latest spend requirement.'}
-              </p>
 
               <div className="relative z-10 mt-auto mt-4 flex gap-2 border-t border-white/5 pt-4">
                 <button
@@ -208,7 +192,7 @@ export function CardsDirectoryResults({
                   href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
                   className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-xs font-semibold text-black transition hover:opacity-90"
                 >
-                  Include this card in my bonus plan
+                  Add to plan
                 </Link>
               </div>
             </article>
