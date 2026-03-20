@@ -1,7 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { CardRecord } from '@/lib/cards';
 import {
   formatBonusValue,
@@ -26,9 +27,12 @@ export function CardsDirectoryResults({
   selectedCompare,
   onClearFilters
 }: CardsDirectoryResultsProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
-  const [modalSlug, setModalSlug] = useState<string | null>(null);
+  const modalSlug = searchParams.get('card');
 
   useEffect(() => {
     const element = sectionRef.current;
@@ -47,6 +51,25 @@ export function CardsDirectoryResults({
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
+
+  const openModal = useCallback(
+    (slug: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('card', slug);
+      const nextUrl = `${pathname}?${params.toString()}`;
+      router.push(nextUrl, { scroll: false });
+    },
+    [pathname, router, searchParams]
+  );
+
+  const closeModal = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('card');
+    const nextQueryString = params.toString();
+    router.replace(nextQueryString ? `${pathname}?${nextQueryString}` : pathname, {
+      scroll: false
+    });
+  }, [pathname, router, searchParams]);
 
   function formatRewardTypeLabel(rewardType: CardRecord['rewardType']) {
     if (rewardType === 'cashback') return 'Cash back';
@@ -153,7 +176,7 @@ export function CardsDirectoryResults({
               <div className="relative z-10 mt-3 min-h-[2.5rem] px-2">
                 <button
                   type="button"
-                  onClick={() => setModalSlug(card.slug)}
+                  onClick={() => openModal(card.slug)}
                   className="block w-full text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
                 >
                   {card.name}
@@ -183,7 +206,7 @@ export function CardsDirectoryResults({
               <div className="relative z-10 mt-auto mt-4 flex gap-2 border-t border-white/5 pt-4">
                 <button
                   type="button"
-                  onClick={() => setModalSlug(card.slug)}
+                  onClick={() => openModal(card.slug)}
                   className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
                 >
                   Details
@@ -201,7 +224,7 @@ export function CardsDirectoryResults({
       </div>
 
       {modalSlug && (
-        <CardDetailModal slug={modalSlug} onClose={() => setModalSlug(null)} />
+        <CardDetailModal slug={modalSlug} onClose={closeModal} />
       )}
     </section>
   );

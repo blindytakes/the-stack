@@ -4,15 +4,23 @@ import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import type { CardDetail } from '@/lib/cards';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import { formatSpendCategoryLabel } from '@/lib/cards-directory-explorer';
+import { AffiliateLink } from '@/components/analytics/affiliate-link';
+import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { EntityImage } from '@/components/ui/entity-image';
 import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type CardDetailModalProps = {
   slug: string;
   onClose: () => void;
+  source?: string;
 };
 
-export function CardDetailModal({ slug, onClose }: CardDetailModalProps) {
+export function CardDetailModal({
+  slug,
+  onClose,
+  source = 'cards_directory'
+}: CardDetailModalProps) {
   const [card, setCard] = useState<CardDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -73,7 +81,10 @@ export function CardDetailModal({ slug, onClose }: CardDetailModalProps) {
   const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
 
   const formatCreditTier = (tier: string) => {
-    return tier.charAt(0).toUpperCase() + tier.slice(1);
+    if (tier === 'excellent') return 'Excellent';
+    if (tier === 'good') return 'Good+';
+    if (tier === 'fair') return 'Fair+';
+    return 'Building';
   };
 
   const formatForeignFee = (fee: number) => {
@@ -81,17 +92,60 @@ export function CardDetailModal({ slug, onClose }: CardDetailModalProps) {
     return `${fee}%`;
   };
 
-  const spendPeriod = card?.bestSignUpBonusSpendPeriodDays
-    ? `${Math.max(1, Math.round(card.bestSignUpBonusSpendPeriodDays / 30))} mo`
-    : null;
+  const formatRewardRate = (rate: number, rateType: CardDetail['rewardType']) => {
+    if (rateType === 'cashback') return `${rate}%`;
+    return `${rate}x`;
+  };
 
+  const formatCurrency = (value: number) => `$${Math.round(value).toLocaleString()}`;
+  const formatSignedCurrency = (value: number) =>
+    `${value >= 0 ? '+' : '-'}$${Math.abs(Math.round(value)).toLocaleString()}`;
+
+  const activeBonuses = card?.signUpBonuses.filter((bonus) => bonus.isCurrentOffer !== false) ?? [];
+  const bonusCandidates = activeBonuses.length > 0 ? activeBonuses : (card?.signUpBonuses ?? []);
+  const primaryBonus = [...bonusCandidates].sort((a, b) => b.bonusValue - a.bonusValue)[0];
+  const bestListedOfferValue = primaryBonus?.bonusValue ?? card?.bestSignUpBonusValue ?? 0;
+  const topRewards = card
+    ? [...card.rewards]
+        .sort((a, b) => b.rate - a.rate)
+        .slice(0, 2)
+    : [];
+  const allSortedBenefits = card
+    ? [...card.benefits]
+        .sort((a, b) => (b.estimatedValue ?? 0) - (a.estimatedValue ?? 0))
+    : [];
+  const topBenefits = allSortedBenefits.slice(0, 2);
+  const remainingBenefitsCount = Math.max(allSortedBenefits.length - topBenefits.length, 0);
+  const topCategories = card?.topCategories.filter((category) => category !== 'other') ?? [];
+  const displayCategories =
+    topCategories.length > 0 ? topCategories.slice(0, 2) : (['all'] as const);
+  const summaryCopy = card ? card.description ?? card.headline : '';
+  const rewardStyleLabel = card
+    ? card.rewardType === 'cashback'
+      ? 'Cash back'
+      : card.rewardType === 'miles'
+        ? 'Miles'
+        : 'Points'
+    : '';
+  const estimatedFirstYearValue = card
+    ? (card.bestSignUpBonusValue ?? 0) + card.totalBenefitsValue - card.annualFee
+    : 0;
+  const outboundApplyUrl = card ? card.affiliateUrl ?? card.applyUrl : null;
+  const applyHref =
+    card && outboundApplyUrl
+      ? `/api/affiliate/click?${new URLSearchParams({
+          card_slug: card.slug,
+          source,
+          target: outboundApplyUrl
+        }).toString()}`
+      : null;
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(4px)' }}
       onClick={handleBackdropClick}
     >
-      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-bg-surface shadow-2xl animate-in zoom-in-95 fade-in duration-200">
+      <div className="relative max-h-[92vh] w-full max-w-[1200px] overflow-y-auto rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(20,22,33,0.96),rgba(14,16,25,0.98))] shadow-2xl animate-in zoom-in-95 fade-in duration-200">
         {/* Close button */}
         <button
           type="button"
@@ -125,193 +179,228 @@ export function CardDetailModal({ slug, onClose }: CardDetailModalProps) {
 
         {card && (
           <div className="p-6 md:p-8">
-            {/* Header: Card image + name + bonus */}
-            <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
-              {/* Card image */}
-              <div className="w-48 shrink-0 overflow-hidden rounded-xl">
-                <EntityImage
-                  src={card.imageUrl}
-                  alt={`${card.name} card art`}
-                  label={card.name}
-                  className="aspect-[1.586/1]"
-                  imgClassName={imageClassName}
-                  fallbackClassName="bg-black/10"
-                  fit={imagePresentation?.fit}
-                  position={imagePresentation?.position}
-                  scale={imagePresentation?.scale}
-                />
+            <TrackFunnelEventOnView
+              event="card_detail_view"
+              properties={{ source, card_slug: card.slug, path: `/cards?card=${card.slug}` }}
+            />
+
+            <div className="grid gap-6 md:grid-cols-[236px_minmax(0,1fr)] md:items-start md:gap-x-10">
+              <div className="mx-auto w-full max-w-[236px]">
+                <div className="overflow-hidden rounded-[1.35rem] border border-white/10 bg-black/10 p-2.5 shadow-[0_16px_42px_rgba(0,0,0,0.22)]">
+                  <EntityImage
+                    src={card.imageUrl}
+                    alt={`${card.name} card art`}
+                    label={card.name}
+                    className="aspect-[1.586/1] rounded-[1.05rem]"
+                    imgClassName={imageClassName}
+                    fallbackClassName="bg-black/10"
+                    fit={imagePresentation?.fit}
+                    position={imagePresentation?.position}
+                    scale={imagePresentation?.scale}
+                  />
+                </div>
+
+                <div className="mx-auto mt-4 flex w-full max-w-[220px] flex-col gap-3">
+                  <Link
+                    href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
+                    className="inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-5 py-3.5 text-base font-semibold text-black transition hover:opacity-90"
+                  >
+                    Add to my plan
+                  </Link>
+                  {applyHref && (
+                    <AffiliateLink
+                      href={applyHref}
+                      cardSlug={card.slug}
+                      source={source}
+                      className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-5 py-3.5 text-base font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
+                    >
+                      View current offer
+                    </AffiliateLink>
+                  )}
+                </div>
               </div>
 
-              {/* Name + bonus */}
-              <div className="flex-1 text-center sm:text-left">
-                <p className="text-xs uppercase tracking-[0.2em] text-text-muted">{card.issuer}</p>
-                <h2 className="mt-1 font-heading text-xl font-bold text-text-primary">{card.name}</h2>
+              <div>
+                <p className="text-xs uppercase tracking-[0.26em] text-text-muted">{card.issuer}</p>
+                <h2 className="mt-3 max-w-[24ch] font-heading text-[2.35rem] leading-[0.94] tracking-[-0.02em] text-text-primary md:text-[3.45rem]">
+                  {card.name}
+                </h2>
+                {summaryCopy && (
+                  <p className="mt-3.5 max-w-[62ch] text-sm leading-6 text-text-secondary md:text-[15px] md:leading-7">
+                    {summaryCopy}
+                  </p>
+                )}
 
-                {/* Bonus hero */}
-                {card.bestSignUpBonusValue && card.bestSignUpBonusValue > 0 && (
-                  <div className="mt-3">
-                    <p className="text-3xl font-bold text-brand-teal">
-                      +${Math.round(card.bestSignUpBonusValue).toLocaleString()} bonus
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {displayCategories.map((category) => (
+                    <span
+                      key={category}
+                      className="rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2.5 py-1 text-[11px] text-brand-teal"
+                    >
+                      Best for {formatSpendCategoryLabel(category)}
+                    </span>
+                  ))}
+                  <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-secondary">
+                    {rewardStyleLabel}
+                  </span>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-secondary">
+                    {card.cardType === 'business' ? 'Business card' : 'Personal card'}
+                  </span>
+                </div>
+
+                <div className="mt-4 grid gap-3 md:max-w-[620px] md:grid-cols-[minmax(0,290px)_minmax(0,290px)] md:justify-start">
+                  <div className="rounded-[1.15rem] border border-brand-gold/20 bg-white/[0.03] p-3">
+                    <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">
+                      Best listed offer
                     </p>
-                    {card.bestSignUpBonusSpendRequired && spendPeriod && (
-                      <p className="mt-1 text-xs text-text-muted">
-                        Spend ${card.bestSignUpBonusSpendRequired.toLocaleString()} in {spendPeriod}
-                      </p>
-                    )}
+                    <p className="mt-2 text-[2.05rem] font-semibold leading-none text-brand-gold">
+                      {bestListedOfferValue > 0 ? formatCurrency(bestListedOfferValue) : 'N/A'}
+                    </p>
                   </div>
-                )}
 
-                {/* Apply CTA */}
-                {(card.affiliateUrl || card.applyUrl) && (
-                  <a
-                    href={card.affiliateUrl || card.applyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-teal px-6 py-2.5 text-sm font-semibold text-black transition hover:bg-brand-teal/90"
-                  >
-                    Apply Now →
-                  </a>
-                )}
+                  <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] p-3">
+                    <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">
+                      Estimated first-year net
+                    </p>
+                    <p
+                      className={`mt-2 text-[2.05rem] font-semibold leading-none ${
+                        estimatedFirstYearValue >= 0 ? 'text-brand-teal' : 'text-brand-coral'
+                      }`}
+                    >
+                      {formatSignedCurrency(estimatedFirstYearValue)}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Stat pills */}
-            <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-                <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Annual Fee</p>
+            <div className="mt-4 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Annual Fee</p>
                 <p className="mt-1 text-sm font-semibold text-text-primary">
-                  {card.annualFee === 0 ? 'No fee' : `$${card.annualFee}`}
+                  {card.annualFee === 0 ? 'No fee' : formatCurrency(card.annualFee)}
                 </p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-                <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Credit</p>
+              <div className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Credit Needed</p>
                 <p className="mt-1 text-sm font-semibold text-text-primary">
-                  {formatCreditTier(card.creditTierMin)}+
+                  {formatCreditTier(card.creditTierMin)}
                 </p>
               </div>
-              <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-                <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Type</p>
-                <p className="mt-1 text-sm font-semibold text-text-primary">
-                  {card.cardType === 'business' ? 'Business' : 'Personal'}
-                </p>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-                <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Foreign Fees</p>
+              <div className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Foreign Fee</p>
                 <p className="mt-1 text-sm font-semibold text-text-primary">
                   {formatForeignFee(card.foreignTxFee)}
                 </p>
               </div>
+              <div className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-2.5">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Reward Style</p>
+                <p className="mt-1 text-sm font-semibold text-text-primary">{rewardStyleLabel}</p>
+              </div>
             </div>
 
-            {/* Earn rates */}
-            {card.rewards.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-xs uppercase tracking-[0.2em] text-text-muted">How You Earn</h3>
-                <div className="mt-3 space-y-2">
-                  {card.rewards.slice(0, 4).map((reward, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center justify-between rounded-xl border border-white/10 bg-bg-elevated px-4 py-2.5"
-                    >
-                      <span className="text-sm text-text-secondary capitalize">{reward.category}</span>
-                      <span className="text-sm font-bold text-brand-teal">
-                        {reward.rate}%
-                      </span>
+            <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)]">
+              <div className="space-y-5">
+                {topRewards.length > 0 && (
+                  <section className="rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
+                    <h3 className="text-xs uppercase tracking-[0.22em] text-text-muted">How You Earn</h3>
+                    <div className="mt-3 space-y-2.5">
+                      {topRewards.map((reward, index) => (
+                        <div
+                          key={`${reward.category}-${index}`}
+                          className="flex items-start justify-between gap-4 rounded-xl border border-white/5 bg-bg/40 px-3.5 py-2.5"
+                        >
+                          <div>
+                            <p className="text-sm font-semibold text-text-primary">
+                              {formatSpendCategoryLabel(reward.category)}
+                            </p>
+                            {(reward.notes || reward.capAmount != null) && (
+                              <p className="mt-1 text-xs leading-5 text-text-secondary">
+                                {reward.notes ??
+                                  `Up to ${formatCurrency(reward.capAmount ?? 0)}${
+                                    reward.capPeriod ? `/${reward.capPeriod}` : ''
+                                  }`}
+                              </p>
+                            )}
+                          </div>
+                          <span className="shrink-0 text-base font-semibold text-brand-teal">
+                            {formatRewardRate(reward.rate, reward.rateType)}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
-              </div>
-            )}
+                  </section>
+                )}
 
-            {/* Top perks — just names, no descriptions */}
-            {card.benefits.length > 0 && (
-              <div className="mt-6">
-                <h3 className="text-xs uppercase tracking-[0.2em] text-text-muted">Top Perks</h3>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {card.benefits.slice(0, 5).map((benefit, i) => (
-                    <span
-                      key={i}
-                      className="rounded-full border border-white/10 bg-bg-elevated px-3 py-1.5 text-xs text-text-secondary"
-                    >
-                      {benefit.name}
-                    </span>
-                  ))}
-                </div>
+                {topBenefits.length > 0 && (
+                  <section className="rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
+                    <h3 className="text-xs uppercase tracking-[0.22em] text-text-muted">Top Perks</h3>
+                    <div className="mt-3 space-y-2.5">
+                      {topBenefits.map((benefit, index) => (
+                        <div
+                          key={`${benefit.name}-${index}`}
+                          className="rounded-xl border border-white/5 bg-bg/40 px-3.5 py-3"
+                        >
+                          <div className="flex items-start justify-between gap-4">
+                            <p className="text-sm font-semibold text-text-primary">{benefit.name}</p>
+                            {benefit.estimatedValue != null && (
+                              <span className="shrink-0 text-sm font-semibold text-brand-teal">
+                                ~{formatCurrency(benefit.estimatedValue)}/yr
+                              </span>
+                            )}
+                          </div>
+                          <p className="mt-1 text-xs leading-5 text-text-secondary">
+                            {benefit.description}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    {remainingBenefitsCount > 0 && (
+                      <p className="mt-3 text-xs text-text-muted">
+                        Plus {remainingBenefitsCount} more listed benefits on the issuer page.
+                      </p>
+                    )}
+                  </section>
+                )}
               </div>
-            )}
 
-            {/* Good fit / Think twice */}
-            {(card.pros?.length || card.cons?.length) ? (
-              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              <div className="space-y-5">
                 {card.pros && card.pros.length > 0 && (
-                  <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">
+                  <section className="rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-400">
                       Good fit if
                     </h3>
-                    <ul className="mt-2 space-y-1.5">
-                      {card.pros.slice(0, 4).map((pro, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-text-secondary">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                    <ul className="mt-3 space-y-2">
+                      {card.pros.slice(0, 4).map((pro, index) => (
+                        <li
+                          key={`${pro}-${index}`}
+                          className="flex items-start gap-2 text-sm leading-6 text-text-secondary"
+                        >
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
                           {pro}
                         </li>
                       ))}
                     </ul>
-                  </div>
+                  </section>
                 )}
+
                 {card.cons && card.cons.length > 0 && (
-                  <div>
-                    <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-red-400">
+                  <section className="rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
+                    <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-red-400">
                       Think twice if
                     </h3>
-                    <ul className="mt-2 space-y-1.5">
-                      {card.cons.slice(0, 4).map((con, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm text-text-secondary">
-                          <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
+                    <ul className="mt-3 space-y-2">
+                      {card.cons.slice(0, 4).map((con, index) => (
+                        <li
+                          key={`${con}-${index}`}
+                          className="flex items-start gap-2 text-sm leading-6 text-text-secondary"
+                        >
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-red-400" />
                           {con}
                         </li>
                       ))}
                     </ul>
-                  </div>
-                )}
-              </div>
-            ) : null}
-
-            {/* Estimated first-year value */}
-            {card.totalBenefitsValue > 0 && (
-              <div className="mt-6 rounded-xl border border-brand-teal/20 bg-brand-teal/5 px-4 py-3 text-center">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-                  Estimated First-Year Value
-                </p>
-                <p className="mt-1 text-2xl font-bold text-brand-teal">
-                  +${Math.round(card.totalBenefitsValue - card.annualFee).toLocaleString()}
-                </p>
-              </div>
-            )}
-
-            {/* Bottom actions */}
-            <div className="mt-6 flex flex-col gap-3 border-t border-white/5 pt-4 sm:flex-row sm:items-center sm:justify-between">
-              <Link
-                href={`/cards/${card.slug}`}
-                className="text-sm text-text-muted transition hover:text-brand-teal"
-              >
-                View full details →
-              </Link>
-              <div className="flex flex-col gap-2 sm:flex-row">
-                <Link
-                  href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
-                  className="inline-flex items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
-                >
-                  Include this card in my bonus plan
-                </Link>
-                {(card.affiliateUrl || card.applyUrl) && (
-                  <a
-                    href={card.affiliateUrl || card.applyUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-brand-teal transition hover:border-brand-teal/40 hover:text-brand-teal/80"
-                  >
-                    Apply Now
-                  </a>
+                  </section>
                 )}
               </div>
             </div>
