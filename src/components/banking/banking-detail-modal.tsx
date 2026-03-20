@@ -261,9 +261,9 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
             <div className="flex flex-col gap-2 sm:flex-row">
               <Link
                 href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
-                className="inline-flex items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
+                className="inline-flex items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-center text-sm leading-tight font-semibold text-black transition hover:opacity-90"
               >
-                Include this bank in my bonus plan
+                Include in my plan
               </Link>
               {(offer.affiliateUrl || offer.offerUrl) && (
                 <a

@@ -92,124 +92,181 @@ export function BankingDirectoryFilterPanel({
     state.length > 0
   ].filter(Boolean).length;
   const [showMore, setShowMore] = useState(advancedFilterCount > 0);
+  const summaryCards = [
+    {
+      label: 'Showing',
+      value: filteredOffersCount.toLocaleString(),
+      context: `of ${totalOffers}`,
+      description: 'Offers in the current view.',
+      valueClassName: 'text-white',
+      barClassName: 'bg-white/80',
+      percent: totalOffers > 0 ? (filteredOffersCount / totalOffers) * 100 : 0
+    },
+    {
+      label: 'No Direct Deposit',
+      value: noDirectDepositCount.toLocaleString(),
+      context: totalOffers > 0 ? `${Math.round((noDirectDepositCount / totalOffers) * 100)}%` : '0%',
+      description: 'Lower-friction keepers.',
+      valueClassName: 'text-emerald-300',
+      barClassName: 'bg-emerald-400/80',
+      percent: totalOffers > 0 ? (noDirectDepositCount / totalOffers) * 100 : 0
+    },
+    {
+      label: 'Filterable APY',
+      value: numericApyCount.toLocaleString(),
+      context: totalOffers > 0 ? `${Math.round((numericApyCount / totalOffers) * 100)}%` : '0%',
+      description: 'Offers with APY data attached.',
+      valueClassName: 'text-brand-gold',
+      barClassName: 'bg-brand-gold/85',
+      percent: totalOffers > 0 ? (numericApyCount / totalOffers) * 100 : 0
+    }
+  ] as const;
 
   useEffect(() => {
     if (advancedFilterCount > 0) setShowMore(true);
   }, [advancedFilterCount]);
 
   return (
-    <section className="rounded-2xl border border-white/10 bg-bg-surface p-4 md:p-5">
-      <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.18),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-5 md:p-6">
-        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_320px] lg:items-start">
-          <div className="max-w-[46rem]">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-brand-gold">Banking Bonuses</p>
-            <h1 className="mt-2 font-heading text-[2.6rem] leading-[0.94] text-text-primary md:text-[3.2rem]">
-              Compare the bank bonus before you open the account.
-            </h1>
-            <p className="mt-3 max-w-[39rem] text-[15px] leading-7 text-text-secondary">
-              See net bonus value, direct deposit requirement, upfront cash, APY, and hold timeline
-              in one view. Filter down to accounts you can actually complete, then send the good
-              fits into your bonus plan.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {[
-                'Net bonus after estimated fees',
-                'Direct deposit friction',
-                'Opening cash requirement',
-                'APY and hold period'
-              ].map((item) => (
-                <span
-                  key={item}
-                  className="rounded-full border border-white/10 bg-bg/50 px-3 py-1 text-xs text-text-secondary"
-                >
-                  {item}
-                </span>
-              ))}
+    <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,32,0.96),rgba(12,13,22,0.98))] p-4 shadow-[0_24px_90px_rgba(0,0,0,0.24)] md:p-5">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.14),transparent_26%),radial-gradient(circle_at_85%_18%,rgba(212,168,83,0.12),transparent_18%),linear-gradient(180deg,transparent,rgba(255,255,255,0.02))]"
+      />
+
+      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(125deg,rgba(36,76,81,0.46),rgba(31,33,49,0.94)_38%,rgba(19,20,32,0.98)_100%)] p-5 md:p-7">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_0%_100%,rgba(45,212,191,0.08),transparent_34%),radial-gradient(circle_at_100%_100%,rgba(255,255,255,0.04),transparent_28%)]"
+        />
+        <div className="relative">
+          <div className="max-w-none">
+            <div className="inline-flex items-center gap-2 rounded-full border border-brand-gold/20 bg-brand-gold/10 px-3 py-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" aria-hidden="true" />
+              <span className="text-[10px] uppercase tracking-[0.32em] text-brand-gold">
+                Banking Bonuses
+              </span>
             </div>
+            <h1 className="mt-4 w-full font-heading text-[clamp(2.15rem,2.9vw,3.35rem)] leading-[1] tracking-[-0.035em] text-white">
+              Find the right bank bonus for you.
+            </h1>
+            <p className="mt-4 w-full max-w-[62rem] text-base leading-7 text-text-secondary md:text-lg md:leading-8">
+              When you find a bank bonus you like, The Stack builds your bonus plan around it.
+            </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
-            <div className="rounded-2xl border border-white/10 bg-bg/55 p-4">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Showing</p>
-              <p className="mt-2 text-2xl font-semibold text-text-primary">
-                {filteredOffersCount}
-                <span className="ml-1 text-base font-medium text-text-muted">of {totalOffers}</span>
-              </p>
-              <p className="mt-1 text-xs text-text-muted">Offers in the current view.</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-bg/55 p-4">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">No Direct Deposit</p>
-              <p className="mt-2 text-2xl font-semibold text-text-primary">{noDirectDepositCount}</p>
-              <p className="mt-1 text-xs text-text-muted">Lower-friction accounts in the directory.</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-bg/55 p-4">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Filterable APY</p>
-              <p className="mt-2 text-2xl font-semibold text-text-primary">{numericApyCount}</p>
-              <p className="mt-1 text-xs text-text-muted">Offers with numeric APY data attached.</p>
-            </div>
+          <div className="mt-6 grid gap-3 md:grid-cols-3">
+            {summaryCards.map((card) => (
+              <div
+                key={card.label}
+                className="rounded-[1.45rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,10,18,0.78),rgba(12,13,22,0.96))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-[0.26em] text-text-muted">
+                      {card.label}
+                    </p>
+                    <div className="mt-2 flex items-end gap-2">
+                      <p className={`text-3xl font-semibold leading-none ${card.valueClassName}`}>
+                        {card.value}
+                      </p>
+                      <p className="pb-0.5 text-base text-text-muted">{card.context}</p>
+                    </div>
+                  </div>
+                  <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[10px] uppercase tracking-[0.2em] text-text-muted">
+                    {Math.round(card.percent)}%
+                  </div>
+                </div>
+                <p className="mt-2 text-sm text-text-secondary">{card.description}</p>
+                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/6">
+                  <div
+                    className={`h-full rounded-full ${card.barClassName}`}
+                    style={{ width: `${Math.max(card.percent, 8)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
-      <input
-        type="text"
-        value={query}
-        onChange={(event) => onQueryChange(event.target.value)}
-        placeholder="Search bank, offer, or requirement..."
-        className="mt-4 w-full rounded-xl border border-white/10 bg-bg-elevated px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
-      />
+      <div className="relative mt-5">
+        <svg
+          viewBox="0 0 20 20"
+          fill="none"
+          className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-text-muted"
+          aria-hidden="true"
+        >
+          <circle cx="9" cy="9" r="5.75" stroke="currentColor" strokeWidth="1.5" />
+          <path d="m13.5 13.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        </svg>
+        <input
+          type="text"
+          value={query}
+          onChange={(event) => onQueryChange(event.target.value)}
+          placeholder="Search bank, offer, or requirement..."
+          className="w-full rounded-2xl border border-white/10 bg-bg-elevated/90 py-3 pr-4 pl-11 text-sm text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
+        />
+      </div>
 
-      <div className="mt-3 grid gap-3 md:grid-cols-3">
-        <label className="block">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Direct Deposit</span>
-          <select
-            value={directDeposit}
-            onChange={(event) => onDirectDepositChange(event.target.value as DirectDepositFilterValue)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-          >
-            {directDepositOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+      <div className="mt-4 rounded-2xl border border-white/10 bg-bg-elevated/65 p-3">
+        <div className="grid gap-3 md:grid-cols-3">
+          <label className="block">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+              Direct Deposit
+            </span>
+            <select
+              value={directDeposit}
+              onChange={(event) =>
+                onDirectDepositChange(event.target.value as DirectDepositFilterValue)
+              }
+              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+            >
+              {directDepositOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        <label className="block">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">APY</span>
-          <select
-            value={apy}
-            onChange={(event) => onApyChange(event.target.value as ApyFilterValue)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-          >
-            {apyOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+          <label className="block">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">APY</span>
+            <select
+              value={apy}
+              onChange={(event) => onApyChange(event.target.value as ApyFilterValue)}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+            >
+              {apyOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
 
-        <label className="block">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Sort</span>
-          <select
-            value={sortBy}
-            onChange={(event) => onSortByChange(event.target.value as BankingBonusesSort)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-          >
-            {bankingSortOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+          <label className="block">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Sort</span>
+            <select
+              value={sortBy}
+              onChange={(event) => onSortByChange(event.target.value as BankingBonusesSort)}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+            >
+              {bankingSortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
       </div>
 
       {showMore && (
         <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-6">
           <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Account Type</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+              Account Type
+            </span>
             <select
               value={accountType}
               onChange={(event) => onAccountTypeChange(event.target.value as AccountTypeFilterValue)}
@@ -224,7 +281,9 @@ export function BankingDirectoryFilterPanel({
           </label>
 
           <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Cash Needed</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+              Cash Needed
+            </span>
             <select
               value={cashRequirement}
               onChange={(event) =>
@@ -256,7 +315,9 @@ export function BankingDirectoryFilterPanel({
           </label>
 
           <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Difficulty</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+              Difficulty
+            </span>
             <select
               value={difficulty}
               onChange={(event) => onDifficultyChange(event.target.value as DifficultyFilterValue)}
@@ -271,10 +332,14 @@ export function BankingDirectoryFilterPanel({
           </label>
 
           <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Availability</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+              Availability
+            </span>
             <select
               value={stateLimited}
-              onChange={(event) => onStateLimitedChange(event.target.value as StateLimitedFilterValue)}
+              onChange={(event) =>
+                onStateLimitedChange(event.target.value as StateLimitedFilterValue)
+              }
               className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
             >
               {stateLimitedOptions.map((option) => (
@@ -286,7 +351,9 @@ export function BankingDirectoryFilterPanel({
           </label>
 
           <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Your State</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+              Your State
+            </span>
             <select
               value={state}
               onChange={(event) => onStateChange(event.target.value)}
