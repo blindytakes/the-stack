@@ -7,6 +7,10 @@
     "headline": "Earn $400 after completing direct deposit and account activity requirements.",
     "bonusAmount": 400,
     "estimatedFees": 12,
+    "apyPercent": 0.05,
+    "apyDisplay": "0.05% APY",
+    "apySourceUrl": "https://www.example.com/checking-rates",
+    "apyAsOf": "2026-03-19",
     "directDeposit": {
       "required": true,
       "minimumAmount": 1000
@@ -32,6 +36,10 @@
     "headline": "Earn $250 by depositing fresh funds and maintaining the qualifying balance.",
     "bonusAmount": 250,
     "estimatedFees": 0,
+    "apyPercent": 4.25,
+    "apyDisplay": "4.25% APY",
+    "apySourceUrl": "https://www.example.com/savings-rates",
+    "apyAsOf": "2026-03-19",
     "directDeposit": {
       "required": false
     },

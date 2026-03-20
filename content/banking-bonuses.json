@@ -195,6 +195,9 @@
     "headline": "Earn up to $2,000 with large new deposits in E*TRADE Premium Savings.",
     "bonusAmount": 2000,
     "estimatedFees": 0,
+    "apyPercent": 3.75,
+    "apyDisplay": "3.75% APY for 6 months",
+    "apySourceUrl": "https://us.etrade.com/bank/premium-savings-account",
     "directDeposit": {
       "required": false
     },
@@ -287,6 +290,10 @@
     "headline": "Earn up to $3,000 with large new-money deposits into eligible Chase Private Client accounts.",
     "bonusAmount": 3000,
     "estimatedFees": 35,
+    "apyPercent": 0.01,
+    "apyDisplay": "0.01% APY",
+    "apySourceUrl": "https://account.chase.com/consumer/banking/chase-private-client-checking-account",
+    "apyAsOf": "2025-12-26",
     "directDeposit": {
       "required": false
     },
@@ -309,6 +316,10 @@
     "headline": "Earn up to $300 after receiving qualifying direct deposits in a new SoFi Checking and Savings account.",
     "bonusAmount": 300,
     "estimatedFees": 0,
+    "apyPercent": 3.3,
+    "apyDisplay": "3.30% savings APY + 0.50% checking APY",
+    "apySourceUrl": "https://support.sofi.com/hc/en-us/articles/4421758127245-What-s-the-interest-rate-for-SoFi-Checking-and-Savings",
+    "apyAsOf": "2025-12-23",
     "directDeposit": {
       "required": true,
       "minimumAmount": 1000
@@ -354,6 +365,10 @@
     "headline": "Earn $100 for consistent monthly saving activity in a new Ultimate Opportunity Savings account.",
     "bonusAmount": 100,
     "estimatedFees": 0,
+    "apyPercent": 3.01,
+    "apyDisplay": "3.01% APY",
+    "apySourceUrl": "https://www.alliantcreditunion.org/u/deposit-rates",
+    "apyAsOf": "2026-02-01",
     "directDeposit": {
       "required": false
     },
@@ -399,6 +414,9 @@
     "headline": "Earn $300 after opening TD Beyond Checking and meeting direct deposit requirements.",
     "bonusAmount": 300,
     "estimatedFees": 25,
+    "apyPercent": 0.01,
+    "apyDisplay": "0.01% APY",
+    "apySourceUrl": "https://www.td.com/us/en/personal-banking/checking-accounts/beyond",
     "directDeposit": {
       "required": true,
       "minimumAmount": 2500
@@ -445,6 +463,9 @@
     "headline": "Earn $500 with Key Select Checking after qualifying direct deposits.",
     "bonusAmount": 500,
     "estimatedFees": 25,
+    "apyPercent": 0.05,
+    "apyDisplay": "0.05% APY",
+    "apySourceUrl": "https://www.key.com/content/kco/us/en/personal/checking/key-select-checking-account.html",
     "directDeposit": {
       "required": true,
       "minimumAmount": 5000
@@ -493,6 +514,10 @@
     "headline": "Earn up to $1,500 by enrolling and maintaining qualifying new balances in Marcus Online Savings.",
     "bonusAmount": 1500,
     "estimatedFees": 0,
+    "apyPercent": 3.65,
+    "apyDisplay": "3.65% APY",
+    "apySourceUrl": "https://www.marcus.com/us/en/resources/saving/what-to-know-about-interest-rates",
+    "apyAsOf": "2026-03-11",
     "directDeposit": {
       "required": false
     },

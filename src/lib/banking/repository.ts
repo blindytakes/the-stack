@@ -1,5 +1,4 @@
 import { BankingAccountType, type Prisma } from '@prisma/client';
-import { bankingApyBySlug } from '@/lib/banking/apy-data';
 import { getNodeEnv } from '@/lib/config/runtime';
 import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
 import { bankingBonusesSeedDatasetSchema } from '@/lib/banking-bonus-seed-schema';
@@ -140,11 +139,8 @@ function sortByNetValueDesc<T extends BankingBonusListItem>(bonuses: T[]): T[] {
 }
 
 function toListItem(record: BankingBonusRecord): BankingBonusListItem {
-  const apySnapshot = bankingApyBySlug[record.slug];
-
   return {
     ...record,
-    ...apySnapshot,
     imageUrl: resolveBankingBrandImageUrl(record.bankName, record.imageUrl),
     estimatedNetValue: Number((record.bonusAmount - record.estimatedFees).toFixed(2))
   };
@@ -162,6 +158,10 @@ function toRecordFromDb(row: DbBankingBonusRow): BankingBonusRecord {
     imageUrl: row.imageUrl ?? undefined,
     bonusAmount: Number(row.bonusAmount),
     estimatedFees: Number(row.estimatedFees),
+    apyPercent: row.apyPercent != null ? Number(row.apyPercent) : undefined,
+    apyDisplay: row.apyDisplay ?? undefined,
+    apySourceUrl: row.apySourceUrl ?? undefined,
+    apyAsOf: row.apyAsOf ? row.apyAsOf.toISOString().slice(0, 10) : undefined,
     directDeposit: {
       required: row.directDepositRequired,
       ...(row.directDepositRequired && row.directDepositMinimumAmount != null

@@ -230,6 +230,10 @@ model BankingBonus {
   imageUrl                   String?
   bonusAmount                Decimal
   estimatedFees              Decimal                 @default(0)
+  apyPercent                 Decimal?
+  apyDisplay                 String?
+  apySourceUrl               String?
+  apyAsOf                    DateTime?
   directDepositRequired      Boolean                 @default(false)
   directDepositMinimumAmount Decimal?
   minimumOpeningDeposit      Decimal?

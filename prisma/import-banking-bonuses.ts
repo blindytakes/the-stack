@@ -68,6 +68,10 @@ function toUpsertData(record: BankingBonusSeedRecord) {
     imageUrl: record.imageUrl ?? null,
     bonusAmount: record.bonusAmount,
     estimatedFees: record.estimatedFees,
+    apyPercent: typeof record.apyPercent === 'number' ? record.apyPercent : null,
+    apyDisplay: record.apyDisplay ?? null,
+    apySourceUrl: record.apySourceUrl ?? null,
+    apyAsOf: record.apyAsOf ? new Date(`${record.apyAsOf}T00:00:00.000Z`) : null,
     directDepositRequired: record.directDeposit.required,
     directDepositMinimumAmount:
       record.directDeposit.required && typeof record.directDeposit.minimumAmount === 'number'

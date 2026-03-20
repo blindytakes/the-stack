@@ -11,6 +11,10 @@ describe('bankingBonusSeedRecordSchema', () => {
       headline: 'Open an account and complete the steps.',
       imageUrl: 'https://assets.example.com/test-bank-logo.png',
       bonusAmount: 300,
+      apyPercent: 4.1,
+      apyDisplay: '4.10% APY',
+      apySourceUrl: 'https://www.example.com/rates',
+      apyAsOf: '2026-03-19',
       requiredActions: ['Open an account']
     });
 
