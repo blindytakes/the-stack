@@ -1,6 +1,8 @@
 import { db, isDatabaseConfigured } from '@/lib/db';
 import {
   buildPlanEmailBody,
+  buildPlanEmailHtml,
+  buildSavedPlanUrl,
   buildPlanEmailSubject,
   planSnapshotDataSchema,
   toPlanEmailContent
@@ -98,7 +100,9 @@ export async function sendSavedPlanEmail(
     emailContent.totalValue,
     emailContent.cardsOnlyMode
   );
-  const emailBody = buildPlanEmailBody(emailContent);
+  const savedPlanUrl = buildSavedPlanUrl(input.planId);
+  const emailBody = buildPlanEmailBody(emailContent, { savedPlanUrl });
+  const emailHtml = buildPlanEmailHtml(emailContent, { savedPlanUrl });
 
   try {
     const response = await fetch('https://api.resend.com/emails', {
@@ -111,6 +115,7 @@ export async function sendSavedPlanEmail(
         from: `The Stack <${env.config.EMAIL_FROM_ADDRESS}>`,
         to: [input.to],
         subject,
+        html: emailHtml,
         text: emailBody
       })
     });

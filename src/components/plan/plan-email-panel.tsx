@@ -47,10 +47,13 @@ export function PlanEmailPanel({
       totalValue,
       cardsOnlyMode,
       recommendations: recommendations.slice(0, 12).map((recommendation) => ({
+        lane: recommendation.lane,
         provider: recommendation.provider,
         title: recommendation.title,
         estimatedNetValue: recommendation.estimatedNetValue,
         effort: recommendation.effort,
+        detailPath: recommendation.detailPath,
+        keyRequirements: recommendation.keyRequirements.slice(0, 2),
         valueBreakdown: recommendation.valueBreakdown
           ? { annualFee: recommendation.valueBreakdown.annualFee }
           : undefined,
