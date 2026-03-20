@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { usStateOptions } from '@/lib/us-state-options';
 import {
   accountTypeOptions,
+  apyOptions,
   bankingSortOptions,
   cashRequirementOptions,
   directDepositOptions,
@@ -11,6 +12,7 @@ import {
   stateLimitedOptions,
   timelineOptions,
   type AccountTypeFilterValue,
+  type ApyFilterValue,
   type BankingActiveFilterChip,
   type CashRequirementFilterValue,
   type DifficultyFilterValue,
@@ -26,6 +28,7 @@ type BankingDirectoryFilterPanelProps = {
   query: string;
   accountType: AccountTypeFilterValue;
   directDeposit: DirectDepositFilterValue;
+  apy: ApyFilterValue;
   difficulty: DifficultyFilterValue;
   cashRequirement: CashRequirementFilterValue;
   timeline: TimelineFilterValue;
@@ -35,6 +38,7 @@ type BankingDirectoryFilterPanelProps = {
   onQueryChange: (value: string) => void;
   onAccountTypeChange: (value: AccountTypeFilterValue) => void;
   onDirectDepositChange: (value: DirectDepositFilterValue) => void;
+  onApyChange: (value: ApyFilterValue) => void;
   onDifficultyChange: (value: DifficultyFilterValue) => void;
   onCashRequirementChange: (value: CashRequirementFilterValue) => void;
   onTimelineChange: (value: TimelineFilterValue) => void;
@@ -51,6 +55,7 @@ export function BankingDirectoryFilterPanel({
   query,
   accountType,
   directDeposit,
+  apy,
   difficulty,
   cashRequirement,
   timeline,
@@ -60,6 +65,7 @@ export function BankingDirectoryFilterPanel({
   onQueryChange,
   onAccountTypeChange,
   onDirectDepositChange,
+  onApyChange,
   onDifficultyChange,
   onCashRequirementChange,
   onTimelineChange,
@@ -70,6 +76,7 @@ export function BankingDirectoryFilterPanel({
   onReset
 }: BankingDirectoryFilterPanelProps) {
   const advancedFilterCount = [
+    apy !== 'any',
     difficulty !== 'any',
     cashRequirement !== 'any',
     timeline !== 'any',
@@ -150,7 +157,22 @@ export function BankingDirectoryFilterPanel({
       </div>
 
       {showMore && (
-        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-6">
+          <label className="block">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">APY</span>
+            <select
+              value={apy}
+              onChange={(event) => onApyChange(event.target.value as ApyFilterValue)}
+              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+            >
+              {apyOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
           <label className="block">
             <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Cash Needed</span>
             <select

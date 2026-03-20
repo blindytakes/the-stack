@@ -39,6 +39,8 @@ describe('/api/banking route integration', () => {
           bonusAmount: 250,
           estimatedFees: 0,
           estimatedNetValue: 250,
+          apyPercent: 3.65,
+          apyDisplay: '3.65% APY',
           minimumOpeningDeposit: 1500,
           holdingPeriodDays: 60
         }),
@@ -82,7 +84,7 @@ describe('/api/banking route integration', () => {
 
   it('passes through the full query surface and returns actually sorted filtered results', async () => {
     const req = new Request(
-      'http://localhost/api/banking?accountType=checking&requiresDirectDeposit=no&difficulty=low&timeline=fast&stateLimited=no&sort=low_cash&limit=10&offset=0'
+      'http://localhost/api/banking?accountType=checking&requiresDirectDeposit=no&apy=3_plus&difficulty=low&timeline=fast&stateLimited=no&sort=low_cash&limit=10&offset=0'
     );
 
     const res = await GET(req);
@@ -90,12 +92,11 @@ describe('/api/banking route integration', () => {
 
     expect(res.status).toBe(200);
     expect(body.pagination).toEqual({
-      total: 2,
+      total: 1,
       limit: 10,
       offset: 0
     });
     expect(body.results.map((offer: BankingBonusListItem) => offer.slug)).toEqual([
-      'low-net-no-deposit',
       'high-net-light-deposit'
     ]);
     expect(getBankingBonusesDataMock).toHaveBeenCalledTimes(1);

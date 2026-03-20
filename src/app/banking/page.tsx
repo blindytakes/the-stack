@@ -58,7 +58,8 @@ export default async function BankingPage({ searchParams }: Props) {
       </section>
 
       <p className="mt-6 text-xs text-text-muted">
-        Net-value estimates are modeled, not guaranteed. Confirm final terms directly with the bank before opening.
+        Net-value estimates are modeled, not guaranteed. APYs and bonus terms can change. Confirm
+        final terms directly with the bank before opening.
       </p>
     </div>
   );

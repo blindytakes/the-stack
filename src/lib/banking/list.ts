@@ -12,6 +12,13 @@ import {
   getOpeningDepositAmount
 } from '@/lib/banking/scoring';
 
+function getApyThreshold(filter: BankingBonusesQuery['apy']) {
+  if (filter === '1_plus') return 1;
+  if (filter === '3_plus') return 3;
+  if (filter === '4_plus') return 4;
+  return null;
+}
+
 export function filterBankingBonuses(
   bonuses: BankingBonusListItem[],
   query: BankingBonusesQuery
@@ -26,6 +33,11 @@ export function filterBankingBonuses(
     }
 
     if (query.requiresDirectDeposit === 'no' && bonus.directDeposit.required) {
+      return false;
+    }
+
+    const apyThreshold = getApyThreshold(query.apy);
+    if (apyThreshold != null && (bonus.apyPercent == null || bonus.apyPercent < apyThreshold)) {
       return false;
     }
 

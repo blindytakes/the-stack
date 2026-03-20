@@ -73,6 +73,9 @@ export function BankingOfferCard({
         <p className={`font-bold text-brand-teal ${isCompact ? 'text-xl' : 'text-2xl'}`}>
           +{formatBankingCurrency(offer.estimatedNetValue)} bonus
         </p>
+        {offer.apyDisplay ? (
+          <p className="mt-1 text-xs font-medium text-brand-gold">{offer.apyDisplay}</p>
+        ) : null}
       </div>
 
       {/* Offer name */}

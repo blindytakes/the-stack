@@ -23,6 +23,7 @@ export async function GET(req: Request) {
         url.searchParams.get('requiresDirectDeposit') ??
         url.searchParams.get('directDeposit') ??
         undefined,
+      apy: url.searchParams.get('apy') ?? undefined,
       difficulty: url.searchParams.get('difficulty') ?? undefined,
       cashRequirement: url.searchParams.get('cashRequirement') ?? undefined,
       timeline: url.searchParams.get('timeline') ?? undefined,

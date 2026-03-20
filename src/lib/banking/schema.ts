@@ -14,15 +14,18 @@ export type BankingBonusesDataSource = 'db' | 'seed';
 export type BankingOfferCashRequirementLevel = 'none' | 'light' | 'medium' | 'high';
 export type BankingOfferTimelineBucket = 'fast' | 'standard' | 'long' | 'unknown';
 export type BankingBonusesSort = 'net' | 'easy' | 'fast' | 'low_cash';
+export type BankingApyFilter = '1_plus' | '3_plus' | '4_plus';
 
 const bankingDifficultySchema = z.enum(['low', 'medium', 'high']);
 const bankingCashRequirementSchema = z.enum(['none', 'light', 'medium', 'high']);
 const bankingTimelineSchema = z.enum(['fast', 'standard', 'long']);
 const bankingSortSchema = z.enum(['net', 'easy', 'fast', 'low_cash']);
+const bankingApyFilterSchema = z.enum(['1_plus', '3_plus', '4_plus']);
 
 export const bankingBonusesQuerySchema = z.object({
   accountType: bankingAccountTypeSchema.optional(),
   requiresDirectDeposit: z.enum(['yes', 'no']).optional(),
+  apy: bankingApyFilterSchema.optional(),
   difficulty: bankingDifficultySchema.optional(),
   cashRequirement: bankingCashRequirementSchema.optional(),
   timeline: bankingTimelineSchema.optional(),

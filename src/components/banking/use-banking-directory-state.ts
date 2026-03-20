@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { BankingBonusListItem, BankingBonusesSort } from '@/lib/banking-bonuses';
 import {
+  type ApyFilterValue,
   buildActiveBankingFilterChips,
   buildBankingDirectorySearchParams,
   countActiveBankingDirectoryFilters,
@@ -38,6 +39,7 @@ export function useBankingDirectoryState(
   const [directDeposit, setDirectDeposit] = useState<DirectDepositFilterValue>(
     initialFilters.directDeposit
   );
+  const [apy, setApy] = useState<ApyFilterValue>(initialFilters.apy);
   const [difficulty, setDifficulty] = useState<DifficultyFilterValue>(initialFilters.difficulty);
   const [cashRequirement, setCashRequirement] = useState<CashRequirementFilterValue>(
     initialFilters.cashRequirement
@@ -54,6 +56,7 @@ export function useBankingDirectoryState(
       query,
       accountType,
       directDeposit,
+      apy,
       difficulty,
       cashRequirement,
       timeline,
@@ -61,7 +64,18 @@ export function useBankingDirectoryState(
       state,
       sortBy
     }),
-    [accountType, cashRequirement, difficulty, directDeposit, query, sortBy, state, stateLimited, timeline]
+    [
+      accountType,
+      apy,
+      cashRequirement,
+      difficulty,
+      directDeposit,
+      query,
+      sortBy,
+      state,
+      stateLimited,
+      timeline
+    ]
   );
 
   useEffect(() => {
@@ -70,6 +84,7 @@ export function useBankingDirectoryState(
     setQuery(nextFilters.query);
     setAccountType(nextFilters.accountType);
     setDirectDeposit(nextFilters.directDeposit);
+    setApy(nextFilters.apy);
     setDifficulty(nextFilters.difficulty);
     setCashRequirement(nextFilters.cashRequirement);
     setTimeline(nextFilters.timeline);
@@ -111,6 +126,7 @@ export function useBankingDirectoryState(
     setQuery(defaultBankingDirectoryFilters.query);
     setAccountType(defaultBankingDirectoryFilters.accountType);
     setDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
+    setApy(defaultBankingDirectoryFilters.apy);
     setDifficulty(defaultBankingDirectoryFilters.difficulty);
     setCashRequirement(defaultBankingDirectoryFilters.cashRequirement);
     setTimeline(defaultBankingDirectoryFilters.timeline);
@@ -123,6 +139,7 @@ export function useBankingDirectoryState(
     if (key === 'query') setQuery(defaultBankingDirectoryFilters.query);
     if (key === 'accountType') setAccountType(defaultBankingDirectoryFilters.accountType);
     if (key === 'directDeposit') setDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
+    if (key === 'apy') setApy(defaultBankingDirectoryFilters.apy);
     if (key === 'difficulty') setDifficulty(defaultBankingDirectoryFilters.difficulty);
     if (key === 'cashRequirement') setCashRequirement(defaultBankingDirectoryFilters.cashRequirement);
     if (key === 'timeline') setTimeline(defaultBankingDirectoryFilters.timeline);
@@ -134,6 +151,7 @@ export function useBankingDirectoryState(
     query,
     accountType,
     directDeposit,
+    apy,
     difficulty,
     cashRequirement,
     timeline,
@@ -146,6 +164,7 @@ export function useBankingDirectoryState(
     setQuery,
     setAccountType,
     setDirectDeposit,
+    setApy,
     setDifficulty,
     setCashRequirement,
     setTimeline,

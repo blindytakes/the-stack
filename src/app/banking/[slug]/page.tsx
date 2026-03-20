@@ -52,6 +52,16 @@ function formatVerifiedDate(value?: string) {
   }).format(new Date(value));
 }
 
+function formatApyDate(value?: string) {
+  if (!value) return null;
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(new Date(value));
+}
+
 function getRelatedOfferScore(currentOffer: BankingBonusListItem, candidate: BankingBonusListItem) {
   let score = 0;
 
@@ -82,6 +92,7 @@ export default async function BankingOfferDetailPage({ params }: Props) {
   const gotchas = getBankingOfferGotchas(offer);
   const bestFitBullets = getBankingOfferBestFit(offer);
   const cautionBullets = getBankingOfferThinkTwiceIf(offer);
+  const apyAsOfLabel = formatApyDate(offer.apyAsOf);
   const openingDepositLabel =
     typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0
       ? formatBankingCurrency(offer.minimumOpeningDeposit)
@@ -101,6 +112,9 @@ export default async function BankingOfferDetailPage({ params }: Props) {
     { label: 'Opening deposit', value: openingDepositLabel },
     { label: 'Availability', value: getBankingOfferAvailabilityLabel(offer) }
   ];
+  if (offer.apyDisplay) {
+    keyFacts.splice(3, 0, { label: 'APY', value: offer.apyDisplay });
+  }
 
   return (
     <div className="container-page pt-12 pb-16">
@@ -144,7 +158,11 @@ export default async function BankingOfferDetailPage({ params }: Props) {
               {executionSummary}
             </p>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div
+              className={`mt-6 grid gap-3 sm:grid-cols-2 ${
+                keyFacts.length > 4 ? 'lg:grid-cols-5' : 'lg:grid-cols-4'
+              }`}
+            >
               {keyFacts.map((fact) => (
                 <div key={fact.label} className="rounded-2xl border border-white/10 bg-bg/50 p-4">
                   <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">{fact.label}</p>
@@ -196,6 +214,12 @@ export default async function BankingOfferDetailPage({ params }: Props) {
                   {offer.directDeposit.required ? 'Required' : 'Not required'}
                 </p>
               </div>
+              {offer.apyDisplay ? (
+                <div className="rounded-2xl border border-white/10 bg-bg-surface p-4">
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">APY</p>
+                  <p className="mt-2 text-sm font-semibold text-brand-gold">{offer.apyDisplay}</p>
+                </div>
+              ) : null}
               <div className="rounded-2xl border border-white/10 bg-bg-surface p-4">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Opening deposit</p>
                 <p className="mt-2 text-sm font-semibold text-text-primary">{openingDepositLabel}</p>
@@ -228,6 +252,19 @@ export default async function BankingOfferDetailPage({ params }: Props) {
                   Last verified {formatVerifiedDate(offer.lastVerified)}. Confirm live terms before
                   you open the account.
                 </p>
+                {offer.apyDisplay && offer.apySourceUrl ? (
+                  <p className="mt-2 text-xs text-text-muted">
+                    <a
+                      href={offer.apySourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-brand-gold transition hover:text-brand-gold/80"
+                    >
+                      View APY source
+                    </a>
+                    {apyAsOfLabel ? ` · Rate as of ${apyAsOfLabel}` : ''}
+                  </p>
+                ) : null}
               </>
             ) : null}
 

@@ -1,4 +1,5 @@
 import { BankingAccountType, type Prisma } from '@prisma/client';
+import { bankingApyBySlug } from '@/lib/banking/apy-data';
 import { getNodeEnv } from '@/lib/config/runtime';
 import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
 import { bankingBonusesSeedDatasetSchema } from '@/lib/banking-bonus-seed-schema';
@@ -139,8 +140,11 @@ function sortByNetValueDesc<T extends BankingBonusListItem>(bonuses: T[]): T[] {
 }
 
 function toListItem(record: BankingBonusRecord): BankingBonusListItem {
+  const apySnapshot = bankingApyBySlug[record.slug];
+
   return {
     ...record,
+    ...apySnapshot,
     imageUrl: resolveBankingBrandImageUrl(record.bankName, record.imageUrl),
     estimatedNetValue: Number((record.bonusAmount - record.estimatedFees).toFixed(2))
   };

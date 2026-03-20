@@ -18,6 +18,7 @@ export function BankingDirectoryExplorer({
     query,
     accountType,
     directDeposit,
+    apy,
     difficulty,
     cashRequirement,
     timeline,
@@ -30,6 +31,7 @@ export function BankingDirectoryExplorer({
     setQuery,
     setAccountType,
     setDirectDeposit,
+    setApy,
     setDifficulty,
     setCashRequirement,
     setTimeline,
@@ -48,6 +50,7 @@ export function BankingDirectoryExplorer({
         query={query}
         accountType={accountType}
         directDeposit={directDeposit}
+        apy={apy}
         difficulty={difficulty}
         cashRequirement={cashRequirement}
         timeline={timeline}
@@ -57,6 +60,7 @@ export function BankingDirectoryExplorer({
         onQueryChange={setQuery}
         onAccountTypeChange={setAccountType}
         onDirectDepositChange={setDirectDeposit}
+        onApyChange={setApy}
         onDifficultyChange={setDifficulty}
         onCashRequirementChange={setCashRequirement}
         onTimelineChange={setTimeline}

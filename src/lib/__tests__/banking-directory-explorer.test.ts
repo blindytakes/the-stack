@@ -13,7 +13,7 @@ describe('banking directory explorer helpers', () => {
   it('parses and rebuilds non-default filters from the URL', () => {
     const filters = parseBankingDirectoryFilters(
       new URLSearchParams(
-        'q=empire&accountType=checking&directDeposit=no&difficulty=low&cash=light&timeline=fast&stateLimited=yes&state=ny&sort=low_cash'
+        'q=empire&accountType=checking&directDeposit=no&apy=3_plus&difficulty=low&cash=light&timeline=fast&stateLimited=yes&state=ny&sort=low_cash'
       )
     );
 
@@ -21,6 +21,7 @@ describe('banking directory explorer helpers', () => {
       query: 'empire',
       accountType: 'checking',
       directDeposit: 'no',
+      apy: '3_plus',
       difficulty: 'low',
       cashRequirement: 'light',
       timeline: 'fast',
@@ -30,9 +31,9 @@ describe('banking directory explorer helpers', () => {
     });
 
     expect(buildBankingDirectorySearchParams(new URLSearchParams(), filters).toString()).toBe(
-      'q=empire&accountType=checking&directDeposit=no&difficulty=low&cash=light&timeline=fast&stateLimited=yes&state=NY&sort=low_cash'
+      'q=empire&accountType=checking&directDeposit=no&apy=3_plus&difficulty=low&cash=light&timeline=fast&stateLimited=yes&state=NY&sort=low_cash'
     );
-    expect(countActiveBankingDirectoryFilters(filters)).toBe(8);
+    expect(countActiveBankingDirectoryFilters(filters)).toBe(9);
   });
 
   it('filters and sorts offers with search layered on top of banking filters', () => {
@@ -51,6 +52,8 @@ describe('banking directory explorer helpers', () => {
         bankName: 'Empire National',
         offerName: 'Empire Checking Bonus',
         directDeposit: { required: false },
+        apyPercent: 3.25,
+        apyDisplay: '3.25% APY',
         minimumOpeningDeposit: 1500,
         holdingPeriodDays: 60,
         estimatedNetValue: 280
@@ -81,22 +84,25 @@ describe('banking directory explorer helpers', () => {
       query: 'checking',
       accountType: 'checking',
       directDeposit: 'no',
+      apy: '3_plus',
       sortBy: 'low_cash'
     });
 
-    expect(result.map((offer) => offer.slug)).toEqual(['summit-no-payroll', 'empire-checking']);
+    expect(result.map((offer) => offer.slug)).toEqual(['empire-checking']);
   });
 
   it('builds removable chip labels for active filters', () => {
     const chips = buildActiveBankingFilterChips({
       ...defaultBankingDirectoryFilters,
       query: 'empire',
+      apy: '3_plus',
       cashRequirement: 'light',
       state: 'NY'
     });
 
     expect(chips).toEqual([
       { key: 'query', label: 'Search: empire' },
+      { key: 'apy', label: '3.00%+ APY' },
       { key: 'cashRequirement', label: 'Up to $2.5k' },
       { key: 'state', label: 'Available in New York' }
     ]);

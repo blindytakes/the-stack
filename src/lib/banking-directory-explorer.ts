@@ -1,9 +1,14 @@
-import type { BankingBonusListItem, BankingBonusesSort } from '@/lib/banking-bonuses';
+import type {
+  BankingApyFilter,
+  BankingBonusListItem,
+  BankingBonusesSort
+} from '@/lib/banking-bonuses';
 import { filterBankingBonuses, sortBankingBonuses } from '@/lib/banking-bonuses';
 import { usStateOptions } from '@/lib/us-state-options';
 
 export type AccountTypeFilterValue = 'all' | 'checking' | 'savings' | 'bundle';
 export type DirectDepositFilterValue = 'any' | 'yes' | 'no';
+export type ApyFilterValue = 'any' | BankingApyFilter;
 export type DifficultyFilterValue = 'any' | 'low' | 'medium' | 'high';
 export type CashRequirementFilterValue = 'any' | 'none' | 'light' | 'medium' | 'high';
 export type TimelineFilterValue = 'any' | 'fast' | 'standard' | 'long';
@@ -12,6 +17,7 @@ export type BankingDirectoryFilterKey =
   | 'query'
   | 'accountType'
   | 'directDeposit'
+  | 'apy'
   | 'difficulty'
   | 'cashRequirement'
   | 'timeline'
@@ -22,6 +28,7 @@ export type BankingDirectoryFilters = {
   query: string;
   accountType: AccountTypeFilterValue;
   directDeposit: DirectDepositFilterValue;
+  apy: ApyFilterValue;
   difficulty: DifficultyFilterValue;
   cashRequirement: CashRequirementFilterValue;
   timeline: TimelineFilterValue;
@@ -39,6 +46,7 @@ export const defaultBankingDirectoryFilters: BankingDirectoryFilters = {
   query: '',
   accountType: 'all',
   directDeposit: 'any',
+  apy: 'any',
   difficulty: 'any',
   cashRequirement: 'any',
   timeline: 'any',
@@ -65,6 +73,13 @@ export const directDepositOptions: Array<{ value: DirectDepositFilterValue; labe
   { value: 'any', label: 'Any direct deposit setup' },
   { value: 'no', label: 'No direct deposit required' },
   { value: 'yes', label: 'Direct deposit required' }
+];
+
+export const apyOptions: Array<{ value: ApyFilterValue; label: string }> = [
+  { value: 'any', label: 'Any APY' },
+  { value: '1_plus', label: '1.00%+ APY' },
+  { value: '3_plus', label: '3.00%+ APY' },
+  { value: '4_plus', label: '4.00%+ APY' }
 ];
 
 export const difficultyOptions: Array<{ value: DifficultyFilterValue; label: string }> = [
@@ -110,6 +125,10 @@ function isDirectDepositFilterValue(value: string | null): value is DirectDeposi
   return value === 'any' || value === 'yes' || value === 'no';
 }
 
+function isApyFilterValue(value: string | null): value is ApyFilterValue {
+  return value === 'any' || value === '1_plus' || value === '3_plus' || value === '4_plus';
+}
+
 function isDifficultyFilterValue(value: string | null): value is DifficultyFilterValue {
   return value === 'any' || value === 'low' || value === 'medium' || value === 'high';
 }
@@ -140,6 +159,7 @@ function toBankingQuery(filters: BankingDirectoryFilters) {
   return {
     accountType: filters.accountType === 'all' ? undefined : filters.accountType,
     requiresDirectDeposit: filters.directDeposit === 'any' ? undefined : filters.directDeposit,
+    apy: filters.apy === 'any' ? undefined : filters.apy,
     difficulty: filters.difficulty === 'any' ? undefined : filters.difficulty,
     cashRequirement: filters.cashRequirement === 'any' ? undefined : filters.cashRequirement,
     timeline: filters.timeline === 'any' ? undefined : filters.timeline,
@@ -158,6 +178,7 @@ export function getStateLabel(value: string) {
 export function parseBankingDirectoryFilters(searchParams: URLSearchParams): BankingDirectoryFilters {
   const accountTypeFromUrl = searchParams.get('accountType');
   const directDepositFromUrl = searchParams.get('directDeposit');
+  const apyFromUrl = searchParams.get('apy');
   const difficultyFromUrl = searchParams.get('difficulty');
   const cashFromUrl = searchParams.get('cash');
   const timelineFromUrl = searchParams.get('timeline');
@@ -174,6 +195,7 @@ export function parseBankingDirectoryFilters(searchParams: URLSearchParams): Ban
     directDeposit: isDirectDepositFilterValue(directDepositFromUrl)
       ? directDepositFromUrl
       : defaultBankingDirectoryFilters.directDeposit,
+    apy: isApyFilterValue(apyFromUrl) ? apyFromUrl : defaultBankingDirectoryFilters.apy,
     difficulty: isDifficultyFilterValue(difficultyFromUrl)
       ? difficultyFromUrl
       : defaultBankingDirectoryFilters.difficulty,
@@ -213,6 +235,12 @@ export function buildBankingDirectorySearchParams(
     params.set('directDeposit', filters.directDeposit);
   } else {
     params.delete('directDeposit');
+  }
+
+  if (filters.apy !== defaultBankingDirectoryFilters.apy) {
+    params.set('apy', filters.apy);
+  } else {
+    params.delete('apy');
   }
 
   if (filters.difficulty !== defaultBankingDirectoryFilters.difficulty) {
@@ -272,6 +300,7 @@ export function countActiveBankingDirectoryFilters(filters: BankingDirectoryFilt
     filters.query.trim().length > 0,
     filters.accountType !== defaultBankingDirectoryFilters.accountType,
     filters.directDeposit !== defaultBankingDirectoryFilters.directDeposit,
+    filters.apy !== defaultBankingDirectoryFilters.apy,
     filters.difficulty !== defaultBankingDirectoryFilters.difficulty,
     filters.cashRequirement !== defaultBankingDirectoryFilters.cashRequirement,
     filters.timeline !== defaultBankingDirectoryFilters.timeline,
@@ -299,6 +328,12 @@ export function buildActiveBankingFilterChips(
       label:
         directDepositOptions.find((option) => option.value === filters.directDeposit)?.label ??
         filters.directDeposit
+    });
+  }
+  if (filters.apy !== defaultBankingDirectoryFilters.apy) {
+    chips.push({
+      key: 'apy',
+      label: apyOptions.find((option) => option.value === filters.apy)?.label ?? filters.apy
     });
   }
   if (filters.cashRequirement !== defaultBankingDirectoryFilters.cashRequirement) {

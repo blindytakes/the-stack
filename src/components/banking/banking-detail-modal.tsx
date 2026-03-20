@@ -18,11 +18,22 @@ type BankingDetailModalProps = {
   onClose: () => void;
 };
 
+function formatApyDate(value?: string) {
+  if (!value) return null;
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(new Date(value));
+}
+
 export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) {
   const imagePresentation = getBankingImagePresentation(offer.bankName);
   const primaryRequirement = getBankingOfferPrimaryRequirement(offer);
   const primaryConstraint = getBankingOfferPrimaryConstraint(offer);
   const timeline = getBankingOfferTimeline(offer);
+  const apyAsOfLabel = formatApyDate(offer.apyAsOf);
 
   // Close on Escape
   useEffect(() => {
@@ -122,7 +133,11 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
           </div>
 
           {/* Stat pills */}
-          <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <div
+            className={`mt-6 grid grid-cols-2 gap-2 ${
+              offer.apyDisplay ? 'md:grid-cols-5' : 'md:grid-cols-4'
+            }`}
+          >
             <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
               <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Account</p>
               <p className="mt-1 text-sm font-semibold capitalize text-text-primary">
@@ -143,6 +158,12 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
                   : 'No minimum listed'}
               </p>
             </div>
+            {offer.apyDisplay ? (
+              <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
+                <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">APY</p>
+                <p className="mt-1 text-sm font-semibold text-brand-gold">{offer.apyDisplay}</p>
+              </div>
+            ) : null}
             <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
               <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Hold Period</p>
               <p className="mt-1 text-sm font-semibold text-text-primary">
@@ -214,6 +235,20 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
               {formatBankingCurrency(offer.bonusAmount)} bonus − {formatBankingCurrency(offer.estimatedFees)} est. fees
             </p>
           </div>
+
+          {offer.apyDisplay && offer.apySourceUrl ? (
+            <div className="mt-4 text-center text-xs text-text-muted">
+              <a
+                href={offer.apySourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-gold transition hover:text-brand-gold/80"
+              >
+                View current APY source
+              </a>
+              {apyAsOfLabel ? ` · Rate as of ${apyAsOfLabel}` : ''}
+            </div>
+          ) : null}
 
           {/* Bottom actions */}
           <div className="mt-6 flex flex-col gap-3 border-t border-white/5 pt-4 sm:flex-row sm:items-center sm:justify-between">

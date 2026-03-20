@@ -8,6 +8,7 @@ export {
   bankingBonusesQuerySchema,
   type BankingBonusListItem,
   type BankingBonusRecord,
+  type BankingApyFilter,
   type BankingBonusesDataSource,
   type BankingBonusesQuery,
   type BankingBonusesSort,

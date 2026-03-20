@@ -16,6 +16,7 @@ import {
   paginateBankingBonuses,
   sortBankingBonuses
 } from '../banking-bonuses';
+import { createBankingListItem } from './banking-test-helpers';
 import { resolveBankingBrandImageUrl } from '../banking-brand-assets';
 
 async function getBonuses() {
@@ -60,10 +61,11 @@ describe('banking slug helpers', () => {
 
 describe('bankingBonusesQuerySchema', () => {
   it('normalizes state to uppercase and applies pagination defaults', () => {
-    const parsed = bankingBonusesQuerySchema.safeParse({ state: 'wa' });
+    const parsed = bankingBonusesQuerySchema.safeParse({ state: 'wa', apy: '3_plus' });
     expect(parsed.success).toBe(true);
     if (parsed.success) {
       expect(parsed.data.state).toBe('WA');
+      expect(parsed.data.apy).toBe('3_plus');
       expect(parsed.data.sort).toBe('net');
       expect(parsed.data.limit).toBe(20);
       expect(parsed.data.offset).toBe(0);
@@ -141,6 +143,23 @@ describe('filterBankingBonuses', () => {
     expect(stateLimited.every((bonus) => bonus.stateRestrictions && bonus.stateRestrictions.length > 0)).toBe(
       true
     );
+  });
+
+  it('filters by APY threshold when APY data is present', () => {
+    const bonuses = [
+      createBankingListItem({ slug: 'high-apy', apyPercent: 3.65, apyDisplay: '3.65% APY' }),
+      createBankingListItem({ slug: 'low-apy', apyPercent: 0.05, apyDisplay: '0.05% APY' }),
+      createBankingListItem({ slug: 'no-apy' })
+    ];
+
+    const result = filterBankingBonuses(bonuses, {
+      apy: '3_plus',
+      sort: 'net',
+      limit: 20,
+      offset: 0
+    });
+
+    expect(result.map((bonus) => bonus.slug)).toEqual(['high-apy']);
   });
 
   it('keeps unrestricted offers while excluding state-restricted mismatches', async () => {

@@ -56,7 +56,7 @@ describe('/api/banking route contract', () => {
     });
 
     const req = new Request(
-      'http://localhost/api/banking?accountType=checking&requiresDirectDeposit=no&difficulty=low&cashRequirement=light&timeline=fast&stateLimited=no&state=ny&sort=easy&limit=20&offset=0'
+      'http://localhost/api/banking?accountType=checking&requiresDirectDeposit=no&apy=3_plus&difficulty=low&cashRequirement=light&timeline=fast&stateLimited=no&state=ny&sort=easy&limit=20&offset=0'
     );
     const res = await GET(req);
     const body = await res.json();
@@ -67,6 +67,7 @@ describe('/api/banking route contract', () => {
     expect(getBankingBonusesListMock).toHaveBeenCalledWith({
       accountType: 'checking',
       requiresDirectDeposit: 'no',
+      apy: '3_plus',
       difficulty: 'low',
       cashRequirement: 'light',
       timeline: 'fast',
