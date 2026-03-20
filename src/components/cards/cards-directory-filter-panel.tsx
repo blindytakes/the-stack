@@ -121,9 +121,9 @@ export function CardsDirectoryFilterPanel({
               </span>
             </div>
             <h1 className="mt-4 w-full font-heading text-[clamp(2.15rem,2.9vw,3.35rem)] leading-[1] tracking-[-0.035em] text-white md:whitespace-nowrap">
-              Find the right card for your spend.
+              Find the Best Credit Card Bonus for your plan.
             </h1>
-            <p className="mt-4 w-full text-base leading-7 text-text-secondary md:text-lg md:leading-8">
+            <p className="mt-4 w-full text-xl leading-8 text-text-secondary md:text-2xl md:leading-9">
               When you find a card you like, The Stack builds your bonus plan around it.
             </p>
           </div>
