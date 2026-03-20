@@ -209,22 +209,22 @@ export function PlanEmailPanel({
   }
 
   return (
-    <div className="mt-4 rounded-[1.75rem] border border-white/10 bg-[linear-gradient(180deg,rgba(45,212,191,0.08),rgba(255,255,255,0.03))] p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="max-w-2xl">
+    <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(45,212,191,0.07),rgba(255,255,255,0.025))] p-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="max-w-xl">
           <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Take it with you</p>
-          <h3 className="mt-2 text-xl font-semibold text-text-primary">Email this plan to yourself</h3>
-          <p className="mt-2 text-sm leading-6 text-text-secondary">
+          <h3 className="mt-1.5 text-lg font-semibold text-text-primary">Email this plan to yourself</h3>
+          <p className="mt-1 text-sm leading-6 text-text-secondary">
             Get the 6-month estimate, next actions, and move stack delivered straight to your inbox.
           </p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-bg/35 px-4 py-3 text-sm text-text-secondary">
+        <div className="rounded-2xl border border-white/10 bg-bg/30 px-4 py-2.5 text-sm text-text-secondary">
           Includes:
           <div className="mt-1 text-text-primary">Estimate, next actions, top moves</div>
         </div>
       </div>
 
-      <div className="mt-5 flex flex-col gap-3 lg:flex-row lg:items-center">
+      <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center">
         <input
           type="email"
           value={email}

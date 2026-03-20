@@ -20,7 +20,6 @@ import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 
 import {
-  clearPlanResults,
   loadPlanResults,
   type PlanResultsLoadResult,
   type PlanResultsStoragePayload
@@ -145,13 +144,13 @@ function MiniTimeline({
   const recommendationsById = new Map(recommendations.map((r) => [r.id, r]));
 
   return (
-    <div className="mt-5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-4">
+    <div className="mt-5 rounded-2xl border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] px-5 py-5">
       {/* Month axis */}
-      <div className="relative mb-3 h-4">
+      <div className="relative mb-4 h-5">
         {monthLabels.map((m) => (
           <span
             key={m.label}
-            className="absolute text-[10px] uppercase tracking-[0.15em] text-text-muted"
+            className="absolute text-[11px] uppercase tracking-[0.15em] text-text-muted"
             style={{ left: `${m.left}%`, transform: 'translateX(-50%)' }}
           >
             {m.label}
@@ -160,47 +159,63 @@ function MiniTimeline({
       </div>
 
       {/* Bars */}
-      <div className="space-y-1.5">
+      <div className="space-y-2.5">
         {entries.map((entry) => {
           const startPct = (diffDays(earliest, entry.startDate) / totalDays) * 100;
           const widthPct = Math.max(2, (diffDays(entry.startDate, entry.completeDate) / totalDays) * 100);
           const rec = recommendationsById.get(entry.id);
           const step = stepNumbers.get(entry.id) ?? 0;
-          const barColor = entry.lane === 'cards'
-            ? 'bg-brand-gold/40'
-            : 'bg-brand-teal/40';
-          const dotColor = entry.lane === 'cards'
-            ? 'bg-brand-gold'
-            : 'bg-brand-teal';
+          const barColor =
+            entry.lane === 'cards'
+              ? 'bg-[linear-gradient(90deg,rgba(133,99,34,0.92)_0%,rgba(196,154,61,0.98)_55%,rgba(242,205,110,1)_100%)] shadow-[0_0_22px_rgba(210,166,69,0.28)]'
+              : 'bg-[linear-gradient(90deg,rgba(16,99,91,0.92)_0%,rgba(34,170,157,0.98)_55%,rgba(86,240,225,1)_100%)] shadow-[0_0_22px_rgba(45,212,191,0.26)]';
 
           return (
-            <div key={entry.id} className="relative flex items-center gap-3">
+            <div
+              key={entry.id}
+              className="relative grid grid-cols-[22px_minmax(110px,150px)_minmax(0,1fr)] items-center gap-x-3"
+            >
               {/* Step number */}
-              <span className="w-4 shrink-0 text-right text-[10px] font-semibold text-text-muted">
+              <span className="text-right text-xs font-semibold text-text-muted">
                 {step}
               </span>
 
+              {/* Provider name */}
+              <span className="truncate pr-2 text-sm font-medium text-text-secondary sm:text-[15px]">
+                {rec?.provider ?? ''}
+              </span>
+
               {/* Bar track */}
-              <div className="relative h-3 flex-1 rounded-full bg-white/[0.03]">
+              <div className="relative h-4 flex-1 rounded-full bg-white/[0.06] ring-1 ring-white/[0.04]">
                 {/* Active period bar */}
-                <div
-                  className={`absolute top-0 h-3 rounded-full ${barColor}`}
+                <motion.div
+                  className={`absolute top-0 h-4 origin-left rounded-full ${barColor}`}
+                  initial={{ opacity: 0, scaleX: 0 }}
+                  whileInView={{ opacity: 1, scaleX: 1 }}
+                  viewport={{ once: true, amount: 0.7 }}
+                  transition={{
+                    delay: step * 0.12,
+                    duration: 0.7,
+                    ease: [0.22, 1, 0.36, 1]
+                  }}
                   style={{ left: `${startPct}%`, width: `${widthPct}%` }}
                 />
-                {/* Payout dot */}
-                <span
-                  className={`absolute top-1/2 h-2 w-2 rounded-full ${dotColor}`}
+                <motion.span
+                  className="absolute top-[3px] h-[2px] rounded-full bg-white/45 origin-left"
+                  initial={{ opacity: 0, scaleX: 0 }}
+                  whileInView={{ opacity: [0.1, 0.45, 0.18], scaleX: 1 }}
+                  viewport={{ once: true, amount: 0.7 }}
+                  transition={{
+                    delay: 0.18 + step * 0.12,
+                    duration: 0.8,
+                    ease: [0.22, 1, 0.36, 1]
+                  }}
                   style={{
-                    left: `${(diffDays(earliest, entry.payoutDate) / totalDays) * 100}%`,
-                    transform: 'translate(-50%, -50%)'
+                    left: `calc(${startPct}% + 8px)`,
+                    width: `max(calc(${widthPct}% - 16px), 12px)`
                   }}
                 />
               </div>
-
-              {/* Short name */}
-              <span className="hidden w-24 truncate text-[10px] text-text-muted sm:inline">
-                {rec?.provider ?? ''}
-              </span>
             </div>
           );
         })}
@@ -242,12 +257,20 @@ function StepCard({
   const netValue = item.estimatedNetValue;
   const fee = breakdown?.annualFee ?? breakdown?.estimatedFees ?? 0;
   const monthly = monthlySpendText(item);
+  const isFirstStep = stepNumber === 1;
 
-  const laneColor = item.lane === 'cards' ? 'brand-gold' : 'brand-teal';
   const stepBg = item.lane === 'cards' ? 'bg-brand-gold/15 text-brand-gold' : 'bg-brand-teal/15 text-brand-teal';
+  const netValueClass = item.lane === 'cards' ? 'text-brand-gold' : 'text-brand-teal';
+  const actionDotClass = item.lane === 'cards' ? 'bg-brand-gold' : 'bg-brand-teal';
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] transition-colors hover:bg-white/[0.04]">
+    <div
+      className={`rounded-2xl border transition-colors hover:bg-white/[0.04] ${
+        isFirstStep
+          ? 'border-brand-teal/20 bg-[linear-gradient(180deg,rgba(45,212,191,0.06),rgba(255,255,255,0.03))]'
+          : 'border-white/[0.06] bg-white/[0.02]'
+      }`}
+    >
       {/* Collapsed header — always visible */}
       <button
         type="button"
@@ -262,6 +285,11 @@ function StepCard({
           <p className="truncate text-base font-semibold text-text-primary">{item.title}</p>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <p className="text-sm text-text-muted">{item.provider}</p>
+            {isFirstStep ? (
+              <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-teal">
+                Start here
+              </span>
+            ) : null}
             {isSelectedOffer ? (
               <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-teal">
                 Selected offer
@@ -316,7 +344,7 @@ function StepCard({
             {headlineValue !== netValue ? (
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Net value</p>
-                <p className={`mt-1 text-xl font-semibold text-${laneColor}`}>
+                <p className={`mt-1 text-xl font-semibold ${netValueClass}`}>
                   {formatValue(netValue)}
                 </p>
               </div>
@@ -330,12 +358,14 @@ function StepCard({
             ) : null}
           </div>
 
-          {/* What to do */}
-          <div className="mt-5 rounded-xl bg-white/[0.03] px-4 py-3">
-            <p className="text-xs uppercase tracking-[0.2em] text-text-muted">What to do</p>
-            <p className="mt-2 text-base leading-7 text-text-secondary">
-              {whatToDoText(item)}
-            </p>
+          <div className="mt-5 flex items-start gap-3 border-t border-white/[0.06] pt-4">
+            <span className={`mt-2 h-2.5 w-2.5 shrink-0 rounded-full ${actionDotClass}`} aria-hidden />
+            <div className="min-w-0">
+              <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Next action</p>
+              <p className="mt-2 text-base leading-7 text-text-secondary">
+                {whatToDoText(item)}
+              </p>
+            </div>
           </div>
 
           {/* Timeline dates */}
@@ -366,20 +396,23 @@ function StepCard({
             </div>
           ) : null}
 
-          {/* Effort badge */}
-          <div className="mt-4">
-            <span className="inline-flex rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
-              {item.effort} effort
-            </span>
-          </div>
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="inline-flex rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+                {item.effort} effort
+              </span>
+              {monthly ? (
+                <span className="text-sm text-text-muted">{monthly} pace</span>
+              ) : null}
+            </div>
 
-          {/* Detail link */}
-          <Link
-            href={`${item.detailPath}${item.detailPath.includes('?') ? '&' : '?'}src=plan_results`}
-            className="mt-4 inline-flex items-center text-sm font-semibold text-brand-teal transition hover:underline"
-          >
-            View details →
-          </Link>
+            <Link
+              href={`${item.detailPath}${item.detailPath.includes('?') ? '&' : '?'}src=plan_results`}
+              className="inline-flex items-center text-sm font-semibold text-brand-teal transition hover:underline"
+            >
+              View details →
+            </Link>
+          </div>
         </div>
       ) : null}
     </div>
@@ -505,12 +538,10 @@ function SelectedOfferSummary({ selectedOfferStatus }: { selectedOfferStatus: Se
 
 function PlanSummary({
   payload,
-  onClear,
   cardsOnlyMode,
   isDemo
 }: {
   payload: PlanResultsStoragePayload;
-  onClear: () => void;
   cardsOnlyMode: boolean;
   isDemo: boolean;
 }) {
@@ -552,27 +583,7 @@ function PlanSummary({
   const totalValue = orderedRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
   const moveCount = orderedRecommendations.length;
 
-  const cardCount = orderedRecommendations.filter((item) => item.lane === 'cards').length;
-  const bankCount = orderedRecommendations.filter((item) => item.lane === 'banking').length;
   const milestones = useMemo(() => buildTimelineMilestones(timelineEntries), [timelineEntries]);
-
-  // Build subtitle
-  const parts: string[] = [];
-  if (cardCount > 0) parts.push(`${cardCount} card bonus${cardCount === 1 ? '' : 'es'}`);
-  if (bankCount > 0) parts.push(`${bankCount} bank bonus${bankCount === 1 ? '' : 'es'}`);
-
-  // Calculate duration from timeline
-  let durationText = '6 months';
-  if (timelineEntries.length > 0) {
-    const firstStart = timelineEntries[0].startDate;
-    const lastPayout = timelineEntries.reduce(
-      (latest, e) => (e.payoutDate > latest ? e.payoutDate : latest),
-      timelineEntries[0].payoutDate
-    );
-    const totalDays = diffDays(firstStart, lastPayout);
-    const months = Math.max(1, Math.round(totalDays / 30));
-    durationText = `${months} month${months === 1 ? '' : 's'}`;
-  }
 
   const entriesById = useMemo(
     () => new Map(timelineEntries.map((entry) => [entry.id, entry])),
@@ -588,63 +599,61 @@ function PlanSummary({
 
       {/* ── ① Hero ── */}
       <motion.section
-        className="mt-8 text-center"
+        className="mt-2 rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-6 py-6 md:px-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
-        {isDemo ? (
-          <span className="mb-4 inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-brand-teal">
-            Demo fixture
-          </span>
-        ) : null}
+        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] lg:items-end">
+          <div className="max-w-3xl">
+            {isDemo ? (
+              <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-brand-teal">
+                Demo fixture
+              </span>
+            ) : null}
+            <h1
+              className={`font-heading text-5xl leading-none text-text-primary md:text-6xl ${
+                isDemo ? 'mt-5' : 'mt-3'
+              }`}
+            >
+              {cardsOnlyMode ? 'Your Card Plan' : 'Your Bonus Plan'}
+            </h1>
+          </div>
 
-        <p className="font-heading text-6xl text-text-primary md:text-7xl">
-          {formatValue(animatedTotal)}
-        </p>
-        <motion.p
-          className="mt-3 text-lg text-text-secondary"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8, duration: 0.4 }}
-        >
-          {parts.join(' + ')} · {durationText}
-        </motion.p>
+          <div className="lg:justify-self-end lg:text-right">
+            <p className="font-heading text-6xl text-text-primary md:text-7xl">
+              {formatValue(animatedTotal)}
+            </p>
+          </div>
+        </div>
 
-        {!isDemo ? (
-          <button
-            type="button"
-            onClick={onClear}
-            className="mt-4 text-sm text-text-muted transition hover:text-text-secondary"
+        <div className="mt-6 border-t border-white/[0.06] pt-5">
+          <motion.p
+            className="text-xs uppercase tracking-[0.22em] text-text-muted"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.0, duration: 0.3 }}
           >
-            Clear plan
-          </button>
-        ) : null}
+            Your plan · {moveCount} move{moveCount === 1 ? '' : 's'}
+          </motion.p>
+
+          {timelineEntries.length > 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.1, duration: 0.4 }}
+            >
+              <MiniTimeline
+                entries={timelineEntries}
+                recommendations={orderedRecommendations}
+              />
+            </motion.div>
+          ) : null}
+        </div>
       </motion.section>
 
-      {/* ── ② Mini timeline + Step cards ── */}
-      <section className="mt-10">
-        <motion.p
-          className="text-xs uppercase tracking-[0.22em] text-text-muted"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.0, duration: 0.3 }}
-        >
-          Your plan · {moveCount} move{moveCount === 1 ? '' : 's'}
-        </motion.p>
-
-        {timelineEntries.length > 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1, duration: 0.4 }}
-          >
-            <MiniTimeline
-              entries={timelineEntries}
-              recommendations={orderedRecommendations}
-            />
-          </motion.div>
-        ) : null}
+      {/* ── ② Step cards ── */}
+      <section className="mt-4">
 
         <div className="mt-4 space-y-3">
           {orderedRecommendations.map((item, index) => (
@@ -690,11 +699,6 @@ export function PlanResultsView() {
   const cardsOnlyMode = searchParams.get('mode') === 'cards_only';
   const demoMode = searchParams.get('demo') === 'true';
   const [state, setState] = useState<LoadState>({ status: 'loading' });
-
-  function handleClearPlan() {
-    clearPlanResults();
-    setState({ status: 'missing' });
-  }
 
   useEffect(() => {
     if (demoMode) {
@@ -754,17 +758,13 @@ export function PlanResultsView() {
 
   return (
     <div className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
-      <h1 className="font-heading text-5xl text-text-primary md:text-6xl">
-        {cardsOnlyMode ? 'Your Card Plan' : 'Your Bonus Plan'}
-      </h1>
       {state.status === 'recovered' && (
-        <p className="mt-3 text-base text-brand-gold">
+        <p className="text-base text-brand-gold">
           Recovered your latest saved plan from this browser.
         </p>
       )}
       <PlanSummary
         payload={state.payload}
-        onClear={handleClearPlan}
         cardsOnlyMode={cardsOnlyMode}
         isDemo={demoMode}
       />
