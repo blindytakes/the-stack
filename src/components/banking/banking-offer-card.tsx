@@ -23,7 +23,7 @@ export function BankingOfferCard({
 }: BankingOfferCardProps) {
   const isCompact = variant === 'compact';
   const imagePresentation = getBankingImagePresentation(offer.bankName);
-  const noPayroll = !offer.directDeposit.required;
+  const noDirectDeposit = !offer.directDeposit.required;
   const stateLimited =
     offer.stateRestrictions && offer.stateRestrictions.length > 0;
   const primaryRequirement = getBankingOfferPrimaryRequirement(offer);
@@ -40,9 +40,9 @@ export function BankingOfferCard({
       />
 
       {/* Badges — top corners */}
-      {noPayroll && (
+      {noDirectDeposit && (
         <div className="absolute top-3 left-3 z-20 rounded-full border border-emerald-300/20 bg-emerald-400/65 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black/90 backdrop-blur-sm">
-          No payroll
+          No direct deposit
         </div>
       )}
       {stateLimited && (
@@ -114,7 +114,7 @@ export function BankingOfferCard({
               href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
               className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-xs font-semibold text-black transition hover:opacity-90"
             >
-              Build Full Plan
+              Include this bank in my bonus plan
             </Link>
           </div>
         )}

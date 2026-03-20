@@ -48,7 +48,7 @@ export const defaultBankingDirectoryFilters: BankingDirectoryFilters = {
 };
 
 export const bankingSortOptions: Array<{ value: BankingBonusesSort; label: string }> = [
-  { value: 'net', label: 'Highest Net Value' },
+  { value: 'net', label: 'Highest Bonus Value' },
   { value: 'easy', label: 'Easiest to Complete' },
   { value: 'fast', label: 'Fastest Timeline' },
   { value: 'low_cash', label: 'Lowest Cash Needed' }
@@ -62,9 +62,9 @@ export const accountTypeOptions: Array<{ value: AccountTypeFilterValue; label: s
 ];
 
 export const directDepositOptions: Array<{ value: DirectDepositFilterValue; label: string }> = [
-  { value: 'any', label: 'Any payroll setup' },
-  { value: 'no', label: 'No payroll required' },
-  { value: 'yes', label: 'Payroll required' }
+  { value: 'any', label: 'Any direct deposit setup' },
+  { value: 'no', label: 'No direct deposit required' },
+  { value: 'yes', label: 'Direct deposit required' }
 ];
 
 export const difficultyOptions: Array<{ value: DifficultyFilterValue; label: string }> = [

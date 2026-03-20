@@ -131,7 +131,9 @@ export default async function BankingOfferDetailPage({ params }: Props) {
                 {difficulty.label}
               </span>
               <span className="rounded-full border border-white/10 bg-bg/40 px-3 py-1 text-xs text-text-secondary">
-                {offer.directDeposit.required ? 'Payroll reroute required' : 'No payroll reroute'}
+                {offer.directDeposit.required
+                  ? 'Direct deposit required'
+                  : 'No direct deposit required'}
               </span>
             </div>
 
@@ -363,7 +365,7 @@ export default async function BankingOfferDetailPage({ params }: Props) {
                 href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
                 className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
               >
-                Build Full Bonus Plan
+                Include this bank in my bonus plan
               </Link>
               <Link
                 href="/banking"

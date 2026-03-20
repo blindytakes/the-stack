@@ -389,7 +389,7 @@ export default async function CardDetailPage({ params, searchParams }: Props) {
                 href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
                 className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
               >
-                Build Full Bonus Plan
+                Include this card in my bonus plan
               </Link>
             </div>
           </section>

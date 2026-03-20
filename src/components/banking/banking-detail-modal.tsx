@@ -48,7 +48,7 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
     [onClose]
   );
 
-  const noPayroll = !offer.directDeposit.required;
+  const noDirectDeposit = !offer.directDeposit.required;
   const stateLimited =
     offer.stateRestrictions && offer.stateRestrictions.length > 0;
 
@@ -130,9 +130,9 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
               </p>
             </div>
             <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-              <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Payroll</p>
-              <p className={`mt-1 text-sm font-semibold ${noPayroll ? 'text-emerald-400' : 'text-text-primary'}`}>
-                {noPayroll ? 'Not required' : 'Required'}
+              <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Direct Deposit</p>
+              <p className={`mt-1 text-sm font-semibold ${noDirectDeposit ? 'text-emerald-400' : 'text-text-primary'}`}>
+                {noDirectDeposit ? 'Not required' : 'Required'}
               </p>
             </div>
             <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
@@ -228,7 +228,7 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
                 href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
                 className="inline-flex items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
               >
-                Build Full Plan
+                Include this bank in my bonus plan
               </Link>
               {(offer.affiliateUrl || offer.offerUrl) && (
                 <a

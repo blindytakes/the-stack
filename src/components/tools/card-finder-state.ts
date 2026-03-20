@@ -1,13 +1,17 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
 import { submitPlanQuiz } from '@/lib/plan-client';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
-import { cardFinderSteps } from '@/components/tools/card-finder-config';
-import type { CardSelectionQuestionId, BankSelectionQuestionId } from '@/components/tools/card-finder-sections';
+import { buildCardFinderSteps } from '@/components/tools/card-finder-config';
+import type {
+  BankSelectionQuestionId,
+  CardSelectionQuestionId,
+  FinderQuestionStep
+} from '@/components/tools/card-finder-sections';
 
 type QuizAnswers = Partial<QuizRequest>;
 
@@ -21,19 +25,34 @@ export function useCardFinderState(initialSelectedOfferIntent: SelectedOfferInte
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const currentStep = cardFinderSteps[stepIndex];
-  const isLastStep = stepIndex === cardFinderSteps.length - 1;
-  const canContinue =
-    currentStep.type === 'card_selection' || currentStep.type === 'bank_selection'
-      ? true
-      : Boolean(answers[currentStep.id]);
+  const steps = useMemo(
+    () => buildCardFinderSteps(answers.directDeposit),
+    [answers.directDeposit]
+  );
+
+  useEffect(() => {
+    setStepIndex((prev) => Math.min(prev, steps.length - 1));
+  }, [steps.length]);
+
+  const currentStep = steps[Math.min(stepIndex, steps.length - 1)];
+
+  function isOptionalStep(step: FinderQuestionStep) {
+    return (
+      step.type === 'card_selection' ||
+      step.type === 'bank_selection' ||
+      ('optional' in step && step.optional === true)
+    );
+  }
+
+  const isLastStep = stepIndex === steps.length - 1;
+  const canContinue = isOptionalStep(currentStep)
+    ? true
+    : Boolean(answers[currentStep.id]);
   const progress = useMemo(
-    () => (stepIndex / cardFinderSteps.length) * 100,
-    [stepIndex]
+    () => (stepIndex / steps.length) * 100,
+    [stepIndex, steps.length]
   );
-  const isComplete = cardFinderSteps.every((step) =>
-    step.type === 'card_selection' || step.type === 'bank_selection' ? true : Boolean(answers[step.id])
-  );
+  const isComplete = steps.every((step) => isOptionalStep(step) || Boolean(answers[step.id]));
 
   function selectCurrentOption(value: string) {
     if (currentStep.type === 'card_selection' || currentStep.type === 'bank_selection') {
@@ -112,7 +131,7 @@ export function useCardFinderState(initialSelectedOfferIntent: SelectedOfferInte
   }
 
   function goForward() {
-    setStepIndex((prev) => Math.min(cardFinderSteps.length - 1, prev + 1));
+    setStepIndex((prev) => Math.min(steps.length - 1, prev + 1));
   }
 
   function resetFinder() {
@@ -163,7 +182,7 @@ export function useCardFinderState(initialSelectedOfferIntent: SelectedOfferInte
   }
 
   return {
-    steps: cardFinderSteps,
+    steps,
     stepIndex,
     currentStep,
     answers,

@@ -213,7 +213,7 @@ describe('compact banking card helpers', () => {
     if (!bundle || !lowFriction) return;
 
     expect(getBankingOfferPrimaryRequirement(bundle)).toBe(
-      'Open both accounts and route $1,500+ in payroll.'
+      'Open both accounts and route $1,500+ in qualifying direct deposit.'
     );
     expect(getBankingOfferPrimaryRequirement(lowFriction)).toBe(
       'Complete the required debit activity.'

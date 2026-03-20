@@ -119,7 +119,7 @@ export function BankingDirectoryFilterPanel({
         </label>
 
         <label className="block">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Payroll</span>
+          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Direct Deposit</span>
           <select
             value={directDeposit}
             onChange={(event) => onDirectDepositChange(event.target.value as DirectDepositFilterValue)}

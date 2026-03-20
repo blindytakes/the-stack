@@ -301,7 +301,7 @@ export function CardDetailModal({ slug, onClose }: CardDetailModalProps) {
                   href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
                   className="inline-flex items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-sm font-semibold text-black transition hover:opacity-90"
                 >
-                  Build Full Plan
+                  Include this card in my bonus plan
                 </Link>
                 {(card.affiliateUrl || card.applyUrl) && (
                   <a

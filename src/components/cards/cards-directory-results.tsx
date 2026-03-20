@@ -143,7 +143,7 @@ export function CardsDirectoryResults({
                 href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
                 className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-xs font-semibold text-black transition hover:opacity-90"
               >
-                Build Full Plan
+                Include this card in my bonus plan
               </Link>
             </div>
           </article>

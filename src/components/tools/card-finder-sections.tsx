@@ -31,6 +31,7 @@ export type FinderOptionStep = {
   type?: 'options';
   title: string;
   description?: string;
+  optional?: boolean;
   options: ReadonlyArray<FinderStepOption>;
 };
 
@@ -39,6 +40,7 @@ export type FinderSelectStep = {
   type: 'select';
   title: string;
   description?: string;
+  optional?: boolean;
   placeholder?: string;
   helperText?: string;
   options: ReadonlyArray<FinderStepOption>;
@@ -113,7 +115,14 @@ export function CardFinderQuestion({
         transition={{ duration: 0.3 }}
         className="text-3xl font-semibold md:text-4xl"
       >
-        {step.title}
+        <span className="flex flex-wrap items-center gap-3">
+          <span>{step.title}</span>
+          {step.optional ? (
+            <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-text-muted">
+              Optional
+            </span>
+          ) : null}
+        </span>
       </motion.h2>
       {step.description && (
         <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>

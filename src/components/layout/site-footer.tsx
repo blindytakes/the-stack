@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 
 const footerLinks = [
-  { href: '/affiliate-disclosure', label: 'Affiliate Disclosure' },
   { href: '/privacy', label: 'Privacy' },
   { href: '/contact', label: 'Contact' }
 ];

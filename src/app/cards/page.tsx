@@ -45,7 +45,7 @@ export default async function CardsPage() {
       {/* Cards immediately */}
       <CardsDirectoryExplorer cards={directoryCards} learnArticles={featuredLearn} />
 
-      {/* Methodology, Disclosure, Data Snapshot */}
+      {/* Methodology, Terms, Data Snapshot */}
       <section className="mt-8 grid gap-3 md:grid-cols-3">
         <Link
           href="/methodology"
@@ -56,13 +56,13 @@ export default async function CardsPage() {
           <p className="mt-1 text-xs text-text-secondary">Scoring logic, fit criteria, and value assumptions.</p>
         </Link>
         <Link
-          href="/affiliate-disclosure"
+          href="/terms"
           className="rounded-2xl border border-white/10 bg-bg-surface p-4 transition hover:border-brand-teal/35 hover:bg-bg-elevated"
         >
-          <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Disclosure</p>
-          <p className="mt-2 text-sm font-semibold text-text-primary">How affiliate links work</p>
+          <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Terms</p>
+          <p className="mt-2 text-sm font-semibold text-text-primary">How to use this directory</p>
           <p className="mt-1 text-xs text-text-secondary">
-            Transparency on partner relationships and editorial independence.
+            Offer accuracy, usage expectations, and important limitations.
           </p>
         </Link>
         <div className="rounded-2xl border border-white/10 bg-bg-surface p-4">

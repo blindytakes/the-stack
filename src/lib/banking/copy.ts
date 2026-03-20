@@ -53,15 +53,15 @@ export function getBankingOfferExecutionSummary(offer: BankingBonusRecord) {
     typeof offer.minimumOpeningDeposit === 'number' &&
     offer.minimumOpeningDeposit > 0
   ) {
-    return `This is more cash parking than payroll routing: move at least ${formatBankingCurrency(offer.minimumOpeningDeposit)} in fresh funds and leave the account alone ${timelineText}.`;
+    return `This is more cash parking than direct-deposit setup: move at least ${formatBankingCurrency(offer.minimumOpeningDeposit)} in fresh funds and leave the account alone ${timelineText}.`;
   }
 
   if (offer.directDeposit.required && typeof offer.minimumOpeningDeposit === 'number') {
-    return `Works best if you can route qualifying payroll, fund the account with at least ${formatBankingCurrency(offer.minimumOpeningDeposit)}, and keep it active ${timelineText}.`;
+    return `Works best if you can route qualifying direct deposit, fund the account with at least ${formatBankingCurrency(offer.minimumOpeningDeposit)}, and keep it active ${timelineText}.`;
   }
 
   if (offer.directDeposit.required) {
-    return `Works best if you can route qualifying payroll and stay on top of the account ${timelineText}.`;
+    return `Works best if you can route qualifying direct deposit and stay on top of the account ${timelineText}.`;
   }
 
   if (typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0) {
@@ -74,11 +74,11 @@ export function getBankingOfferExecutionSummary(offer: BankingBonusRecord) {
 export function getBankingOfferPrimaryRequirement(offer: BankingBonusRecord) {
   if (offer.accountType === 'bundle') {
     if (offer.directDeposit.required && typeof offer.directDeposit.minimumAmount === 'number') {
-      return `Open both accounts and route ${formatBankingCurrency(offer.directDeposit.minimumAmount)}+ in payroll.`;
+      return `Open both accounts and route ${formatBankingCurrency(offer.directDeposit.minimumAmount)}+ in qualifying direct deposit.`;
     }
 
     if (offer.directDeposit.required) {
-      return 'Open both accounts and route qualifying payroll.';
+      return 'Open both accounts and route qualifying direct deposit.';
     }
 
     if (typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0) {
@@ -90,8 +90,8 @@ export function getBankingOfferPrimaryRequirement(offer: BankingBonusRecord) {
 
   if (offer.directDeposit.required) {
     return typeof offer.directDeposit.minimumAmount === 'number'
-      ? `Route ${formatBankingCurrency(offer.directDeposit.minimumAmount)}+ in qualifying payroll.`
-      : 'Route qualifying payroll direct deposit.';
+      ? `Route ${formatBankingCurrency(offer.directDeposit.minimumAmount)}+ in qualifying direct deposit.`
+      : 'Route qualifying direct deposit.';
   }
 
   if (
@@ -157,7 +157,7 @@ export function getBankingOfferPrimaryConstraint(offer: BankingBonusRecord) {
   }
 
   return offer.directDeposit.required
-    ? 'Payroll setup must code as qualifying.'
+    ? 'Your direct deposit has to code as qualifying.'
     : 'Confirm the live terms before opening.';
 }
 
@@ -173,15 +173,15 @@ export function getBankingOfferWhyInteresting(offer: BankingBonusListItem) {
     typeof offer.minimumOpeningDeposit === 'number' &&
     offer.minimumOpeningDeposit >= 10000
   ) {
-    return `This is a cash-deployment play more than a behavior change. If you already have idle funds, you can trade that balance for a modeled ${netValue} net return without rerouting payroll.`;
+    return `This is a cash-deployment play more than a behavior change. If you already have idle funds, you can trade that balance for a modeled ${netValue} net return without changing your direct deposit setup.`;
   }
 
   if (!offer.directDeposit.required && (offer.minimumOpeningDeposit ?? 0) <= 2000) {
-    return `The strongest part of this offer is the execution profile: a modeled ${netValue} net value without payroll rerouting and without a heavy upfront funding requirement. That makes it easier to complete cleanly than many checking bonuses.`;
+    return `The strongest part of this offer is the execution profile: a modeled ${netValue} net value without changing direct deposit and without a heavy upfront funding requirement. That makes it easier to complete cleanly than many checking bonuses.`;
   }
 
   if (offer.directDeposit.required) {
-    return `This is a classic checking-bonus execution page: the upside is meaningful if payroll routing is easy for you and the bonus still clears fees. The model lands at about ${netValue} net, so the decision is really about operational fit, not just the headline.`;
+    return `This is a classic checking-bonus execution page: the upside is meaningful if qualifying direct deposit is easy for you and the bonus still clears fees. The model lands at about ${netValue} net, so the decision is really about operational fit, not just the headline.`;
   }
 
   return `The value proposition is straightforward: a modeled ${netValue} net return with a manageable set of requirements. The real question is whether the steps fit your current cash flow and attention budget.`;
@@ -195,10 +195,10 @@ export function getBankingOfferBestFit(offer: BankingBonusRecord): string[] {
     bullets.push(
       typeof offer.directDeposit.minimumAmount === 'number'
         ? `You can route at least ${formatBankingCurrency(offer.directDeposit.minimumAmount)} in qualifying direct deposit without disrupting your main bank setup.`
-        : 'You can route a qualifying payroll or employer direct deposit without extra hassle.'
+        : 'You can route a qualifying direct deposit without extra hassle.'
     );
   } else {
-    bullets.push('You want a bonus path that does not depend on rerouting payroll.');
+    bullets.push('You want a bonus path that does not depend on changing direct deposit.');
   }
 
   if (typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0) {
@@ -230,7 +230,7 @@ export function getBankingOfferThinkTwiceIf(offer: BankingBonusRecord): string[]
   const bullets: string[] = [];
 
   if (offer.directDeposit.required) {
-    bullets.push('Your payroll setup makes qualifying direct deposit hard to move or hard to verify.');
+    bullets.push('Your current direct deposit setup makes qualifying direct deposit hard to move or verify.');
   }
 
   if (typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit >= 10000) {
@@ -334,8 +334,8 @@ export function getBankingOfferChecklist(offer: BankingBonusRecord): BankingOffe
       title: 'Route qualifying direct deposit',
       detail:
         typeof offer.directDeposit.minimumAmount === 'number'
-          ? `Send at least ${formatBankingCurrency(offer.directDeposit.minimumAmount)} in qualifying payroll or employer direct deposits and verify the bank counts it correctly.`
-          : 'Make sure at least one qualifying payroll or employer direct deposit lands before the deadline.'
+          ? `Send at least ${formatBankingCurrency(offer.directDeposit.minimumAmount)} in qualifying direct deposits and verify the bank counts them correctly.`
+          : 'Make sure at least one qualifying direct deposit lands before the deadline.'
     });
   }
 

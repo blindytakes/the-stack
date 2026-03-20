@@ -79,9 +79,17 @@ export function CardFinderTool({
   const selectionCards = currentStep.type !== 'card_selection' ? [] : cards;
 
   const isOptionalStep =
-    currentStep.type === 'card_selection' || currentStep.type === 'bank_selection';
-  const optionalStepEmpty =
-    isOptionalStep && (answers[currentStep.id]?.length ?? 0) === 0;
+    currentStep.type === 'card_selection' ||
+    currentStep.type === 'bank_selection' ||
+    ('optional' in currentStep && currentStep.optional === true);
+  const optionalStepEmpty = isOptionalStep
+    ? Array.isArray(answers[currentStep.id])
+      ? (answers[currentStep.id]?.length ?? 0) === 0
+      : !answers[currentStep.id]
+    : false;
+  const shouldAutoAdvance =
+    currentStep.type === 'options' &&
+    !('optional' in currentStep && currentStep.optional === true);
 
   return (
     <section className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
@@ -149,7 +157,7 @@ export function CardFinderTool({
           step={currentStep}
           selectedValue={typeof answers[currentStep.id] === 'string' ? answers[currentStep.id] : undefined}
           onSelect={selectCurrentOption}
-          onAutoAdvance={goForward}
+          onAutoAdvance={shouldAutoAdvance ? goForward : undefined}
         />
       )}
 
@@ -159,7 +167,10 @@ export function CardFinderTool({
         isLastStep={isLastStep}
         isComplete={isComplete}
         loading={loading}
-        hideContinue={currentStep.type === 'options'}
+        hideContinue={
+          currentStep.type === 'options' &&
+          !('optional' in currentStep && currentStep.optional === true)
+        }
         continueLabel={optionalStepEmpty ? 'Skip for now' : 'Continue'}
         onBack={goBack}
         onContinue={goForward}

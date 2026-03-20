@@ -53,8 +53,8 @@ export function getBankingOfferDifficulty(
       label: 'Moderate friction',
       shortLabel: 'Moderate friction',
       detail: offer.directDeposit.required
-        ? 'Expect payroll routing or a few coordinated tasks, but the workload is still manageable.'
-        : 'There are enough steps or holding time to warrant a tracker, even without payroll routing.'
+        ? 'Expect direct-deposit setup or a few coordinated tasks, but the workload is still manageable.'
+        : 'There are enough steps or holding time to warrant a tracker, even without direct-deposit setup.'
     };
   }
 
