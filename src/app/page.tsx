@@ -122,7 +122,7 @@ const differentiationCards = [
   {
     title: 'Tells you what to open and when',
     description:
-      'Your plan is ordered to maximize real dollar value while respecting issuer rules, cooldown periods, and spend windows.',
+      'Your plan is ordered to maximize real dollar value while respecting issuer rules and cooldown periods.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M6 6h8M6 10h6M6 14h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -327,8 +327,10 @@ export default async function HomePage() {
           <h1 className="font-heading text-4xl leading-tight text-text-primary md:text-6xl lg:text-[66px]">
             Make Banks Work For You.
           </h1>
-          <p className="max-w-[48ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl">
-            The Stack builds you a personalized plan to maximize credit card and bank sign-up bonuses — telling you exactly what to open, when to open it, and how to hit every bonus.
+          <p className="max-w-[48ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl lg:max-w-[58ch]">
+            Stop wasting time on points. Start maximizing Bank and Credit Card bonuses. The Stack
+            builds you a plan to maximize credit card and bank sign-up bonuses by telling you
+            exactly what to open, when to open it, and how to hit every bonus.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
@@ -411,7 +413,7 @@ export default async function HomePage() {
               <h3 className="mt-5 text-xl font-semibold text-text-primary">
                 {card.title}
               </h3>
-              <p className="mt-3 max-w-[34ch] text-sm leading-7 text-text-secondary">
+              <p className="mt-3 max-w-[40ch] text-base leading-7 text-text-secondary">
                 {card.description}
               </p>
             </div>
@@ -428,7 +430,7 @@ export default async function HomePage() {
               Proof
             </p>
             <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
-              What people actually got from it.
+              Real reviews from Stackers.
             </h2>
             <blockquote className="mt-8 max-w-[24ch] font-heading text-3xl leading-tight text-text-primary md:text-5xl">
               &ldquo;{featuredReview.quote}&rdquo;
