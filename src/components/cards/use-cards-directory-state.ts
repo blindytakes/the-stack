@@ -14,6 +14,7 @@ import {
   type BonusFilterValue,
   type CardTypeFilterValue,
   type FeeFilterValue,
+  type SpendCategoryFilterValue,
   type SortValue
 } from '@/lib/cards-directory-explorer';
 
@@ -26,6 +27,9 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
 
   const [query, setQuery] = useState(defaultCardsDirectoryFilters.query);
   const [issuer, setIssuer] = useState(defaultCardsDirectoryFilters.issuer);
+  const [spendCategory, setSpendCategory] = useState<SpendCategoryFilterValue>(
+    defaultCardsDirectoryFilters.spendCategory
+  );
   const [bonusFilter, setBonusFilter] = useState<BonusFilterValue>(
     defaultCardsDirectoryFilters.bonusFilter
   );
@@ -41,12 +45,13 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
     () => ({
       query,
       issuer,
+      spendCategory,
       bonusFilter,
       maxFee,
       cardType,
       sortBy
     }),
-    [bonusFilter, cardType, issuer, maxFee, query, sortBy]
+    [bonusFilter, cardType, issuer, maxFee, query, sortBy, spendCategory]
   );
 
   useEffect(() => {
@@ -54,6 +59,7 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
 
     setQuery(nextFilters.query);
     setIssuer(nextFilters.issuer);
+    setSpendCategory(nextFilters.spendCategory);
     setBonusFilter(nextFilters.bonusFilter);
     setMaxFee(nextFilters.maxFee);
     setCardType(nextFilters.cardType);
@@ -97,6 +103,7 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
   function clearFilters() {
     setQuery(defaultCardsDirectoryFilters.query);
     setIssuer(defaultCardsDirectoryFilters.issuer);
+    setSpendCategory(defaultCardsDirectoryFilters.spendCategory);
     setBonusFilter(defaultCardsDirectoryFilters.bonusFilter);
     setMaxFee(defaultCardsDirectoryFilters.maxFee);
     setCardType(defaultCardsDirectoryFilters.cardType);
@@ -128,6 +135,7 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
   return {
     query,
     issuer,
+    spendCategory,
     bonusFilter,
     maxFee,
     cardType,
@@ -141,6 +149,7 @@ export function useCardsDirectoryState(cards: CardRecord[]) {
     activeFilterCount,
     setQuery,
     setIssuer,
+    setSpendCategory,
     setBonusFilter,
     setMaxFee,
     setCardType,

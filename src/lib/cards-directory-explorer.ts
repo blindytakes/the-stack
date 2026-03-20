@@ -1,15 +1,21 @@
-import type { CardRecord } from '@/lib/cards';
+import {
+  spendingCategoryValues,
+  type CardRecord,
+  type SpendingCategoryValue
+} from '@/lib/cards';
 import { issuerKey, normalizeIssuerLabel } from '@/lib/cards-directory';
 
 export type SortValue = 'highest_bonus' | 'bonus_minus_fee' | 'lowest_fee' | 'highest_rating';
 export type BonusFilterValue = 'any' | 'has_bonus' | '500' | '750' | '1000';
 export type FeeFilterValue = 'any' | '0' | '95' | '250' | '10000';
 export type CardTypeFilterValue = 'all' | CardRecord['cardType'];
+export type SpendCategoryFilterValue = 'any' | SpendingCategoryValue;
 export type IssuerOption = { value: string; label: string; count: number };
 
 export type CardsDirectoryFilters = {
   query: string;
   issuer: string;
+  spendCategory: SpendCategoryFilterValue;
   bonusFilter: BonusFilterValue;
   maxFee: FeeFilterValue;
   cardType: CardTypeFilterValue;
@@ -19,6 +25,7 @@ export type CardsDirectoryFilters = {
 export const defaultCardsDirectoryFilters: CardsDirectoryFilters = {
   query: '',
   issuer: 'all',
+  spendCategory: 'any',
   bonusFilter: 'any',
   maxFee: 'any',
   cardType: 'all',
@@ -56,11 +63,29 @@ export const cardTypeOptions: Array<{ value: CardTypeFilterValue; label: string 
   { value: 'secured', label: 'Secured' }
 ];
 
+export const spendCategoryOptions: Array<{
+  value: SpendCategoryFilterValue;
+  label: string;
+}> = [
+  { value: 'any', label: 'Any spend' },
+  { value: 'dining', label: 'Dining' },
+  { value: 'groceries', label: 'Groceries' },
+  { value: 'travel', label: 'Travel' },
+  { value: 'gas', label: 'Gas' },
+  { value: 'all', label: 'General spend' }
+];
+
 export function formatCardType(value: CardRecord['cardType']) {
   if (value === 'personal') return 'Personal';
   if (value === 'business') return 'Business';
   if (value === 'student') return 'Student';
   return 'Secured';
+}
+
+export function formatSpendCategoryLabel(value: SpendingCategoryValue) {
+  if (value === 'all') return 'General spending';
+  if (value === 'online_shopping') return 'Online shopping';
+  return value.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 export function formatBonusValue(value?: number) {
@@ -111,6 +136,13 @@ export function isCardTypeFilterValue(value: string | null): value is CardTypeFi
   );
 }
 
+export function isSpendCategoryFilterValue(value: string | null): value is SpendCategoryFilterValue {
+  return (
+    value === 'any' ||
+    spendingCategoryValues.includes(value as SpendingCategoryValue)
+  );
+}
+
 export function buildIssuerOptions(cards: CardRecord[]): IssuerOption[] {
   const byIssuer = new Map<string, IssuerOption>();
   for (const card of cards) {
@@ -133,6 +165,7 @@ export function parseCardsDirectoryFilters(
 ): CardsDirectoryFilters {
   const queryFromUrl = searchParams.get('q') ?? '';
   const issuerFromUrl = searchParams.get('issuer');
+  const spendFromUrl = searchParams.get('spend');
   const bonusFromUrl = searchParams.get('bonus');
   const feeFromUrl = searchParams.get('fee');
   const typeFromUrl = searchParams.get('type');
@@ -147,6 +180,9 @@ export function parseCardsDirectoryFilters(
       issuerValueFromUrl && validIssuerValues.has(issuerValueFromUrl)
         ? issuerValueFromUrl
         : defaultCardsDirectoryFilters.issuer,
+    spendCategory: isSpendCategoryFilterValue(spendFromUrl)
+      ? spendFromUrl
+      : defaultCardsDirectoryFilters.spendCategory,
     bonusFilter: isBonusFilterValue(bonusFromUrl)
       ? bonusFromUrl
       : defaultCardsDirectoryFilters.bonusFilter,
@@ -168,6 +204,12 @@ export function buildCardsDirectorySearchParams(
 
   if (filters.issuer !== defaultCardsDirectoryFilters.issuer) params.set('issuer', filters.issuer);
   else params.delete('issuer');
+
+  if (filters.spendCategory !== defaultCardsDirectoryFilters.spendCategory) {
+    params.set('spend', filters.spendCategory);
+  } else {
+    params.delete('spend');
+  }
 
   if (filters.bonusFilter !== defaultCardsDirectoryFilters.bonusFilter) {
     params.set('bonus', filters.bonusFilter);
@@ -200,6 +242,13 @@ export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryF
     }
 
     if (filters.issuer !== 'all' && issuerKey(card.issuer) !== filters.issuer) return false;
+    if (
+      filters.spendCategory !== 'any' &&
+      !card.topCategories.some((category) => category === filters.spendCategory)
+    ) {
+      return false;
+    }
+
     if (filters.cardType !== 'all' && card.cardType !== filters.cardType) return false;
 
     const bonusValue = card.bestSignUpBonusValue ?? 0;
@@ -249,6 +298,7 @@ export function countActiveCardsDirectoryFilters(filters: CardsDirectoryFilters)
   return [
     filters.query.trim().length > 0,
     filters.issuer !== defaultCardsDirectoryFilters.issuer,
+    filters.spendCategory !== defaultCardsDirectoryFilters.spendCategory,
     filters.bonusFilter !== defaultCardsDirectoryFilters.bonusFilter,
     filters.maxFee !== defaultCardsDirectoryFilters.maxFee,
     filters.cardType !== defaultCardsDirectoryFilters.cardType

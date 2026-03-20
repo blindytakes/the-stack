@@ -58,6 +58,7 @@ describe('cards-directory-explorer', () => {
       new URLSearchParams({
         q: ' travel ',
         issuer: 'American Express',
+        spend: 'travel',
         bonus: '750',
         fee: '95',
         type: 'personal',
@@ -69,6 +70,7 @@ describe('cards-directory-explorer', () => {
     expect(filters).toEqual({
       query: ' travel ',
       issuer: 'american-express',
+      spendCategory: 'travel',
       bonusFilter: '750',
       maxFee: '95',
 
@@ -131,6 +133,7 @@ describe('cards-directory-explorer', () => {
     const filtered = filterAndSortCards(cards, {
       query: 'travel',
       issuer: 'all',
+      spendCategory: 'travel',
       bonusFilter: '500',
       maxFee: '95',
 
@@ -145,6 +148,7 @@ describe('cards-directory-explorer', () => {
     const filters = {
       query: '  chase sapphire  ',
       issuer: 'chase',
+      spendCategory: 'travel' as const,
       bonusFilter: '750' as const,
       maxFee: '95' as const,
       cardType: 'personal' as const,
@@ -152,9 +156,9 @@ describe('cards-directory-explorer', () => {
     };
 
     expect(buildCardsDirectorySearchParams(new URLSearchParams(), filters).toString()).toBe(
-      'q=chase+sapphire&issuer=chase&bonus=750&fee=95&type=personal&sort=bonus_minus_fee'
+      'q=chase+sapphire&issuer=chase&spend=travel&bonus=750&fee=95&type=personal&sort=bonus_minus_fee'
     );
-    expect(countActiveCardsDirectoryFilters(filters)).toBe(5);
+    expect(countActiveCardsDirectoryFilters(filters)).toBe(6);
   });
 
   it('builds compare links only when exactly two cards are selected', () => {

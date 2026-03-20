@@ -41,12 +41,18 @@ export function BankingDirectoryExplorer({
     clearFilters,
     removeFilter
   } = useBankingDirectoryState(offers, initialSearchParams);
+  const noDirectDepositCount = offers.filter((offer) => !offer.directDeposit.required).length;
+  const numericApyCount = offers.filter((offer) => offer.apyPercent != null).length;
 
   return (
     <div>
       <BankingDirectoryFilterPanel
         activeFilterCount={activeFilterCount}
         activeFilterChips={activeFilterChips}
+        totalOffers={offers.length}
+        filteredOffersCount={filteredSortedOffers.length}
+        noDirectDepositCount={noDirectDepositCount}
+        numericApyCount={numericApyCount}
         query={query}
         accountType={accountType}
         directDeposit={directDeposit}

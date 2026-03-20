@@ -25,6 +25,10 @@ import type { BankingBonusesSort } from '@/lib/banking-bonuses';
 type BankingDirectoryFilterPanelProps = {
   activeFilterCount: number;
   activeFilterChips: BankingActiveFilterChip[];
+  totalOffers: number;
+  filteredOffersCount: number;
+  noDirectDepositCount: number;
+  numericApyCount: number;
   query: string;
   accountType: AccountTypeFilterValue;
   directDeposit: DirectDepositFilterValue;
@@ -52,6 +56,10 @@ type BankingDirectoryFilterPanelProps = {
 export function BankingDirectoryFilterPanel({
   activeFilterCount,
   activeFilterChips,
+  totalOffers,
+  filteredOffersCount,
+  noDirectDepositCount,
+  numericApyCount,
   query,
   accountType,
   directDeposit,
@@ -76,7 +84,7 @@ export function BankingDirectoryFilterPanel({
   onReset
 }: BankingDirectoryFilterPanelProps) {
   const advancedFilterCount = [
-    apy !== 'any',
+    accountType !== 'all',
     difficulty !== 'any',
     cashRequirement !== 'any',
     timeline !== 'any',
@@ -91,40 +99,67 @@ export function BankingDirectoryFilterPanel({
 
   return (
     <section className="rounded-2xl border border-white/10 bg-bg-surface p-4 md:p-5">
-      <div className="max-w-[44rem]">
-        <p className="text-[11px] uppercase tracking-[0.28em] text-brand-gold">Banking Bonuses</p>
-        <h1 className="mt-2 font-heading text-[2.85rem] leading-[0.94] text-text-primary md:text-[3.35rem]">
-          Bank bonus offers you can actually finish.
-        </h1>
-        <p className="mt-2.5 max-w-[38rem] text-[15px] leading-7 text-text-secondary">
-          Browse top bank bonus offers, then let The Stack turn them into a workable plan.
-        </p>
+      <div className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.18),transparent_42%),linear-gradient(135deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02))] p-5 md:p-6">
+        <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_320px] lg:items-start">
+          <div className="max-w-[46rem]">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-brand-gold">Banking Bonuses</p>
+            <h1 className="mt-2 font-heading text-[2.6rem] leading-[0.94] text-text-primary md:text-[3.2rem]">
+              Compare the bank bonus before you open the account.
+            </h1>
+            <p className="mt-3 max-w-[39rem] text-[15px] leading-7 text-text-secondary">
+              See net bonus value, direct deposit requirement, upfront cash, APY, and hold timeline
+              in one view. Filter down to accounts you can actually complete, then send the good
+              fits into your bonus plan.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[
+                'Net bonus after estimated fees',
+                'Direct deposit friction',
+                'Opening cash requirement',
+                'APY and hold period'
+              ].map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-white/10 bg-bg/50 px-3 py-1 text-xs text-text-secondary"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+            <div className="rounded-2xl border border-white/10 bg-bg/55 p-4">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Showing</p>
+              <p className="mt-2 text-2xl font-semibold text-text-primary">
+                {filteredOffersCount}
+                <span className="ml-1 text-base font-medium text-text-muted">of {totalOffers}</span>
+              </p>
+              <p className="mt-1 text-xs text-text-muted">Offers in the current view.</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-bg/55 p-4">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">No Direct Deposit</p>
+              <p className="mt-2 text-2xl font-semibold text-text-primary">{noDirectDepositCount}</p>
+              <p className="mt-1 text-xs text-text-muted">Lower-friction accounts in the directory.</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-bg/55 p-4">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Filterable APY</p>
+              <p className="mt-2 text-2xl font-semibold text-text-primary">{numericApyCount}</p>
+              <p className="mt-1 text-xs text-text-muted">Offers with numeric APY data attached.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <input
         type="text"
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
-        placeholder="Search bank or offer..."
+        placeholder="Search bank, offer, or requirement..."
         className="mt-4 w-full rounded-xl border border-white/10 bg-bg-elevated px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
       />
 
       <div className="mt-3 grid gap-3 md:grid-cols-3">
-        <label className="block">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Account Type</span>
-          <select
-            value={accountType}
-            onChange={(event) => onAccountTypeChange(event.target.value as AccountTypeFilterValue)}
-            className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-          >
-            {accountTypeOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
         <label className="block">
           <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Direct Deposit</span>
           <select
@@ -133,6 +168,21 @@ export function BankingDirectoryFilterPanel({
             className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
           >
             {directDepositOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">APY</span>
+          <select
+            value={apy}
+            onChange={(event) => onApyChange(event.target.value as ApyFilterValue)}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+          >
+            {apyOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>
@@ -159,13 +209,13 @@ export function BankingDirectoryFilterPanel({
       {showMore && (
         <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-6">
           <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">APY</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Account Type</span>
             <select
-              value={apy}
-              onChange={(event) => onApyChange(event.target.value as ApyFilterValue)}
+              value={accountType}
+              onChange={(event) => onAccountTypeChange(event.target.value as AccountTypeFilterValue)}
               className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
             >
-              {apyOptions.map((option) => (
+              {accountTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>

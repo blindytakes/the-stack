@@ -3,7 +3,11 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import type { CardRecord } from '@/lib/cards';
-import { formatBonusValue } from '@/lib/cards-directory-explorer';
+import {
+  formatBonusValue,
+  formatSpendCategoryLabel,
+  formatSpendRequirement
+} from '@/lib/cards-directory-explorer';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { EntityImage } from '@/components/ui/entity-image';
 import { CardDetailModal } from '@/components/cards/card-detail-modal';
@@ -11,12 +15,16 @@ import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type CardsDirectoryResultsProps = {
   cards: CardRecord[];
+  totalCards: number;
+  activeFilterCount: number;
   selectedCompare: string[];
   onClearFilters: () => void;
 };
 
 export function CardsDirectoryResults({
   cards,
+  totalCards,
+  activeFilterCount,
   selectedCompare,
   onClearFilters
 }: CardsDirectoryResultsProps) {
@@ -42,12 +50,18 @@ export function CardsDirectoryResults({
     return () => observer.disconnect();
   }, []);
 
+  function formatRewardTypeLabel(rewardType: CardRecord['rewardType']) {
+    if (rewardType === 'cashback') return 'Cash back';
+    if (rewardType === 'miles') return 'Miles';
+    return 'Points';
+  }
+
   if (cards.length === 0) {
     return (
       <section className="mt-6 rounded-2xl border border-white/10 bg-bg-surface p-6">
         <h3 className="text-lg font-semibold text-text-primary">No cards match these filters</h3>
         <p className="mt-2 text-sm text-text-secondary">
-          Try broadening issuer, bonus threshold, or annual fee filters.
+          Try broadening spend fit, issuer, bonus threshold, or annual fee filters.
         </p>
         <button
           type="button"
@@ -61,96 +75,147 @@ export function CardsDirectoryResults({
   }
 
   return (
-    <section ref={sectionRef} className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {cards.map((card, index) => {
-        const selectedForCompare = selectedCompare.includes(card.slug);
-        const imagePresentation = getCardImagePresentation(card.slug);
-        const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-
-        return (
-          <article
-            key={card.slug}
-            className={`group relative flex flex-col rounded-2xl border bg-bg-surface p-5 transition-all duration-500 ${
-              isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
-            } ${
-              selectedForCompare
-                ? 'border-brand-teal/45 shadow-[0_0_24px_rgba(45,212,191,0.14)]'
-                : 'border-white/10 shadow-[0_0_16px_rgba(45,212,191,0.04)] hover:-translate-y-1.5 hover:border-brand-teal/30 hover:shadow-[0_4px_32px_rgba(45,212,191,0.14)]'
-            }`}
-            style={{ transitionDelay: isVisible ? `${Math.min(index, 8) * 80}ms` : '0ms' }}
+    <section ref={sectionRef} className="mt-6">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">Card Matches</p>
+          <h2 className="mt-1 text-2xl font-semibold text-text-primary">
+            {cards.length} cards ready to compare
+          </h2>
+          <p className="mt-1 text-sm text-text-secondary">
+            {activeFilterCount > 0
+              ? `Showing ${cards.length} of ${totalCards} cards after your current filters.`
+              : 'Start with spend fit, then use fee and bonus filters to narrow the list.'}
+          </p>
+        </div>
+        {activeFilterCount > 0 && (
+          <button
+            type="button"
+            onClick={onClearFilters}
+            className="rounded-full border border-white/10 px-4 py-2 text-sm text-text-secondary transition hover:border-white/30 hover:text-text-primary"
           >
-            {/* Badges — top corners */}
-            {card.cardType === 'business' && (
-              <div className="absolute top-3 left-3 z-10 rounded-full bg-amber-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
-                Business
-              </div>
-            )}
-            {card.annualFee === 0 && (
-              <div className="absolute top-3 right-3 z-10 rounded-full bg-emerald-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
-                No fee
-              </div>
-            )}
+            Clear filters
+          </button>
+        )}
+      </div>
 
-            {/* Card image */}
-            <div className="mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02]">
-              <EntityImage
-                src={card.imageUrl}
-                alt={`${card.name} card art`}
-                label={card.name}
-                className="aspect-[1.586/1]"
-                imgClassName={imageClassName}
-                fallbackClassName="bg-black/10"
-                fit={imagePresentation?.fit}
-                position={imagePresentation?.position}
-                scale={imagePresentation?.scale}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {cards.map((card, index) => {
+          const selectedForCompare = selectedCompare.includes(card.slug);
+          const imagePresentation = getCardImagePresentation(card.slug);
+          const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
+          const spendRequirement = formatSpendRequirement(card);
+          const topCategories = card.topCategories.filter((category) => category !== 'other');
+          const categoryChips = (
+            topCategories.length > 0 ? topCategories : (['all'] as const)
+          ).slice(0, 3);
+
+          return (
+            <article
+              key={card.slug}
+              className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-bg-surface p-5 transition-all duration-500 ${
+                isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+              } ${
+                selectedForCompare
+                  ? 'border-brand-teal/45 shadow-[0_0_24px_rgba(45,212,191,0.14)]'
+                  : 'border-white/10 shadow-[0_0_16px_rgba(45,212,191,0.04)] hover:-translate-y-1.5 hover:border-brand-teal/30 hover:shadow-[0_4px_32px_rgba(45,212,191,0.14)]'
+              }`}
+              style={{ transitionDelay: isVisible ? `${Math.min(index, 8) * 80}ms` : '0ms' }}
+            >
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.16),transparent_56%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
               />
-            </div>
 
-            {/* Bonus — the hero of the card */}
-            <div className="mt-1 text-center">
-              <p className="text-2xl font-bold text-brand-teal">
-                {formatBonusValue(card.bestSignUpBonusValue)}
+              {card.cardType === 'business' && (
+                <div className="absolute top-3 left-3 z-10 rounded-full bg-amber-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
+                  Business
+                </div>
+              )}
+              {card.annualFee === 0 && (
+                <div className="absolute top-3 right-3 z-10 rounded-full bg-emerald-500/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-black backdrop-blur-sm">
+                  No fee
+                </div>
+              )}
+
+              <div className="relative z-10 mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02]">
+                <EntityImage
+                  src={card.imageUrl}
+                  alt={`${card.name} card art`}
+                  label={card.name}
+                  className="aspect-[1.586/1]"
+                  imgClassName={imageClassName}
+                  fallbackClassName="bg-black/10"
+                  fit={imagePresentation?.fit}
+                  position={imagePresentation?.position}
+                  scale={imagePresentation?.scale}
+                />
+              </div>
+
+              <div className="relative z-10 mt-1 text-center">
+                <p className="text-2xl font-bold text-brand-teal">
+                  {formatBonusValue(card.bestSignUpBonusValue)}
+                </p>
+              </div>
+
+              <div className="relative z-10 mt-3 min-h-[2.5rem] px-2">
+                <button
+                  type="button"
+                  onClick={() => setModalSlug(card.slug)}
+                  className="block w-full text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
+                >
+                  {card.name}
+                </button>
+              </div>
+
+              <p className="relative z-10 mt-2 min-h-[2.75rem] text-center text-xs leading-5 text-text-muted">
+                {card.headline}
               </p>
-            </div>
 
-            <div className="mt-3 min-h-[2.5rem] px-2">
-              <button
-                type="button"
-                onClick={() => setModalSlug(card.slug)}
-                className="block w-full text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
-              >
-                {card.name}
-              </button>
-            </div>
+              <div className="relative z-10 mt-3 flex flex-wrap justify-center gap-2">
+                <span className="rounded-full border border-brand-gold/20 bg-brand-gold/10 px-2.5 py-1 text-[11px] text-brand-gold">
+                  {formatRewardTypeLabel(card.rewardType)}
+                </span>
+                <span className="rounded-full border border-white/10 bg-bg-elevated px-2.5 py-1 text-[11px] text-text-secondary">
+                  {card.annualFee === 0 ? 'No annual fee' : `$${card.annualFee}/yr fee`}
+                </span>
+              </div>
 
-            {/* Annual fee — only show text when there IS a fee (no-fee cards already have the badge) */}
-            {card.annualFee > 0 && (
-              <p className="mt-1.5 text-center text-xs text-text-muted">
-                ${card.annualFee}/yr annual fee
+              <div className="relative z-10 mt-3 flex min-h-[3.5rem] flex-wrap justify-center gap-2">
+                {categoryChips.map((category) => (
+                  <span
+                    key={`${card.slug}-${category}`}
+                    className="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-text-secondary"
+                  >
+                    Best for {formatSpendCategoryLabel(category)}
+                  </span>
+                ))}
+              </div>
+
+              <p className="relative z-10 mt-2 text-center text-xs text-text-muted">
+                {spendRequirement ?? 'See issuer terms for the latest spend requirement.'}
               </p>
-            )}
 
-            {/* Actions — side by side */}
-            <div className="mt-auto flex gap-2 border-t border-white/5 pt-4 mt-4">
-              <button
-                type="button"
-                onClick={() => setModalSlug(card.slug)}
-                className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
-              >
-                Details
-              </button>
-              <Link
-                href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
-                className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-xs font-semibold text-black transition hover:opacity-90"
-              >
-                Include this card in my bonus plan
-              </Link>
-            </div>
-          </article>
-        );
-      })}
+              <div className="relative z-10 mt-auto mt-4 flex gap-2 border-t border-white/5 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setModalSlug(card.slug)}
+                  className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
+                >
+                  Details
+                </button>
+                <Link
+                  href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
+                  className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-xs font-semibold text-black transition hover:opacity-90"
+                >
+                  Include this card in my bonus plan
+                </Link>
+              </div>
+            </article>
+          );
+        })}
+      </div>
 
-      {/* Detail modal */}
       {modalSlug && (
         <CardDetailModal slug={modalSlug} onClose={() => setModalSlug(null)} />
       )}
