@@ -7,6 +7,10 @@
     "headline": "Earn up to $450 with tiered direct deposits after opening a Smartly Checking account.",
     "bonusAmount": 450,
     "estimatedFees": 12,
+    "apyPercent": 0.005,
+    "apyDisplay": "0.001% to 0.005% APY",
+    "apySourceUrl": "https://www.usbank.com/dam/en/documents/pdfs/common/usb2026feb-2026febchk.pdf",
+    "apyAsOf": "2025-12-31",
     "directDeposit": {
       "required": true,
       "minimumAmount": 2000
@@ -61,6 +65,9 @@
     "headline": "Earn $325 with qualifying direct deposits after opening a new Everyday Checking account.",
     "bonusAmount": 325,
     "estimatedFees": 15,
+    "apyPercent": 0,
+    "apyDisplay": "Non-interest-bearing",
+    "apySourceUrl": "https://www.wellsfargo.com/checking/",
     "directDeposit": {
       "required": true,
       "minimumAmount": 1000
@@ -80,18 +87,21 @@
   {
     "slug": "bmo-smart-advantage-checking-400",
     "bankName": "BMO",
-    "offerName": "Smart Advantage/Smart Money Checking Bonus",
+    "offerName": "BMO Personal Checking Bonus",
     "accountType": "checking",
     "headline": "Earn $400 after opening eligible BMO checking and meeting direct deposit requirements.",
     "bonusAmount": 400,
     "estimatedFees": 0,
+    "apyDisplay": "Varies by account: Relationship 0.01% APY; Smart Money/Advantage no APY",
+    "apySourceUrl": "https://www.bmo.com/en-us/main/personal/checking-accounts/digital-offer/",
+    "apyAsOf": "2026-01-29",
     "directDeposit": {
       "required": true,
       "minimumAmount": 4000
     },
     "holdingPeriodDays": 100,
     "requiredActions": [
-      "Open a new BMO Smart Advantage Checking or Smart Money Checking account with the promo code.",
+      "Open a new BMO Smart Advantage Checking, Smart Money Checking, or Relationship Checking account with the promo code.",
       "Receive qualifying direct deposits totaling at least $4,000 within 90 days.",
       "Keep the account in good standing through payout."
     ],
@@ -108,6 +118,9 @@
     "headline": "Earn $250 after opening 360 Checking and receiving qualifying direct deposits.",
     "bonusAmount": 250,
     "estimatedFees": 0,
+    "apyDisplay": "Interest-bearing; APY varies by balance tier",
+    "apySourceUrl": "https://www.capitalone.com/bank/checking-accounts/online-checking-account/",
+    "apyAsOf": "2026-03-11",
     "directDeposit": {
       "required": true,
       "minimumAmount": 500
@@ -221,6 +234,8 @@
     "headline": "Earn up to $500 with tiered qualifying direct deposits in a new eligible checking account.",
     "bonusAmount": 500,
     "estimatedFees": 12,
+    "apyDisplay": "Varies by account: Relationship earns interest; Plus/SafeBalance do not",
+    "apySourceUrl": "https://www.bankofamerica.com/deposits/checking/advantage-banking/?view_page=compare",
     "directDeposit": {
       "required": true,
       "minimumAmount": 2000
@@ -244,6 +259,9 @@
     "headline": "Earn up to $400 with qualifying direct deposits after opening a new Virtual Wallet account.",
     "bonusAmount": 400,
     "estimatedFees": 25,
+    "apyDisplay": "Interest-bearing; APY varies by market and product mix",
+    "apySourceUrl": "https://www.pnc.com/en/personal-banking/banking/checking/features-and-fees/virtual-wallet-performance-select.html",
+    "apyAsOf": "2026-02-22",
     "directDeposit": {
       "required": true,
       "minimumAmount": 500
@@ -267,6 +285,8 @@
     "headline": "Earn $300 with qualifying direct deposits into a new E*TRADE checking account.",
     "bonusAmount": 300,
     "estimatedFees": 15,
+    "apyDisplay": "Variable APY (see official ratesheet)",
+    "apySourceUrl": "https://us.etrade.com/bank/max-rate-checking",
     "directDeposit": {
       "required": true,
       "minimumAmount": 1500
@@ -342,6 +362,9 @@
     "headline": "Earn $325 by opening eligible Citi checking and completing enhanced direct deposit requirements.",
     "bonusAmount": 325,
     "estimatedFees": 15,
+    "apyPercent": 0,
+    "apyDisplay": "Non-interest-bearing",
+    "apySourceUrl": "https://online.citi.com/JRS/popups/ao/CDAA.pdf",
     "directDeposit": {
       "required": true,
       "minimumAmount": 3000
@@ -392,6 +415,9 @@
     "headline": "Earn $200 after opening TD Complete Checking and receiving qualifying direct deposits.",
     "bonusAmount": 200,
     "estimatedFees": 15,
+    "apyPercent": 0.02,
+    "apyDisplay": "0.02% APY",
+    "apySourceUrl": "https://www.td.com/us/en/personal-banking/checking-accounts/complete",
     "directDeposit": {
       "required": true,
       "minimumAmount": 500
@@ -439,6 +465,9 @@
     "headline": "Earn $300 with Key Smart Checking after qualifying direct deposits.",
     "bonusAmount": 300,
     "estimatedFees": 0,
+    "apyPercent": 0,
+    "apyDisplay": "APY N/A",
+    "apySourceUrl": "https://www.key.com/personal/checking/checking-account-bonus-offers.html",
     "directDeposit": {
       "required": true,
       "minimumAmount": 2000
@@ -490,6 +519,9 @@
     "headline": "Earn $400 by opening Truist One Checking online and completing deposit and debit activity requirements.",
     "bonusAmount": 400,
     "estimatedFees": 12,
+    "apyPercent": 0,
+    "apyDisplay": "Non-interest-bearing",
+    "apySourceUrl": "https://www.truist.com/checking/truist-one-banking/disclosures-and-fees",
     "directDeposit": {
       "required": true,
       "minimumAmount": 2000
@@ -541,6 +573,9 @@
     "headline": "Earn $400 with a new Huntington Perks Checking account after direct deposit qualification.",
     "bonusAmount": 400,
     "estimatedFees": 10,
+    "apyPercent": 0.02,
+    "apyDisplay": "0.02% APY",
+    "apySourceUrl": "https://www.huntington.com/checking-account-promotions-bonuses-offers",
     "directDeposit": {
       "required": true,
       "minimumAmount": 500
@@ -578,6 +613,9 @@
     "headline": "Earn $600 with a new Huntington Platinum Perks Checking account after qualifying new-money deposits.",
     "bonusAmount": 600,
     "estimatedFees": 25,
+    "apyPercent": 0.03,
+    "apyDisplay": "0.03% APY",
+    "apySourceUrl": "https://www.huntington.com/checking-account-promotions-bonuses-offers",
     "directDeposit": {
       "required": false
     },
