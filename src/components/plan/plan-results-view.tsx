@@ -8,18 +8,14 @@ import {
   buildScheduledTimelineEntries,
   buildTimelineEntriesFallback,
   buildTimelineMilestones,
-  buildTimelineMonthBuckets,
   downloadTimelineCalendar,
-  findTimelineMonthIndex,
   formatShortDate,
   formatValue,
   diffDays,
   type TimelineEntry
 } from '@/components/plan/plan-results-utils';
 import { PlanEmailPanel } from '@/components/plan/plan-email-panel';
-import { PlanMonthCalendar } from '@/components/plan/plan-month-calendar';
 import { exclusionActions, scheduleIssueActions } from '@/components/plan/plan-results-config';
-import { PlanYearOverview } from '@/components/plan/plan-year-overview';
 import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 
@@ -433,73 +429,6 @@ function SaveActBar({
   );
 }
 
-function ExecutionCalendarSection({
-  milestones,
-  planStart,
-  referenceDate,
-  scopedRecommendationsById
-}: {
-  milestones: ReturnType<typeof buildTimelineMilestones>;
-  planStart: Date;
-  referenceDate: Date;
-  scopedRecommendationsById: Map<string, PlannerRecommendation>;
-}) {
-  const [view, setView] = useState<'month' | 'year'>('month');
-  const monthBuckets = useMemo(
-    () => buildTimelineMonthBuckets(milestones, planStart),
-    [milestones, planStart]
-  );
-  const initialMonthIndex = useMemo(
-    () => findTimelineMonthIndex(monthBuckets, referenceDate),
-    [monthBuckets, referenceDate]
-  );
-  const [activeMonthIndex, setActiveMonthIndex] = useState(initialMonthIndex);
-
-  useEffect(() => {
-    setActiveMonthIndex(initialMonthIndex);
-  }, [initialMonthIndex]);
-
-  if (milestones.length === 0) return null;
-
-  return (
-    <section className="mt-10 rounded-3xl bg-bg-surface p-6 xl:px-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="max-w-2xl">
-          <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Exact dates</p>
-          <h2 className="mt-2 text-2xl font-semibold text-text-primary">Need the plan on a real calendar?</h2>
-          <p className="mt-2 text-base leading-7 text-text-secondary">
-            The Gantt above is still the fastest way to scan the sequence. Use this when you want
-            the exact apply dates, deadlines, and expected payouts.
-          </p>
-        </div>
-      </div>
-
-      {view === 'month' ? (
-        <PlanMonthCalendar
-          milestones={milestones}
-          monthBuckets={monthBuckets}
-          activeMonthIndex={activeMonthIndex}
-          onSelectMonthIndex={setActiveMonthIndex}
-          onChangeView={setView}
-          referenceDate={referenceDate}
-          scopedRecommendationsById={scopedRecommendationsById}
-        />
-      ) : null}
-
-      {view === 'year' ? (
-        <PlanYearOverview
-          monthBuckets={monthBuckets}
-          activeMonthIndex={activeMonthIndex}
-          onSelectMonthIndex={setActiveMonthIndex}
-          onChangeView={setView}
-          onOpenMonthView={() => setView('month')}
-          referenceDate={referenceDate}
-        />
-      ) : null}
-    </section>
-  );
-}
-
 function SelectedOfferSummary({ selectedOfferStatus }: { selectedOfferStatus: SelectedOfferIntentStatus }) {
 
   const bannerTone =
@@ -649,10 +578,6 @@ function PlanSummary({
     () => new Map(timelineEntries.map((entry) => [entry.id, entry])),
     [timelineEntries]
   );
-  const scopedRecommendationsById = useMemo(
-    () => new Map(orderedRecommendations.map((item) => [item.id, item])),
-    [orderedRecommendations]
-  );
   const selectedOfferStatus = useMemo(() => getSelectedOfferIntentStatus(payload), [payload]);
 
   const animatedTotal = useCountUp(totalValue);
@@ -752,21 +677,6 @@ function PlanSummary({
         timelineEntries={timelineEntries}
         referenceDate={referenceDate}
       />
-
-      {milestones.length > 0 ? (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
-        >
-          <ExecutionCalendarSection
-            milestones={milestones}
-            planStart={planStart}
-            referenceDate={referenceDate}
-            scopedRecommendationsById={scopedRecommendationsById}
-          />
-        </motion.div>
-      ) : null}
     </div>
   );
 }
