@@ -122,20 +122,36 @@ function EdgeArrow({
 
 export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const hasCenteredInitialCardRef = useRef(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-
-  const cardWidth = 280;
-  const gap = 16;
-  const scrollAmount = cardWidth + gap;
 
   const updateScrollState = useCallback(() => {
     const track = trackRef.current;
     if (!track) return;
-    setCanScrollLeft(track.scrollLeft > 2);
-    setCanScrollRight(
-      track.scrollLeft < track.scrollWidth - track.clientWidth - 2
+    const cards = Array.from(
+      track.querySelectorAll<HTMLElement>('[data-offer-index]')
     );
+    if (cards.length === 0) return;
+
+    const trackCenter = track.scrollLeft + track.clientWidth / 2;
+    let nearestIndex = 0;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+
+    cards.forEach((card) => {
+      const index = Number(card.dataset.offerIndex);
+      const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+      const distance = Math.abs(cardCenter - trackCenter);
+      if (distance < nearestDistance) {
+        nearestDistance = distance;
+        nearestIndex = index;
+      }
+    });
+
+    setActiveIndex(nearestIndex);
+    setCanScrollLeft(nearestIndex > 0);
+    setCanScrollRight(nearestIndex < cards.length - 1);
   }, []);
 
   useEffect(() => {
@@ -148,27 +164,53 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
     return () => observer.disconnect();
   }, [updateScrollState]);
 
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || hasCenteredInitialCardRef.current || offers.length === 0) return;
+
+    const shouldCenterMiddleCard =
+      window.matchMedia('(min-width: 1024px)').matches && offers.length > 2;
+    const initialIndex = shouldCenterMiddleCard ? 1 : 0;
+    const target = track.querySelector<HTMLElement>(
+      `[data-offer-index="${initialIndex}"]`
+    );
+
+    if (!target) return;
+
+    requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
+      hasCenteredInitialCardRef.current = true;
+      updateScrollState();
+    });
+  }, [offers.length, updateScrollState]);
+
   const scroll = useCallback(
     (direction: 'left' | 'right') => {
       const track = trackRef.current;
       if (!track) return;
-      const delta = direction === 'left' ? -scrollAmount : scrollAmount;
-      track.scrollBy({ left: delta, behavior: 'smooth' });
+      const nextIndex =
+        direction === 'left'
+          ? Math.max(activeIndex - 1, 0)
+          : Math.min(activeIndex + 1, offers.length - 1);
+      const target = track.querySelector<HTMLElement>(
+        `[data-offer-index="${nextIndex}"]`
+      );
+      target?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
     },
-    [scrollAmount]
+    [activeIndex, offers.length]
   );
 
   return (
-    <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] shadow-[0_0_45px_rgba(45,212,191,0.08)] backdrop-blur-2xl">
+    <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] shadow-[0_0_45px_rgba(45,212,191,0.08)] backdrop-blur-2xl lg:ml-auto lg:max-w-[432px]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.14),transparent_40%)]" />
 
       <div className="relative">
         {/* Header */}
-        <div className="border-b border-white/10 px-6 py-4 md:px-8">
-          <p className="text-lg font-semibold leading-relaxed text-text-primary md:text-xl">
-            Which of these is actually right for you?
+        <div className="border-b border-white/10 px-6 py-4 text-center md:px-8">
+          <p className="text-lg font-semibold leading-relaxed text-text-primary md:text-[1.45rem] md:whitespace-nowrap">
+            Which of these is best for you?
           </p>
-          <p className="mt-1 text-lg text-brand-teal md:text-xl">
+          <p className="mt-1 text-lg text-brand-teal md:text-[1.45rem]">
             The Stack tells you.
           </p>
         </div>
@@ -188,15 +230,28 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
           <div
             ref={trackRef}
             onScroll={updateScrollState}
-            className="flex gap-4 overflow-x-auto scroll-smooth px-6 py-5 md:px-8"
+            className="flex gap-4 overflow-x-auto scroll-smooth py-5"
             style={{
+              paddingLeft: 'calc(50% - 140px)',
+              paddingRight: 'calc(50% - 140px)',
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
               WebkitOverflowScrolling: 'touch',
+              scrollSnapType: 'x mandatory',
             }}
           >
-            {offers.map((offer) => (
-              <OfferCard key={offer.slug} offer={offer} />
+            {offers.map((offer, index) => (
+              <div
+                key={offer.slug}
+                data-offer-index={index}
+                className={`snap-center transition-all duration-300 ${
+                  index === activeIndex
+                    ? 'scale-100 opacity-100'
+                    : 'scale-[0.93] opacity-55'
+                }`}
+              >
+                <OfferCard offer={offer} />
+              </div>
             ))}
           </div>
         </div>
