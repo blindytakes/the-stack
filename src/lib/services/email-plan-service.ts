@@ -12,6 +12,7 @@ import { getEmailEnv } from '@/lib/env';
 export type SendSavedPlanEmailInput = {
   to: string;
   planId: string;
+  referenceDateKey?: string;
 };
 
 export type SendSavedPlanEmailResult =
@@ -101,8 +102,14 @@ export async function sendSavedPlanEmail(
     emailContent.cardsOnlyMode
   );
   const savedPlanUrl = buildSavedPlanUrl(input.planId);
-  const emailBody = buildPlanEmailBody(emailContent, { savedPlanUrl });
-  const emailHtml = buildPlanEmailHtml(emailContent, { savedPlanUrl });
+  const emailBody = buildPlanEmailBody(emailContent, {
+    savedPlanUrl,
+    referenceDateKey: input.referenceDateKey
+  });
+  const emailHtml = buildPlanEmailHtml(emailContent, {
+    savedPlanUrl,
+    referenceDateKey: input.referenceDateKey
+  });
 
   try {
     const response = await fetch('https://api.resend.com/emails', {

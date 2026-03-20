@@ -1,4 +1,9 @@
 import { z } from 'zod';
+import {
+  formatDateKeyedShortDate,
+  getUpcomingDateKeyedItems,
+  toLocalDateKey
+} from '@/lib/plan-date-utils';
 
 const planEmailRecommendationSchema = z.object({
   lane: z.enum(['cards', 'banking']).optional(),
@@ -22,7 +27,8 @@ const planEmailRecommendationSchema = z.object({
 const planEmailMilestoneSchema = z.object({
   label: z.string().trim().min(1).max(80),
   title: z.string().trim().min(1).max(200),
-  date: z.coerce.date()
+  date: z.coerce.date(),
+  dateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional()
 });
 
 export const planSnapshotDataSchema = z.object({
@@ -45,6 +51,7 @@ export const sendPlanEmailRequestSchema = z.object({
     .email()
     .transform((value) => value.toLowerCase()),
   planId: z.string().trim().min(1).max(120),
+  referenceDateKey: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   turnstileToken: z.string().trim().min(1).max(2048).optional()
 });
 
@@ -57,30 +64,14 @@ export type SendPlanEmailRequest = z.infer<typeof sendPlanEmailRequestSchema>;
 
 const SITE_URL = 'https://thestackhq.com';
 const SITE_ICON_URL = `${SITE_URL}/icon.png`;
-const SITE_HERO_IMAGE_URL = `${SITE_URL}/opengraph-image.png`;
 
 type PlanEmailRenderOptions = {
   savedPlanUrl?: string;
+  referenceDateKey?: string;
 };
 
 function formatValue(value: number) {
   return `$${Math.round(value).toLocaleString()}`;
-}
-
-function formatShortDate(date: Date) {
-  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date);
-}
-
-function startOfDay(date: Date) {
-  const copy = new Date(date);
-  copy.setHours(0, 0, 0, 0);
-  return copy;
-}
-
-function addDays(date: Date, days: number) {
-  const copy = new Date(date);
-  copy.setDate(copy.getDate() + days);
-  return copy;
 }
 
 function recommendationWarningFlags(recommendation: PlanEmailRecommendation) {
@@ -105,19 +96,15 @@ function recommendationWarningFlags(recommendation: PlanEmailRecommendation) {
 function getUpcomingTimelineMilestones(
   milestones: PlanEmailMilestone[],
   referenceDate: Date,
+  referenceDateKey?: string,
   daysAhead = 45,
   limit = 5
 ) {
-  const windowStart = startOfDay(referenceDate);
-  const windowEnd = addDays(windowStart, daysAhead);
-  const futureMilestones = milestones
-    .filter((milestone) => milestone.date.getTime() >= windowStart.getTime())
-    .sort((left, right) => left.date.getTime() - right.date.getTime());
-  const inWindow = futureMilestones.filter(
-    (milestone) => milestone.date.getTime() <= windowEnd.getTime()
-  );
-
-  return (inWindow.length > 0 ? inWindow : futureMilestones).slice(0, limit);
+  return getUpcomingDateKeyedItems(milestones, referenceDate, {
+    referenceDateKey,
+    daysAhead,
+    limit
+  });
 }
 
 export function buildPlanEmailSubject(totalValue: number, cardsOnlyMode: boolean) {
@@ -130,13 +117,18 @@ export function buildSavedPlanUrl(planId: string) {
   return `${SITE_URL}/plan/saved/${encodeURIComponent(planId)}`;
 }
 
+export function buildReferenceDateKey(date: Date) {
+  return toLocalDateKey(date);
+}
+
 export function buildPlanEmailBody(
   input: PlanEmailContent,
   options: PlanEmailRenderOptions = {}
 ) {
   const upcomingMilestones = getUpcomingTimelineMilestones(
     input.milestones,
-    input.referenceDate
+    input.referenceDate,
+    options.referenceDateKey
   );
   const moveLines = input.recommendations.slice(0, 5).map((recommendation, index) => {
     const warnings = recommendationWarningFlags(recommendation);
@@ -156,7 +148,7 @@ export function buildPlanEmailBody(
     ...(upcomingMilestones.length > 0
       ? upcomingMilestones.map(
           (milestone) =>
-            `- ${formatShortDate(milestone.date)}: ${milestone.label} - ${milestone.title}`
+            `- ${formatDateKeyedShortDate(milestone)}: ${milestone.label} - ${milestone.title}`
         )
       : ['- No scheduled actions yet.']),
     '',
@@ -201,9 +193,23 @@ export function buildPlanEmailHtml(
 ) {
   const upcomingMilestones = getUpcomingTimelineMilestones(
     input.milestones,
-    input.referenceDate
+    input.referenceDate,
+    options.referenceDateKey
   );
   const primaryUrl = options.savedPlanUrl ?? SITE_URL;
+  const moveCount = input.recommendations.length;
+  const cardCount = input.recommendations.filter((item) => item.lane !== 'banking').length;
+  const bankCount = input.recommendations.filter((item) => item.lane === 'banking').length;
+  const statCards = [
+    { label: 'Estimate', value: formatValue(input.totalValue) },
+    { label: 'Moves', value: String(moveCount) },
+    { label: 'Next actions', value: String(upcomingMilestones.length) }
+  ];
+  const summaryPills = [
+    `${moveCount} move${moveCount === 1 ? '' : 's'}`,
+    cardCount > 0 ? `${cardCount} card bonus${cardCount === 1 ? '' : 'es'}` : null,
+    bankCount > 0 ? `${bankCount} bank bonus${bankCount === 1 ? '' : 'es'}` : null
+  ].filter((value): value is string => Boolean(value));
 
   const moveCards = input.recommendations.slice(0, 5).map((recommendation, index) => {
     const warnings = recommendationWarningFlags(recommendation);
@@ -266,7 +272,7 @@ export function buildPlanEmailHtml(
                     <tr>
                       <td style="padding:14px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
                         <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#5eead4;">
-                          ${escapeHtml(formatShortDate(milestone.date))}
+                          ${escapeHtml(formatDateKeyedShortDate(milestone))}
                         </div>
                         <div style="margin-top:6px;font-size:15px;font-weight:700;color:#f8fafc;">
                           ${escapeHtml(milestone.label)}
@@ -305,31 +311,76 @@ export function buildPlanEmailHtml(
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;border-collapse:collapse;">
                 <tr>
                   <td style="padding:0 0 18px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-                    <div style="display:flex;align-items:center;gap:12px;">
-                      <img src="${SITE_ICON_URL}" alt="The Stack" width="44" height="44" style="display:block;border:0;border-radius:12px;" />
-                    </div>
+                    <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+                      <tr>
+                        <td width="44" style="padding-right:12px;">
+                          <img src="${SITE_ICON_URL}" alt="The Stack" width="44" height="44" style="display:block;border:0;border-radius:12px;" />
+                        </td>
+                        <td style="font-size:18px;font-weight:800;letter-spacing:0.01em;color:#f8fafc;">
+                          The Stack
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
                 <tr>
-                  <td style="overflow:hidden;border-radius:28px;background:linear-gradient(180deg,#10253b 0%,#071423 100%);border:1px solid #1f2937;">
-                    <img src="${SITE_HERO_IMAGE_URL}" alt="The Stack plan preview" width="640" style="display:block;width:100%;max-width:640px;height:auto;border:0;" />
+                  <td style="overflow:hidden;border-radius:28px;background:#081521;border:1px solid #163348;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
                       <tr>
-                        <td style="padding:24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+                        <td style="padding:26px 24px 18px 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
                           <div style="font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#5eead4;">
-                            ${input.cardsOnlyMode ? 'Card plan' : 'Bonus plan'}
+                            ${input.cardsOnlyMode ? 'Card plan snapshot' : 'Bonus plan snapshot'}
                           </div>
-                          <div style="margin-top:10px;font-size:32px;line-height:1.1;font-weight:800;color:#f8fafc;">
+                          <div style="margin-top:10px;font-size:38px;line-height:1.05;font-weight:800;color:#f8fafc;">
                             ${escapeHtml(formatValue(input.totalValue))}
                           </div>
-                          <div style="margin-top:10px;font-size:16px;line-height:1.7;color:#cbd5e1;">
-                            Your 6-month estimate, next actions, and top moves from The Stack.
+                          <div style="margin-top:12px;font-size:16px;line-height:1.7;color:#cbd5e1;">
+                            Your saved plan with next actions, top moves, and a full web version ready to reopen.
+                          </div>
+                          <div style="margin-top:16px;">
+                            ${summaryPills
+                              .map(
+                                (pill) => `<span style="display:inline-block;margin:0 8px 8px 0;padding:7px 11px;border-radius:999px;border:1px solid #234057;background:#0f2335;color:#cbd5e1;font-size:12px;font-weight:700;">${escapeHtml(
+                                  pill
+                                )}</span>`
+                              )
+                              .join('')}
                           </div>
                           <div style="margin-top:18px;">
                             <a href="${escapeHtml(primaryUrl)}" style="display:inline-block;padding:12px 18px;border-radius:999px;background:#14b8a6;color:#04111a;font-size:14px;font-weight:800;text-decoration:none;">
                               ${options.savedPlanUrl ? 'Open full plan' : 'Open The Stack'}
                             </a>
                           </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:0 24px 24px 24px;">
+                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;">
+                            <tr>
+                              ${statCards
+                                .map(
+                                  (card, index) => `
+                                    <td width="33.33%" style="${
+                                      index > 0 ? 'padding-left:8px;' : ''
+                                    }">
+                                      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;background:#0f1f2f;border:1px solid #1c3850;border-radius:18px;">
+                                        <tr>
+                                          <td style="padding:14px 14px 12px 14px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+                                            <div style="font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8ea8be;">
+                                              ${escapeHtml(card.label)}
+                                            </div>
+                                            <div style="margin-top:8px;font-size:22px;line-height:1.15;font-weight:800;color:#f8fafc;">
+                                              ${escapeHtml(card.value)}
+                                            </div>
+                                          </td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  `
+                                )
+                                .join('')}
+                            </tr>
+                          </table>
                         </td>
                       </tr>
                     </table>

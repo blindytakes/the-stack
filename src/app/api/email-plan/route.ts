@@ -31,7 +31,8 @@ export async function POST(req: Request) {
 
     const result = await sendSavedPlanEmail({
       to: parsed.data.to,
-      planId: parsed.data.planId
+      planId: parsed.data.planId,
+      referenceDateKey: parsed.data.referenceDateKey
     });
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: result.status });

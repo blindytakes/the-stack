@@ -1,5 +1,9 @@
 import Link from 'next/link';
 import type { PlanSnapshotData } from '@/lib/plan-email';
+import {
+  formatDateKeyedShortDate,
+  getUpcomingDateKeyedItems
+} from '@/lib/plan-date-utils';
 
 type SavedPlanViewProps = {
   planId: string;
@@ -11,10 +15,6 @@ function formatValue(value: number) {
   return `$${Math.round(value).toLocaleString()}`;
 }
 
-function formatShortDate(date: Date) {
-  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date);
-}
-
 function formatSavedAt(date: Date) {
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -23,29 +23,11 @@ function formatSavedAt(date: Date) {
   }).format(date);
 }
 
-function startOfDay(date: Date) {
-  const copy = new Date(date);
-  copy.setHours(0, 0, 0, 0);
-  return copy;
-}
-
-function addDays(date: Date, days: number) {
-  const copy = new Date(date);
-  copy.setDate(copy.getDate() + days);
-  return copy;
-}
-
 function getUpcomingMilestones(snapshot: PlanSnapshotData, referenceDate: Date) {
-  const windowStart = startOfDay(referenceDate);
-  const windowEnd = addDays(windowStart, 45);
-  const futureMilestones = [...snapshot.milestones]
-    .filter((milestone) => milestone.date.getTime() >= windowStart.getTime())
-    .sort((left, right) => left.date.getTime() - right.date.getTime());
-  const inWindow = futureMilestones.filter(
-    (milestone) => milestone.date.getTime() <= windowEnd.getTime()
-  );
-
-  return (inWindow.length > 0 ? inWindow : futureMilestones).slice(0, 6);
+  return getUpcomingDateKeyedItems(snapshot.milestones, referenceDate, {
+    daysAhead: 45,
+    limit: 6
+  });
 }
 
 function resolveLane(
@@ -157,7 +139,7 @@ export function SavedPlanView({ planId, createdAt, snapshot }: SavedPlanViewProp
                 className="rounded-2xl border border-white/10 bg-bg/40 p-4"
               >
                 <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-teal">
-                  {formatShortDate(milestone.date)}
+                  {formatDateKeyedShortDate(milestone)}
                 </p>
                 <h3 className="mt-2 text-base font-semibold text-text-primary">{milestone.label}</h3>
                 <p className="mt-2 text-sm leading-6 text-text-secondary">{milestone.title}</p>

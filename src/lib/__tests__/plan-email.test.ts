@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildPlanEmailBody,
   buildPlanEmailHtml,
+  buildReferenceDateKey,
   buildSavedPlanUrl,
   type PlanEmailContent,
   planSnapshotDataSchema
@@ -41,12 +42,14 @@ function makeContent(): PlanEmailContent {
       {
         label: 'Apply/open by',
         title: 'Chase Sapphire Preferred',
-        date: new Date('2026-03-24T12:00:00Z')
+        date: new Date('2026-03-24T12:00:00Z'),
+        dateKey: '2026-03-24'
       },
       {
         label: 'Bonus expected',
         title: 'Wells Fargo Everyday Checking',
-        date: new Date('2026-04-11T12:00:00Z')
+        date: new Date('2026-04-11T12:00:00Z'),
+        dateKey: '2026-04-11'
       }
     ]
   };
@@ -54,7 +57,9 @@ function makeContent(): PlanEmailContent {
 
 describe('plan email renderers', () => {
   it('builds the text summary body', () => {
-    const body = buildPlanEmailBody(makeContent());
+    const body = buildPlanEmailBody(makeContent(), {
+      referenceDateKey: buildReferenceDateKey(new Date('2026-03-19T12:00:00Z'))
+    });
 
     expect(body).toContain('6-month estimate: $2,745');
     expect(body).toContain('- Mar 24: Apply/open by - Chase Sapphire Preferred');
@@ -66,13 +71,14 @@ describe('plan email renderers', () => {
     const html = buildPlanEmailHtml(makeContent(), { savedPlanUrl });
 
     expect(html).toContain('https://thestackhq.com/icon.png');
-    expect(html).toContain('https://thestackhq.com/opengraph-image.png');
     expect(html).toContain('https://thestackhq.com/cards/chase-sapphire-preferred');
     expect(html).toContain(savedPlanUrl);
     expect(html).toContain('Open full plan');
     expect(html).toContain('Spend $4,000 within 3 months');
     expect(html).toContain('Top moves');
     expect(html).toContain('Next actions');
+    expect(html).toContain('Bonus plan snapshot');
+    expect(html).toContain('2 moves');
   });
 
   it('adds the saved plan link to the text fallback when available', () => {
@@ -80,6 +86,26 @@ describe('plan email renderers', () => {
     const body = buildPlanEmailBody(makeContent(), { savedPlanUrl });
 
     expect(body).toContain(`View full plan: ${savedPlanUrl}`);
+  });
+
+  it('uses date keys to keep milestone labels stable across runtime timezone differences', () => {
+    const body = buildPlanEmailBody(
+      {
+        ...makeContent(),
+        referenceDate: new Date('2026-03-20T02:00:00Z'),
+        milestones: [
+          {
+            label: 'Apply/open by',
+            title: 'Capital One Venture Rewards Credit Card',
+            date: new Date('2026-03-20T02:00:00Z'),
+            dateKey: '2026-03-19'
+          }
+        ]
+      },
+      { referenceDateKey: '2026-03-19' }
+    );
+
+    expect(body).toContain('- Mar 19: Apply/open by - Capital One Venture Rewards Credit Card');
   });
 
   it('keeps new snapshot fields optional for older stored plans', () => {

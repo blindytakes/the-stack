@@ -8,6 +8,7 @@ import { getTurnstileSiteKey } from '@/lib/config/public';
 import {
   buildPlanEmailBody,
   buildPlanEmailSubject,
+  buildReferenceDateKey,
   toPlanEmailContent,
   type PlanSnapshotData
 } from '@/lib/plan-email';
@@ -66,7 +67,8 @@ export function PlanEmailPanel({
       milestones: milestones.slice(0, 60).map((milestone) => ({
         label: milestone.label,
         title: milestone.title,
-        date: milestone.date
+        date: milestone.date,
+        dateKey: buildReferenceDateKey(milestone.date)
       }))
     }),
     [cardsOnlyMode, milestones, recommendations, totalValue]
@@ -80,9 +82,11 @@ export function PlanEmailPanel({
   const draft = useMemo(
     () => ({
       subject: buildPlanEmailSubject(emailPlan.totalValue, emailPlan.cardsOnlyMode),
-      body: buildPlanEmailBody(emailPlan)
+      body: buildPlanEmailBody(emailPlan, {
+        referenceDateKey: buildReferenceDateKey(referenceDate)
+      })
     }),
-    [emailPlan]
+    [emailPlan, referenceDate]
   );
 
   useEffect(() => {
@@ -155,6 +159,7 @@ export function PlanEmailPanel({
         body: JSON.stringify({
           to: normalizedEmail,
           planId: savedPlanId,
+          referenceDateKey: buildReferenceDateKey(referenceDate),
           ...(turnstileToken ? { turnstileToken } : {})
         })
       });

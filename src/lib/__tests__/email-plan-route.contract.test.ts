@@ -32,6 +32,7 @@ function makeValidRequestBody() {
   return {
     to: 'User@Example.com',
     planId: 'plan_123',
+    referenceDateKey: '2026-03-19',
     turnstileToken: 'token'
   };
 }
@@ -150,7 +151,8 @@ describe('/api/email-plan route contract', () => {
     });
     expect(sendSavedPlanEmailMock).toHaveBeenCalledWith({
       to: 'user@example.com',
-      planId: 'plan_123'
+      planId: 'plan_123',
+      referenceDateKey: '2026-03-19'
     });
   });
 });
