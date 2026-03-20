@@ -115,9 +115,10 @@ export function BankingOfferCard({
             </button>
             <Link
               href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
-              className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs leading-tight font-semibold text-black transition hover:opacity-90"
+              className="inline-flex flex-1 flex-col items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs leading-tight font-semibold text-black transition hover:opacity-90"
             >
-              Include in my plan
+              <span>Add to</span>
+              <span>my plan</span>
             </Link>
           </div>
         )}

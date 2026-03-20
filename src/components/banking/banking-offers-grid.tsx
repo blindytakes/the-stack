@@ -2,21 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { BankingOfferCard } from '@/components/banking/banking-offer-card';
-import { BankingDetailModal } from '@/components/banking/banking-detail-modal';
 import type { BankingBonusListItem } from '@/lib/banking-bonuses';
 
 type BankingOffersGridProps = {
   offers: BankingBonusListItem[];
-  source?: string;
+  onOpenDetail: (slug: string) => void;
 };
 
-export function BankingOffersGrid({ offers }: BankingOffersGridProps) {
-  const [modalSlug, setModalSlug] = useState<string | null>(null);
+export function BankingOffersGrid({ offers, onOpenDetail }: BankingOffersGridProps) {
   const [visibleSet, setVisibleSet] = useState<Set<number>>(new Set());
   const gridRef = useRef<HTMLDivElement>(null);
-  const modalOffer = modalSlug
-    ? offers.find((o) => o.slug === modalSlug) ?? null
-    : null;
 
   const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
     const newVisible = new Set<number>();
@@ -47,34 +42,21 @@ export function BankingOffersGrid({ offers }: BankingOffersGridProps) {
   }, [offers, handleIntersection]);
 
   return (
-    <>
-      <div ref={gridRef} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {offers.map((offer, index) => (
-          <div
-            key={offer.slug}
-            data-idx={index}
-            className={`transition-all duration-500 ${
-              visibleSet.has(index)
-                ? 'translate-y-0 opacity-100'
-                : 'translate-y-6 opacity-0'
-            }`}
-            style={{
-              transitionDelay: visibleSet.has(index)
-                ? `${Math.min(index % 8, 7) * 80}ms`
-                : '0ms'
-            }}
-          >
-            <BankingOfferCard
-              offer={offer}
-              onOpenDetail={setModalSlug}
-            />
-          </div>
-        ))}
-      </div>
-
-      {modalOffer && (
-        <BankingDetailModal offer={modalOffer} onClose={() => setModalSlug(null)} />
-      )}
-    </>
+    <div ref={gridRef} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {offers.map((offer, index) => (
+        <div
+          key={offer.slug}
+          data-idx={index}
+          className={`transition-all duration-500 ${
+            visibleSet.has(index) ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+          }`}
+          style={{
+            transitionDelay: visibleSet.has(index) ? `${Math.min(index % 8, 7) * 80}ms` : '0ms'
+          }}
+        >
+          <BankingOfferCard offer={offer} onOpenDetail={onOpenDetail} />
+        </div>
+      ))}
+    </div>
   );
 }

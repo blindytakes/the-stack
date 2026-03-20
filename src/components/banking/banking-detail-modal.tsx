@@ -1,12 +1,20 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
+import { AffiliateLink } from '@/components/analytics/affiliate-link';
+import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { EntityImage } from '@/components/ui/entity-image';
 import {
+  formatBankingAccountType,
   formatBankingCurrency,
-  getBankingOfferPrimaryRequirement,
+  getBankingOfferAvailabilityLabel,
+  getBankingOfferBestFit,
+  getBankingOfferDifficulty,
+  getBankingOfferExecutionSummary,
   getBankingOfferPrimaryConstraint,
+  getBankingOfferPrimaryRequirement,
+  getBankingOfferThinkTwiceIf,
   getBankingOfferTimeline,
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
@@ -16,6 +24,7 @@ import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 type BankingDetailModalProps = {
   offer: BankingBonusListItem;
   onClose: () => void;
+  source?: string;
 };
 
 function formatApyDate(value?: string) {
@@ -28,14 +37,83 @@ function formatApyDate(value?: string) {
   }).format(new Date(value));
 }
 
-export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) {
+function formatVerifiedDate(value?: string) {
+  if (!value) return null;
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(new Date(value));
+}
+
+export function BankingDetailModal({
+  offer,
+  onClose,
+  source = 'banking_directory'
+}: BankingDetailModalProps) {
   const imagePresentation = getBankingImagePresentation(offer.bankName);
   const primaryRequirement = getBankingOfferPrimaryRequirement(offer);
   const primaryConstraint = getBankingOfferPrimaryConstraint(offer);
   const timeline = getBankingOfferTimeline(offer);
+  const difficulty = getBankingOfferDifficulty(offer);
+  const executionSummary = getBankingOfferExecutionSummary(offer);
+  const bestFitBullets = getBankingOfferBestFit(offer).slice(0, 3);
+  const cautionBullets = getBankingOfferThinkTwiceIf(offer).slice(0, 3);
+  const checklistItems = offer.requiredActions.length > 0 ? offer.requiredActions : [primaryRequirement];
+  const availabilityLabel = getBankingOfferAvailabilityLabel(offer);
   const apyAsOfLabel = formatApyDate(offer.apyAsOf);
+  const verifiedLabel = formatVerifiedDate(offer.lastVerified);
+  const outboundOfferUrl = offer.affiliateUrl ?? offer.offerUrl;
+  const applyHref = outboundOfferUrl
+    ? `/api/affiliate/click?${new URLSearchParams({
+        card_slug: offer.slug,
+        source,
+        target: outboundOfferUrl
+      }).toString()}`
+    : null;
+  const openingDepositLabel =
+    typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0
+      ? formatBankingCurrency(offer.minimumOpeningDeposit)
+      : 'Low cash';
+  const directDepositLabel = offer.directDeposit.required
+    ? typeof offer.directDeposit.minimumAmount === 'number'
+      ? `${formatBankingCurrency(offer.directDeposit.minimumAmount)}+ DD`
+      : 'Direct deposit'
+    : 'No DD';
+  const statCards = [
+    {
+      label: 'Net bonus',
+      value: `+${formatBankingCurrency(offer.estimatedNetValue)}`,
+      tone: 'text-brand-teal'
+    },
+    {
+      label: 'Cash needed',
+      value: openingDepositLabel,
+      tone: 'text-text-primary'
+    },
+    {
+      label: 'Timeline',
+      value: timeline.shortLabel,
+      tone: 'text-text-primary'
+    },
+    {
+      label: 'Friction',
+      value: difficulty.shortLabel,
+      tone:
+        difficulty.level === 'low'
+          ? 'text-emerald-400'
+          : difficulty.level === 'high'
+            ? 'text-brand-coral'
+            : 'text-brand-gold'
+    },
+    {
+      label: offer.apyDisplay ? 'APY' : 'Direct deposit',
+      value: offer.apyDisplay ?? directDepositLabel,
+      tone: offer.apyDisplay ? 'text-brand-gold' : 'text-text-primary'
+    }
+  ];
 
-  // Close on Escape
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -44,7 +122,6 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
     return () => document.removeEventListener('keydown', handleKey);
   }, [onClose]);
 
-  // Prevent body scroll
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
@@ -59,18 +136,13 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
     [onClose]
   );
 
-  const noDirectDeposit = !offer.directDeposit.required;
-  const stateLimited =
-    offer.stateRestrictions && offer.stateRestrictions.length > 0;
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200"
       style={{ backgroundColor: 'rgba(0, 0, 0, 0.75)', backdropFilter: 'blur(4px)' }}
       onClick={handleBackdropClick}
     >
-      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl border border-white/10 bg-bg-surface shadow-2xl animate-in zoom-in-95 fade-in duration-200">
-        {/* Close button */}
+      <div className="relative max-h-[92vh] w-full max-w-[1080px] overflow-y-auto rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(20,22,33,0.96),rgba(14,16,25,0.98))] shadow-2xl animate-in zoom-in-95 fade-in duration-200">
         <button
           type="button"
           onClick={onClose}
@@ -82,199 +154,182 @@ export function BankingDetailModal({ offer, onClose }: BankingDetailModalProps) 
           </svg>
         </button>
 
-        <div className="p-6 md:p-8">
-          {/* Header: Bank logo + name + bonus */}
-          <div className="flex flex-col items-center gap-5 sm:flex-row sm:items-start">
-            {/* Bank logo */}
-            <div className="w-48 shrink-0 overflow-hidden rounded-xl">
-              <EntityImage
-                src={offer.imageUrl}
-                alt={`${offer.bankName} logo`}
-                label={offer.bankName}
-                className="h-[120px] w-full"
-                imgClassName={imagePresentation?.imgClassName ?? 'bg-black/10 px-6 py-4'}
-                fallbackClassName="bg-black/10"
-                fallbackVariant="wordmark"
-                fallbackTextClassName="px-3 text-xl"
-                fit={imagePresentation?.fit}
-                position={imagePresentation?.position}
-                scale={imagePresentation?.scale ?? 1.04}
-              />
-            </div>
+        <TrackFunnelEventOnView
+          event="banking_detail_view"
+          properties={{ source, bank_slug: offer.slug, path: `/banking?bank=${offer.slug}` }}
+        />
 
-            {/* Name + bonus */}
-            <div className="flex-1 text-center sm:text-left">
-              <p className="text-xs uppercase tracking-[0.2em] text-text-muted">{offer.bankName}</p>
-              <h2 className="mt-1 font-heading text-xl font-bold text-text-primary">{offer.offerName}</h2>
+        <div className="p-5 md:p-6">
+          <div className="grid gap-5 md:grid-cols-[220px_minmax(0,1fr)] md:items-start md:gap-x-8">
+            <aside className="mx-auto w-full max-w-[220px]">
+              <div className="overflow-hidden rounded-[1.35rem] border border-white/10 bg-black/10 p-2.5 shadow-[0_16px_42px_rgba(0,0,0,0.22)]">
+                <EntityImage
+                  src={offer.imageUrl}
+                  alt={`${offer.bankName} logo`}
+                  label={offer.bankName}
+                  className="aspect-[1.9/1] rounded-[1.05rem]"
+                  imgClassName={imagePresentation?.imgClassName ?? 'bg-black/10 px-6 py-4'}
+                  fallbackClassName="bg-black/10"
+                  fallbackVariant="wordmark"
+                  fallbackTextClassName="px-3 text-xl"
+                  fit={imagePresentation?.fit}
+                  position={imagePresentation?.position}
+                  scale={imagePresentation?.scale ?? 1.04}
+                />
+              </div>
 
-              {/* Bonus hero */}
-              <div className="mt-3">
-                <p className="text-3xl font-bold text-brand-teal">
-                  +{formatBankingCurrency(offer.estimatedNetValue)} bonus
+              <div className="mt-3 flex flex-col gap-2.5">
+                <Link
+                  href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
+                  className="inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-5 py-3 text-base font-semibold text-black transition hover:opacity-90"
+                >
+                  Add to my plan
+                </Link>
+                {applyHref && (
+                  <AffiliateLink
+                    href={applyHref}
+                    cardSlug={offer.slug}
+                    source={source}
+                    className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-5 py-3 text-base font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
+                  >
+                    View current offer
+                  </AffiliateLink>
+                )}
+              </div>
+
+              <div className="mt-3 rounded-[1.15rem] border border-brand-gold/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))] px-4 py-3">
+                <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">Gross bonus</p>
+                <p className="mt-2 text-[1.9rem] font-semibold leading-none text-brand-gold">
+                  {formatBankingCurrency(offer.bonusAmount)}
                 </p>
-                <p className="mt-1 text-xs text-text-muted">
-                  {formatBankingCurrency(offer.bonusAmount)} gross
-                  {timeline.isKnown ? ` · ${timeline.shortLabel}` : ''}
+                <p className="mt-2 text-xs leading-5 text-text-muted">
+                  Est. fees: {formatBankingCurrency(offer.estimatedFees)}
                 </p>
               </div>
 
-              {/* Apply CTA */}
-              {(offer.affiliateUrl || offer.offerUrl) && (
-                <a
-                  href={offer.affiliateUrl || offer.offerUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center justify-center rounded-full bg-brand-teal px-6 py-2.5 text-sm font-semibold text-black transition hover:bg-brand-teal/90"
-                >
-                  Open Account →
-                </a>
+              {(verifiedLabel || (offer.apyDisplay && offer.apySourceUrl)) && (
+                <div className="mt-3 space-y-2 text-xs leading-5 text-text-muted">
+                  {verifiedLabel && <p>Last verified {verifiedLabel}. Confirm live terms before opening.</p>}
+                  {offer.apyDisplay && offer.apySourceUrl && (
+                    <p>
+                      <a
+                        href={offer.apySourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-brand-gold transition hover:text-brand-gold/80"
+                      >
+                        View APY source
+                      </a>
+                      {apyAsOfLabel ? ` · Rate as of ${apyAsOfLabel}` : ''}
+                    </p>
+                  )}
+                </div>
               )}
-            </div>
-          </div>
+            </aside>
 
-          {/* Stat pills */}
-          <div
-            className={`mt-6 grid grid-cols-2 gap-2 ${
-              offer.apyDisplay ? 'md:grid-cols-5' : 'md:grid-cols-4'
-            }`}
-          >
-            <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-              <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Account</p>
-              <p className="mt-1 text-sm font-semibold capitalize text-text-primary">
-                {offer.accountType}
-              </p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-              <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Direct Deposit</p>
-              <p className={`mt-1 text-sm font-semibold ${noDirectDeposit ? 'text-emerald-400' : 'text-text-primary'}`}>
-                {noDirectDeposit ? 'Not required' : 'Required'}
-              </p>
-            </div>
-            <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-              <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Opening Deposit</p>
-              <p className="mt-1 text-sm font-semibold text-text-primary">
-                {offer.minimumOpeningDeposit
-                  ? formatBankingCurrency(offer.minimumOpeningDeposit)
-                  : 'No minimum listed'}
-              </p>
-            </div>
-            {offer.apyDisplay ? (
-              <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-                <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">APY</p>
-                <p className="mt-1 text-sm font-semibold text-brand-gold">{offer.apyDisplay}</p>
+            <div>
+              <section className="rounded-[1.55rem] border border-white/10 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.12),transparent_42%),linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] p-4 md:p-5">
+                <p className="text-xs uppercase tracking-[0.26em] text-text-muted">{offer.bankName}</p>
+                <h2 className="mt-2.5 max-w-[22ch] font-heading text-[2.1rem] leading-[0.94] tracking-[-0.02em] text-text-primary md:max-w-none md:text-[2.8rem] md:whitespace-nowrap xl:text-[3rem]">
+                  {offer.offerName}
+                </h2>
+                <p className="mt-2.5 text-base text-text-primary/90 md:text-lg">{offer.headline}</p>
+                <p className="mt-2.5 max-w-[58ch] text-sm leading-6 text-text-secondary">
+                  {executionSummary}
+                </p>
+
+                <div className="mt-3.5 flex flex-wrap gap-2">
+                  <span className="rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2.5 py-1 text-[11px] text-brand-teal">
+                    {formatBankingAccountType(offer.accountType)}
+                  </span>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-secondary">
+                    {offer.directDeposit.required ? 'Direct deposit required' : 'No direct deposit'}
+                  </span>
+                  <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-secondary">
+                    {availabilityLabel}
+                  </span>
+                </div>
+
+                <div className="mt-4 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-5">
+                  {statCards.map((stat) => (
+                    <div
+                      key={stat.label}
+                      className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-3"
+                    >
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">{stat.label}</p>
+                      <p className={`mt-1.5 text-sm font-semibold ${stat.tone}`}>{stat.value}</p>
+                    </div>
+                  ))}
+                </div>
+              </section>
+
+              <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                <section className="rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-400">
+                    Good fit if
+                  </h3>
+                  <ul className="mt-3 space-y-2">
+                    {bestFitBullets.map((item, index) => (
+                      <li
+                        key={`${item}-${index}`}
+                        className="flex items-start gap-2 text-sm leading-6 text-text-secondary"
+                      >
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+
+                <section className="rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
+                  <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-coral">
+                    Think twice if
+                  </h3>
+                  <ul className="mt-3 space-y-2">
+                    {(cautionBullets.length > 0 ? cautionBullets : [primaryConstraint]).map((item, index) => (
+                      <li
+                        key={`${item}-${index}`}
+                        className="flex items-start gap-2 text-sm leading-6 text-text-secondary"
+                      >
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-coral" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               </div>
-            ) : null}
-            <div className="rounded-xl border border-white/10 bg-bg-elevated px-3 py-2.5 text-center">
-              <p className="text-[10px] uppercase tracking-[0.15em] text-text-muted">Hold Period</p>
-              <p className="mt-1 text-sm font-semibold text-text-primary">
-                {offer.holdingPeriodDays
-                  ? `${Math.round(offer.holdingPeriodDays / 30)} months`
-                  : 'None'}
-              </p>
-            </div>
-          </div>
 
-          {/* What it takes + Main constraint */}
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-400">
-                What it takes
-              </h3>
-              <p className="mt-2 text-sm text-text-secondary">
-                {primaryRequirement}
-              </p>
-            </div>
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-red-400">
-                Main constraint
-              </h3>
-              <p className="mt-2 text-sm text-text-secondary">
-                {primaryConstraint}
-              </p>
-            </div>
-          </div>
+              <section className="mt-4 rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)]">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="text-xs uppercase tracking-[0.22em] text-text-muted">What it takes</h3>
+                      <p className="mt-2 text-sm leading-6 text-text-secondary">{primaryRequirement}</p>
+                    </div>
+                    <div>
+                      <h3 className="text-xs uppercase tracking-[0.22em] text-text-muted">Main constraint</h3>
+                      <p className="mt-2 text-sm leading-6 text-text-secondary">{primaryConstraint}</p>
+                    </div>
+                  </div>
 
-          {/* Required actions */}
-          {offer.requiredActions.length > 0 && (
-            <div className="mt-6">
-              <h3 className="text-xs uppercase tracking-[0.2em] text-text-muted">Required Steps</h3>
-              <ul className="mt-3 space-y-1.5">
-                {offer.requiredActions.map((action, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm text-text-secondary">
-                    <span className="mt-1.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] text-text-muted">
-                      {i + 1}
-                    </span>
-                    {action}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* State restrictions */}
-          {stateLimited && (
-            <div className="mt-6 rounded-xl border border-amber-500/20 bg-amber-500/5 px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400">
-                State-limited
-              </p>
-              <p className="mt-1 text-sm text-text-secondary">
-                Available in: {offer.stateRestrictions!.join(', ')}
-              </p>
-            </div>
-          )}
-
-          {/* Net value breakdown */}
-          <div className="mt-6 rounded-xl border border-brand-teal/20 bg-brand-teal/5 px-4 py-3 text-center">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Estimated Net Value
-            </p>
-            <p className="mt-1 text-2xl font-bold text-brand-teal">
-              +{formatBankingCurrency(offer.estimatedNetValue)}
-            </p>
-            <p className="mt-1 text-xs text-text-muted">
-              {formatBankingCurrency(offer.bonusAmount)} bonus − {formatBankingCurrency(offer.estimatedFees)} est. fees
-            </p>
-          </div>
-
-          {offer.apyDisplay && offer.apySourceUrl ? (
-            <div className="mt-4 text-center text-xs text-text-muted">
-              <a
-                href={offer.apySourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-brand-gold transition hover:text-brand-gold/80"
-              >
-                View current APY source
-              </a>
-              {apyAsOfLabel ? ` · Rate as of ${apyAsOfLabel}` : ''}
-            </div>
-          ) : null}
-
-          {/* Bottom actions */}
-          <div className="mt-6 flex flex-col gap-3 border-t border-white/5 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <Link
-              href={`/banking/${offer.slug}`}
-              className="text-sm text-text-muted transition hover:text-brand-teal"
-            >
-              View full steps →
-            </Link>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Link
-                href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
-                className="inline-flex items-center justify-center rounded-full bg-brand-teal px-4 py-2 text-center text-sm leading-tight font-semibold text-black transition hover:opacity-90"
-              >
-                Include in my plan
-              </Link>
-              {(offer.affiliateUrl || offer.offerUrl) && (
-                <a
-                  href={offer.affiliateUrl || offer.offerUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-brand-teal transition hover:border-brand-teal/40 hover:text-brand-teal/80"
-                >
-                  Open Account
-                </a>
-              )}
+                  <div>
+                    <h3 className="text-xs uppercase tracking-[0.22em] text-text-muted">Execution checklist</h3>
+                    <ul className="mt-3 space-y-2.5">
+                      {checklistItems.map((action, index) => (
+                        <li
+                          key={`${action}-${index}`}
+                          className="flex items-start gap-3 rounded-xl border border-white/5 bg-bg/40 px-3.5 py-3 text-sm leading-6 text-text-secondary"
+                        >
+                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] text-text-muted">
+                            {index + 1}
+                          </span>
+                          <span>{action}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </section>
             </div>
           </div>
         </div>

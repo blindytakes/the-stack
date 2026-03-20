@@ -9,6 +9,7 @@ export type FunnelEventName =
   | 'quiz_completed'
   | 'plan_results_view'
   | 'card_detail_view'
+  | 'banking_detail_view'
   | 'newsletter_subscribed'
   | 'affiliate_click';
 
@@ -16,6 +17,7 @@ export type FunnelEventProperties = {
   source?: string;
   path?: string;
   card_slug?: string;
+  bank_slug?: string;
   tool?: string;
 };
 

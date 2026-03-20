@@ -7,6 +7,7 @@ export const trackedSourceValues = [
   'card_detail',
   'card_finder',
   'cards_directory',
+  'banking_directory',
   'hidden_benefits',
   'card_vs_card'
 ] as const;

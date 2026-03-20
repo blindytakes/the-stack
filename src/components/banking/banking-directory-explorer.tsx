@@ -78,7 +78,9 @@ export function BankingDirectoryExplorer({
       />
 
       <BankingDirectoryResults
+        allOffers={offers}
         offers={filteredSortedOffers}
+        activeFilterCount={activeFilterCount}
         onClearFilters={clearFilters}
       />
     </div>
