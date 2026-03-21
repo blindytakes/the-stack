@@ -42,19 +42,22 @@ export function SiteNav() {
   }, [open, close]);
 
   return (
-    <header ref={headerRef} className="sticky top-0 z-40 border-b border-white/5 bg-bg/70 backdrop-blur">
+    <header
+      ref={headerRef}
+      className="sticky top-0 z-40 border-b border-white/5 bg-[linear-gradient(180deg,rgba(45,212,191,0.08)_0%,rgba(10,10,15,0.92)_62%)] shadow-[inset_0_-1px_0_rgba(45,212,191,0.12)] backdrop-blur-xl"
+    >
       <div className="container-page flex h-16 items-center justify-between">
         <Link href="/" className="text-lg font-semibold tracking-wide text-text-primary">
           <span className="font-heading text-2xl">The Stack</span>
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden gap-6 text-sm text-text-secondary md:flex">
+        <nav className="hidden gap-6 text-base text-text-secondary md:flex">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`transition hover:text-text-primary ${
+              className={`font-medium transition hover:text-text-primary ${
                 pathname.startsWith(item.activePath ?? item.href) ? 'text-text-primary' : ''
               }`}
             >
@@ -74,7 +77,7 @@ export function SiteNav() {
           {/* Mobile hamburger */}
           <button
             onClick={() => setOpen(!open)}
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 md:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/5 md:hidden"
             aria-label={open ? 'Close menu' : 'Open menu'}
             aria-expanded={open}
           >
@@ -95,16 +98,16 @@ export function SiteNav() {
 
       {/* Mobile menu */}
       {open && (
-        <nav className="border-t border-white/5 bg-bg-elevated md:hidden">
+        <nav className="border-t border-white/5 bg-[linear-gradient(180deg,rgba(18,24,27,0.98)_0%,rgba(10,10,15,0.98)_100%)] shadow-[inset_0_1px_0_rgba(45,212,191,0.08)] md:hidden">
           <div className="container-page flex flex-col gap-1 py-4">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className={`rounded-xl px-4 py-3 text-sm transition hover:bg-bg-surface ${
+                className={`rounded-xl px-4 py-3 text-sm transition hover:bg-bg-surface hover:text-text-primary ${
                   pathname.startsWith(item.activePath ?? item.href)
-                    ? 'text-text-primary bg-bg-surface'
+                    ? 'bg-bg-surface text-text-primary'
                     : 'text-text-secondary'
                 }`}
               >
