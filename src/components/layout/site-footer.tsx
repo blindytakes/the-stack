@@ -19,10 +19,10 @@ export function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-t border-white/5 bg-[linear-gradient(180deg,rgba(10,10,15,0.38)_0%,rgba(12,20,22,0.86)_22%,rgba(14,28,29,0.96)_100%)] shadow-[inset_0_1px_0_rgba(45,212,191,0.08)]">
+    <footer className="relative overflow-hidden border-t border-white/5 bg-bg shadow-[inset_0_1px_0_rgba(45,212,191,0.06)]">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.10),transparent_72%)]"
+        className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.07),transparent_74%)]"
       />
 
       {/* Newsletter */}
@@ -41,16 +41,16 @@ export function SiteFooter() {
       )}
 
       {/* Links */}
-      <div className="container-page relative flex flex-col gap-4 py-10 text-sm text-text-muted md:flex-row md:items-center md:justify-between">
+      <div className="container-page relative flex flex-col gap-6 py-12 text-base text-text-secondary md:flex-row md:items-start md:justify-between">
         <div>
-          <div className="font-heading text-lg text-text-primary">The Stack</div>
-          <p className="max-w-xl">
+          <div className="font-heading text-xl text-text-primary">The Stack</div>
+          <p className="mt-2 max-w-2xl leading-7">
             The rewards site that tells you exactly what to do next, with personalized bonus plans
             for cards and banking.
           </p>
-          <p className="mt-1 text-xs text-text-muted">© {year} The Stack. All rights reserved.</p>
+          <p className="mt-3 text-sm text-text-muted">© {year} The Stack. All rights reserved.</p>
         </div>
-        <nav className="flex flex-wrap gap-6">
+        <nav className="flex flex-wrap gap-8 text-base">
           {footerLinks.map((link) => (
             <Link
               key={link.label}
