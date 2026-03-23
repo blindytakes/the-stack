@@ -98,7 +98,12 @@ export function AboutContent() {
           Bonus offers, timing tips, and free tools. Curated, not sponsored.
         </p>
         <div className="mx-auto mt-6 max-w-xl">
-          <NewsletterSignup source="about" compact size="large" />
+          <NewsletterSignup
+            source="about"
+            compact
+            size="large"
+            submitLabel="Get bonus plays"
+          />
         </div>
       </section>
 

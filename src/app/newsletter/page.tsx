@@ -27,7 +27,7 @@ export default function NewsletterPage() {
             source="newsletter_page"
             compact
             size="large"
-            submitLabel="Subscribe"
+            submitLabel="Get bonus plays"
           />
         </div>
 

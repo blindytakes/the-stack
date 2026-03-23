@@ -20,11 +20,6 @@ export function SiteFooter() {
 
   return (
     <footer className="relative overflow-hidden border-t border-white/5 bg-bg shadow-[inset_0_1px_0_rgba(45,212,191,0.06)]">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.07),transparent_74%)]"
-      />
-
       {/* Newsletter */}
       {showFooterNewsletter && (
         <div className="container-page relative border-b border-white/5 py-10">
@@ -34,7 +29,12 @@ export function SiteFooter() {
               Bonus offers, APY moves, and fee traps to avoid. Never sponsored.
             </p>
             <div className="mt-4">
-              <NewsletterSignup source="footer" compact />
+              <NewsletterSignup
+                source="footer"
+                compact
+                size="large"
+                submitLabel="Get bonus plays"
+              />
             </div>
           </div>
         </div>

@@ -184,13 +184,9 @@ export default async function BlogPage({ searchParams }: Props) {
     <div className="container-page pt-16 pb-20 md:pt-20">
       <div className="max-w-3xl">
         <p className="text-xs uppercase tracking-[0.3em] text-brand-coral">Blog</p>
-        <h1 className="mt-3 font-heading text-4xl text-text-primary">
+        <h1 className="mt-3 font-heading text-5xl text-text-primary md:text-6xl">
           Guides, Strategy &amp; Takes
         </h1>
-        <p className="mt-4 text-lg text-text-secondary">
-          High-conviction playbooks, strategic frameworks, and opinionated takes on
-          cards, banking, and benefits.
-        </p>
       </div>
 
       <BlogHero featured={featured} />
@@ -231,6 +227,8 @@ export default async function BlogPage({ searchParams }: Props) {
             eyebrow="Stay Sharp"
             heading="Get bonus plays"
             description="Bonus offers, timing tips, and strategy breakdowns. Curated, not sponsored."
+            size="large"
+            submitLabel="Get bonus plays"
           />
         </section>
       </RevealOnScroll>
