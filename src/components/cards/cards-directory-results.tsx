@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { CardRecord } from '@/lib/cards';
 import {
@@ -12,6 +12,7 @@ import {
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { EntityImage } from '@/components/ui/entity-image';
 import { CardDetailModal } from '@/components/cards/card-detail-modal';
+import { useFirstGridRowReveal } from '@/components/ui/use-first-grid-row-reveal';
 import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type CardsDirectoryResultsProps = {
@@ -30,27 +31,10 @@ export function CardsDirectoryResults({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const sectionRef = useRef<HTMLElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
   const modalSlug = searchParams.get('card');
-
-  useEffect(() => {
-    const element = sectionRef.current;
-    if (!element) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.05 }
-    );
-
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
+  const { gridRef, isVisible, isMeasured, prefersReducedMotion } = useFirstGridRowReveal(
+    cards.length
+  );
 
   const openModal = useCallback(
     (slug: string) => {
@@ -101,7 +85,7 @@ export function CardsDirectoryResults({
   }
 
   return (
-    <section ref={sectionRef} className="mt-6">
+    <section className="mt-6">
       {activeFilterCount > 0 && (
         <div className="mb-4 flex justify-end">
           <button
@@ -114,7 +98,7 @@ export function CardsDirectoryResults({
         </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <div ref={gridRef} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {cards.map((card, index) => {
           const selectedForCompare = selectedCompare.includes(card.slug);
           const imagePresentation = getCardImagePresentation(card.slug);
@@ -124,18 +108,23 @@ export function CardsDirectoryResults({
           const annualFeeLabel =
             card.annualFee === 0 ? 'No annual fee' : `Annual fee: $${card.annualFee}/yr`;
           const bestCategory = (topCategories.length > 0 ? topCategories : (['all'] as const))[0];
+          const shouldReveal = !prefersReducedMotion && isMeasured;
+          const transitionDelay = shouldReveal && isVisible ? 180 + Math.min(index, 15) * 50 : 0;
 
           return (
             <article
               key={card.slug}
+              data-reveal-index={index}
               className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-bg-surface p-5 transition-all duration-500 ${
-                isVisible ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+                shouldReveal && !isVisible
+                  ? 'translate-y-6 scale-[0.985] opacity-0'
+                  : 'translate-y-0 scale-100 opacity-100'
               } ${
                 selectedForCompare
                   ? 'border-brand-teal/45 shadow-[0_0_24px_rgba(45,212,191,0.14)]'
                   : 'border-white/10 shadow-[0_0_16px_rgba(45,212,191,0.04)] hover:-translate-y-1.5 hover:border-brand-teal/30 hover:shadow-[0_4px_32px_rgba(45,212,191,0.14)]'
               }`}
-              style={{ transitionDelay: isVisible ? `${Math.min(index, 8) * 80}ms` : '0ms' }}
+              style={{ transitionDelay: `${transitionDelay}ms` }}
             >
               <div
                 aria-hidden="true"

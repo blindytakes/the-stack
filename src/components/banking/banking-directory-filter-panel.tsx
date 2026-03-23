@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { usStateOptions } from '@/lib/us-state-options';
 import {
   accountTypeOptions,
@@ -83,6 +84,7 @@ export function BankingDirectoryFilterPanel({
   onRemoveFilter,
   onReset
 }: BankingDirectoryFilterPanelProps) {
+  const prefersReducedMotion = useReducedMotion();
   const advancedFilterCount = [
     accountType !== 'all',
     difficulty !== 'any',
@@ -92,6 +94,27 @@ export function BankingDirectoryFilterPanel({
     state.length > 0
   ].filter(Boolean).length;
   const [showMore, setShowMore] = useState(advancedFilterCount > 0);
+  const introShellTransition = prefersReducedMotion
+    ? { duration: 0 }
+    : { duration: 0.44, ease: [0.22, 1, 0.36, 1] as const };
+  const statGridVariants = {
+    hidden: {},
+    visible: {
+      transition: {
+        delayChildren: 0.1,
+        staggerChildren: 0.07
+      }
+    }
+  };
+  const statCardVariants = {
+    hidden: { opacity: 0, y: 14, scale: 0.985 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] as const }
+    }
+  };
   const summaryCards = [
     {
       label: 'Showing',
@@ -133,7 +156,12 @@ export function BankingDirectoryFilterPanel({
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.14),transparent_26%),radial-gradient(circle_at_85%_18%,rgba(212,168,83,0.12),transparent_18%),linear-gradient(180deg,transparent,rgba(255,255,255,0.02))]"
       />
 
-      <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(125deg,rgba(36,76,81,0.46),rgba(31,33,49,0.94)_38%,rgba(19,20,32,0.98)_100%)] p-5 md:p-7">
+      <motion.div
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={introShellTransition}
+        className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(125deg,rgba(36,76,81,0.46),rgba(31,33,49,0.94)_38%,rgba(19,20,32,0.98)_100%)] p-5 md:p-7"
+      >
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_0%_100%,rgba(45,212,191,0.08),transparent_34%),radial-gradient(circle_at_100%_100%,rgba(255,255,255,0.04),transparent_28%)]"
@@ -154,10 +182,16 @@ export function BankingDirectoryFilterPanel({
             </p>
           </div>
 
-          <div className="mt-6 grid gap-3 md:grid-cols-3">
+          <motion.div
+            className="mt-6 grid gap-3 md:grid-cols-3"
+            initial={prefersReducedMotion ? false : 'hidden'}
+            animate="visible"
+            variants={statGridVariants}
+          >
             {summaryCards.map((card) => (
-              <div
+              <motion.div
                 key={card.label}
+                variants={statCardVariants}
                 className="rounded-[1.45rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,10,18,0.78),rgba(12,13,22,0.96))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
               >
                 <div className="flex items-start justify-between gap-3">
@@ -183,11 +217,11 @@ export function BankingDirectoryFilterPanel({
                     style={{ width: `${Math.max(card.percent, 8)}%` }}
                   />
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="relative mt-5">
         <svg

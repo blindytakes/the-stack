@@ -317,4 +317,13 @@ describe('banking brand asset fallbacks', () => {
     );
     expect(resolveBankingBrandImageUrl('Summit National Bank')).toBeUndefined();
   });
+
+  it('drops the known-bad KeyBank favicon so the UI can fall back to a wordmark', () => {
+    expect(
+      resolveBankingBrandImageUrl(
+        'KeyBank',
+        'https://www.key.com/etc.clientlibs/keybank-foundation/clientlibs/clientlib-base/resources/icons/favicon.ico'
+      )
+    ).toBeUndefined();
+  });
 });

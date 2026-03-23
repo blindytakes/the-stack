@@ -1,7 +1,7 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
 import { BankingOfferCard } from '@/components/banking/banking-offer-card';
+import { useFirstGridRowReveal } from '@/components/ui/use-first-grid-row-reveal';
 import type { BankingBonusListItem } from '@/lib/banking-bonuses';
 
 type BankingOffersGridProps = {
@@ -10,48 +10,27 @@ type BankingOffersGridProps = {
 };
 
 export function BankingOffersGrid({ offers, onOpenDetail }: BankingOffersGridProps) {
-  const [visibleSet, setVisibleSet] = useState<Set<number>>(new Set());
-  const gridRef = useRef<HTMLDivElement>(null);
-
-  const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
-    const newVisible = new Set<number>();
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        const idx = Number((entry.target as HTMLElement).dataset.idx);
-        if (!isNaN(idx)) newVisible.add(idx);
-      }
-    });
-    if (newVisible.size > 0) {
-      setVisibleSet((prev) => {
-        const merged = new Set(prev);
-        newVisible.forEach((i) => merged.add(i));
-        return merged;
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
-    const observer = new IntersectionObserver(handleIntersection, {
-      threshold: 0.15
-    });
-    const cards = grid.querySelectorAll('[data-idx]');
-    cards.forEach((card) => observer.observe(card));
-    return () => observer.disconnect();
-  }, [offers, handleIntersection]);
+  const { gridRef, isVisible, isMeasured, prefersReducedMotion } = useFirstGridRowReveal(
+    offers.length
+  );
 
   return (
     <div ref={gridRef} className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {offers.map((offer, index) => (
         <div
           key={offer.slug}
-          data-idx={index}
+          data-reveal-index={index}
           className={`transition-all duration-500 ${
-            visibleSet.has(index) ? 'translate-y-0 opacity-100' : 'translate-y-6 opacity-0'
+            !prefersReducedMotion && isMeasured && !isVisible
+              ? 'translate-y-6 scale-[0.985] opacity-0'
+              : 'translate-y-0 scale-100 opacity-100'
           }`}
           style={{
-            transitionDelay: visibleSet.has(index) ? `${Math.min(index % 8, 7) * 80}ms` : '0ms'
+            transitionDelay: `${
+              !prefersReducedMotion && isMeasured && isVisible
+                ? 180 + Math.min(index, 15) * 50
+                : 0
+            }ms`
           }}
         >
           <BankingOfferCard offer={offer} onOpenDetail={onOpenDetail} />

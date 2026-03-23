@@ -1,3 +1,6 @@
+const KEYBANK_FAVICON_URL =
+  'https://www.key.com/etc.clientlibs/keybank-foundation/clientlibs/clientlib-base/resources/icons/favicon.ico';
+
 const bankingBrandImageUrlByBankName: Record<string, string> = {
   'alliant credit union': 'https://www.alliantcreditunion.org/resources/favicon.ico',
   'bank of america':
@@ -10,8 +13,6 @@ const bankingBrandImageUrlByBankName: Record<string, string> = {
   'etrade from morgan stanley private bank':
     'https://cdn2.etrade.net/1/21123117210.0/aempros/content/dam/etrade/global/pagemeta/images/apple-touch-icon.png',
   'huntington bank': 'https://www.huntington.com/Presentation/images/apple-touch-icon-180.png',
-  keybank:
-    'https://www.key.com/etc.clientlibs/keybank-foundation/clientlibs/clientlib-base/resources/icons/favicon.ico',
   'marcus by goldman sachs': 'https://cdn.gs.com/images/goldman-sachs/v1/gs-favicon.ico',
   pnc: 'https://www.pnc.com/etc.clientlibs/pnc-aem-base/clientlibs/clientlib-site/resources/apple-touch-icon.png',
   sofi: 'https://www.sofi.com/favicon.ico',
@@ -30,7 +31,11 @@ function normalizeBankName(bankName: string) {
     .trim();
 }
 
+function isKnownBrokenBankImageUrl(bankName: string, imageUrl: string) {
+  return normalizeBankName(bankName) === 'keybank' && imageUrl.trim() === KEYBANK_FAVICON_URL;
+}
+
 export function resolveBankingBrandImageUrl(bankName: string, imageUrl?: string | null) {
-  if (imageUrl) return imageUrl;
+  if (imageUrl && !isKnownBrokenBankImageUrl(bankName, imageUrl)) return imageUrl;
   return bankingBrandImageUrlByBankName[normalizeBankName(bankName)];
 }
