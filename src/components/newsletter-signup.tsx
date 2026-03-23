@@ -58,6 +58,15 @@ export function NewsletterSignup({
   const [showTurnstile, setShowTurnstile] = useState(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
   const largeSize = size === 'large';
+  const formClassName = compact
+    ? `flex w-full flex-col gap-3 sm:flex-row sm:items-center ${largeSize ? 'sm:gap-4' : ''}`
+    : 'mt-4 flex flex-col gap-3 sm:flex-row sm:items-center';
+  const inputClassName = `min-w-0 w-full flex-1 border border-white/10 bg-bg-surface text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none ${
+    largeSize ? 'rounded-full px-5 py-3.5 text-sm md:text-base' : 'rounded-full px-4 py-2 text-sm'
+  }`;
+  const buttonClassName = `${compact ? 'w-full sm:w-auto' : 'sm:self-start'} shrink-0 whitespace-nowrap ${
+    largeSize ? 'px-6 py-3.5 text-sm md:text-base' : ''
+  }`;
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token);
@@ -155,25 +164,23 @@ export function NewsletterSignup({
       )}
       <form
         onSubmit={handleSubmit}
-        className={compact ? 'flex flex-col gap-3 sm:flex-row' : 'mt-4 flex flex-col gap-3 sm:flex-row'}
+        className={formClassName}
       >
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            required
-            className={`flex-1 border border-white/10 bg-bg-surface text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none ${
-              largeSize ? 'rounded-full px-6 py-3.5 text-lg md:text-xl' : 'rounded-full px-4 py-2 text-sm'
-            }`}
-          />
-          <Button
-            type="submit"
-            disabled={status === 'loading'}
-            className={`${compact ? 'w-full sm:w-auto' : 'sm:self-start'} ${largeSize ? 'px-7 py-3.5 text-lg md:text-xl' : ''}`}
-          >
-            {status === 'loading' ? 'Joining...' : submitLabel}
-          </Button>
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="Enter your email"
+          required
+          className={inputClassName}
+        />
+        <Button
+          type="submit"
+          disabled={status === 'loading'}
+          className={buttonClassName}
+        >
+          {status === 'loading' ? 'Joining...' : submitLabel}
+        </Button>
       </form>
       {showConsultationOption && !compact && (
         <label className="mt-3 flex items-start gap-2 text-xs text-text-muted">

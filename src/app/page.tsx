@@ -479,9 +479,9 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <section className="relative mx-auto mt-16 max-w-4xl overflow-hidden rounded-[2.25rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,18,26,0.98)_0%,rgba(10,10,15,0.98)_100%)] px-6 py-8 shadow-[0_24px_90px_rgba(0,0,0,0.28)] md:px-10 md:py-10">
+      <section className="relative mx-auto mt-16 max-w-5xl overflow-hidden rounded-[2.25rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,18,26,0.98)_0%,rgba(10,10,15,0.98)_100%)] px-6 py-8 shadow-[0_24px_90px_rgba(0,0,0,0.28)] md:px-10 md:py-10">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.12),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(212,168,83,0.08),transparent_34%)]" />
-        <div className="relative grid gap-8 lg:grid-cols-[0.92fr_1.08fr] lg:items-center">
+        <div className="relative grid gap-8 lg:grid-cols-[minmax(0,0.62fr)_minmax(0,1.38fr)] lg:items-center lg:gap-10">
           <div className="max-w-xl">
             <p className="text-sm font-semibold uppercase tracking-[0.24em] text-brand-teal">
               Newsletter
@@ -489,13 +489,9 @@ export default async function HomePage() {
             <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
               Get bonus plays in your inbox.
             </h2>
-            <p className="mt-3 max-w-lg text-base leading-7 text-text-secondary md:text-lg">
-              One short email with bonus offers, timing tips, and practical strategy. Curated, not
-              sponsored.
-            </p>
-            <p className="mt-4 text-sm text-text-muted">Free. Unsubscribe anytime.</p>
+            <p className="mt-3 text-sm text-text-muted">Free. Unsubscribe anytime.</p>
           </div>
-          <div className="rounded-[1.7rem] border border-white/10 bg-white/5 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.22)] backdrop-blur-sm md:p-5">
+          <div className="rounded-[1.7rem] border border-white/10 bg-white/5 p-4 shadow-[0_12px_40px_rgba(0,0,0,0.22)] backdrop-blur-sm md:p-5 lg:w-full lg:max-w-none lg:justify-self-end">
             <NewsletterSignup source="homepage" compact size="large" submitLabel="Get bonus plays" />
           </div>
         </div>
