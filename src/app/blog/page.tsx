@@ -148,7 +148,7 @@ export default async function BlogPage({ searchParams }: Props) {
     );
 
     return (
-      <div className="container-page pt-12 pb-16">
+      <div className="container-page pt-16 pb-20 md:pt-20">
         <div className="max-w-2xl">
           <Link
             href="/blog"
@@ -170,7 +170,7 @@ export default async function BlogPage({ searchParams }: Props) {
           selectedCategory={selectedCategory}
         />
 
-        <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-8 grid gap-5 md:mt-10 md:grid-cols-2 lg:grid-cols-3">
           {filteredArticles.map((article) => (
             <BlogCard key={article.slug} article={article} />
           ))}
@@ -181,8 +181,8 @@ export default async function BlogPage({ searchParams }: Props) {
 
   // Default: magazine layout
   return (
-    <div className="container-page pt-12 pb-16">
-      <div className="max-w-2xl">
+    <div className="container-page pt-16 pb-20 md:pt-20">
+      <div className="max-w-3xl">
         <p className="text-xs uppercase tracking-[0.3em] text-brand-coral">Blog</p>
         <h1 className="mt-3 font-heading text-4xl text-text-primary">
           Guides, Strategy &amp; Takes
@@ -195,11 +195,13 @@ export default async function BlogPage({ searchParams }: Props) {
 
       <BlogHero featured={featured} />
 
-      <CategoryFilter categories={categories} selectedCategory={null} />
+      <div className="mt-8 md:mt-10">
+        <CategoryFilter categories={categories} selectedCategory={null} />
+      </div>
 
       {/* Evergreen Assets */}
       <RevealOnScroll>
-        <section className="mt-12">
+        <section className="mt-16">
           <p className="text-xs uppercase tracking-[0.28em] text-brand-gold">
             Evergreen Assets
           </p>
@@ -223,7 +225,7 @@ export default async function BlogPage({ searchParams }: Props) {
 
       {/* Newsletter */}
       <RevealOnScroll>
-        <section className="mx-auto mt-14 max-w-2xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center">
+        <section className="mx-auto mt-16 max-w-2xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center">
           <NewsletterSignup
             source="blog"
             eyebrow="Stay Sharp"
@@ -235,7 +237,7 @@ export default async function BlogPage({ searchParams }: Props) {
 
       {/* Core Playbooks */}
       <RevealOnScroll>
-        <section className="mt-14">
+        <section className="mt-16">
           <p className="text-xs uppercase tracking-[0.28em] text-brand-teal">
             Core Playbooks
           </p>
