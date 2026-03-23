@@ -10,6 +10,7 @@ import {
   type LearnArticleCard
 } from '@/lib/learn-articles';
 import { BlogHero } from '@/components/blog/blog-hero';
+import { BlogCoverImage } from '@/components/blog/blog-cover-image';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
@@ -50,29 +51,39 @@ function BlogCard({
   return (
     <Link
       href={`/blog/${article.slug}`}
-      className={`group rounded-2xl border border-white/10 bg-bg-surface p-6 transition hover:-translate-y-1 ${hoverBorder}`}
+      className={`group overflow-hidden rounded-2xl border border-white/10 bg-bg-surface transition hover:-translate-y-1 ${hoverBorder}`}
     >
-      <div className="flex items-center gap-3">
-        <span
-          className={`text-[10px] uppercase tracking-[0.2em] ${
-            learnCategoryColor[article.category] ?? 'text-text-muted'
-          }`}
-        >
-          {article.category}
-        </span>
-        <span className="text-[10px] text-text-muted">{article.readTime}</span>
+      <div className="relative">
+        <BlogCoverImage
+          image={article.coverImage}
+          className="aspect-[16/10]"
+          imgClassName="transition duration-500 group-hover:scale-105"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
       </div>
-      <h3
-        className={`mt-3 text-lg font-semibold text-text-primary transition ${titleHover}`}
-      >
-        {article.title}
-      </h3>
-      <p className="mt-2 line-clamp-2 text-sm text-text-secondary">
-        {article.description}
-      </p>
-      <p className="mt-3 text-[10px] text-text-muted">
-        {formatArticleDate(article.publishedAt)}
-      </p>
+      <div className="p-6">
+        <div className="flex items-center gap-3">
+          <span
+            className={`text-[10px] uppercase tracking-[0.2em] ${
+              learnCategoryColor[article.category] ?? 'text-text-muted'
+            }`}
+          >
+            {article.category}
+          </span>
+          <span className="text-[10px] text-text-muted">{article.readTime}</span>
+        </div>
+        <h3
+          className={`mt-3 text-lg font-semibold text-text-primary transition ${titleHover}`}
+        >
+          {article.title}
+        </h3>
+        <p className="mt-2 line-clamp-2 text-sm text-text-secondary">
+          {article.description}
+        </p>
+        <p className="mt-3 text-[10px] text-text-muted">
+          {formatArticleDate(article.publishedAt)}
+        </p>
+      </div>
     </Link>
   );
 }

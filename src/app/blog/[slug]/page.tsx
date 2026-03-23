@@ -11,6 +11,7 @@ import {
 import { ReadingProgressBar } from '@/components/blog/reading-progress-bar';
 import { TableOfContents } from '@/components/blog/table-of-contents';
 import { BlogArticleCTA } from '@/components/blog/blog-article-cta';
+import { BlogCoverImage } from '@/components/blog/blog-cover-image';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
 function slugify(text: string): string {
@@ -30,7 +31,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
   if (!article) return { title: 'Article Not Found' };
-  return { title: article.title, description: article.description };
+  return {
+    title: article.title,
+    description: article.description,
+    openGraph: article.coverImage
+      ? {
+          images: [
+            {
+              url: article.coverImage.src,
+              alt: article.coverImage.alt
+            }
+          ]
+        }
+      : undefined,
+    twitter: article.coverImage
+      ? {
+          images: [article.coverImage.src]
+        }
+      : undefined
+  };
 }
 
 export default async function BlogArticlePage({ params }: Props) {
@@ -95,6 +114,29 @@ export default async function BlogArticlePage({ params }: Props) {
         </p>
       </header>
 
+      <div className="mt-8 overflow-hidden rounded-[2rem] border border-white/10 bg-bg-surface shadow-[0_18px_60px_rgba(0,0,0,0.22)]">
+        <BlogCoverImage
+          image={article.coverImage}
+          className="aspect-[16/9] md:aspect-[21/9]"
+          imgClassName="h-full w-full"
+          priority
+        />
+      </div>
+      {article.coverImage?.attribution && (
+        <p className="mt-3 text-xs text-text-muted">
+          Cover photo by{' '}
+          <a
+            href={article.coverImage.attribution.href}
+            target="_blank"
+            rel="noreferrer"
+            className="text-text-secondary underline decoration-white/20 underline-offset-4 transition hover:text-text-primary"
+          >
+            {article.coverImage.attribution.name}
+          </a>
+          .
+        </p>
+      )}
+
       <div className="mt-10 lg:grid lg:grid-cols-[1fr_220px] lg:gap-12">
         {/* Article column */}
         <div>
@@ -155,29 +197,39 @@ export default async function BlogArticlePage({ params }: Props) {
                 <Link
                   key={related.slug}
                   href={`/blog/${related.slug}`}
-                  className="group rounded-2xl border border-white/10 bg-bg-surface p-5 transition hover:-translate-y-1 hover:border-brand-coral/35 hover:shadow-[0_0_18px_rgba(232,99,74,0.08)]"
+                  className="group overflow-hidden rounded-2xl border border-white/10 bg-bg-surface transition hover:-translate-y-1 hover:border-brand-coral/35 hover:shadow-[0_0_18px_rgba(232,99,74,0.08)]"
                 >
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`text-[10px] uppercase tracking-[0.2em] ${
-                        learnCategoryColor[related.category] ?? 'text-text-muted'
-                      }`}
-                    >
-                      {related.category}
-                    </span>
-                    <span className="text-[10px] text-text-muted">
-                      {related.readTime}
-                    </span>
+                  <div className="relative">
+                    <BlogCoverImage
+                      image={related.coverImage}
+                      className="aspect-[16/10]"
+                      imgClassName="transition duration-500 group-hover:scale-105"
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                   </div>
-                  <h3 className="mt-2 text-base font-semibold text-text-primary transition group-hover:text-brand-coral">
-                    {related.title}
-                  </h3>
-                  <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-text-secondary">
-                    {related.description}
-                  </p>
-                  <p className="mt-2 text-[10px] text-text-muted">
-                    {formatArticleDate(related.publishedAt)}
-                  </p>
+                  <div className="p-5">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-[10px] uppercase tracking-[0.2em] ${
+                          learnCategoryColor[related.category] ?? 'text-text-muted'
+                        }`}
+                      >
+                        {related.category}
+                      </span>
+                      <span className="text-[10px] text-text-muted">
+                        {related.readTime}
+                      </span>
+                    </div>
+                    <h3 className="mt-2 text-base font-semibold text-text-primary transition group-hover:text-brand-coral">
+                      {related.title}
+                    </h3>
+                    <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-text-secondary">
+                      {related.description}
+                    </p>
+                    <p className="mt-2 text-[10px] text-text-muted">
+                      {formatArticleDate(related.publishedAt)}
+                    </p>
+                  </div>
                 </Link>
               ))}
             </div>

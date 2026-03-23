@@ -1,5 +1,15 @@
 export type LearnArticleSeries = 'Evergreen Assets' | 'Core Playbooks';
 
+export type LearnArticleImage = {
+  src: string;
+  alt: string;
+  position?: string;
+  attribution?: {
+    name: string;
+    href: string;
+  };
+};
+
 export type LearnArticle = {
   title: string;
   category: string;
@@ -10,6 +20,7 @@ export type LearnArticle = {
   publishedAt: string;
   author?: string;
   keyTakeaway?: string;
+  coverImage?: LearnArticleImage;
   sections: { heading: string; body: string }[];
 };
 
@@ -22,6 +33,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     featuredOrder: 1,
     publishedAt: '2026-03-01',
     keyTakeaway: 'A single welcome offer can be worth years of everyday category optimization.',
+    coverImage: {
+      src: '/blog/covers/why-sign-up-bonuses-matter-more-than-everything-else-combined.jpg',
+      alt: 'Passport and travel planner resting on a world map.',
+      position: 'center 38%',
+      attribution: {
+        name: 'Nataliya Vaitkevich / Pexels',
+        href: 'https://www.pexels.com/photo/passport-on-top-of-a-planner-7235894/'
+      }
+    },
     description:
       'Category multipliers are nice. Welcome offers are where the real acceleration happens.',
     sections: [
@@ -55,6 +75,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     featuredOrder: 2,
     publishedAt: '2026-02-24',
     keyTakeaway: 'A card can be excellent on paper and still overrated when most users capture only a fraction of the benefit stack.',
+    coverImage: {
+      src: '/blog/covers/why-amex-platinum-is-overrated.jpg',
+      alt: 'Traveler sitting in an airport terminal beside a suitcase.',
+      position: 'center 24%',
+      attribution: {
+        name: 'Kenneth Surillo / Pexels',
+        href: 'https://www.pexels.com/photo/stylish-traveler-waiting-in-airport-lobby-32176091/'
+      }
+    },
     description:
       'Great for a narrow profile, expensive for everyone else. The mismatch is the problem.',
     sections: [
@@ -88,6 +117,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     featuredOrder: 3,
     publishedAt: '2026-02-17',
     keyTakeaway: 'Legacy reputation is doing most of the work. The competitive landscape has changed faster than most assumptions.',
+    coverImage: {
+      src: '/blog/covers/why-chase-sapphire-reserve-is-losing-its-shine.jpg',
+      alt: 'Solo traveler seated in a quiet airport lounge.',
+      position: 'center 56%',
+      attribution: {
+        name: 'Sam Tan / Pexels',
+        href: 'https://www.pexels.com/photo/a-man-with-a-suitcase-sitting-alone-at-an-airport-17947934/'
+      }
+    },
     description:
       'Still a strong card, but no longer the automatic premium default it once was.',
     sections: [
@@ -121,6 +159,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     featuredOrder: 4,
     publishedAt: '2026-02-10',
     keyTakeaway: 'Systems with lower operational friction usually outperform systems with higher theoretical upside.',
+    coverImage: {
+      src: '/blog/covers/why-capital-one-venture-x-is-the-future-winner.jpg',
+      alt: 'Traveler working on a laptop in an airport lounge.',
+      position: 'center 36%',
+      attribution: {
+        name: 'Kelly / Pexels',
+        href: 'https://www.pexels.com/photo/business-traveler-working-with-laptop-in-airport-lounge-33621991/'
+      }
+    },
     description:
       'Its advantage is not hype. It is repeatable, low-friction value at portfolio scale.',
     sections: [
@@ -154,6 +201,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     featuredOrder: 5,
     publishedAt: '2026-02-03',
     keyTakeaway: 'The best rewards strategy is not just about earning more. It is about losing less.',
+    coverImage: {
+      src: '/blog/covers/why-return-protection-is-the-secret-you-need-now.jpg',
+      alt: 'Customer signing for a delivered package at a front door.',
+      position: 'center 24%',
+      attribution: {
+        name: 'Lil_ Gary Ramirez / Pexels',
+        href: 'https://www.pexels.com/photo/friendly-package-delivery-at-doorstep-33530406/'
+      }
+    },
     description:
       'When return windows fail you, this overlooked protection can quietly save real money.',
     sections: [
@@ -184,6 +240,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     category: 'Fundamentals',
     readTime: '6 min',
     publishedAt: '2026-01-27',
+    coverImage: {
+      src: '/blog/covers/how-credit-card-rewards-actually-work.jpg',
+      alt: 'Hand pulling a credit card from a wallet beside a laptop.',
+      position: 'center 44%',
+      attribution: {
+        name: 'Sora Shimazaki / Pexels',
+        href: 'https://www.pexels.com/photo/credit-card-in-wallet-and-laptop-on-desk-5926243/'
+      }
+    },
     description:
       'Points, miles, and cash back sound simple — until you try to use them.',
     sections: [
@@ -214,6 +279,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     category: 'Strategy',
     readTime: '5 min',
     publishedAt: '2026-01-20',
+    coverImage: {
+      src: '/blog/covers/annual-fee-math.jpg',
+      alt: 'Receipts, a calculator, and notes spread across a desk.',
+      position: 'center 42%',
+      attribution: {
+        name: 'Kaboompics.com / Pexels',
+        href: 'https://www.pexels.com/photo/hands-holding-receipt-and-notes-5900135/'
+      }
+    },
     description:
       'A $550 card can cost less than a $0 card if the benefits offset the fee.',
     sections: [
@@ -240,6 +314,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     category: 'Getting Started',
     readTime: '7 min',
     publishedAt: '2026-01-13',
+    coverImage: {
+      src: '/blog/covers/first-card-playbook.jpg',
+      alt: 'Young student working on a laptop in a study hall.',
+      position: 'center 28%',
+      attribution: {
+        name: 'Andrea Piacquadio / Pexels',
+        href: 'https://www.pexels.com/photo/concentrated-young-student-using-laptop-3932570/'
+      }
+    },
     description: 'Building credit from scratch? Here\'s exactly what to look for.',
     sections: [
       {
@@ -269,6 +352,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     category: 'Strategy',
     readTime: '5 min',
     publishedAt: '2026-01-06',
+    coverImage: {
+      src: '/blog/covers/signup-bonus-strategy.jpg',
+      alt: 'Small globe resting on luggage beside a passport.',
+      position: 'center 56%',
+      attribution: {
+        name: 'Tima Miroshnichenko / Pexels',
+        href: 'https://www.pexels.com/photo/globe-beside-a-passport-7009465/'
+      }
+    },
     description: 'Time your applications and meet spend requirements with normal purchases.',
     sections: [
       {
@@ -294,6 +386,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     category: 'Banking',
     readTime: '6 min',
     publishedAt: '2026-02-14',
+    coverImage: {
+      src: '/blog/covers/bank-account-bonuses-101.jpg',
+      alt: 'Phone calculator over cash and a notebook on a desk.',
+      position: 'center 38%',
+      attribution: {
+        name: 'Jakub Zerdzicki / Pexels',
+        href: 'https://www.pexels.com/photo/person-using-smartphone-calculator-with-money-on-desk-35028998/'
+      }
+    },
     description:
       'Checking and savings bonuses can be high-value, but only if you avoid fee clawbacks and missed requirements.',
     sections: [
@@ -324,6 +425,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     category: 'Comparison',
     readTime: '8 min',
     publishedAt: '2026-02-21',
+    coverImage: {
+      src: '/blog/covers/travel-vs-cashback.jpg',
+      alt: 'Person holding a credit card in one hand and cash in the other.',
+      position: 'center 28%',
+      attribution: {
+        name: 'Sora Shimazaki / Pexels',
+        href: 'https://www.pexels.com/photo/a-man-holding-a-bank-card-and-dollar-bills-5926251/'
+      }
+    },
     description: 'The answer depends on how you spend, how you redeem, and your complexity tolerance.',
     sections: [
       {
@@ -353,6 +463,15 @@ export const learnArticles: Record<string, LearnArticle> = {
     category: 'Fundamentals',
     readTime: '4 min',
     publishedAt: '2026-01-30',
+    coverImage: {
+      src: '/blog/covers/credit-score-myths.jpg',
+      alt: 'Receipts and a calculator laid out on top of financial paperwork.',
+      position: 'center 34%',
+      attribution: {
+        name: 'Kaboompics.com / Pexels',
+        href: 'https://www.pexels.com/photo/person-holding-receipts-and-using-a-calculator-7680736/'
+      }
+    },
     description: 'What actually matters for your credit score — and what doesn\'t.',
     sections: [
       {
@@ -400,6 +519,7 @@ export type LearnArticleCard = {
   publishedAt: string;
   author: string;
   keyTakeaway: string | null;
+  coverImage: LearnArticleImage | null;
 };
 
 function getArticleSeries(article: LearnArticle): LearnArticleSeries {
@@ -417,7 +537,8 @@ const allLearnArticleCards: LearnArticleCard[] = Object.entries(learnArticles).m
     featuredOrder: article.featuredOrder ?? null,
     publishedAt: article.publishedAt,
     author: article.author ?? 'The Stack',
-    keyTakeaway: article.keyTakeaway ?? null
+    keyTakeaway: article.keyTakeaway ?? null,
+    coverImage: article.coverImage ?? null
   })
 );
 
