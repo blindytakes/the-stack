@@ -326,4 +326,22 @@ describe('banking brand asset fallbacks', () => {
       )
     ).toBeUndefined();
   });
+
+  it('replaces broken Chime favicon data and drops Alliant favicon data', () => {
+    expect(
+      resolveBankingBrandImageUrl('Chime', 'https://www.chime.com/img/favicon.png')
+    ).toBe(
+      'https://chime-mobile-assets.prod-ext.chmfin.com/prod/images/ck.logo.chime.chime_green.medium.registered.dark%403x.png'
+    );
+    expect(
+      resolveBankingBrandImageUrl(
+        'Alliant Credit Union',
+        'https://www.alliantcreditunion.org/resources/favicon.ico'
+      )
+    ).toBeUndefined();
+    expect(resolveBankingBrandImageUrl('Chime')).toBe(
+      'https://chime-mobile-assets.prod-ext.chmfin.com/prod/images/ck.logo.chime.chime_green.medium.registered.dark%403x.png'
+    );
+    expect(resolveBankingBrandImageUrl('Alliant Credit Union')).toBeUndefined();
+  });
 });

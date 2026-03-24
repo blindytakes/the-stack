@@ -1,14 +1,16 @@
 const KEYBANK_FAVICON_URL =
   'https://www.key.com/etc.clientlibs/keybank-foundation/clientlibs/clientlib-base/resources/icons/favicon.ico';
+const ALLIANT_FAVICON_URL = 'https://www.alliantcreditunion.org/resources/favicon.ico';
+const CHIME_FAVICON_URL = 'https://www.chime.com/img/favicon.png';
 
 const bankingBrandImageUrlByBankName: Record<string, string> = {
-  'alliant credit union': 'https://www.alliantcreditunion.org/resources/favicon.ico',
   'bank of america':
     'https://www.bankofamerica.com/homepage/spa-assets/images/assets-images-global-favicon-apple-touch-icon-CSX889b28c.png',
   bmo: 'https://www.bmo.com/dist/favicon/apple-touch-icon.png',
   'capital one': 'https://www.capitalone.com/assets/shell/apple-touch-icon.png',
   chase: 'https://www.chase.com/etc/designs/chase-ux/favicon-152.png',
-  chime: 'https://www.chime.com/img/favicon.png',
+  chime:
+    'https://chime-mobile-assets.prod-ext.chmfin.com/prod/images/ck.logo.chime.chime_green.medium.registered.dark%403x.png',
   citibank: 'https://www.citi.com/cbol-hp-static-assets/assets/favicon.ico',
   'etrade from morgan stanley private bank':
     'https://cdn2.etrade.net/1/21123117210.0/aempros/content/dam/etrade/global/pagemeta/images/apple-touch-icon.png',
@@ -32,7 +34,14 @@ function normalizeBankName(bankName: string) {
 }
 
 function isKnownBrokenBankImageUrl(bankName: string, imageUrl: string) {
-  return normalizeBankName(bankName) === 'keybank' && imageUrl.trim() === KEYBANK_FAVICON_URL;
+  const normalizedBankName = normalizeBankName(bankName);
+  const normalizedImageUrl = imageUrl.trim();
+
+  return (
+    (normalizedBankName === 'keybank' && normalizedImageUrl === KEYBANK_FAVICON_URL) ||
+    (normalizedBankName === 'alliant credit union' && normalizedImageUrl === ALLIANT_FAVICON_URL) ||
+    (normalizedBankName === 'chime' && normalizedImageUrl === CHIME_FAVICON_URL)
+  );
 }
 
 export function resolveBankingBrandImageUrl(bankName: string, imageUrl?: string | null) {

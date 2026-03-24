@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useRef, useState, useEffect } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { EntityImage } from '@/components/ui/entity-image';
 
 export type HeroOffer = {
@@ -27,7 +27,49 @@ function formatCurrency(value: number) {
   return `$${value.toLocaleString()}`;
 }
 
-function OfferCard({ offer }: { offer: HeroOffer }) {
+function centerCardInTrack(
+  track: HTMLDivElement,
+  target: HTMLElement,
+  behavior: ScrollBehavior
+) {
+  const centeredLeft = target.offsetLeft - (track.clientWidth - target.offsetWidth) / 2;
+  const maxLeft = Math.max(track.scrollWidth - track.clientWidth, 0);
+  const left = Math.min(Math.max(centeredLeft, 0), maxLeft);
+
+  track.scrollTo({ left, behavior });
+}
+
+function getRenderedOfferIndex(realIndex: number, offerCount: number) {
+  if (offerCount <= 1) {
+    return realIndex;
+  }
+
+  return realIndex + 1;
+}
+
+function getSettledRenderedIndex(renderedIndex: number, offerCount: number) {
+  if (offerCount <= 1) {
+    return renderedIndex;
+  }
+
+  if (renderedIndex === 0) {
+    return offerCount;
+  }
+
+  if (renderedIndex === offerCount + 1) {
+    return 1;
+  }
+
+  return renderedIndex;
+}
+
+function OfferCard({
+  offer,
+  interactive = true,
+}: {
+  offer: HeroOffer;
+  interactive?: boolean;
+}) {
   const isCard = offer.type === 'card';
   const accentText = isCard ? 'text-brand-teal' : 'text-brand-gold';
   const glowColor = isCard
@@ -35,6 +77,35 @@ function OfferCard({ offer }: { offer: HeroOffer }) {
     : 'rgba(234, 179, 8, 0.15)';
   const hrefBase = isCard ? '/cards' : '/banking';
   const pres = offer.imagePresentation;
+  const content = (
+    <>
+        <EntityImage
+          src={offer.imageUrl}
+          alt={`${offer.name} ${isCard ? 'card art' : 'logo'}`}
+          label={isCard ? offer.name : offer.issuer}
+          className="aspect-[1.586/1] w-full"
+        imgClassName={
+          pres?.imgClassName ??
+          (isCard ? 'bg-black/10 p-1.5' : 'bg-black/10 px-5 py-3')
+        }
+          fallbackClassName="bg-black/10"
+          fallbackVariant={isCard ? 'initials' : 'wordmark'}
+          fallbackTextClassName={isCard ? 'text-sm' : 'px-4 text-lg sm:text-xl'}
+          fit={pres?.fit}
+          position={pres?.position}
+          scale={pres?.scale}
+        />
+      <p className="mt-3 line-clamp-2 text-sm font-semibold leading-snug text-text-primary">
+        {offer.name}
+      </p>
+      <p className="mt-0.5 text-xs text-text-muted">{offer.issuer}</p>
+      <div className="mt-auto pt-3">
+        <p className={`text-2xl font-bold ${accentText}`}>
+          +{formatCurrency(offer.bonusValue)}
+        </p>
+      </div>
+    </>
+  );
 
   return (
     <div className="relative w-[280px] shrink-0">
@@ -44,36 +115,21 @@ function OfferCard({ offer }: { offer: HeroOffer }) {
           background: `radial-gradient(ellipse at center, ${glowColor}, transparent 70%)`,
         }}
       />
-      <a
-        href={`${hrefBase}/${offer.slug}`}
-        className="group relative flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-brand-teal/25 hover:bg-white/[0.06]"
-      >
-        <EntityImage
-          src={offer.imageUrl}
-          alt={`${offer.name} ${isCard ? 'card art' : 'logo'}`}
-          label={isCard ? offer.name : offer.issuer}
-          className="aspect-[1.586/1] w-full"
-          imgClassName={
-            pres?.imgClassName ??
-            (isCard ? 'bg-black/10 p-1.5' : 'bg-black/10 px-5 py-3')
-          }
-          fallbackClassName="bg-black/10"
-          fallbackVariant={isCard ? 'initials' : 'wordmark'}
-          fallbackTextClassName="text-sm"
-          fit={pres?.fit}
-          position={pres?.position}
-          scale={pres?.scale}
-        />
-        <p className="mt-3 line-clamp-2 text-sm font-semibold leading-snug text-text-primary">
-          {offer.name}
-        </p>
-        <p className="mt-0.5 text-xs text-text-muted">{offer.issuer}</p>
-        <div className="mt-auto pt-3">
-          <p className={`text-2xl font-bold ${accentText}`}>
-            +{formatCurrency(offer.bonusValue)}
-          </p>
+      {interactive ? (
+        <a
+          href={`${hrefBase}/${offer.slug}`}
+          className="group relative flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-5 transition hover:border-brand-teal/25 hover:bg-white/[0.06]"
+        >
+          {content}
+        </a>
+      ) : (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none relative flex h-full flex-col rounded-2xl border border-white/10 bg-white/[0.03] p-5"
+        >
+          {content}
         </div>
-      </a>
+      )}
     </div>
   );
 }
@@ -122,10 +178,61 @@ function EdgeArrow({
 
 export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const hasCenteredInitialCardRef = useRef(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const scrollEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [activeRenderedIndex, setActiveRenderedIndex] = useState(
+    getRenderedOfferIndex(0, offers.length)
+  );
+  const activeRenderedIndexRef = useRef(activeRenderedIndex);
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const renderedOffers =
+    offers.length > 1
+      ? [
+          {
+            key: `clone-start-${offers[offers.length - 1].slug}`,
+            offer: offers[offers.length - 1],
+            renderedIndex: 0,
+            isClone: true,
+          },
+          ...offers.map((offer, index) => ({
+            key: offer.slug,
+            offer,
+            renderedIndex: index + 1,
+            isClone: false,
+          })),
+          {
+            key: `clone-end-${offers[0].slug}`,
+            offer: offers[0],
+            renderedIndex: offers.length + 1,
+            isClone: true,
+          },
+        ]
+      : offers.map((offer, index) => ({
+          key: offer.slug,
+          offer,
+          renderedIndex: index,
+          isClone: false,
+        }));
+
+  const syncActiveRenderedIndex = useCallback((index: number) => {
+    activeRenderedIndexRef.current = index;
+    setActiveRenderedIndex(index);
+  }, []);
+
+  const snapToRenderedIndex = useCallback(
+    (renderedIndex: number) => {
+      const track = trackRef.current;
+      if (!track) return;
+
+      const target = track.querySelector<HTMLElement>(
+        `[data-offer-index="${renderedIndex}"]`
+      );
+      if (!target) return;
+
+      syncActiveRenderedIndex(renderedIndex);
+      centerCardInTrack(track, target, 'auto');
+    },
+    [syncActiveRenderedIndex]
+  );
 
   const updateScrollState = useCallback(() => {
     const track = trackRef.current;
@@ -149,10 +256,23 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
       }
     });
 
-    setActiveIndex(nearestIndex);
-    setCanScrollLeft(nearestIndex > 0);
-    setCanScrollRight(nearestIndex < cards.length - 1);
-  }, []);
+    syncActiveRenderedIndex(nearestIndex);
+
+    if (scrollEndTimerRef.current) {
+      clearTimeout(scrollEndTimerRef.current);
+    }
+
+    scrollEndTimerRef.current = setTimeout(() => {
+      const settledIndex = getSettledRenderedIndex(
+        activeRenderedIndexRef.current,
+        offers.length
+      );
+
+      if (settledIndex !== activeRenderedIndexRef.current) {
+        snapToRenderedIndex(settledIndex);
+      }
+    }, 120);
+  }, [offers.length, snapToRenderedIndex, syncActiveRenderedIndex]);
 
   useEffect(() => {
     const track = trackRef.current;
@@ -161,44 +281,60 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
 
     const observer = new ResizeObserver(updateScrollState);
     observer.observe(track);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (scrollEndTimerRef.current) {
+        clearTimeout(scrollEndTimerRef.current);
+      }
+    };
   }, [updateScrollState]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const track = trackRef.current;
-    if (!track || hasCenteredInitialCardRef.current || offers.length === 0) return;
+    if (!track || offers.length === 0) return;
+
+    setHasInitialized(false);
 
     const shouldCenterMiddleCard =
       window.matchMedia('(min-width: 1024px)').matches && offers.length > 2;
-    const initialIndex = shouldCenterMiddleCard ? 1 : 0;
+    const initialRealIndex = shouldCenterMiddleCard ? 1 : 0;
+    const initialIndex = getRenderedOfferIndex(initialRealIndex, offers.length);
     const target = track.querySelector<HTMLElement>(
       `[data-offer-index="${initialIndex}"]`
     );
 
     if (!target) return;
 
-    requestAnimationFrame(() => {
-      target.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' });
-      hasCenteredInitialCardRef.current = true;
-      updateScrollState();
-    });
-  }, [offers.length, updateScrollState]);
+    syncActiveRenderedIndex(initialIndex);
+    centerCardInTrack(track, target, 'auto');
+    setHasInitialized(true);
+  }, [offers.length, syncActiveRenderedIndex]);
 
   const scroll = useCallback(
     (direction: 'left' | 'right') => {
       const track = trackRef.current;
-      if (!track) return;
+      if (!track || offers.length <= 1) return;
+
+      const currentRenderedIndex = getSettledRenderedIndex(
+        activeRenderedIndexRef.current,
+        offers.length
+      );
       const nextIndex =
         direction === 'left'
-          ? Math.max(activeIndex - 1, 0)
-          : Math.min(activeIndex + 1, offers.length - 1);
+          ? currentRenderedIndex - 1
+          : currentRenderedIndex + 1;
+
       const target = track.querySelector<HTMLElement>(
         `[data-offer-index="${nextIndex}"]`
       );
-      target?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      if (!target) return;
+
+      centerCardInTrack(track, target, 'smooth');
     },
-    [activeIndex, offers.length]
+    [offers.length]
   );
+
+  const showArrows = offers.length > 1;
 
   return (
     <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.05] shadow-[0_0_45px_rgba(45,212,191,0.08)] backdrop-blur-2xl lg:ml-auto lg:max-w-[432px]">
@@ -220,17 +356,17 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
           <EdgeArrow
             direction="left"
             onClick={() => scroll('left')}
-            visible={canScrollLeft}
+            visible={showArrows}
           />
           <EdgeArrow
             direction="right"
             onClick={() => scroll('right')}
-            visible={canScrollRight}
+            visible={showArrows}
           />
           <div
             ref={trackRef}
             onScroll={updateScrollState}
-            className="flex gap-4 overflow-x-auto scroll-smooth py-5"
+            className="flex gap-4 overflow-x-auto py-5"
             style={{
               paddingLeft: 'calc(50% - 140px)',
               paddingRight: 'calc(50% - 140px)',
@@ -240,17 +376,20 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
               scrollSnapType: 'x mandatory',
             }}
           >
-            {offers.map((offer, index) => (
+            {renderedOffers.map(({ key, offer, renderedIndex, isClone }) => (
               <div
-                key={offer.slug}
-                data-offer-index={index}
-                className={`snap-center transition-all duration-300 ${
-                  index === activeIndex
+                key={key}
+                aria-hidden={isClone ? 'true' : undefined}
+                data-offer-index={renderedIndex}
+                className={`snap-center ${
+                  hasInitialized ? 'transition-all duration-300' : ''
+                } ${
+                  renderedIndex === activeRenderedIndex
                     ? 'scale-100 opacity-100'
                     : 'scale-[0.93] opacity-55'
                 }`}
               >
-                <OfferCard offer={offer} />
+                <OfferCard offer={offer} interactive={!isClone} />
               </div>
             ))}
           </div>
