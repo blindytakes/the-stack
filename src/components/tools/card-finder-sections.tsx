@@ -195,8 +195,33 @@ function CompactBankChoice({
   name: string;
   onSelect: (name: string) => void;
 }) {
+  function buildBankFallbackLabel(bankName: string) {
+    const normalized = bankName
+      .replace(/\*/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    const lower = normalized.toLowerCase();
+
+    if (lower === 'american express') return 'Amex';
+    if (lower === 'bank of america') return 'BofA';
+    if (lower === 'u.s. bank') return 'U.S.';
+    if (lower === 'wells fargo') return 'WF';
+    if (lower === 'capital one') return 'C1';
+
+    const firstWord = normalized.split(' ')[0] ?? normalized;
+    if (firstWord.length <= 8) return firstWord;
+
+    return normalized
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((segment) => segment[0]?.toUpperCase() ?? '')
+      .join('');
+  }
+
   const imagePresentation = getBankingImagePresentation(name);
   const imageUrl = resolveBankingBrandImageUrl(name);
+  const normalizedScale = Math.min(imagePresentation?.scale ?? 1.04, 1.12);
 
   return (
     <button
@@ -204,25 +229,32 @@ function CompactBankChoice({
       onClick={() => onSelect(name)}
       className="group flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.03] px-3.5 py-3 text-left transition hover:border-brand-teal/35 hover:bg-brand-teal/[0.06]"
     >
-      <div className="w-16 shrink-0">
-        <EntityImage
-          src={imageUrl}
-          alt={`${name} logo`}
-          label={name}
-          className="aspect-[1.586/1] rounded-[0.95rem]"
-          imgClassName={imagePresentation?.imgClassName ?? 'bg-black/10 px-4 py-3'}
-          fallbackClassName="bg-black/10"
-          fallbackVariant="wordmark"
-          fallbackTextClassName="px-2 text-sm sm:text-base"
-          fit={imagePresentation?.fit}
-          position={imagePresentation?.position}
-          scale={imagePresentation?.scale}
-        />
+      <div className="flex h-11 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[0.95rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] ring-1 ring-white/8">
+        {imageUrl ? (
+          // Banking logo URLs are curated brand assets from canonical sources.
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageUrl}
+            alt={`${name} logo`}
+            loading="lazy"
+            decoding="async"
+            style={{
+              ...(imagePresentation?.position ? { objectPosition: imagePresentation.position } : {}),
+              ...(normalizedScale !== 1 ? { transform: `scale(${normalizedScale})` } : {})
+            }}
+            className={`h-full w-full px-3 py-2 ${
+              imagePresentation?.fit === 'cover' ? 'object-cover' : 'object-contain'
+            }`}
+          />
+        ) : (
+          <span className="px-2 text-center text-[11px] font-semibold uppercase tracking-[0.14em] text-text-primary">
+            {buildBankFallbackLabel(name)}
+          </span>
+        )}
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="text-[11px] uppercase tracking-[0.18em] text-text-muted">Bank</p>
-        <p className="mt-1 text-sm font-semibold leading-snug text-text-primary">{name}</p>
+        <p className="text-sm font-semibold leading-snug text-text-primary">{name}</p>
       </div>
 
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-brand-teal/25 bg-brand-teal/10 text-brand-teal transition group-hover:border-brand-teal/40 group-hover:bg-brand-teal/15">
