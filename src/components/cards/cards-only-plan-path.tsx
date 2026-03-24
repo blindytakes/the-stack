@@ -86,7 +86,7 @@ const cardOnlySteps: CardOnlyStep[] = [
     id: 'ownedCardSlugs',
     type: 'card_selection',
     title: 'Which cards do you already have?',
-    description: 'Optional, but useful. We will exclude cards you already have from new-card recommendations.'
+    description: 'We will exclude cards you already have from new-card recommendations.'
   }
 ];
 

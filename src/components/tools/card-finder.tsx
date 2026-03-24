@@ -92,7 +92,7 @@ export function CardFinderTool({
     !('optional' in currentStep && currentStep.optional === true);
 
   return (
-    <section className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
+    <section className="rounded-[2rem] border border-white/10 bg-bg-elevated p-7 md:p-12 lg:p-14">
       {activeSelectedOfferIntent ? (
         <div className="mb-6 rounded-2xl border border-brand-teal/20 bg-brand-teal/10 px-4 py-4 md:px-5">
           <p className="text-xs uppercase tracking-[0.22em] text-brand-teal">Selected offer</p>

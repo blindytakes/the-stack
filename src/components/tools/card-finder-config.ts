@@ -45,7 +45,6 @@ const stateStep: FinderQuestionStep = {
   title: 'What state do you live in?',
   description: 'Some bank bonuses are state-limited, so this keeps ineligible offers out.',
   placeholder: 'Select your state',
-  helperText: 'Choose "Other / not listed" if you are outside the 50 states or D.C.',
   options: usStateOptions
 };
 
@@ -54,7 +53,7 @@ const ownedCardsStep: FinderQuestionStep = {
   type: 'card_selection',
   title: 'Which cards do you already have?',
   description:
-    'Optional, but useful. We will exclude cards you already have from new-card recommendations.'
+    'We will exclude cards you already have from new-card recommendations.'
 };
 
 const availableCashStep: FinderQuestionStep = {

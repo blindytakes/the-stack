@@ -73,11 +73,11 @@ export function CardFinderProgress({
 }) {
   return (
     <div>
-      <p className="text-sm uppercase tracking-[0.25em] text-text-muted">
+      <p className="text-sm uppercase tracking-[0.25em] text-text-muted md:text-base">
         Step {stepIndex + 1} of {totalSteps}
       </p>
       <div
-        className="mt-2 h-1.5 overflow-hidden rounded-full bg-bg-surface"
+        className="mt-3 h-2 overflow-hidden rounded-full bg-bg-surface md:h-2.5"
         role="progressbar"
         aria-valuemin={0}
         aria-valuemax={100}
@@ -107,29 +107,24 @@ export function CardFinderQuestion({
   onAutoAdvance?: () => void;
 }) {
   return (
-    <div className="mt-8">
+    <div className="mt-10">
       <motion.h2
         key={step.id}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="text-3xl font-semibold md:text-4xl"
+        className="text-4xl font-semibold leading-tight text-text-primary md:text-5xl"
       >
-        <span className="flex flex-wrap items-center gap-3">
-          <span>{step.title}</span>
-          {step.optional ? (
-            <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-text-muted">
-              Optional
-            </span>
-          ) : null}
-        </span>
+        {step.title}
       </motion.h2>
       {step.description && (
-        <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
+        <p className="mt-5 max-w-2xl text-lg leading-8 text-text-secondary md:text-xl lg:max-w-none">
+          {step.description}
+        </p>
       )}
       <motion.div
         key={step.id + '-options'}
-        className="mt-8 grid gap-3 md:grid-cols-2"
+        className="mt-10 grid gap-4 md:grid-cols-2"
         initial="hidden"
         animate="visible"
         variants={{
@@ -153,13 +148,13 @@ export function CardFinderQuestion({
                 }
               }}
               whileTap={{ scale: 0.97 }}
-              className={`flex items-center gap-3 rounded-2xl border px-5 py-4 text-left text-base transition-all duration-200 ${
+              className={`flex min-h-[82px] items-center gap-4 rounded-2xl border px-6 py-5 text-left text-lg leading-snug transition-all duration-200 md:min-h-[90px] md:text-xl ${
                 active
                   ? 'border-brand-teal bg-brand-teal/10 text-text-primary scale-[1.02]'
                   : 'border-white/10 bg-bg-surface text-text-secondary hover:border-white/30'
               }`}
             >
-              <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-all duration-200 ${
+              <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-200 ${
                 active
                   ? 'border-brand-teal bg-brand-teal'
                   : 'border-white/20'
@@ -189,26 +184,32 @@ export function CardFinderSelectQuestion({
   onSelect: (value: string) => void;
 }) {
   return (
-    <div className="mt-8">
+    <div className="mt-10">
       <motion.div
         key={step.id}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <h2 className="text-3xl font-semibold text-text-primary md:text-4xl">{step.title}</h2>
+        <h2 className="text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
+          {step.title}
+        </h2>
         {step.description && (
-          <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
+          <p className="mt-5 max-w-2xl text-lg leading-8 text-text-secondary md:text-xl lg:max-w-none">
+            {step.description}
+          </p>
         )}
       </motion.div>
 
-      <div className="mt-8 max-w-xl rounded-2xl border border-white/10 bg-bg-surface p-5">
+      <div className="mt-10 max-w-4xl rounded-3xl border border-white/10 bg-bg-surface p-6 md:p-7 lg:p-8">
         <label className="block">
-          <span className="text-xs uppercase tracking-[0.22em] text-text-muted">Select one</span>
+          <span className="text-sm uppercase tracking-[0.22em] text-text-muted md:text-base">
+            Select one
+          </span>
           <select
             value={selectedValue ?? ''}
             onChange={(event) => onSelect(event.target.value)}
-            className="mt-3 w-full rounded-2xl border border-white/10 bg-bg px-4 py-3 text-base text-text-primary focus:border-brand-teal focus:outline-none"
+            className="mt-4 w-full rounded-2xl border border-white/10 bg-bg px-6 py-5 text-lg text-text-primary focus:border-brand-teal focus:outline-none md:text-xl"
           >
             <option value="">{step.placeholder ?? 'Choose an option'}</option>
             {step.options.map((option) => (
@@ -219,7 +220,9 @@ export function CardFinderSelectQuestion({
           </select>
         </label>
         {step.helperText && (
-          <p className="mt-3 text-sm leading-6 text-text-muted">{step.helperText}</p>
+          <p className="mt-5 text-base leading-8 text-text-muted md:text-lg">
+            {step.helperText}
+          </p>
         )}
       </div>
     </div>
@@ -310,27 +313,26 @@ export function CardSelectionQuestion({
   );
 
   return (
-    <div className="mt-8">
+    <div className="mt-10">
       <motion.div
         key={step.id}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="flex flex-wrap items-center gap-3">
-          <h2 className="text-3xl font-semibold text-text-primary md:text-4xl">{step.title}</h2>
-          <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-text-muted">
-            Optional
-          </span>
-        </div>
-        <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
+        <h2 className="text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
+          {step.title}
+        </h2>
+        <p className="mt-5 max-w-2xl text-lg leading-8 text-text-secondary md:text-xl lg:max-w-none">
+          {step.description}
+        </p>
       </motion.div>
 
-      <div className="mt-8 space-y-4">
-        <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
+      <div className="mt-10 space-y-5">
+        <div className="rounded-3xl border border-white/10 bg-bg-surface p-6 md:p-7">
           <label
             htmlFor={searchId}
-            className="text-xs uppercase tracking-[0.22em] text-text-muted"
+            className="text-sm uppercase tracking-[0.22em] text-text-muted"
           >
             {searchLabel}
           </label>
@@ -340,16 +342,16 @@ export function CardSelectionQuestion({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder={searchPlaceholder}
-            className="mt-3 w-full rounded-2xl border border-white/10 bg-bg px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none"
+            className="mt-4 w-full rounded-2xl border border-white/10 bg-bg px-5 py-4 text-base text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none md:text-lg"
           />
 
           {loading ? (
-            <p className="mt-4 text-sm text-text-muted">Loading the active card catalog…</p>
+            <p className="mt-5 text-base text-text-muted">Loading the active card catalog…</p>
           ) : error ? (
-            <p className="mt-4 text-sm text-brand-coral">{errorMessage}</p>
+            <p className="mt-5 text-base text-brand-coral">{errorMessage}</p>
           ) : trimmedQuery ? (
-            <div className="mt-4 space-y-2">
-              <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Matches</p>
+            <div className="mt-5 space-y-3">
+              <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Matches</p>
               {matchingCards.length > 0 ? (
                 matchingCards.map((card) => (
                   <button
@@ -359,81 +361,83 @@ export function CardSelectionQuestion({
                       onToggle(card.slug);
                       setQuery('');
                     }}
-                    className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-bg px-4 py-3 text-left transition hover:border-brand-teal/40 hover:bg-brand-teal/5"
+                    className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-bg px-5 py-4 text-left transition hover:border-brand-teal/40 hover:bg-brand-teal/5"
                   >
                     <span>
-                      <span className="block text-xs uppercase tracking-[0.2em] text-text-muted">
+                      <span className="block text-sm uppercase tracking-[0.2em] text-text-muted">
                         {card.issuer}
                       </span>
-                      <span className="mt-1 block text-sm text-text-primary">{card.name}</span>
+                      <span className="mt-1 block text-base text-text-primary md:text-lg">
+                        {card.name}
+                      </span>
                     </span>
-                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-teal">
+                    <span className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal">
                       Add
                     </span>
                   </button>
                 ))
               ) : (
-                <p className="rounded-2xl border border-dashed border-white/10 px-4 py-3 text-sm text-text-muted">
+                <p className="rounded-2xl border border-dashed border-white/10 px-5 py-4 text-base text-text-muted">
                   No cards matched that search. Try an issuer name like Chase or Amex.
                 </p>
               )}
             </div>
           ) : (
-            <div className="mt-4">
+            <div className="mt-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Common cards</p>
+                <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Common cards</p>
                 {availableCards.length > commonCards.length && (
                   <button
                     type="button"
                     onClick={() => setShowAllCards(true)}
-                    className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-teal transition hover:opacity-80"
+                    className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal transition hover:opacity-80"
                   >
                     {`Browse all ${availableCards.length} cards`}
                   </button>
                 )}
               </div>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-4 flex flex-wrap gap-3">
                 {commonCards.map((card) => (
                   <button
                     key={card.slug}
                     type="button"
                     onClick={() => onToggle(card.slug)}
-                    className="rounded-full border border-white/10 bg-bg px-3 py-2 text-sm text-text-secondary transition hover:border-brand-teal/40 hover:bg-brand-teal/5 hover:text-text-primary"
+                    className="rounded-full border border-white/10 bg-bg px-4 py-2.5 text-base text-text-secondary transition hover:border-brand-teal/40 hover:bg-brand-teal/5 hover:text-text-primary"
                   >
                     {card.name}
                   </button>
                 ))}
                 {commonCards.length === 0 && (
-                  <p className="text-sm text-text-muted">Start typing to search the full card list.</p>
+                  <p className="text-base text-text-muted">Start typing to search the full card list.</p>
                 )}
               </div>
             </div>
           )}
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
+        <div className="rounded-3xl border border-white/10 bg-bg-surface p-6 md:p-7">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <p className="text-xs uppercase tracking-[0.22em] text-text-muted">{selectedHeading}</p>
-              <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-text-muted">
+              <p className="text-sm uppercase tracking-[0.22em] text-text-muted">{selectedHeading}</p>
+              <span className="rounded-full border border-white/10 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
                 {selectedCards.length}
               </span>
             </div>
             {selectedCards.length > 0 && (
-              <Button variant="ghost" onClick={onClear}>
+              <Button variant="ghost" onClick={onClear} className="px-5 py-2.5 text-sm md:text-base">
                 Clear all
               </Button>
             )}
           </div>
 
           {selectedCards.length > 0 ? (
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-3">
               {selectedCards.map((card) => (
                 <button
                   key={card.slug}
                   type="button"
                   onClick={() => onToggle(card.slug)}
-                  className="rounded-full border border-brand-teal/30 bg-brand-teal/10 px-3 py-2 text-sm text-text-primary transition hover:border-brand-teal/50"
+                  className="rounded-full border border-brand-teal/30 bg-brand-teal/10 px-4 py-2.5 text-base text-text-primary transition hover:border-brand-teal/50"
                 >
                   {card.name}
                   <span className="ml-2 text-text-muted">×</span>
@@ -441,7 +445,7 @@ export function CardSelectionQuestion({
               ))}
             </div>
           ) : (
-            <p className="mt-3 text-sm text-text-muted">
+            <p className="mt-4 text-base text-text-muted">
               No cards selected yet. Add any cards you already have from the box above.
             </p>
           )}
@@ -555,27 +559,26 @@ export function BankSelectionQuestion({
     : available;
 
   return (
-    <div className="mt-8">
+    <div className="mt-10">
       <motion.div
         key={step.id}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="flex flex-wrap items-center gap-3">
-          <h2 className="text-3xl font-semibold text-text-primary md:text-4xl">{step.title}</h2>
-          <span className="rounded-full border border-white/10 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-text-muted">
-            Optional
-          </span>
-        </div>
-        <p className="mt-4 max-w-2xl text-base text-text-secondary">{step.description}</p>
+        <h2 className="text-4xl font-semibold leading-tight text-text-primary md:text-5xl">
+          {step.title}
+        </h2>
+        <p className="mt-5 max-w-2xl text-lg leading-8 text-text-secondary md:text-xl lg:max-w-none">
+          {step.description}
+        </p>
       </motion.div>
 
-      <div className="mt-8 space-y-4">
-        <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
+      <div className="mt-10 space-y-5">
+        <div className="rounded-3xl border border-white/10 bg-bg-surface p-6 md:p-7">
           <label
             htmlFor="bank-name-search"
-            className="text-xs uppercase tracking-[0.22em] text-text-muted"
+            className="text-sm uppercase tracking-[0.22em] text-text-muted"
           >
             Search banks
           </label>
@@ -585,14 +588,14 @@ export function BankSelectionQuestion({
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search by bank name"
-            className="mt-3 w-full rounded-2xl border border-white/10 bg-bg px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none"
+            className="mt-4 w-full rounded-2xl border border-white/10 bg-bg px-5 py-4 text-base text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none md:text-lg"
           />
 
-          <div className="mt-4">
-            <p className="text-xs uppercase tracking-[0.22em] text-text-muted">
+          <div className="mt-5">
+            <p className="text-sm uppercase tracking-[0.22em] text-text-muted">
               {trimmedQuery ? 'Matches' : 'All banks'}
             </p>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-3">
               {filtered.length > 0 ? (
                 filtered.map((name) => (
                   <button
@@ -602,13 +605,13 @@ export function BankSelectionQuestion({
                       onToggle(name);
                       setQuery('');
                     }}
-                    className="rounded-full border border-white/10 bg-bg px-3 py-2 text-sm text-text-secondary transition hover:border-brand-teal/40 hover:bg-brand-teal/5 hover:text-text-primary"
+                    className="rounded-full border border-white/10 bg-bg px-4 py-2.5 text-base text-text-secondary transition hover:border-brand-teal/40 hover:bg-brand-teal/5 hover:text-text-primary"
                   >
                     {name}
                   </button>
                 ))
               ) : (
-                <p className="rounded-2xl border border-dashed border-white/10 px-4 py-3 text-sm text-text-muted">
+                <p className="rounded-2xl border border-dashed border-white/10 px-5 py-4 text-base text-text-muted">
                   {trimmedQuery ? 'No banks matched that search.' : 'No banks available.'}
                 </p>
               )}
@@ -616,29 +619,29 @@ export function BankSelectionQuestion({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-bg-surface p-5">
+        <div className="rounded-3xl border border-white/10 bg-bg-surface p-6 md:p-7">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Banks you already use</p>
-              <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-text-muted">
+              <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Banks you already use</p>
+              <span className="rounded-full border border-white/10 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
                 {selectedNames.length}
               </span>
             </div>
             {selectedNames.length > 0 && (
-              <Button variant="ghost" onClick={onClear}>
+              <Button variant="ghost" onClick={onClear} className="px-5 py-2.5 text-sm md:text-base">
                 Clear all
               </Button>
             )}
           </div>
 
           {selectedNames.length > 0 ? (
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-4 flex flex-wrap gap-3">
               {selectedNames.map((name) => (
                 <button
                   key={name}
                   type="button"
                   onClick={() => onToggle(name)}
-                  className="rounded-full border border-brand-teal/30 bg-brand-teal/10 px-3 py-2 text-sm text-text-primary transition hover:border-brand-teal/50"
+                  className="rounded-full border border-brand-teal/30 bg-brand-teal/10 px-4 py-2.5 text-base text-text-primary transition hover:border-brand-teal/50"
                 >
                   {name}
                   <span className="ml-2 text-text-muted">×</span>
@@ -646,7 +649,7 @@ export function BankSelectionQuestion({
               ))}
             </div>
           ) : (
-            <p className="mt-3 text-sm text-text-muted">
+            <p className="mt-4 text-base text-text-muted">
               No banks selected yet. Add any banks you already use from the box above.
             </p>
           )}
@@ -684,18 +687,26 @@ export function CardFinderActions({
   onSubmit: () => void;
 }) {
   return (
-    <div className="mt-8 flex flex-wrap justify-between gap-4">
+    <div className="mt-10 flex flex-wrap justify-between gap-4">
       {canGoBack ? (
-        <Button variant="ghost" onClick={onBack}>
+        <Button variant="ghost" onClick={onBack} className="px-6 py-3 text-base md:px-7 md:text-lg">
           Back
         </Button>
       ) : <span />}
       {isLastStep && isComplete ? (
-        <Button onClick={onSubmit} disabled={loading}>
+        <Button
+          onClick={onSubmit}
+          disabled={loading}
+          className="px-6 py-3 text-base md:px-7 md:text-lg"
+        >
           {loading ? (submittingLabel ?? 'Scoring...') : (submitLabel ?? 'See my bonus plan')}
         </Button>
       ) : hideContinue ? null : (
-        <Button onClick={onContinue} disabled={!canContinue || isLastStep}>
+        <Button
+          onClick={onContinue}
+          disabled={!canContinue || isLastStep}
+          className="px-6 py-3 text-base md:px-7 md:text-lg"
+        >
           {continueLabel ?? 'Continue'}
         </Button>
       )}
