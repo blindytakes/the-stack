@@ -137,6 +137,7 @@ export function CardFinderTool({
           searchLabel="Search cards"
           searchPlaceholder="Search by card name or issuer"
           selectedHeading="Already open"
+          browseAllLayout="modal"
         />
       ) : currentStep.type === 'bank_selection' ? (
         <BankSelectionQuestion

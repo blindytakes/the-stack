@@ -3,6 +3,11 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
+import { EntityImage } from '@/components/ui/entity-image';
+import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
+import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
+import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import { formatSpendCategoryLabel } from '@/lib/cards-directory-explorer';
 import type { CardRecord } from '@/lib/cards';
 import type { QuizRequest } from '@/lib/quiz-engine';
 import { usStateAndOtherOptions } from '@/lib/us-state-options';
@@ -17,7 +22,18 @@ const popularOwnedCardSlugs = [
   'amex-blue-cash-preferred',
   'bilt-mastercard'
 ] as const;
-const commonCardLimit = popularOwnedCardSlugs.length;
+const commonCardLimit = 6;
+const popularOwnedBankNames = [
+  'Chase',
+  'Bank of America',
+  'Wells Fargo',
+  'Capital One',
+  'Citi',
+  'American Express',
+  'Discover',
+  'U.S. Bank'
+] as const;
+const commonBankLimit = 6;
 
 export const usStateOptions = usStateAndOtherOptions;
 
@@ -61,6 +77,160 @@ export type FinderBankSelectionStep = {
 };
 
 export type FinderQuestionStep = FinderOptionStep | FinderSelectStep | FinderCardSelectionStep | FinderBankSelectionStep;
+
+function formatRewardTypeLabel(rewardType: CardRecord['rewardType']) {
+  if (rewardType === 'cashback') return 'Cash back';
+  if (rewardType === 'miles') return 'Miles';
+  return 'Points';
+}
+
+function formatAnnualFeeLabel(annualFee: number) {
+  return annualFee === 0 ? 'No annual fee' : `$${annualFee} annual fee`;
+}
+
+function formatPrimarySpendLabel(card: CardRecord) {
+  const primaryCategory = card.topCategories.find((category) => category !== 'other') ?? 'all';
+  return formatSpendCategoryLabel(primaryCategory);
+}
+
+function CompactCardChoice({
+  card,
+  onSelect
+}: {
+  card: CardRecord;
+  onSelect: (slug: string) => void;
+}) {
+  const imagePresentation = getCardImagePresentation(card.slug);
+  const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(card.slug)}
+      className="group flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.03] px-3.5 py-3 text-left transition hover:border-brand-teal/35 hover:bg-brand-teal/[0.06]"
+    >
+      <div className="w-16 shrink-0">
+        <EntityImage
+          src={card.imageUrl}
+          alt={`${card.name} card art`}
+          label={card.name}
+          className="aspect-[1.586/1] rounded-[0.95rem]"
+          imgClassName={imageClassName}
+          fallbackClassName="bg-black/10"
+          fit={imagePresentation?.fit}
+          position={imagePresentation?.position}
+          scale={imagePresentation?.scale}
+        />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-text-muted">{card.issuer}</p>
+        <p className="mt-1 text-sm font-semibold leading-snug text-text-primary">
+          {card.name}
+        </p>
+      </div>
+
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-brand-teal/25 bg-brand-teal/10 text-brand-teal transition group-hover:border-brand-teal/40 group-hover:bg-brand-teal/15">
+        +
+      </span>
+    </button>
+  );
+}
+
+function DrawerCardRow({
+  card,
+  onSelect
+}: {
+  card: CardRecord;
+  onSelect: (slug: string) => void;
+}) {
+  const imagePresentation = getCardImagePresentation(card.slug);
+  const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(card.slug)}
+      className="group flex w-full items-start gap-4 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-3.5 text-left transition hover:border-brand-teal/35 hover:bg-brand-teal/[0.06]"
+    >
+      <div className="w-24 shrink-0">
+        <EntityImage
+          src={card.imageUrl}
+          alt={`${card.name} card art`}
+          label={card.name}
+          className="aspect-[1.586/1] rounded-[0.95rem]"
+          imgClassName={imageClassName}
+          fallbackClassName="bg-black/10"
+          fit={imagePresentation?.fit}
+          position={imagePresentation?.position}
+          scale={imagePresentation?.scale}
+        />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-text-muted">{card.issuer}</p>
+            <p className="mt-1 text-sm font-semibold leading-snug text-text-primary">
+              {card.name}
+            </p>
+          </div>
+          <span className="rounded-full border border-brand-teal/25 bg-brand-teal/10 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-teal transition group-hover:border-brand-teal/40">
+            Add
+          </span>
+        </div>
+
+        <p className="mt-3 text-xs text-text-secondary">
+          {formatPrimarySpendLabel(card)} · {formatRewardTypeLabel(card.rewardType)} · {formatAnnualFeeLabel(card.annualFee)}
+        </p>
+      </div>
+    </button>
+  );
+}
+
+function CompactBankChoice({
+  name,
+  onSelect
+}: {
+  name: string;
+  onSelect: (name: string) => void;
+}) {
+  const imagePresentation = getBankingImagePresentation(name);
+  const imageUrl = resolveBankingBrandImageUrl(name);
+
+  return (
+    <button
+      type="button"
+      onClick={() => onSelect(name)}
+      className="group flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.03] px-3.5 py-3 text-left transition hover:border-brand-teal/35 hover:bg-brand-teal/[0.06]"
+    >
+      <div className="w-16 shrink-0">
+        <EntityImage
+          src={imageUrl}
+          alt={`${name} logo`}
+          label={name}
+          className="aspect-[1.586/1] rounded-[0.95rem]"
+          imgClassName={imagePresentation?.imgClassName ?? 'bg-black/10 px-4 py-3'}
+          fallbackClassName="bg-black/10"
+          fallbackVariant="wordmark"
+          fallbackTextClassName="px-2 text-sm sm:text-base"
+          fit={imagePresentation?.fit}
+          position={imagePresentation?.position}
+          scale={imagePresentation?.scale}
+        />
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-text-muted">Bank</p>
+        <p className="mt-1 text-sm font-semibold leading-snug text-text-primary">{name}</p>
+      </div>
+
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-brand-teal/25 bg-brand-teal/10 text-brand-teal transition group-hover:border-brand-teal/40 group-hover:bg-brand-teal/15">
+        +
+      </span>
+    </button>
+  );
+}
 
 export function CardFinderProgress({
   stepIndex,
@@ -239,10 +409,9 @@ export function CardSelectionQuestion({
   searchLabel = 'Search cards',
   searchPlaceholder = 'Search by card name or issuer',
   selectedHeading,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   selectedSummary,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   emptySelectionText,
+  browseAllLayout = 'drawer',
   loading = false,
   error = '',
   errorMessage = 'Card search is unavailable right now. You can skip this step and still build a plan.'
@@ -258,6 +427,7 @@ export function CardSelectionQuestion({
   selectedHeading: string;
   selectedSummary?: (count: number) => string;
   emptySelectionText?: string;
+  browseAllLayout?: 'drawer' | 'modal';
   loading?: boolean;
   error?: string;
   errorMessage?: string;
@@ -265,11 +435,36 @@ export function CardSelectionQuestion({
   const [query, setQuery] = useState('');
   const [showAllCards, setShowAllCards] = useState(false);
   const [allCardsQuery, setAllCardsQuery] = useState('');
+  const [activeIssuer, setActiveIssuer] = useState('all');
+
   useEffect(() => {
     setQuery('');
     setShowAllCards(false);
     setAllCardsQuery('');
+    setActiveIssuer('all');
   }, [step.id]);
+
+  useEffect(() => {
+    if (!showAllCards) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setShowAllCards(false);
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showAllCards]);
+
   const trimmedQuery = query.trim().toLowerCase();
   const trimmedAllCardsQuery = allCardsQuery.trim().toLowerCase();
   const cardsBySlug = new Map(cards.map((card) => [card.slug, card]));
@@ -281,11 +476,12 @@ export function CardSelectionQuestion({
     (a, b) => a.issuer.localeCompare(b.issuer) || a.name.localeCompare(b.name)
   );
   const availableCards = sortedCards.filter((card) => !selectedCardSet.has(card.slug));
-  const matchingCards = trimmedQuery
-    ? availableCards
-        .filter((card) => `${card.name} ${card.issuer}`.toLowerCase().includes(trimmedQuery))
-        .slice(0, 8)
+  const matchedSearchCards = trimmedQuery
+    ? availableCards.filter((card) =>
+        `${card.name} ${card.issuer}`.toLowerCase().includes(trimmedQuery)
+      )
     : [];
+  const matchingCards = matchedSearchCards.slice(0, 6);
   const popularCardSlugSet = new Set<string>(popularOwnedCardSlugs);
   const prioritizedCommonCards = popularOwnedCardSlugs
     .map((slug) => cardsBySlug.get(slug))
@@ -293,12 +489,26 @@ export function CardSelectionQuestion({
     .filter((card) => !selectedCardSet.has(card.slug));
   const fallbackCommonCards = availableCards.filter((card) => !popularCardSlugSet.has(card.slug));
   const commonCards = [...prioritizedCommonCards, ...fallbackCommonCards].slice(0, commonCardLimit);
+  const issuerOptions = Array.from(new Set(availableCards.map((card) => card.issuer))).sort(
+    (a, b) => a.localeCompare(b)
+  );
+
+  useEffect(() => {
+    if (activeIssuer !== 'all' && !issuerOptions.includes(activeIssuer)) {
+      setActiveIssuer('all');
+    }
+  }, [activeIssuer, issuerOptions]);
+
   const fullListCards = trimmedAllCardsQuery
     ? availableCards.filter((card) =>
         `${card.name} ${card.issuer}`.toLowerCase().includes(trimmedAllCardsQuery)
       )
     : availableCards;
-  const allCardGroups = fullListCards.reduce<Array<{ issuer: string; cards: CardRecord[] }>>(
+  const drawerCards =
+    activeIssuer === 'all'
+      ? fullListCards
+      : fullListCards.filter((card) => card.issuer === activeIssuer);
+  const allCardGroups = drawerCards.reduce<Array<{ issuer: string; cards: CardRecord[] }>>(
     (groups, card) => {
       const lastGroup = groups[groups.length - 1];
       if (lastGroup && lastGroup.issuer === card.issuer) {
@@ -311,6 +521,18 @@ export function CardSelectionQuestion({
     },
     []
   );
+  const selectedSummaryText =
+    selectedCards.length > 0
+      ? selectedSummary?.(selectedCards.length) ??
+        'Selected cards stay out of future recommendation sets.'
+      : emptySelectionText ??
+        'No cards selected yet. Add any cards you already have from the quick picks or full catalog.';
+
+  function openAllCardsDrawer(prefillQuery = '') {
+    setAllCardsQuery(prefillQuery);
+    setActiveIssuer('all');
+    setShowAllCards(true);
+  }
 
   return (
     <div className="mt-10">
@@ -329,100 +551,124 @@ export function CardSelectionQuestion({
       </motion.div>
 
       <div className="mt-10 space-y-5">
-        <div className="rounded-3xl border border-white/10 bg-bg-surface p-6 md:p-7">
-          <label
-            htmlFor={searchId}
-            className="text-sm uppercase tracking-[0.22em] text-text-muted"
-          >
-            {searchLabel}
+        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02))] p-6 shadow-[0_8px_36px_rgba(0,0,0,0.18)] md:p-7">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[0.22em] text-text-muted">{searchLabel}</p>
+              <p className="mt-1 text-sm text-text-secondary">Search directly or browse the full list.</p>
+            </div>
+
+            {availableCards.length > 0 && (
+              <Button
+                onClick={() => openAllCardsDrawer(query)}
+                className="w-full gap-2 px-4 py-3 text-sm sm:w-auto"
+              >
+                Browse all cards
+                <span className="rounded-full bg-black/20 px-2 py-0.5 text-[11px] uppercase tracking-[0.18em] text-black/80">
+                  {availableCards.length}
+                </span>
+              </Button>
+            )}
+          </div>
+
+          <label htmlFor={searchId} className="mt-6 block">
+            <span className="sr-only">{searchLabel}</span>
+            <input
+              id={searchId}
+              type="text"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={searchPlaceholder}
+              className="w-full rounded-2xl border border-white/10 bg-bg px-5 py-4 text-base text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none md:text-lg"
+            />
           </label>
-          <input
-            id={searchId}
-            type="text"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder={searchPlaceholder}
-            className="mt-4 w-full rounded-2xl border border-white/10 bg-bg px-5 py-4 text-base text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none md:text-lg"
-          />
 
           {loading ? (
             <p className="mt-5 text-base text-text-muted">Loading the active card catalog…</p>
           ) : error ? (
             <p className="mt-5 text-base text-brand-coral">{errorMessage}</p>
           ) : trimmedQuery ? (
-            <div className="mt-5 space-y-3">
-              <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Matches</p>
-              {matchingCards.length > 0 ? (
-                matchingCards.map((card) => (
-                  <button
-                    key={card.slug}
-                    type="button"
-                    onClick={() => {
-                      onToggle(card.slug);
-                      setQuery('');
-                    }}
-                    className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-bg px-5 py-4 text-left transition hover:border-brand-teal/40 hover:bg-brand-teal/5"
+            <div className="mt-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Matches</p>
+                {matchedSearchCards.length > matchingCards.length && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => openAllCardsDrawer(query)}
+                    className="px-4 py-2.5 text-sm"
                   >
-                    <span>
-                      <span className="block text-sm uppercase tracking-[0.2em] text-text-muted">
-                        {card.issuer}
-                      </span>
-                      <span className="mt-1 block text-base text-text-primary md:text-lg">
-                        {card.name}
-                      </span>
-                    </span>
-                    <span className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal">
-                      Add
-                    </span>
-                  </button>
-                ))
+                    View all {matchedSearchCards.length} matches
+                  </Button>
+                )}
+              </div>
+
+              {matchingCards.length > 0 ? (
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {matchingCards.map((card) => (
+                    <CompactCardChoice
+                      key={card.slug}
+                      card={card}
+                      onSelect={(slug) => {
+                        onToggle(slug);
+                        setQuery('');
+                      }}
+                    />
+                  ))}
+                </div>
               ) : (
-                <p className="rounded-2xl border border-dashed border-white/10 px-5 py-4 text-base text-text-muted">
-                  No cards matched that search. Try an issuer name like Chase or Amex.
-                </p>
+                <div className="mt-4 rounded-[1.5rem] border border-dashed border-white/10 bg-bg/40 px-5 py-5">
+                  <p className="text-base text-text-muted">
+                    No cards matched that search. Try an issuer name like Chase or Amex, or open the full catalog.
+                  </p>
+                </div>
               )}
             </div>
           ) : (
-            <div className="mt-5">
+            <div className="mt-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Common cards</p>
-                {availableCards.length > commonCards.length && (
-                  <button
-                    type="button"
-                    onClick={() => setShowAllCards(true)}
-                    className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal transition hover:opacity-80"
-                  >
-                    {`Browse all ${availableCards.length} cards`}
-                  </button>
-                )}
+                <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Quick picks</p>
+                <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+                  {commonCards.length} suggested
+                </span>
               </div>
-              <div className="mt-4 flex flex-wrap gap-3">
-                {commonCards.map((card) => (
-                  <button
-                    key={card.slug}
-                    type="button"
-                    onClick={() => onToggle(card.slug)}
-                    className="rounded-full border border-white/10 bg-bg px-4 py-2.5 text-base text-text-secondary transition hover:border-brand-teal/40 hover:bg-brand-teal/5 hover:text-text-primary"
-                  >
-                    {card.name}
-                  </button>
-                ))}
-                {commonCards.length === 0 && (
-                  <p className="text-base text-text-muted">Start typing to search the full card list.</p>
-                )}
-              </div>
+
+              {commonCards.length > 0 ? (
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {commonCards.map((card) => (
+                    <CompactCardChoice
+                      key={card.slug}
+                      card={card}
+                      onSelect={onToggle}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-4 rounded-[1.5rem] border border-dashed border-white/10 bg-bg/40 px-5 py-5">
+                  <p className="text-base text-text-muted">
+                    {availableCards.length === 0
+                      ? 'You already selected every card in the current catalog.'
+                      : 'Start typing to search, or open the full catalog to browse all available cards.'}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-bg-surface p-6 md:p-7">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <p className="text-sm uppercase tracking-[0.22em] text-text-muted">{selectedHeading}</p>
-              <span className="rounded-full border border-white/10 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
-                {selectedCards.length}
-              </span>
+        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(45,212,191,0.09),rgba(255,255,255,0.025))] p-6 shadow-[0_10px_40px_rgba(45,212,191,0.08)] md:p-7">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-3">
+                <p className="text-sm uppercase tracking-[0.22em] text-text-muted">{selectedHeading}</p>
+                <span className="rounded-full border border-white/10 px-2.5 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+                  {selectedCards.length}
+                </span>
+              </div>
+              {selectedCards.length === 0 && (
+                <p className="mt-2 text-sm text-text-secondary">{selectedSummaryText}</p>
+              )}
             </div>
+
             {selectedCards.length > 0 && (
               <Button variant="ghost" onClick={onClear} className="px-5 py-2.5 text-sm md:text-base">
                 Clear all
@@ -430,63 +676,82 @@ export function CardSelectionQuestion({
             )}
           </div>
 
-          {selectedCards.length > 0 ? (
-            <div className="mt-4 flex flex-wrap gap-3">
+          {selectedCards.length > 0 && (
+            <div className="mt-5 flex flex-wrap gap-3">
               {selectedCards.map((card) => (
                 <button
                   key={card.slug}
                   type="button"
                   onClick={() => onToggle(card.slug)}
-                  className="rounded-full border border-brand-teal/30 bg-brand-teal/10 px-4 py-2.5 text-base text-text-primary transition hover:border-brand-teal/50"
+                  className="group rounded-full border border-brand-teal/25 bg-brand-teal/[0.08] px-4 py-2.5 text-left transition hover:border-brand-teal/45 hover:bg-brand-teal/[0.12]"
+                  aria-label={`Remove ${card.name}`}
                 >
-                  {card.name}
-                  <span className="ml-2 text-text-muted">×</span>
+                  <span className="text-base text-text-primary">{card.name}</span>
+                  <span className="ml-2 text-text-muted transition group-hover:text-text-primary">×</span>
                 </button>
               ))}
             </div>
-          ) : (
-            <p className="mt-4 text-base text-text-muted">
-              No cards selected yet. Add any cards you already have from the box above.
-            </p>
           )}
         </div>
       </div>
 
       {showAllCards && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+          className={`fixed inset-0 z-50 bg-black/70 backdrop-blur-sm ${
+            browseAllLayout === 'modal' ? 'flex items-center justify-center p-4 md:p-6' : ''
+          }`}
           onClick={() => setShowAllCards(false)}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.2 }}
         >
           <motion.div
-            className="w-full max-w-4xl rounded-3xl border border-white/10 bg-bg-elevated p-6 shadow-[0_24px_80px_rgba(0,0,0,0.45)] md:p-8"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={`${searchId}-catalog-title`}
+            className={
+              browseAllLayout === 'modal'
+                ? 'flex max-h-[88vh] w-full max-w-[920px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(20,22,33,0.98),rgba(14,16,25,1))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.45)] md:p-6'
+                : 'ml-auto flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-white/10 bg-[linear-gradient(180deg,rgba(20,22,33,0.98),rgba(14,16,25,1))] p-5 shadow-[-24px_0_80px_rgba(0,0,0,0.45)] md:p-6'
+            }
             onClick={(event) => event.stopPropagation()}
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            initial={
+              browseAllLayout === 'modal'
+                ? { opacity: 0, scale: 0.96, y: 16 }
+                : { opacity: 0, x: 36 }
+            }
+            animate={
+              browseAllLayout === 'modal'
+                ? { opacity: 1, scale: 1, y: 0 }
+                : { opacity: 1, x: 0 }
+            }
             transition={{ duration: 0.25, ease: 'easeOut' }}
           >
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-5">
               <div>
                 <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Full card list</p>
-                <h3 className="mt-2 text-2xl font-semibold text-text-primary">
-                  Browse every active card
+                <h3 id={`${searchId}-catalog-title`} className="mt-2 text-2xl font-semibold text-text-primary">
+                  Browse all cards
                 </h3>
                 <p className="mt-2 text-sm text-text-secondary">
-                  Add any cards you already have. Selected cards disappear from this list automatically.
+                  Selected cards disappear from this list automatically.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowAllCards(false)}
-                className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
-              >
-                Close
-              </button>
+              <div className="flex items-center gap-3">
+                <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+                  {selectedCards.length} selected
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowAllCards(false)}
+                  className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
+                >
+                  Close
+                </button>
+              </div>
             </div>
 
-            <div className="mt-6">
+            <div className="mt-5">
               <label
                 htmlFor={`${searchId}-all-cards`}
                 className="text-xs uppercase tracking-[0.22em] text-text-muted"
@@ -499,36 +764,74 @@ export function CardSelectionQuestion({
                 value={allCardsQuery}
                 onChange={(event) => setAllCardsQuery(event.target.value)}
                 placeholder="Search by card name or issuer"
+                autoFocus
                 className="mt-3 w-full rounded-2xl border border-white/10 bg-bg px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none"
               />
             </div>
 
-            <div className="mt-6 max-h-[60vh] space-y-5 overflow-y-auto pr-2">
+            {issuerOptions.length > 1 && (
+              <div className="mt-5">
+                <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Filter by issuer</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setActiveIssuer('all')}
+                    className={`rounded-full border px-3 py-2 text-sm transition ${
+                      activeIssuer === 'all'
+                        ? 'border-brand-teal/40 bg-brand-teal/10 text-text-primary'
+                        : 'border-white/10 text-text-secondary hover:border-white/30 hover:text-text-primary'
+                    }`}
+                  >
+                    All issuers
+                  </button>
+                  {issuerOptions.map((issuer) => (
+                    <button
+                      key={issuer}
+                      type="button"
+                      onClick={() => setActiveIssuer(issuer)}
+                      className={`rounded-full border px-3 py-2 text-sm transition ${
+                        activeIssuer === issuer
+                          ? 'border-brand-teal/40 bg-brand-teal/10 text-text-primary'
+                          : 'border-white/10 text-text-secondary hover:border-white/30 hover:text-text-primary'
+                      }`}
+                    >
+                      {issuer}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="mt-6 flex-1 overflow-y-auto pr-1">
               {allCardGroups.length > 0 ? (
-                allCardGroups.map((group) => (
-                  <div key={group.issuer}>
-                    <p className="text-[11px] uppercase tracking-[0.2em] text-text-muted">
-                      {group.issuer}
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {group.cards.map((card) => (
-                        <button
-                          key={card.slug}
-                          type="button"
-                          onClick={() => onToggle(card.slug)}
-                          className="rounded-full border border-white/10 bg-bg px-3 py-2 text-sm text-text-secondary transition hover:border-brand-teal/40 hover:bg-brand-teal/5 hover:text-text-primary"
-                        >
-                          {card.name}
-                        </button>
-                      ))}
+                <div className="space-y-5 pb-4">
+                  {allCardGroups.map((group) => (
+                    <div key={group.issuer}>
+                      <p className="text-[11px] uppercase tracking-[0.2em] text-text-muted">
+                        {group.issuer}
+                      </p>
+                      <div className="mt-3 space-y-3">
+                        {group.cards.map((card) => (
+                          <DrawerCardRow key={card.slug} card={card} onSelect={onToggle} />
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               ) : (
-                <p className="rounded-2xl border border-dashed border-white/10 px-4 py-3 text-sm text-text-muted">
-                  No cards matched that search.
-                </p>
+                <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-bg/30 px-4 py-4 text-sm text-text-muted">
+                  No cards matched that search or filter.
+                </div>
               )}
+            </div>
+
+            <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
+              <p className="text-sm text-text-secondary">
+                {selectedCards.length === 0
+                  ? 'Select any cards you already have, then continue.'
+                  : `${selectedCards.length} card${selectedCards.length === 1 ? '' : 's'} selected`}
+              </p>
+              <Button onClick={() => setShowAllCards(false)}>Done</Button>
             </div>
           </motion.div>
         </motion.div>
@@ -551,12 +854,58 @@ export function BankSelectionQuestion({
   onClear: () => void;
 }) {
   const [query, setQuery] = useState('');
+  const [showAllBanks, setShowAllBanks] = useState(false);
+  const [allBanksQuery, setAllBanksQuery] = useState('');
+
+  useEffect(() => {
+    setQuery('');
+    setShowAllBanks(false);
+    setAllBanksQuery('');
+  }, [step.id]);
+
+  useEffect(() => {
+    if (!showAllBanks) {
+      return undefined;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setShowAllBanks(false);
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showAllBanks]);
+
   const trimmedQuery = query.trim().toLowerCase();
+  const trimmedAllBanksQuery = allBanksQuery.trim().toLowerCase();
   const selectedSet = new Set(selectedNames);
-  const available = bankNames.filter((name) => !selectedSet.has(name));
-  const filtered = trimmedQuery
+  const available = [...bankNames]
+    .filter((name) => !selectedSet.has(name))
+    .sort((a, b) => a.localeCompare(b));
+  const matchedBanks = trimmedQuery
     ? available.filter((name) => name.toLowerCase().includes(trimmedQuery))
+    : [];
+  const matchingBanks = matchedBanks.slice(0, 8);
+  const popularBankSet = new Set<string>(popularOwnedBankNames);
+  const prioritizedCommonBanks = popularOwnedBankNames.filter((name) => available.includes(name));
+  const fallbackCommonBanks = available.filter((name) => !popularBankSet.has(name));
+  const commonBanks = [...prioritizedCommonBanks, ...fallbackCommonBanks].slice(0, commonBankLimit);
+  const fullListBanks = trimmedAllBanksQuery
+    ? available.filter((name) => name.toLowerCase().includes(trimmedAllBanksQuery))
     : available;
+
+  function openAllBanksModal(prefillQuery = '') {
+    setAllBanksQuery(prefillQuery);
+    setShowAllBanks(true);
+  }
 
   return (
     <div className="mt-10">
@@ -575,51 +924,106 @@ export function BankSelectionQuestion({
       </motion.div>
 
       <div className="mt-10 space-y-5">
-        <div className="rounded-3xl border border-white/10 bg-bg-surface p-6 md:p-7">
+        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02))] p-6 shadow-[0_8px_36px_rgba(0,0,0,0.18)] md:p-7">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Search banks</p>
+              <p className="mt-1 text-sm text-text-secondary">Search directly or browse the full list.</p>
+            </div>
+
+            {available.length > 0 && (
+              <Button
+                onClick={() => openAllBanksModal(query)}
+                className="w-full gap-2 px-4 py-3 text-sm sm:w-auto"
+              >
+                Browse all banks
+                <span className="rounded-full bg-black/20 px-2 py-0.5 text-[11px] uppercase tracking-[0.18em] text-black/80">
+                  {available.length}
+                </span>
+              </Button>
+            )}
+          </div>
+
           <label
             htmlFor="bank-name-search"
-            className="text-sm uppercase tracking-[0.22em] text-text-muted"
+            className="mt-6 block"
           >
-            Search banks
-          </label>
+            <span className="sr-only">Search banks</span>
           <input
             id="bank-name-search"
             type="text"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search by bank name"
-            className="mt-4 w-full rounded-2xl border border-white/10 bg-bg px-5 py-4 text-base text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none md:text-lg"
+            className="w-full rounded-2xl border border-white/10 bg-bg px-5 py-4 text-base text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none md:text-lg"
           />
+          </label>
 
-          <div className="mt-5">
-            <p className="text-sm uppercase tracking-[0.22em] text-text-muted">
-              {trimmedQuery ? 'Matches' : 'All banks'}
-            </p>
-            <div className="mt-4 flex flex-wrap gap-3">
-              {filtered.length > 0 ? (
-                filtered.map((name) => (
-                  <button
-                    key={name}
-                    type="button"
-                    onClick={() => {
-                      onToggle(name);
-                      setQuery('');
-                    }}
-                    className="rounded-full border border-white/10 bg-bg px-4 py-2.5 text-base text-text-secondary transition hover:border-brand-teal/40 hover:bg-brand-teal/5 hover:text-text-primary"
+          {trimmedQuery ? (
+            <div className="mt-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Matches</p>
+                {matchedBanks.length > matchingBanks.length && (
+                  <Button
+                    variant="ghost"
+                    onClick={() => openAllBanksModal(query)}
+                    className="px-4 py-2.5 text-sm"
                   >
-                    {name}
-                  </button>
-                ))
+                    View all {matchedBanks.length} matches
+                  </Button>
+                )}
+              </div>
+
+              {matchingBanks.length > 0 ? (
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {matchingBanks.map((name) => (
+                    <CompactBankChoice
+                      key={name}
+                      name={name}
+                      onSelect={(selectedName) => {
+                        onToggle(selectedName);
+                        setQuery('');
+                      }}
+                    />
+                  ))}
+                </div>
               ) : (
-                <p className="rounded-2xl border border-dashed border-white/10 px-5 py-4 text-base text-text-muted">
-                  {trimmedQuery ? 'No banks matched that search.' : 'No banks available.'}
-                </p>
+                <div className="mt-4 rounded-[1.5rem] border border-dashed border-white/10 bg-bg/40 px-5 py-5">
+                  <p className="text-base text-text-muted">
+                    No banks matched that search. Try a bank name like Chase or Capital One, or open the full list.
+                  </p>
+                </div>
               )}
             </div>
-          </div>
+          ) : (
+            <div className="mt-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Quick picks</p>
+                <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+                  {commonBanks.length} suggested
+                </span>
+              </div>
+
+              {commonBanks.length > 0 ? (
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {commonBanks.map((name) => (
+                    <CompactBankChoice key={name} name={name} onSelect={onToggle} />
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-4 rounded-[1.5rem] border border-dashed border-white/10 bg-bg/40 px-5 py-5">
+                  <p className="text-base text-text-muted">
+                    {available.length === 0
+                      ? 'You already selected every bank in the current list.'
+                      : 'Start typing to search, or open the full list to browse all banks.'}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-bg-surface p-6 md:p-7">
+        <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(45,212,191,0.09),rgba(255,255,255,0.025))] p-6 shadow-[0_10px_40px_rgba(45,212,191,0.08)] md:p-7">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <p className="text-sm uppercase tracking-[0.22em] text-text-muted">Banks you already use</p>
@@ -635,26 +1039,109 @@ export function BankSelectionQuestion({
           </div>
 
           {selectedNames.length > 0 ? (
-            <div className="mt-4 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap gap-3">
               {selectedNames.map((name) => (
                 <button
                   key={name}
                   type="button"
                   onClick={() => onToggle(name)}
-                  className="rounded-full border border-brand-teal/30 bg-brand-teal/10 px-4 py-2.5 text-base text-text-primary transition hover:border-brand-teal/50"
+                  className="group rounded-full border border-brand-teal/25 bg-brand-teal/[0.08] px-4 py-2.5 text-left transition hover:border-brand-teal/45 hover:bg-brand-teal/[0.12]"
                 >
-                  {name}
-                  <span className="ml-2 text-text-muted">×</span>
+                  <span className="text-base text-text-primary">{name}</span>
+                  <span className="ml-2 text-text-muted transition group-hover:text-text-primary">×</span>
                 </button>
               ))}
             </div>
           ) : (
-            <p className="mt-4 text-base text-text-muted">
+            <p className="mt-4 text-sm text-text-secondary">
               No banks selected yet. Add any banks you already use from the box above.
             </p>
           )}
         </div>
       </div>
+
+      {showAllBanks && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm md:p-6"
+          onClick={() => setShowAllBanks(false)}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <motion.div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="bank-catalog-title"
+            className="flex max-h-[88vh] w-full max-w-[820px] flex-col overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(20,22,33,0.98),rgba(14,16,25,1))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.45)] md:p-6"
+            onClick={(event) => event.stopPropagation()}
+            initial={{ opacity: 0, scale: 0.96, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+          >
+            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-white/10 pb-5">
+              <div>
+                <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Full bank list</p>
+                <h3 id="bank-catalog-title" className="mt-2 text-2xl font-semibold text-text-primary">
+                  Browse all banks
+                </h3>
+                <p className="mt-2 text-sm text-text-secondary">
+                  Selected banks disappear from this list automatically.
+                </p>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+                  {selectedNames.length} selected
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowAllBanks(false)}
+                  className="rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-5">
+              <label htmlFor="bank-name-search-all" className="text-xs uppercase tracking-[0.22em] text-text-muted">
+                Search full list
+              </label>
+              <input
+                id="bank-name-search-all"
+                type="text"
+                value={allBanksQuery}
+                onChange={(event) => setAllBanksQuery(event.target.value)}
+                placeholder="Search by bank name"
+                autoFocus
+                className="mt-3 w-full rounded-2xl border border-white/10 bg-bg px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none"
+              />
+            </div>
+
+            <div className="mt-6 flex-1 overflow-y-auto pr-1">
+              {fullListBanks.length > 0 ? (
+                <div className="grid gap-3 pb-4 md:grid-cols-2">
+                  {fullListBanks.map((name) => (
+                    <CompactBankChoice key={name} name={name} onSelect={onToggle} />
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-[1.5rem] border border-dashed border-white/10 bg-bg/30 px-4 py-4 text-sm text-text-muted">
+                  No banks matched that search.
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
+              <p className="text-sm text-text-secondary">
+                {selectedNames.length === 0
+                  ? 'Select any banks you already use, then continue.'
+                  : `${selectedNames.length} bank${selectedNames.length === 1 ? '' : 's'} selected`}
+              </p>
+              <Button onClick={() => setShowAllBanks(false)}>Done</Button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }
