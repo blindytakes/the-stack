@@ -3,6 +3,10 @@ import {
   derivePlannerBenefitsValue,
   deriveTotalBenefitsValue
 } from '@/lib/cards/planner-benefits';
+import {
+  resolveCardBrandImageUrl,
+  resolveCardFallbackBenefits
+} from '@/lib/cards/fallback-enrichment';
 import type {
   CardDetail,
   CardRecord,
@@ -99,14 +103,45 @@ function deriveBestSignUpBonus(signUpBonuses: DbCardRow['signUpBonuses']) {
   };
 }
 
+function toResolvedBenefits(row: Pick<
+  DbCardDetailRow,
+  'slug' | 'issuer' | 'name' | 'cardType' | 'annualFee' | 'foreignTxFee' | 'rewards' | 'benefits'
+>) {
+  if (row.benefits.length > 0) {
+    return row.benefits.map((benefit) => ({
+      category: benefit.category,
+      name: benefit.name,
+      description: benefit.description,
+      estimatedValue: benefit.estimatedValue,
+      activationMethod: benefit.activationMethod
+    }));
+  }
+
+  return resolveCardFallbackBenefits({
+    slug: row.slug,
+    issuer: row.issuer,
+    name: row.name,
+    cardType: cardTypeFromDb[row.cardType],
+    annualFee: Number(row.annualFee),
+    foreignTxFee: Number(row.foreignTxFee),
+    rewardType: deriveRewardType(row.rewards),
+    topCategories: deriveTopCategories(row.rewards)
+  });
+}
+
 export function toCardRecordFromDb(row: DbCardRow): CardRecord {
   const bestSignUpBonus = deriveBestSignUpBonus(row.signUpBonuses);
+  const resolvedBenefits = toResolvedBenefits(row);
+  const resolvedBenefitValues = resolvedBenefits.map((benefit) => ({
+    ...benefit,
+    estimatedValue: benefit.estimatedValue ?? null
+  }));
 
   return {
     slug: row.slug,
     name: row.name,
     issuer: row.issuer,
-    imageUrl: row.imageUrl ?? undefined,
+    imageUrl: resolveCardBrandImageUrl(row.issuer, row.imageUrl ?? undefined),
     cardType: cardTypeFromDb[row.cardType],
     rewardType: deriveRewardType(row.rewards),
     topCategories: deriveTopCategories(row.rewards),
@@ -121,13 +156,14 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
     bestSignUpBonusValue: bestSignUpBonus?.bonusValue,
     bestSignUpBonusSpendRequired: bestSignUpBonus?.spendRequired,
     bestSignUpBonusSpendPeriodDays: bestSignUpBonus?.spendPeriodDays,
-    totalBenefitsValue: deriveTotalBenefitsValue(row.benefits),
-    plannerBenefitsValue: derivePlannerBenefitsValue(row.benefits)
+    totalBenefitsValue: deriveTotalBenefitsValue(resolvedBenefitValues),
+    plannerBenefitsValue: derivePlannerBenefitsValue(resolvedBenefitValues)
   };
 }
 
 export function toCardDetailFromDb(row: DbCardDetailRow): CardDetail {
   const base = toCardRecordFromDb(row);
+  const resolvedBenefits = toResolvedBenefits(row);
 
   return {
     ...base,
@@ -157,7 +193,7 @@ export function toCardDetailFromDb(row: DbCardDetailRow): CardDetail {
       spendPeriodDays: bonus.spendPeriodDays,
       isCurrentOffer: bonus.isCurrentOffer
     })),
-    benefits: row.benefits.map((benefit) => ({
+    benefits: resolvedBenefits.map((benefit) => ({
       category: benefit.category.toLowerCase().replace(/_/g, ' '),
       name: benefit.name,
       description: benefit.description,

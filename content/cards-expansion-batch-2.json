@@ -1,0 +1,902 @@
+{
+  "cards": [
+    {
+      "slug": "chase-united-gateway",
+      "name": "United Gateway Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": ["travel", "gas", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-annual-fee United card with a light mileage boost on travel and gas.",
+      "description": "A starter United card for travelers who want MileagePlus earnings and basic airline perks without paying an annual fee.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/united-gateway",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on United purchases." },
+        { "category": "gas", "rate": 2, "rateType": "miles", "notes": "2X miles at gas stations." },
+        { "category": "all", "rate": 1, "rateType": "miles" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 300,
+          "bonusType": "miles",
+          "displayHeadline": "30,000 bonus miles",
+          "displayDescription": "Plus an additional 10,000 bonus miles after adding an authorized user in the first 3 months.",
+          "bonusPoints": 30000,
+          "spendRequired": 1000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-united-quest",
+      "name": "United Quest Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": ["travel", "dining", "all"],
+      "annualFee": 350,
+      "creditTierMin": "good",
+      "headline": "Mid-tier United card with stronger airline perks and bonus mile earning.",
+      "description": "A better fit than Gateway if you fly United regularly and can use the card's travel credits, bags, and award-flight perks.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/quest",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 3, "rateType": "miles", "notes": "3X miles on eligible United purchases." },
+        { "category": "dining", "rate": 2, "rateType": "miles" },
+        { "category": "all", "rate": 1, "rateType": "miles" }
+      ]
+    },
+    {
+      "slug": "chase-united-club",
+      "name": "United Club Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": ["travel", "all"],
+      "annualFee": 695,
+      "creditTierMin": "excellent",
+      "headline": "Premium United card built around lounge access and richer airline perks.",
+      "description": "Best for frequent United flyers who can justify the fee through United Club access, checked bags, and partner credits.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/club-infinite",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 4, "rateType": "miles", "notes": "4X miles on United purchases." },
+        { "category": "other", "rate": 2, "rateType": "miles", "notes": "2X miles on travel purchases outside United." },
+        { "category": "all", "rate": 1, "rateType": "miles" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 900,
+          "bonusType": "miles",
+          "displayHeadline": "90,000 bonus miles",
+          "bonusPoints": 90000,
+          "spendRequired": 5000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-ink-business-premier",
+      "name": "Ink Business Premier Credit Card",
+      "issuer": "Chase",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": ["all", "other"],
+      "annualFee": 195,
+      "creditTierMin": "good",
+      "headline": "High-spend business cashback card that pays extra on large purchases.",
+      "description": "A strong match for businesses with large-ticket expenses that can make the 2.5% tier and welcome offer worthwhile.",
+      "foreignTxFee": 3,
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/ink/premier",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 2, "rateType": "cashback" },
+        { "category": "other", "rate": 2.5, "rateType": "cashback", "notes": "2.5% cash back on purchases of $5,000 or more." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1000,
+          "bonusType": "cashback",
+          "displayHeadline": "$1,000 bonus cash back",
+          "spendRequired": 10000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-united-business",
+      "name": "United Business Card",
+      "issuer": "Chase",
+      "cardType": "business",
+      "rewardType": "miles",
+      "topCategories": ["travel", "all"],
+      "annualFee": 150,
+      "creditTierMin": "good",
+      "headline": "Core United small-business card with checked bags, travel perks, and partner credits.",
+      "description": "A practical option for business owners who fly United often enough to use its bag benefits and recurring travel perks.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/united/business-card",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible United purchases." },
+        { "category": "all", "rate": 1, "rateType": "miles" }
+      ]
+    },
+    {
+      "slug": "chase-united-club-business",
+      "name": "United Club Business Card",
+      "issuer": "Chase",
+      "cardType": "business",
+      "rewardType": "miles",
+      "topCategories": ["travel", "all"],
+      "annualFee": 695,
+      "creditTierMin": "excellent",
+      "headline": "Premium United business card centered on lounge access and airport perks.",
+      "description": "Designed for business owners who want United Club membership, checked bags, and premium airport treatment on United flights.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/united/club-business-card",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 2, "rateType": "miles", "notes": "Base card earnings plus enhanced airline benefits on United purchases." },
+        { "category": "all", "rate": 1, "rateType": "miles" }
+      ]
+    },
+    {
+      "slug": "chase-ihg-one-rewards-traveler",
+      "name": "IHG One Rewards Traveler Credit Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "dining", "gas"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-annual-fee IHG card with solid hotel earning and a few everyday bonus categories.",
+      "description": "A lighter-weight IHG card for travelers who want hotel points and occasional IHG stays without paying an annual fee.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/ihg/traveler",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 5, "rateType": "points", "notes": "5X points on eligible IHG hotel purchases with the card." },
+        { "category": "dining", "rate": 3, "rateType": "points" },
+        { "category": "gas", "rate": 3, "rateType": "points" }
+      ]
+    },
+    {
+      "slug": "chase-ihg-one-rewards-premier-business",
+      "name": "IHG One Rewards Premier Business Credit Card",
+      "issuer": "Chase",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": ["travel", "gas", "dining"],
+      "annualFee": 99,
+      "creditTierMin": "good",
+      "headline": "IHG business card with elevated hotel earning and an accessible annual fee.",
+      "description": "A strong hotel-business card if your company spends on travel and you can use the card's anniversary-night style value.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/ihg/rewards-premier",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 10, "rateType": "points", "notes": "10X points on eligible IHG hotel purchases with the card." },
+        { "category": "gas", "rate": 5, "rateType": "points" },
+        { "category": "dining", "rate": 5, "rateType": "points" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1400,
+          "bonusType": "points",
+          "displayHeadline": "140,000 bonus points",
+          "bonusPoints": 140000,
+          "spendRequired": 4000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-world-of-hyatt-business",
+      "name": "World of Hyatt Business Credit Card",
+      "issuer": "Chase",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": ["travel", "other", "all"],
+      "annualFee": 199,
+      "creditTierMin": "good",
+      "headline": "Business Hyatt card with hotel rewards and flexible category acceleration.",
+      "description": "Best for businesses that can direct meaningful spend toward Hyatt stays and rotating top-spend categories.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/world-of-hyatt/business",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 4, "rateType": "points", "notes": "4X points on Hyatt purchases with the card." },
+        { "category": "other", "rate": 2, "rateType": "points", "notes": "2X points in your top three eligible spend categories each quarter." },
+        { "category": "all", "rate": 1, "rateType": "points" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 600,
+          "bonusType": "points",
+          "displayHeadline": "60,000 bonus points",
+          "bonusPoints": 60000,
+          "spendRequired": 5000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-southwest-rapid-rewards-plus",
+      "name": "Southwest Rapid Rewards Plus Credit Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "gas", "groceries"],
+      "annualFee": 99,
+      "creditTierMin": "good",
+      "headline": "Entry Southwest card with low annual fee and current Companion Pass-style promo value.",
+      "description": "A lower-cost way to get into the Southwest ecosystem if you value anniversary points and occasional airline perks.",
+      "foreignTxFee": 3,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/southwest/plus",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 2, "rateType": "points", "notes": "2X points on Southwest purchases." },
+        { "category": "gas", "rate": 2, "rateType": "points", "notes": "2X points on the first $5,000 in combined gas and grocery purchases each year." },
+        { "category": "groceries", "rate": 2, "rateType": "points", "notes": "2X points on the first $5,000 in combined gas and grocery purchases each year." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "points",
+          "displayHeadline": "20,000 bonus points plus promotional Companion Pass",
+          "bonusPoints": 20000,
+          "spendRequired": 3000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-southwest-rapid-rewards-premier",
+      "name": "Southwest Rapid Rewards Premier Credit Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "groceries", "dining"],
+      "annualFee": 149,
+      "creditTierMin": "good",
+      "headline": "Mid-tier Southwest card with anniversary points and broader airline value than Plus.",
+      "description": "A good fit for Southwest flyers who want more annual value and stronger ongoing perks than the entry card.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/southwest/premier",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 3, "rateType": "points", "notes": "3X points on Southwest purchases." },
+        { "category": "groceries", "rate": 2, "rateType": "points", "notes": "2X points on the first $8,000 in combined grocery and restaurant spend each year." },
+        { "category": "dining", "rate": 2, "rateType": "points", "notes": "2X points on the first $8,000 in combined grocery and restaurant spend each year." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 300,
+          "bonusType": "points",
+          "displayHeadline": "30,000 bonus points plus promotional Companion Pass",
+          "bonusPoints": 30000,
+          "spendRequired": 4000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-southwest-rapid-rewards-priority",
+      "name": "Southwest Rapid Rewards Priority Credit Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "gas", "dining"],
+      "annualFee": 229,
+      "creditTierMin": "good",
+      "headline": "Best Southwest personal card for frequent flyers who can use the richer perks.",
+      "description": "The strongest Southwest personal card if you want better seating perks, more anniversary value, and stronger airline earning.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/southwest/priority",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 4, "rateType": "points", "notes": "4X points on Southwest purchases." },
+        { "category": "gas", "rate": 2, "rateType": "points" },
+        { "category": "dining", "rate": 2, "rateType": "points" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 400,
+          "bonusType": "points",
+          "displayHeadline": "40,000 bonus points plus promotional Companion Pass",
+          "bonusPoints": 40000,
+          "spendRequired": 5000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-ventureone-rewards",
+      "name": "Capital One VentureOne Rewards Credit Card",
+      "issuer": "Capital One",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": ["travel", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-annual-fee Venture family card for simple travel rewards earning.",
+      "description": "Useful if you want flexible Capital One miles without paying an annual fee, and you do not need Venture-level earn rates.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.capitalone.com/credit-cards/ventureone/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 1.25, "rateType": "miles" },
+        { "category": "travel", "rate": 5, "rateType": "miles", "notes": "5X miles on hotels and rental cars booked through Capital One Travel." }
+      ]
+    },
+    {
+      "slug": "capital-one-venture-x-business",
+      "name": "Capital One Venture X Business",
+      "issuer": "Capital One",
+      "cardType": "business",
+      "rewardType": "miles",
+      "topCategories": ["travel", "all"],
+      "annualFee": 395,
+      "creditTierMin": "excellent",
+      "headline": "Premium Capital One business travel card with strong lounge and portal value.",
+      "description": "Built for businesses that can justify the fee through premium travel perks, annual credits, and a large welcome offer.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.capitalone.com/small-business/credit-cards/venture-x-business/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 2, "rateType": "miles" },
+        { "category": "travel", "rate": 10, "rateType": "miles", "notes": "10X on hotels and rental cars, and 5X on flights and vacation rentals, booked through Capital One Business Travel." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1500,
+          "bonusType": "miles",
+          "displayHeadline": "150,000 bonus miles",
+          "bonusPoints": 150000,
+          "spendRequired": 30000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-spark-2-cash",
+      "name": "Capital One Spark 2% Cash",
+      "issuer": "Capital One",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": ["all", "travel"],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Flat-rate business cashback card for owners who want a simple 2% everywhere.",
+      "description": "A clean business catch-all card if your company spends enough to outgrow no-fee 1.5% business options.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.capitalone.com/small-business/credit-cards/spark-cash/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 2, "rateType": "cashback" },
+        { "category": "travel", "rate": 5, "rateType": "cashback", "notes": "5% cash back on hotels and rental cars booked through Capital One Business Travel." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1000,
+          "bonusType": "cashback",
+          "displayHeadline": "$1,000 cash bonus",
+          "spendRequired": 10000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-spark-cash-select",
+      "name": "Capital One Spark 1.5% Cash Select",
+      "issuer": "Capital One",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": ["all", "travel"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-fee business cashback card with uncomplicated flat-rate earning.",
+      "description": "A straightforward business card for owners who want unlimited cash back without tracking categories or paying an annual fee.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.capitalone.com/small-business/credit-cards/spark-cash-select/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 1.5, "rateType": "cashback" },
+        { "category": "travel", "rate": 5, "rateType": "cashback", "notes": "5% cash back on hotels and rental cars booked through Capital One Business Travel." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 750,
+          "bonusType": "cashback",
+          "displayHeadline": "$750 cash bonus",
+          "spendRequired": 6000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-spark-2x-miles",
+      "name": "Capital One Spark 2X Miles",
+      "issuer": "Capital One",
+      "cardType": "business",
+      "rewardType": "miles",
+      "topCategories": ["all", "travel"],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Flexible-transfer business miles card with flat-rate everyday earning.",
+      "description": "A solid Capital One business travel card if you want transferable miles and stronger ongoing earn than a no-fee option.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.capitalone.com/small-business/credit-cards/spark-miles/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 2, "rateType": "miles" },
+        { "category": "travel", "rate": 5, "rateType": "miles", "notes": "5X miles on hotels and rental cars booked through Capital One Business Travel." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 500,
+          "bonusType": "miles",
+          "displayHeadline": "50,000 bonus miles",
+          "bonusPoints": 50000,
+          "spendRequired": 4500,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-spark-1-5x-miles-select",
+      "name": "Capital One Spark 1.5X Miles Select",
+      "issuer": "Capital One",
+      "cardType": "business",
+      "rewardType": "miles",
+      "topCategories": ["all", "travel"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-fee business miles card with simple flat-rate travel rewards.",
+      "description": "A good entry business travel card for owners who want transferable Capital One miles without a yearly fee.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.capitalone.com/small-business/credit-cards/spark-miles-select/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 1.5, "rateType": "miles" },
+        { "category": "travel", "rate": 5, "rateType": "miles", "notes": "5X miles on hotels and rental cars booked through Capital One Business Travel." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 500,
+          "bonusType": "miles",
+          "displayHeadline": "50,000 bonus miles",
+          "bonusPoints": 50000,
+          "spendRequired": 4500,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "amex-business-platinum-card",
+      "name": "The Business Platinum Card from American Express",
+      "issuer": "American Express",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": ["travel", "all"],
+      "annualFee": 895,
+      "creditTierMin": "excellent",
+      "headline": "Premium Amex business travel card with heavy credits and airport-lounge focus.",
+      "description": "Best for high-spend business owners who can actually use the card's long list of travel and business credits.",
+      "network": "amex",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 5, "rateType": "points", "notes": "5X Membership Rewards points on flights and prepaid hotels booked through AmexTravel.com." },
+        { "category": "all", "rate": 1, "rateType": "points" }
+      ]
+    },
+    {
+      "slug": "amex-blue-business-cash",
+      "name": "Blue Business Cash Card from American Express",
+      "issuer": "American Express",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": ["all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Simple no-fee Amex business cashback card with elevated flat-rate earning.",
+      "description": "A straightforward choice for smaller businesses that want flat-rate cash back without tracking categories.",
+      "network": "amex",
+      "foreignTxFee": 2.7,
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 2, "rateType": "cashback", "notes": "2% cash back on the first $50,000 in eligible purchases each calendar year, then 1%." }
+      ]
+    },
+    {
+      "slug": "amex-business-green-rewards",
+      "name": "Business Green Rewards Card",
+      "issuer": "American Express",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": ["travel", "all"],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Lower-fee Amex business Membership Rewards card with travel-leaning earning.",
+      "description": "A lighter entry into Amex business points if you want Membership Rewards without jumping to Business Gold or Platinum.",
+      "network": "amex",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 2, "rateType": "points", "notes": "2X points on AmexTravel.com purchases." },
+        { "category": "all", "rate": 1, "rateType": "points" }
+      ]
+    },
+    {
+      "slug": "amex-hilton-honors-business",
+      "name": "Hilton Honors Business Card",
+      "issuer": "American Express",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": ["travel", "all"],
+      "annualFee": 195,
+      "creditTierMin": "good",
+      "headline": "Hilton business card with strong hotel earn, quarterly credits, and mid-tier status value.",
+      "description": "One of the better hotel-business cards if your company spends meaningfully with Hilton properties.",
+      "network": "amex",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/hilton-honors/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 12, "rateType": "points", "notes": "12X Hilton Honors points on eligible Hilton purchases." },
+        { "category": "all", "rate": 5, "rateType": "points", "notes": "5X points on other eligible purchases on the first $100,000 per year, then 3X thereafter." }
+      ]
+    },
+    {
+      "slug": "us-bank-triple-cash-rewards-business",
+      "name": "U.S. Bank Triple Cash Rewards Visa Business Card",
+      "issuer": "U.S. Bank",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": ["gas", "dining", "utilities", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-fee business cashback card with elevated earn in practical operating categories.",
+      "description": "A strong small-business cash-back card for owners spending on fuel, restaurants, software, and recurring services.",
+      "foreignTxFee": 3,
+      "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-triple-cash-back-credit-card.html",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "gas", "rate": 3, "rateType": "cashback", "notes": "3% cash back at gas and EV charging stations on transactions of $200 or less." },
+        { "category": "dining", "rate": 3, "rateType": "cashback" },
+        { "category": "utilities", "rate": 3, "rateType": "cashback", "notes": "3% cash back with cell phone service providers." },
+        { "category": "all", "rate": 1, "rateType": "cashback" }
+      ]
+    },
+    {
+      "slug": "us-bank-business-altitude-power",
+      "name": "U.S. Bank Business Altitude Power Visa Signature Card",
+      "issuer": "U.S. Bank",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": ["travel", "all", "other"],
+      "annualFee": 195,
+      "creditTierMin": "good",
+      "headline": "Premium-ish U.S. Bank business card with solid flat-rate points and travel-center upside.",
+      "description": "A good fit for businesses that want straightforward 2X points with some extra upside for travel-center and wallet spend.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-altitude-power-world-elite-mastercard.html",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 2, "rateType": "points" },
+        { "category": "other", "rate": 2.5, "rateType": "points", "notes": "2.5X points on up to $5,000 in combined mobile wallet and virtual card purchases each quarter." },
+        { "category": "travel", "rate": 6, "rateType": "points", "notes": "6X points on prepaid hotels and car rentals booked directly in the Travel Center." }
+      ]
+    },
+    {
+      "slug": "us-bank-business-leverage",
+      "name": "Business Leverage Visa Signature Card",
+      "issuer": "U.S. Bank",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": ["other", "travel", "all"],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Business points card that automatically boosts your top spend categories.",
+      "description": "Useful for businesses with uneven monthly spend because the top-category bonus adjusts without manual tracking.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-leverage-rewards-credit-card.html",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "other", "rate": 2, "rateType": "points", "notes": "2X points in the top two categories where you spend the most each month automatically." },
+        { "category": "travel", "rate": 5, "rateType": "points", "notes": "5X points on prepaid hotels and car rentals booked directly in the Travel Center." },
+        { "category": "all", "rate": 1, "rateType": "points" }
+      ]
+    },
+    {
+      "slug": "us-bank-business-shield",
+      "name": "U.S. Bank Business Shield Visa Card",
+      "issuer": "U.S. Bank",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": ["travel", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Low-fee-flexibility business card with a travel-center bonus and intro APR angle.",
+      "description": "More of an operating card than a pure rewards card, but still worth cataloging because it adds cash-flow utility and modest rewards.",
+      "foreignTxFee": 3,
+      "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-shield-credit-card",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 5, "rateType": "cashback", "notes": "5% cash back on prepaid air, hotel, and car rentals booked directly in the Travel Center." },
+        { "category": "all", "rate": 1, "rateType": "cashback" }
+      ]
+    },
+    {
+      "slug": "bank-of-america-business-advantage-customized-cash-rewards",
+      "name": "Business Advantage Customized Cash Rewards Mastercard credit card",
+      "issuer": "Bank of America",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": ["gas", "dining", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Flexible Bank of America business cash-back card with a selectable bonus category.",
+      "description": "Strong for owners who want category choice on top of a no-fee business card and already bank with Bank of America.",
+      "foreignTxFee": 3,
+      "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/view-all-small-business-credit-cards/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "gas", "rate": 3, "rateType": "cashback", "notes": "3% cash back in the cardholder's selected category; gas and EV charging is the default category." },
+        { "category": "dining", "rate": 2, "rateType": "cashback" },
+        { "category": "all", "rate": 1, "rateType": "cashback" }
+      ]
+    },
+    {
+      "slug": "bank-of-america-business-advantage-unlimited-cash-rewards",
+      "name": "Business Advantage Unlimited Cash Rewards Mastercard credit card",
+      "issuer": "Bank of America",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": ["all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Simple flat-rate Bank of America business cash-back card.",
+      "description": "A clean fit for small businesses that want uncomplicated rewards and may qualify for Preferred Rewards for Business boosts.",
+      "foreignTxFee": 3,
+      "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/view-all-small-business-credit-cards/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 1.5, "rateType": "cashback" }
+      ]
+    },
+    {
+      "slug": "bank-of-america-business-advantage-travel-rewards",
+      "name": "Business Advantage Travel Rewards World Mastercard credit card",
+      "issuer": "Bank of America",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": ["travel", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-fee Bank of America business travel card with flat-rate points and no foreign transaction fee.",
+      "description": "A simple travel-rewards business card for Bank of America shops that want points without an annual fee.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/view-all-small-business-credit-cards/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 1.5, "rateType": "points" }
+      ]
+    },
+    {
+      "slug": "citi-aadvantage-platinum-select",
+      "name": "Citi / AAdvantage Platinum Select World Elite Mastercard",
+      "issuer": "Citi",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": ["travel", "gas", "dining", "all"],
+      "annualFee": 99,
+      "creditTierMin": "good",
+      "headline": "Core American Airlines card for flyers who want miles, bags, and priority perks.",
+      "description": "A mainstream American Airlines co-brand card that rounds out a major gap in the current Citi lineup coverage.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.citi.com/credit-cards/view-all-credit-cards",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible American Airlines purchases." },
+        { "category": "gas", "rate": 2, "rateType": "miles" },
+        { "category": "dining", "rate": 2, "rateType": "miles" },
+        { "category": "all", "rate": 1, "rateType": "miles" }
+      ]
+    },
+    {
+      "slug": "citi-aadvantage-executive",
+      "name": "Citi / AAdvantage Executive World Elite Mastercard",
+      "issuer": "Citi",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": ["travel", "all"],
+      "annualFee": 595,
+      "creditTierMin": "excellent",
+      "headline": "Premium American Airlines card centered on lounge access and richer airline earning.",
+      "description": "Best for American Airlines loyalists who want Admirals Club-style access and are comfortable with a large annual fee.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.citi.com/credit-cards/view-all-credit-cards",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 4, "rateType": "miles", "notes": "4X miles on eligible American Airlines purchases." },
+        { "category": "all", "rate": 1, "rateType": "miles" }
+      ]
+    },
+    {
+      "slug": "citi-aadvantage-business",
+      "name": "Citi / AAdvantage Business Card",
+      "issuer": "Citi",
+      "cardType": "business",
+      "rewardType": "miles",
+      "topCategories": ["travel", "gas", "all"],
+      "annualFee": 99,
+      "creditTierMin": "good",
+      "headline": "American Airlines business card that fills a major co-brand business gap.",
+      "description": "A relevant addition for small-business travelers who want AAdvantage miles and business-focused airline perks.",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.citi.com/credit-cards/view-all-credit-cards",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible American Airlines business purchases." },
+        { "category": "gas", "rate": 2, "rateType": "miles" },
+        { "category": "all", "rate": 1, "rateType": "miles" }
+      ]
+    },
+    {
+      "slug": "citi-strata-card",
+      "name": "Citi Strata Card",
+      "issuer": "Citi",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["groceries", "gas", "dining", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-fee Citi ThankYou-style card with everyday bonus categories.",
+      "description": "A relevant missing Citi everyday rewards card now that the Strata family has expanded beyond Premier.",
+      "foreignTxFee": 3,
+      "applyUrl": "https://www.citi.com/credit-cards/view-all-credit-cards",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "groceries", "rate": 3, "rateType": "points" },
+        { "category": "gas", "rate": 3, "rateType": "points" },
+        { "category": "dining", "rate": 3, "rateType": "points" },
+        { "category": "all", "rate": 1, "rateType": "points" }
+      ]
+    },
+    {
+      "slug": "sofi-unlimited-2-credit-card",
+      "name": "SoFi Unlimited 2% Credit Card",
+      "issuer": "SoFi",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": ["all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Flat-rate fintech cashback card that deserves coverage alongside Robinhood and Apple.",
+      "description": "A sensible addition to the catalog because it represents a mainstream modern fintech catch-all card.",
+      "applyUrl": "https://www.sofi.com/credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 2, "rateType": "cashback" }
+      ]
+    },
+    {
+      "slug": "paypal-cashback-mastercard",
+      "name": "PayPal Cashback Mastercard",
+      "issuer": "PayPal",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": ["online_shopping", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Popular fintech cashback card with a boosted earn rate when checking out through PayPal.",
+      "description": "An important catalog add because it is one of the more visible mainstream online-shopping cashback cards.",
+      "applyUrl": "https://www.paypal.com/us/digital-wallet/manage-money/paypal-cashback-mastercard",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "online_shopping", "rate": 3, "rateType": "cashback", "notes": "3% cash back when checking out with PayPal." },
+        { "category": "all", "rate": 1.5, "rateType": "cashback" }
+      ]
+    },
+    {
+      "slug": "fidelity-rewards-visa-signature",
+      "name": "Fidelity Rewards Visa Signature Card",
+      "issuer": "Fidelity",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": ["all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Well-known flat-rate 2% card tied to Fidelity accounts and investing workflows.",
+      "description": "A worthwhile addition because it is one of the better-known set-it-and-forget-it 2% cards in the U.S. market.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.fidelity.com/spend-save/visa-signature-card?sid=cr010323",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "all", "rate": 2, "rateType": "cashback", "notes": "2% cash back when rewards are deposited into an eligible Fidelity account." }
+      ]
+    },
+    {
+      "slug": "venmo-credit-card",
+      "name": "Venmo Credit Card",
+      "issuer": "Venmo",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": ["other", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "High-visibility Venmo card with dynamic top-category cash-back earning.",
+      "description": "A mainstream social-payments card worth covering because it remains widely recognized and publicly available.",
+      "network": "visa",
+      "applyUrl": "https://venmo.com/about/creditcard/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        { "category": "other", "rate": 3, "rateType": "cashback", "notes": "3% cash back on your top eligible spend category, 2% on the next, and 1% on all other eligible purchases." },
+        { "category": "all", "rate": 1, "rateType": "cashback" }
+      ]
+    }
+  ]
+}

@@ -8,9 +8,15 @@ const supportedDirectoryIssuerLabels = [
   'Wells Fargo',
   'Bilt',
   'Discover',
+  'Apple',
+  'Robinhood',
   'Bank of America',
   'U.S. Bank',
-  'Barclays'
+  'Barclays',
+  'SoFi',
+  'PayPal',
+  'Fidelity',
+  'Venmo'
 ] as const;
 
 export function normalizeIssuerLabel(value: string): string {

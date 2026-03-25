@@ -65,6 +65,18 @@ npx prisma db push            # apply schema to your database
 npx prisma studio              # browse data in GUI
 ```
 
+### Cards import
+
+Use the manual import script to load or refresh card records from JSON.
+
+```bash
+# Import a curated expansion file
+npm run cards:import -- ./content/cards-expansion.json
+
+# Optional: deactivate DB cards not present in the file
+npm run cards:import -- ./content/cards-expansion.json --deactivate-missing
+```
+
 ### Banking offers import
 
 Use the manual import script to load or refresh banking bonus offers from JSON.
@@ -128,6 +140,7 @@ See [docs/deliverability.md](docs/deliverability.md) for SPF/DKIM/DMARC and moni
 | `npm run db:push` | Push Prisma schema to DB |
 | `npm run db:migrate` | Run Prisma migrations |
 | `npm run db:studio` | Open Prisma Studio |
+| `npm run cards:import -- <file>` | Upsert card records from JSON |
 | `npm run banking:import -- <file>` | Upsert banking offers from JSON |
 | `npm run entity-assets:import -- <file>` | Upload card/bank images to Supabase Storage and update DB URLs |
 

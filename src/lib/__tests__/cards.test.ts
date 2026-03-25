@@ -352,6 +352,14 @@ describe('toCardRecordFromDb', () => {
     expect(result.imageUrl).toBe('https://assets.example.com/test-card.png');
   });
 
+  it('falls back to an issuer image when card art is missing for a known issuer', () => {
+    const row = makeDbCardRow({ issuer: 'Chase', imageUrl: null });
+    const result = toCardRecordFromDb(row);
+    expect(result.imageUrl).toBe(
+      'https://www.chase.com/etc/designs/chase-ux/favicon-152.png'
+    );
+  });
+
   it('derives rewardType from first reward rateType', () => {
     const row = makeDbCardRow({
       rewards: [
@@ -756,5 +764,22 @@ describe('toCardDetailFromDb', () => {
       displayDescription:
         'Offer varies by channel and eligibility. See issuer site for your current welcome offer.'
     });
+  });
+
+  it('provides fallback benefits when no card-specific benefits exist yet', () => {
+    const row = makeDbCardDetailRow({
+      slug: 'apple-card',
+      issuer: 'Apple',
+      name: 'Apple Card',
+      annualFee: new Prisma.Decimal(0),
+      foreignTxFee: new Prisma.Decimal(0),
+      benefits: []
+    });
+
+    const result = toCardDetailFromDb(row);
+
+    expect(result.benefits.map((benefit) => benefit.name)).toEqual(
+      expect.arrayContaining(['Daily Cash Ecosystem', 'Apple Card Monthly Installments'])
+    );
   });
 });

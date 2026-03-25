@@ -1,0 +1,1143 @@
+{
+  "cards": [
+    {
+      "slug": "apple-card",
+      "name": "Apple Card",
+      "issuer": "Apple",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": ["all", "other"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-annual-fee cashback card built around Apple Pay and Daily Cash.",
+      "description": "Best fit for iPhone users who want simple rewards and the strongest return when they tap to pay with Apple Pay.",
+      "network": "mastercard",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.apple.com/apple-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "other",
+          "rate": 3,
+          "rateType": "cashback",
+          "notes": "3% Daily Cash on Apple purchases and select Apple Card partner merchants."
+        },
+        {
+          "category": "all",
+          "rate": 2,
+          "rateType": "cashback",
+          "notes": "2% Daily Cash on eligible purchases made with Apple Pay."
+        }
+      ]
+    },
+    {
+      "slug": "robinhood-gold-card",
+      "name": "Robinhood Gold Card",
+      "issuer": "Robinhood",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["all", "travel"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Flat-rate rewards card tied to a Robinhood Gold membership.",
+      "description": "A simple high-earn flat-rate card if you already pay for Robinhood Gold and can access the current application rollout.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://robinhood.com/creditcard/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3x points on eligible purchases for approved Robinhood Gold Card holders."
+        },
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "points",
+          "notes": "5x points on travel booked through the Robinhood travel portal."
+        }
+      ]
+    },
+    {
+      "slug": "bank-of-america-customized-cash-rewards",
+      "name": "Bank of America Customized Cash Rewards credit card",
+      "issuer": "Bank of America",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": ["online_shopping", "groceries", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Flexible cashback card with a selectable 3% bonus category.",
+      "description": "A strong no-fee option if you want to steer your highest cash-back rate toward online shopping or another eligible category.",
+      "network": "visa",
+      "foreignTxFee": 3,
+      "applyUrl": "https://www.bankofamerica.com/credit-cards/products/cash-back-credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "online_shopping",
+          "rate": 3,
+          "rateType": "cashback",
+          "notes": "3% cash back in the cardholder's chosen category; online shopping is a common default fit."
+        },
+        {
+          "category": "groceries",
+          "rate": 2,
+          "rateType": "cashback"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "cashback",
+          "displayHeadline": "$200 online cash rewards bonus",
+          "spendRequired": 1000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "bank-of-america-unlimited-cash-rewards",
+      "name": "Bank of America Unlimited Cash Rewards credit card",
+      "issuer": "Bank of America",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": ["all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Simple flat-rate cashback card with no annual fee.",
+      "description": "A straightforward catch-all card for Bank of America households that want an uncomplicated earning structure.",
+      "network": "visa",
+      "foreignTxFee": 3,
+      "applyUrl": "https://www.bankofamerica.com/credit-cards/products/unlimited-cash-back-credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 1.5,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "cashback",
+          "displayHeadline": "$200 online cash rewards bonus",
+          "spendRequired": 1000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "bank-of-america-travel-rewards",
+      "name": "Bank of America Travel Rewards credit card",
+      "issuer": "Bank of America",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-annual-fee travel card with flat-rate earning and no foreign transaction fees.",
+      "description": "Useful for travelers who want a simple Bank of America points card without carrying an annual fee.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.bankofamerica.com/credit-cards/products/travel-rewards-credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 1.5,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 250,
+          "bonusType": "points",
+          "displayHeadline": "25,000 online bonus points",
+          "bonusPoints": 25000,
+          "spendRequired": 1000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "bank-of-america-premium-rewards",
+      "name": "Bank of America Premium Rewards credit card",
+      "issuer": "Bank of America",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "dining", "all"],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Mid-tier travel card with flexible points and no foreign transaction fees.",
+      "description": "A strong fit for Bank of America Preferred Rewards households that want to push travel and dining earnings higher.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.bankofamerica.com/credit-cards/products/premium-rewards-credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "dining",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1.5,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 600,
+          "bonusType": "points",
+          "displayHeadline": "60,000 online bonus points",
+          "bonusPoints": 60000,
+          "spendRequired": 4000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "bank-of-america-premium-rewards-elite",
+      "name": "Bank of America Premium Rewards Elite credit card",
+      "issuer": "Bank of America",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "dining", "all"],
+      "annualFee": 550,
+      "creditTierMin": "excellent",
+      "headline": "Premium Visa Infinite travel card for heavy-spend Preferred Rewards households.",
+      "description": "Best for high earners who will actually use the travel credits, lounge access, and boosted redemption value.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.bankofamerica.com/credit-cards/products/premium-rewards-elite-credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "dining",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1.5,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 750,
+          "bonusType": "points",
+          "displayHeadline": "75,000 online bonus points",
+          "bonusPoints": 75000,
+          "spendRequired": 5000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "alaska-airlines-visa-signature",
+      "name": "Alaska Airlines Visa Signature credit card",
+      "issuer": "Bank of America",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": ["travel", "all"],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Alaska-focused airline card with companion-fare upside for frequent flyers.",
+      "description": "Best for flyers who value Alaska miles and can extract real value from the annual Companion Fare certificate.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 3,
+          "rateType": "miles",
+          "notes": "3x miles on eligible Alaska Airlines purchases."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "miles"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 700,
+          "bonusType": "miles",
+          "displayHeadline": "70,000 bonus miles plus Companion Fare",
+          "bonusPoints": 70000,
+          "displayDescription": "Companion Fare value varies. Use the issuer site for the exact current combination.",
+          "spendRequired": 3000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "us-bank-altitude-go",
+      "name": "U.S. Bank Altitude Go Visa Signature Card",
+      "issuer": "U.S. Bank",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["dining", "groceries", "gas", "streaming", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-fee dining card with solid everyday bonus categories.",
+      "description": "A good fit for diners who want a no-annual-fee points card without stepping up to a travel-fee product.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.usbank.com/credit-cards/altitude-go-visa-signature-credit-card.html",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "dining",
+          "rate": 4,
+          "rateType": "points"
+        },
+        {
+          "category": "groceries",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "gas",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "streaming",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "points",
+          "displayHeadline": "20,000 bonus points",
+          "bonusPoints": 20000,
+          "spendRequired": 1000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "us-bank-altitude-connect",
+      "name": "U.S. Bank Altitude Connect Visa Signature Card",
+      "issuer": "U.S. Bank",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "gas", "dining", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-fee travel card with elevated earn on travel and road-trip spend.",
+      "description": "A practical points card if you want travel-adjacent earning without carrying a premium annual fee.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.usbank.com/credit-cards/altitude-connect-visa-signature-credit-card.html",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 4,
+          "rateType": "points"
+        },
+        {
+          "category": "gas",
+          "rate": 4,
+          "rateType": "points"
+        },
+        {
+          "category": "dining",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "points",
+          "displayHeadline": "20,000 bonus points",
+          "bonusPoints": 20000,
+          "spendRequired": 1000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "us-bank-altitude-reserve",
+      "name": "U.S. Bank Altitude Reserve Visa Infinite Card",
+      "issuer": "U.S. Bank",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "other", "all"],
+      "annualFee": 400,
+      "creditTierMin": "excellent",
+      "headline": "Premium travel card centered on mobile-wallet earning and flexible travel redemptions.",
+      "description": "Best for heavy Apple Pay or mobile-wallet users who can justify the premium annual fee with travel credits and high redemption value.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.usbank.com/credit-cards/altitude-reserve-visa-infinite-credit-card.html",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "other",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3x points on eligible mobile wallet purchases."
+        },
+        {
+          "category": "travel",
+          "rate": 3,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 750,
+          "bonusType": "points",
+          "displayHeadline": "50,000 bonus points",
+          "bonusPoints": 50000,
+          "spendRequired": 4500,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "us-bank-cash-plus-visa-signature",
+      "name": "U.S. Bank Cash+ Visa Signature Card",
+      "issuer": "U.S. Bank",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": ["utilities", "streaming", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Category-driven cashback card with strong 5% picks if you stay organized.",
+      "description": "A useful no-fee card for households that can maximize rotating 5% utilities, streaming, or other selectable categories.",
+      "network": "visa",
+      "foreignTxFee": 3,
+      "applyUrl": "https://www.usbank.com/credit-cards/cash-plus-visa-signature-credit-card.html",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "utilities",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Representative 5% category; eligible 5% categories are cardholder-selected each quarter."
+        },
+        {
+          "category": "streaming",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Representative 5% category; eligible 5% categories are cardholder-selected each quarter."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "cashback",
+          "displayHeadline": "$200 rewards bonus",
+          "spendRequired": 1000,
+          "spendPeriodDays": 120,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "us-bank-shopper-cash-rewards",
+      "name": "U.S. Bank Shopper Cash Rewards Visa Signature Card",
+      "issuer": "U.S. Bank",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": ["online_shopping", "gas", "all"],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "High-earn retail cashback card if your spending matches the supported merchants.",
+      "description": "Best for households with concentrated spend at the eligible 6% retailers and one strong 3% everyday category.",
+      "network": "visa",
+      "foreignTxFee": 3,
+      "applyUrl": "https://www.usbank.com/credit-cards/shopper-cash-rewards-visa-signature-credit-card.html",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "online_shopping",
+          "rate": 6,
+          "rateType": "cashback",
+          "notes": "Representative 6% category; exact eligible retailers are issuer-defined."
+        },
+        {
+          "category": "gas",
+          "rate": 3,
+          "rateType": "cashback"
+        },
+        {
+          "category": "all",
+          "rate": 1.5,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 250,
+          "bonusType": "cashback",
+          "displayHeadline": "$250 bonus",
+          "spendRequired": 2000,
+          "spendPeriodDays": 120,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "us-bank-smartly-visa-signature",
+      "name": "U.S. Bank Smartly Visa Signature Card",
+      "issuer": "U.S. Bank",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": ["all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Flat-rate cashback card whose best upside depends on a broader U.S. Bank relationship.",
+      "description": "Most compelling for customers who already keep deposits or investments at U.S. Bank and can qualify for the relationship-based earn boost.",
+      "network": "visa",
+      "foreignTxFee": 3,
+      "applyUrl": "https://www.usbank.com/credit-cards/bank-smartly-visa-signature-credit-card.html",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 2,
+          "rateType": "cashback",
+          "notes": "Base flat-rate earning can increase for eligible U.S. Bank relationship customers."
+        }
+      ]
+    },
+    {
+      "slug": "barclays-aadvantage-aviator-red",
+      "name": "AAdvantage Aviator Red World Elite Mastercard",
+      "issuer": "Barclays",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": ["travel", "all"],
+      "annualFee": 99,
+      "creditTierMin": "good",
+      "headline": "Airline miles card with a low-friction first-purchase welcome offer structure.",
+      "description": "Appealing if you want a fast American Airlines miles haul without a heavy minimum-spend requirement.",
+      "network": "mastercard",
+      "foreignTxFee": 0,
+      "applyUrl": "https://cards.barclaycardus.com/banking/cards/aadvantage-aviator-red-world-elite-mastercard/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 2,
+          "rateType": "miles",
+          "notes": "2x miles on eligible American Airlines purchases."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "miles"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 600,
+          "bonusType": "miles",
+          "displayHeadline": "60,000 bonus miles after first purchase",
+          "bonusPoints": 60000,
+          "displayDescription": "Issuer terms also require the annual fee to be paid and the account to remain open.",
+          "spendRequired": 1,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "barclays-wyndham-earner-plus",
+      "name": "Wyndham Rewards Earner Plus Card",
+      "issuer": "Barclays",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["gas", "dining", "groceries", "all"],
+      "annualFee": 75,
+      "creditTierMin": "good",
+      "headline": "Hotel points card with unusually strong gas, dining, and grocery earn rates.",
+      "description": "A niche but powerful option if you actually redeem Wyndham points and spend heavily in the everyday 4x and 6x categories.",
+      "network": "mastercard",
+      "foreignTxFee": 0,
+      "applyUrl": "https://cards.barclaycardus.com/banking/cards/wyndham-rewards-earner-plus-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "gas",
+          "rate": 6,
+          "rateType": "points"
+        },
+        {
+          "category": "dining",
+          "rate": 4,
+          "rateType": "points"
+        },
+        {
+          "category": "groceries",
+          "rate": 4,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 750,
+          "bonusType": "points",
+          "displayHeadline": "75,000 bonus points",
+          "bonusPoints": 75000,
+          "spendRequired": 2000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "barclays-jetblue-plus",
+      "name": "JetBlue Plus Card",
+      "issuer": "Barclays",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "dining", "groceries", "all"],
+      "annualFee": 99,
+      "creditTierMin": "good",
+      "headline": "JetBlue loyalist card with better earning and a more meaningful points bonus than the no-fee version.",
+      "description": "Best for JetBlue flyers who will use the card enough to justify the annual fee and value the airline-specific perks.",
+      "network": "mastercard",
+      "foreignTxFee": 0,
+      "applyUrl": "https://cards.barclaycardus.com/banking/cards/jetblue-plus-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 6,
+          "rateType": "points",
+          "notes": "6x points on eligible JetBlue purchases."
+        },
+        {
+          "category": "dining",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "groceries",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 600,
+          "bonusType": "points",
+          "displayHeadline": "60,000 bonus points",
+          "bonusPoints": 60000,
+          "spendRequired": 1000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "barclays-jetblue-card",
+      "name": "JetBlue Card",
+      "issuer": "Barclays",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "dining", "groceries", "all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-fee JetBlue points card with airline-centered earning.",
+      "description": "A softer-entry JetBlue card if you want the airline ecosystem without paying an annual fee.",
+      "network": "mastercard",
+      "foreignTxFee": 3,
+      "applyUrl": "https://cards.barclaycardus.com/banking/cards/jetblue-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3x points on eligible JetBlue purchases."
+        },
+        {
+          "category": "dining",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "groceries",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ]
+    },
+    {
+      "slug": "amex-green-card",
+      "name": "American Express Green Card",
+      "issuer": "American Express",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "dining", "all"],
+      "annualFee": 150,
+      "creditTierMin": "good",
+      "headline": "Mid-fee Membership Rewards card with broad travel and dining earning.",
+      "description": "A cleaner fit than Gold or Platinum for travelers who want transferable Amex points without a premium annual fee.",
+      "network": "amex",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/green/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 3,
+          "rateType": "points"
+        },
+        {
+          "category": "dining",
+          "rate": 3,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 400,
+          "bonusType": "points",
+          "displayHeadline": "40,000 Membership Rewards points",
+          "bonusPoints": 40000,
+          "spendRequired": 3000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "amex-blue-business-plus",
+      "name": "Blue Business Plus Credit Card from American Express",
+      "issuer": "American Express",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": ["all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-fee business Membership Rewards card with flat-rate earning.",
+      "description": "One of the simplest Amex business cards if you want transferable points without a fee-heavy travel bundle.",
+      "network": "amex",
+      "foreignTxFee": 2.7,
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/blue-business-plus-credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 2,
+          "rateType": "points",
+          "notes": "2x Membership Rewards points on the first tranche of eligible yearly spend, then 1x after the cap."
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 150,
+          "bonusType": "points",
+          "displayHeadline": "15,000 Membership Rewards points",
+          "bonusPoints": 15000,
+          "spendRequired": 3000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "amex-business-gold-card",
+      "name": "American Express Business Gold Card",
+      "issuer": "American Express",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": ["other", "all"],
+      "annualFee": 375,
+      "creditTierMin": "good",
+      "headline": "Business Membership Rewards card that adapts to your biggest spend categories.",
+      "description": "Best for larger businesses whose top spend categories rotate and can justify the high annual fee.",
+      "network": "amex",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/business-gold-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "other",
+          "rate": 4,
+          "rateType": "points",
+          "notes": "4x Membership Rewards points in the two eligible categories where your business spends the most each billing cycle."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 700,
+          "bonusType": "points",
+          "displayHeadline": "70,000 Membership Rewards points",
+          "bonusPoints": 70000,
+          "spendRequired": 10000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-world-of-hyatt",
+      "name": "World of Hyatt Credit Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "dining", "all"],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Hotel card with strong Hyatt value if you actually redeem within the program.",
+      "description": "Best for travelers who specifically like Hyatt's footprint and want annual free-night value on top of the welcome offer.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/world-of-hyatt-credit-card",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 4,
+          "rateType": "points",
+          "notes": "4x points on Hyatt purchases as a representative hotel-spend rate."
+        },
+        {
+          "category": "dining",
+          "rate": 2,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 600,
+          "bonusType": "points",
+          "displayHeadline": "Up to 60,000 Hyatt points",
+          "bonusPoints": 60000,
+          "displayDescription": "Tiered earning offers can vary. Use the issuer site for the exact current breakdown.",
+          "spendRequired": 15000,
+          "spendPeriodDays": 180,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-marriott-bonvoy-boundless",
+      "name": "Marriott Bonvoy Boundless Credit Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "all"],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Mainstream Marriott card with a recurring annual free-night story.",
+      "description": "Compelling if you stay with Marriott enough to use the annual certificate and can get full value from Marriott points.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/marriott-bonvoy/boundless",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 6,
+          "rateType": "points",
+          "notes": "6x points on eligible Marriott purchases."
+        },
+        {
+          "category": "all",
+          "rate": 2,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1050,
+          "bonusType": "free_night_awards",
+          "displayHeadline": "3 Free Night Awards",
+          "displayDescription": "Estimated value assumes strong Marriott redemption usage; actual value varies by property and date.",
+          "spendRequired": 3000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-united-explorer",
+      "name": "United Explorer Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": ["travel", "dining", "all"],
+      "annualFee": 150,
+      "creditTierMin": "good",
+      "headline": "United miles card with better travel perks than a pure no-fee airline option.",
+      "description": "Useful for United flyers who will use the free checked bag, priority boarding, and stronger miles offer.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/united-explorer",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 2,
+          "rateType": "miles"
+        },
+        {
+          "category": "dining",
+          "rate": 2,
+          "rateType": "miles"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "miles"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 600,
+          "bonusType": "miles",
+          "displayHeadline": "60,000 bonus miles",
+          "bonusPoints": 60000,
+          "spendRequired": 3000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "chase-ihg-one-rewards-premier",
+      "name": "IHG One Rewards Premier Credit Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "dining", "gas", "groceries", "all"],
+      "annualFee": 99,
+      "creditTierMin": "good",
+      "headline": "Hotel card with a strong ongoing earn structure and easy annual certificate story.",
+      "description": "A practical IHG choice if you can use the fourth-night-free mechanic and annual free night consistently.",
+      "network": "mastercard",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/ihg-rewards-club/premier",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 10,
+          "rateType": "points",
+          "notes": "10x points on eligible IHG hotel purchases."
+        },
+        {
+          "category": "dining",
+          "rate": 5,
+          "rateType": "points"
+        },
+        {
+          "category": "gas",
+          "rate": 5,
+          "rateType": "points"
+        },
+        {
+          "category": "groceries",
+          "rate": 5,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 3,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 700,
+          "bonusType": "points",
+          "displayHeadline": "140,000 bonus points",
+          "bonusPoints": 140000,
+          "spendRequired": 3000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "wells-fargo-autograph-journey",
+      "name": "Wells Fargo Autograph Journey Card",
+      "issuer": "Wells Fargo",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": ["travel", "dining", "all"],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Travel-oriented Wells Fargo points card with a real welcome offer and no foreign transaction fees.",
+      "description": "A cleaner premium step-up from Autograph if you want stronger travel-category earn and a substantial intro bonus.",
+      "network": "visa",
+      "foreignTxFee": 0,
+      "applyUrl": "https://creditcards.wellsfargo.com/autograph-journey-visa-credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "points",
+          "notes": "Representative top travel earn rate; exact rates vary across airline, hotel, and other travel categories."
+        },
+        {
+          "category": "dining",
+          "rate": 3,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 600,
+          "bonusType": "points",
+          "displayHeadline": "60,000 bonus points",
+          "bonusPoints": 60000,
+          "spendRequired": 4000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "discover-it-miles",
+      "name": "Discover it Miles",
+      "issuer": "Discover",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": ["all"],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-fee flat-rate travel-style card with Discover's first-year Miles match mechanic.",
+      "description": "Simple and beginner-friendly if you want flat-rate earning without managing transfer partners or a fee.",
+      "network": "discover",
+      "foreignTxFee": 0,
+      "applyUrl": "https://www.discover.com/credit-cards/travel/it-miles/",
+      "isActive": true,
+      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 1.5,
+          "rateType": "miles"
+        }
+      ]
+    }
+  ]
+}
