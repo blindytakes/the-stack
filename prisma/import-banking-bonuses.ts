@@ -1,6 +1,11 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { PrismaClient, BankingAccountType, BankingBonusSourceType } from '@prisma/client';
+import {
+  PrismaClient,
+  BankingAccountType,
+  BankingBonusSourceType,
+  BankingCustomerType
+} from '@prisma/client';
 import {
   bankingBonusesSeedDatasetSchema,
   type BankingBonusSeedRecord
@@ -15,6 +20,11 @@ const accountTypeToDb: Record<BankingBonusSeedRecord['accountType'], BankingAcco
   checking: BankingAccountType.CHECKING,
   savings: BankingAccountType.SAVINGS,
   bundle: BankingAccountType.BUNDLE
+};
+
+const customerTypeToDb: Record<BankingBonusSeedRecord['customerType'], BankingCustomerType> = {
+  personal: BankingCustomerType.PERSONAL,
+  business: BankingCustomerType.BUSINESS
 };
 
 function usage() {
@@ -64,6 +74,7 @@ function toUpsertData(record: BankingBonusSeedRecord) {
     bankName: record.bankName,
     offerName: record.offerName,
     accountType: accountTypeToDb[record.accountType],
+    customerType: customerTypeToDb[record.customerType],
     headline: record.headline,
     imageUrl: record.imageUrl ?? null,
     bonusAmount: record.bonusAmount,
@@ -88,6 +99,7 @@ function toUpsertData(record: BankingBonusSeedRecord) {
     sourceType: BankingBonusSourceType.MANUAL,
     sourceLabel: 'manual-import',
     isActive: record.isActive,
+    expiresAt: record.expiresAt ? new Date(record.expiresAt) : null,
     lastVerified: record.lastVerified ? new Date(record.lastVerified) : new Date()
   };
 }

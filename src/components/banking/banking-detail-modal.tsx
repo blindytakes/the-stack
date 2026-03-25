@@ -7,6 +7,7 @@ import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { EntityImage } from '@/components/ui/entity-image';
 import {
   formatBankingAccountType,
+  formatBankingCustomerType,
   formatBankingCurrency,
   getBankingOfferAvailabilityLabel,
   getBankingOfferBestFit,
@@ -47,6 +48,16 @@ function formatVerifiedDate(value?: string) {
   }).format(new Date(value));
 }
 
+function formatExpiryDate(value?: string) {
+  if (!value) return null;
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  }).format(new Date(value));
+}
+
 export function BankingDetailModal({
   offer,
   onClose,
@@ -64,6 +75,8 @@ export function BankingDetailModal({
   const availabilityLabel = getBankingOfferAvailabilityLabel(offer);
   const apyAsOfLabel = formatApyDate(offer.apyAsOf);
   const verifiedLabel = formatVerifiedDate(offer.lastVerified);
+  const expiryLabel = formatExpiryDate(offer.expiresAt);
+  const isExpired = Boolean(offer.expiresAt && new Date(offer.expiresAt).getTime() < Date.now());
   const outboundOfferUrl = offer.affiliateUrl ?? offer.offerUrl;
   const applyHref = outboundOfferUrl
     ? `/api/affiliate/click?${new URLSearchParams({
@@ -207,9 +220,10 @@ export function BankingDetailModal({
                 </p>
               </div>
 
-              {(verifiedLabel || (offer.apyDisplay && offer.apySourceUrl)) && (
+              {(verifiedLabel || expiryLabel || (offer.apyDisplay && offer.apySourceUrl)) && (
                 <div className="mt-3 space-y-2 text-xs leading-5 text-text-muted">
                   {verifiedLabel && <p>Last verified {verifiedLabel}. Confirm live terms before opening.</p>}
+                  {expiryLabel && <p>{isExpired ? `Offer expired ${expiryLabel}.` : `Offer ends ${expiryLabel}.`}</p>}
                   {offer.apyDisplay && offer.apySourceUrl && (
                     <p>
                       <a
@@ -239,6 +253,9 @@ export function BankingDetailModal({
                 </p>
 
                 <div className="mt-3.5 flex flex-wrap gap-2">
+                  <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-secondary">
+                    {formatBankingCustomerType(offer.customerType)}
+                  </span>
                   <span className="rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2.5 py-1 text-[11px] text-brand-teal">
                     {formatBankingAccountType(offer.accountType)}
                   </span>

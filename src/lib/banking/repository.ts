@@ -1,4 +1,4 @@
-import { BankingAccountType, type Prisma } from '@prisma/client';
+import { BankingAccountType, BankingCustomerType, type Prisma } from '@prisma/client';
 import { getNodeEnv } from '@/lib/config/runtime';
 import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
 import { bankingBonusesSeedDatasetSchema } from '@/lib/banking-bonus-seed-schema';
@@ -131,11 +131,21 @@ const accountTypeFromDb: Record<BankingAccountType, BankingBonusRecord['accountT
   BUNDLE: 'bundle'
 };
 
+const customerTypeFromDb: Record<BankingCustomerType, BankingBonusRecord['customerType']> = {
+  PERSONAL: 'personal',
+  BUSINESS: 'business'
+};
+
 type DbBankingBonusRow = Prisma.BankingBonusGetPayload<Record<string, never>>;
 
 function sortByNetValueDesc<T extends BankingBonusListItem>(bonuses: T[]): T[] {
   // Keep the repository default ordering local so loading stays independent from list/query helpers.
   return [...bonuses].sort((a, b) => b.estimatedNetValue - a.estimatedNetValue);
+}
+
+function isOfferExpired(expiresAt?: string, now = new Date()): boolean {
+  if (!expiresAt) return false;
+  return new Date(expiresAt).getTime() < now.getTime();
 }
 
 function toListItem(record: BankingBonusRecord): BankingBonusListItem {
@@ -154,6 +164,7 @@ function toRecordFromDb(row: DbBankingBonusRow): BankingBonusRecord {
     bankName: row.bankName,
     offerName: row.offerName,
     accountType: accountTypeFromDb[row.accountType],
+    customerType: customerTypeFromDb[row.customerType],
     headline: row.headline,
     imageUrl: row.imageUrl ?? undefined,
     bonusAmount: Number(row.bonusAmount),
@@ -177,13 +188,16 @@ function toRecordFromDb(row: DbBankingBonusRow): BankingBonusRecord {
     offerUrl: row.offerUrl ?? undefined,
     affiliateUrl: row.affiliateUrl ?? undefined,
     isActive: row.isActive,
+    expiresAt: row.expiresAt?.toISOString(),
     lastVerified: row.lastVerified.toISOString()
   };
 }
 
 function getActiveSeedBankingBonuses(): BankingBonusListItem[] {
   return sortByNetValueDesc(
-    bankingBonusSeedData.filter((record) => record.isActive).map(toListItem)
+    bankingBonusSeedData
+      .filter((record) => record.isActive && !isOfferExpired(record.expiresAt))
+      .map(toListItem)
   );
 }
 
@@ -194,8 +208,12 @@ function shouldUseDbSource(): boolean {
 }
 
 async function getActiveDbBankingBonuses(): Promise<BankingBonusListItem[]> {
+  const now = new Date();
   const rows = await db.bankingBonus.findMany({
-    where: { isActive: true },
+    where: {
+      isActive: true,
+      OR: [{ expiresAt: null }, { expiresAt: { gte: now } }]
+    },
     orderBy: [{ bankName: 'asc' }, { offerName: 'asc' }]
   });
 
@@ -236,8 +254,13 @@ export async function getBankingBonusesData(): Promise<{
 export async function getBankingBonusBySlug(slug: string): Promise<BankingBonusListItem | null> {
   if (shouldUseDbSource()) {
     try {
+      const now = new Date();
       const dbOffer = await db.bankingBonus.findFirst({
-        where: { slug, isActive: true }
+        where: {
+          slug,
+          isActive: true,
+          OR: [{ expiresAt: null }, { expiresAt: { gte: now } }]
+        }
       });
       if (dbOffer) {
         return toListItem(toRecordFromDb(dbOffer));
@@ -256,8 +279,12 @@ export async function getBankingBonusBySlug(slug: string): Promise<BankingBonusL
 export async function getAllBankingBonusSlugs(): Promise<string[]> {
   if (shouldUseDbSource()) {
     try {
+      const now = new Date();
       const rows = await db.bankingBonus.findMany({
-        where: { isActive: true },
+        where: {
+          isActive: true,
+          OR: [{ expiresAt: null }, { expiresAt: { gte: now } }]
+        },
         select: { slug: true }
       });
       if (rows.length > 0) {

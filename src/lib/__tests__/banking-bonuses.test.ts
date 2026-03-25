@@ -29,6 +29,9 @@ describe('getBankingBonusesData', () => {
     expect(['seed', 'db']).toContain(source);
     expect(bonuses.length).toBeGreaterThan(0);
     expect(bonuses.every((bonus) => bonus.isActive)).toBe(true);
+    expect(
+      bonuses.every((bonus) => !bonus.expiresAt || new Date(bonus.expiresAt).getTime() >= Date.now())
+    ).toBe(true);
     expect(bonuses.some((bonus) => bonus.slug === 'oak-legacy-checking-300-legacy')).toBe(false);
   });
 
@@ -89,6 +92,22 @@ describe('filterBankingBonuses', () => {
     });
     expect(result.length).toBeGreaterThan(0);
     expect(result.every((bonus) => bonus.accountType === 'savings')).toBe(true);
+  });
+
+  it('filters by customer type', () => {
+    const bonuses = [
+      createBankingListItem({ slug: 'personal-offer', customerType: 'personal' }),
+      createBankingListItem({ slug: 'business-offer', customerType: 'business' })
+    ];
+
+    const result = filterBankingBonuses(bonuses, {
+      customerType: 'business',
+      sort: 'net',
+      limit: 20,
+      offset: 0
+    });
+
+    expect(result.map((bonus) => bonus.slug)).toEqual(['business-offer']);
   });
 
   it('filters by direct deposit requirement', async () => {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { QuizRequest, QuizResult } from '../quiz-engine';
+import { createBankingListItem } from './banking-test-helpers';
 import {
   buildPlanRecommendationsFromQuiz,
   rankPlannerRecommendationsByPriority,
@@ -244,6 +245,45 @@ describe('buildPlanRecommendationsFromQuiz', () => {
           item.reasons.includes('state_restricted')
       )
     ).toBe(true);
+  });
+
+  it('keeps only the strongest eligible offer per bank in planner output', () => {
+    const cards: QuizResult[] = [];
+    const bankingBonuses = [
+      createBankingListItem({
+        slug: 'same-bank-low',
+        bankName: 'Example Bank',
+        offerName: 'Example Low',
+        bonusAmount: 300,
+        estimatedNetValue: 300
+      }),
+      createBankingListItem({
+        slug: 'same-bank-high',
+        bankName: 'Example Bank',
+        offerName: 'Example High',
+        bonusAmount: 600,
+        estimatedNetValue: 600,
+        minimumOpeningDeposit: 5000
+      }),
+      createBankingListItem({
+        slug: 'other-bank',
+        bankName: 'Other Bank',
+        offerName: 'Other Bank Offer',
+        bonusAmount: 350,
+        estimatedNetValue: 350
+      })
+    ];
+
+    const bundle = buildPlanRecommendationsFromQuiz(cards, bankingBonuses, baseInput, {
+      maxBanking: 3
+    });
+
+    expect(bundle.recommendations.filter((item) => item.lane === 'banking').map((item) => item.id)).toContain(
+      'bank:same-bank-high'
+    );
+    expect(
+      bundle.recommendations.filter((item) => item.lane === 'banking').map((item) => item.id)
+    ).not.toContain('bank:same-bank-low');
   });
 
   it('applies card hard filters and excludes mismatched offers', () => {

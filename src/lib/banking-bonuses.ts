@@ -26,6 +26,7 @@ export {
 } from '@/lib/banking/repository';
 export {
   formatBankingAccountType,
+  formatBankingCustomerType,
   formatBankingCurrency,
   getBankingOfferAvailabilityLabel,
   getBankingOfferBestFit,

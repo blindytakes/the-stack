@@ -8,6 +8,7 @@ export function createBankingOffer(
     bankName: 'Test Bank',
     offerName: 'Test Offer',
     accountType: 'checking',
+    customerType: 'personal',
     headline: 'Test headline',
     bonusAmount: 300,
     estimatedFees: 0,

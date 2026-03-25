@@ -9,6 +9,8 @@ const usStateCodeSchema = z.string().trim().length(2).transform((value) => value
 
 export const bankingAccountTypeValues = ['checking', 'savings', 'bundle'] as const;
 export const bankingAccountTypeSchema = z.enum(bankingAccountTypeValues);
+export const bankingCustomerTypeValues = ['personal', 'business'] as const;
+export const bankingCustomerTypeSchema = z.enum(bankingCustomerTypeValues);
 
 const directDepositSchema = z
   .object({
@@ -30,6 +32,7 @@ export const bankingBonusSeedRecordSchema = z.object({
   bankName: z.string().trim().min(1),
   offerName: z.string().trim().min(1),
   accountType: bankingAccountTypeSchema,
+  customerType: bankingCustomerTypeSchema.default('personal'),
   headline: z.string().trim().min(1),
   imageUrl: httpUrlSchema.optional(),
   bonusAmount: z.number().nonnegative(),
@@ -47,6 +50,7 @@ export const bankingBonusSeedRecordSchema = z.object({
   offerUrl: httpUrlSchema.optional(),
   affiliateUrl: httpUrlSchema.optional(),
   isActive: z.boolean().default(true),
+  expiresAt: z.string().datetime({ offset: true }).optional(),
   lastVerified: z.string().datetime().optional()
 });
 

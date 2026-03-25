@@ -8,6 +8,7 @@ import {
   apyOptions,
   bankingSortOptions,
   cashRequirementOptions,
+  customerTypeOptions,
   directDepositOptions,
   difficultyOptions,
   stateLimitedOptions,
@@ -16,6 +17,7 @@ import {
   type ApyFilterValue,
   type BankingActiveFilterChip,
   type CashRequirementFilterValue,
+  type CustomerTypeFilterValue,
   type DifficultyFilterValue,
   type DirectDepositFilterValue,
   type StateLimitedFilterValue,
@@ -32,6 +34,7 @@ type BankingDirectoryFilterPanelProps = {
   numericApyCount: number;
   query: string;
   accountType: AccountTypeFilterValue;
+  customerType: CustomerTypeFilterValue;
   directDeposit: DirectDepositFilterValue;
   apy: ApyFilterValue;
   difficulty: DifficultyFilterValue;
@@ -42,6 +45,7 @@ type BankingDirectoryFilterPanelProps = {
   sortBy: BankingBonusesSort;
   onQueryChange: (value: string) => void;
   onAccountTypeChange: (value: AccountTypeFilterValue) => void;
+  onCustomerTypeChange: (value: CustomerTypeFilterValue) => void;
   onDirectDepositChange: (value: DirectDepositFilterValue) => void;
   onApyChange: (value: ApyFilterValue) => void;
   onDifficultyChange: (value: DifficultyFilterValue) => void;
@@ -63,6 +67,7 @@ export function BankingDirectoryFilterPanel({
   numericApyCount,
   query,
   accountType,
+  customerType,
   directDeposit,
   apy,
   difficulty,
@@ -73,6 +78,7 @@ export function BankingDirectoryFilterPanel({
   sortBy,
   onQueryChange,
   onAccountTypeChange,
+  onCustomerTypeChange,
   onDirectDepositChange,
   onApyChange,
   onDifficultyChange,
@@ -87,6 +93,7 @@ export function BankingDirectoryFilterPanel({
   const prefersReducedMotion = useReducedMotion();
   const advancedFilterCount = [
     accountType !== 'all',
+    customerType !== 'all',
     difficulty !== 'any',
     cashRequirement !== 'any',
     timeline !== 'any',
@@ -178,7 +185,8 @@ export function BankingDirectoryFilterPanel({
               Find the right bank bonus for you.
             </h1>
             <p className="mt-4 w-full max-w-[62rem] text-base leading-7 text-text-secondary md:text-lg md:leading-8">
-              When you find a bank bonus you like, The Stack builds your bonus plan around it.
+              Compare personal and business bank bonuses in one place, then let The Stack build
+              your bonus plan around the offer that fits.
             </p>
           </div>
 
@@ -296,7 +304,7 @@ export function BankingDirectoryFilterPanel({
       </div>
 
       {showMore && (
-        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-6">
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-7">
           <label className="block">
             <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
               Account Type
@@ -307,6 +315,25 @@ export function BankingDirectoryFilterPanel({
               className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
             >
               {accountTypeOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+              Customer Type
+            </span>
+            <select
+              value={customerType}
+              onChange={(event) =>
+                onCustomerTypeChange(event.target.value as CustomerTypeFilterValue)
+              }
+              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+            >
+              {customerTypeOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>

@@ -241,6 +241,32 @@ export function rankPlannerRecommendationsByPriority(
   );
 }
 
+function dedupeBankingRecommendationsByBank(
+  recommendations: PlannerRecommendation[]
+): PlannerRecommendation[] {
+  const bestByBank = new Map<string, PlannerRecommendation>();
+
+  for (const recommendation of recommendations) {
+    const bankKey = normalizeBankName(recommendation.provider);
+    const current = bestByBank.get(bankKey);
+    if (!current) {
+      bestByBank.set(bankKey, recommendation);
+      continue;
+    }
+
+    const shouldReplace =
+      recommendation.priorityScore > current.priorityScore ||
+      (recommendation.priorityScore === current.priorityScore &&
+        recommendation.estimatedNetValue > current.estimatedNetValue);
+
+    if (shouldReplace) {
+      bestByBank.set(bankKey, recommendation);
+    }
+  }
+
+  return [...bestByBank.values()];
+}
+
 export function buildPlanRecommendationsFromQuiz(
   cardResults: QuizResult[],
   bankingBonuses: BankingBonusListItem[],
@@ -334,8 +360,10 @@ export function buildPlanRecommendationsFromQuiz(
     });
   }
 
+  const dedupedBanking = dedupeBankingRecommendationsByBank(eligibleBanking);
+
   const scheduleResult = buildPlanSchedule(
-    [...eligibleCards, ...eligibleBanking],
+    [...eligibleCards, ...dedupedBanking],
     input,
     {
       startAt: options.startAt,
@@ -344,7 +372,7 @@ export function buildPlanRecommendationsFromQuiz(
     }
   );
   const recommendationsById = new Map(
-    [...eligibleCards, ...eligibleBanking].map((recommendation) => [recommendation.id, recommendation])
+    [...eligibleCards, ...dedupedBanking].map((recommendation) => [recommendation.id, recommendation])
   );
   const scheduledRecommendations = scheduleResult.scheduled
     .map((item) => recommendationsById.get(item.recommendationId))

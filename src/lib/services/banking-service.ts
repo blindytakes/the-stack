@@ -25,6 +25,7 @@ export type BankingBonusesListResult =
 
 export type BankingBonusesListQueryInput = {
   accountType?: string;
+  customerType?: string;
   requiresDirectDeposit?: string;
   apy?: string;
   difficulty?: string;

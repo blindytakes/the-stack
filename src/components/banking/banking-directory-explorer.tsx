@@ -17,6 +17,7 @@ export function BankingDirectoryExplorer({
   const {
     query,
     accountType,
+    customerType,
     directDeposit,
     apy,
     difficulty,
@@ -30,6 +31,7 @@ export function BankingDirectoryExplorer({
     activeFilterChips,
     setQuery,
     setAccountType,
+    setCustomerType,
     setDirectDeposit,
     setApy,
     setDifficulty,
@@ -55,6 +57,7 @@ export function BankingDirectoryExplorer({
         numericApyCount={numericApyCount}
         query={query}
         accountType={accountType}
+        customerType={customerType}
         directDeposit={directDeposit}
         apy={apy}
         difficulty={difficulty}
@@ -65,6 +68,7 @@ export function BankingDirectoryExplorer({
         sortBy={sortBy}
         onQueryChange={setQuery}
         onAccountTypeChange={setAccountType}
+        onCustomerTypeChange={setCustomerType}
         onDirectDepositChange={setDirectDeposit}
         onApyChange={setApy}
         onDifficultyChange={setDifficulty}

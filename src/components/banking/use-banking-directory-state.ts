@@ -14,6 +14,7 @@ import {
   type AccountTypeFilterValue,
   type BankingDirectoryFilterKey,
   type CashRequirementFilterValue,
+  type CustomerTypeFilterValue,
   type DifficultyFilterValue,
   type DirectDepositFilterValue,
   type StateLimitedFilterValue,
@@ -36,6 +37,9 @@ export function useBankingDirectoryState(
 
   const [query, setQuery] = useState(initialFilters.query);
   const [accountType, setAccountType] = useState<AccountTypeFilterValue>(initialFilters.accountType);
+  const [customerType, setCustomerType] = useState<CustomerTypeFilterValue>(
+    initialFilters.customerType
+  );
   const [directDeposit, setDirectDeposit] = useState<DirectDepositFilterValue>(
     initialFilters.directDeposit
   );
@@ -55,6 +59,7 @@ export function useBankingDirectoryState(
     () => ({
       query,
       accountType,
+      customerType,
       directDeposit,
       apy,
       difficulty,
@@ -68,6 +73,7 @@ export function useBankingDirectoryState(
       accountType,
       apy,
       cashRequirement,
+      customerType,
       difficulty,
       directDeposit,
       query,
@@ -83,6 +89,7 @@ export function useBankingDirectoryState(
 
     setQuery(nextFilters.query);
     setAccountType(nextFilters.accountType);
+    setCustomerType(nextFilters.customerType);
     setDirectDeposit(nextFilters.directDeposit);
     setApy(nextFilters.apy);
     setDifficulty(nextFilters.difficulty);
@@ -125,6 +132,7 @@ export function useBankingDirectoryState(
   function clearFilters() {
     setQuery(defaultBankingDirectoryFilters.query);
     setAccountType(defaultBankingDirectoryFilters.accountType);
+    setCustomerType(defaultBankingDirectoryFilters.customerType);
     setDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
     setApy(defaultBankingDirectoryFilters.apy);
     setDifficulty(defaultBankingDirectoryFilters.difficulty);
@@ -138,6 +146,7 @@ export function useBankingDirectoryState(
   function removeFilter(key: BankingDirectoryFilterKey) {
     if (key === 'query') setQuery(defaultBankingDirectoryFilters.query);
     if (key === 'accountType') setAccountType(defaultBankingDirectoryFilters.accountType);
+    if (key === 'customerType') setCustomerType(defaultBankingDirectoryFilters.customerType);
     if (key === 'directDeposit') setDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
     if (key === 'apy') setApy(defaultBankingDirectoryFilters.apy);
     if (key === 'difficulty') setDifficulty(defaultBankingDirectoryFilters.difficulty);
@@ -150,6 +159,7 @@ export function useBankingDirectoryState(
   return {
     query,
     accountType,
+    customerType,
     directDeposit,
     apy,
     difficulty,
@@ -163,6 +173,7 @@ export function useBankingDirectoryState(
     activeFilterChips,
     setQuery,
     setAccountType,
+    setCustomerType,
     setDirectDeposit,
     setApy,
     setDifficulty,

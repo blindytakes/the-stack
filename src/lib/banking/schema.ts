@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   bankingAccountTypeSchema,
+  bankingCustomerTypeSchema,
   type BankingBonusSeedRecord
 } from '@/lib/banking-bonus-seed-schema';
 
@@ -15,6 +16,7 @@ export type BankingOfferCashRequirementLevel = 'none' | 'light' | 'medium' | 'hi
 export type BankingOfferTimelineBucket = 'fast' | 'standard' | 'long' | 'unknown';
 export type BankingBonusesSort = 'net' | 'easy' | 'fast' | 'low_cash';
 export type BankingApyFilter = '1_plus' | '3_plus' | '4_plus';
+export type BankingCustomerType = BankingBonusRecord['customerType'];
 
 const bankingDifficultySchema = z.enum(['low', 'medium', 'high']);
 const bankingCashRequirementSchema = z.enum(['none', 'light', 'medium', 'high']);
@@ -24,6 +26,7 @@ const bankingApyFilterSchema = z.enum(['1_plus', '3_plus', '4_plus']);
 
 export const bankingBonusesQuerySchema = z.object({
   accountType: bankingAccountTypeSchema.optional(),
+  customerType: bankingCustomerTypeSchema.optional(),
   requiresDirectDeposit: z.enum(['yes', 'no']).optional(),
   apy: bankingApyFilterSchema.optional(),
   difficulty: bankingDifficultySchema.optional(),

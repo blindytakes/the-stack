@@ -28,6 +28,10 @@ export function filterBankingBonuses(
       return false;
     }
 
+    if (query.customerType && bonus.customerType !== query.customerType) {
+      return false;
+    }
+
     if (query.requiresDirectDeposit === 'yes' && !bonus.directDeposit.required) {
       return false;
     }

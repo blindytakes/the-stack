@@ -7,6 +7,7 @@ import { filterBankingBonuses, sortBankingBonuses } from '@/lib/banking-bonuses'
 import { usStateOptions } from '@/lib/us-state-options';
 
 export type AccountTypeFilterValue = 'all' | 'checking' | 'savings' | 'bundle';
+export type CustomerTypeFilterValue = 'all' | 'personal' | 'business';
 export type DirectDepositFilterValue = 'any' | 'yes' | 'no';
 export type ApyFilterValue = 'any' | BankingApyFilter;
 export type DifficultyFilterValue = 'any' | 'low' | 'medium' | 'high';
@@ -16,6 +17,7 @@ export type StateLimitedFilterValue = 'any' | 'yes' | 'no';
 export type BankingDirectoryFilterKey =
   | 'query'
   | 'accountType'
+  | 'customerType'
   | 'directDeposit'
   | 'apy'
   | 'difficulty'
@@ -27,6 +29,7 @@ export type BankingDirectoryFilterKey =
 export type BankingDirectoryFilters = {
   query: string;
   accountType: AccountTypeFilterValue;
+  customerType: CustomerTypeFilterValue;
   directDeposit: DirectDepositFilterValue;
   apy: ApyFilterValue;
   difficulty: DifficultyFilterValue;
@@ -45,6 +48,7 @@ export type BankingActiveFilterChip = {
 export const defaultBankingDirectoryFilters: BankingDirectoryFilters = {
   query: '',
   accountType: 'all',
+  customerType: 'all',
   directDeposit: 'any',
   apy: 'any',
   difficulty: 'any',
@@ -67,6 +71,12 @@ export const accountTypeOptions: Array<{ value: AccountTypeFilterValue; label: s
   { value: 'checking', label: 'Checking' },
   { value: 'savings', label: 'Savings' },
   { value: 'bundle', label: 'Checking + savings' }
+];
+
+export const customerTypeOptions: Array<{ value: CustomerTypeFilterValue; label: string }> = [
+  { value: 'all', label: 'Personal + business' },
+  { value: 'personal', label: 'Personal only' },
+  { value: 'business', label: 'Business only' }
 ];
 
 export const directDepositOptions: Array<{ value: DirectDepositFilterValue; label: string }> = [
@@ -121,6 +131,10 @@ function isAccountTypeFilterValue(value: string | null): value is AccountTypeFil
   return value === 'all' || value === 'checking' || value === 'savings' || value === 'bundle';
 }
 
+function isCustomerTypeFilterValue(value: string | null): value is CustomerTypeFilterValue {
+  return value === 'all' || value === 'personal' || value === 'business';
+}
+
 function isDirectDepositFilterValue(value: string | null): value is DirectDepositFilterValue {
   return value === 'any' || value === 'yes' || value === 'no';
 }
@@ -158,6 +172,7 @@ function isBankingSortValue(value: string | null): value is BankingBonusesSort {
 function toBankingQuery(filters: BankingDirectoryFilters) {
   return {
     accountType: filters.accountType === 'all' ? undefined : filters.accountType,
+    customerType: filters.customerType === 'all' ? undefined : filters.customerType,
     requiresDirectDeposit: filters.directDeposit === 'any' ? undefined : filters.directDeposit,
     apy: filters.apy === 'any' ? undefined : filters.apy,
     difficulty: filters.difficulty === 'any' ? undefined : filters.difficulty,
@@ -177,6 +192,7 @@ export function getStateLabel(value: string) {
 
 export function parseBankingDirectoryFilters(searchParams: URLSearchParams): BankingDirectoryFilters {
   const accountTypeFromUrl = searchParams.get('accountType');
+  const customerTypeFromUrl = searchParams.get('customerType');
   const directDepositFromUrl = searchParams.get('directDeposit');
   const apyFromUrl = searchParams.get('apy');
   const difficultyFromUrl = searchParams.get('difficulty');
@@ -192,6 +208,9 @@ export function parseBankingDirectoryFilters(searchParams: URLSearchParams): Ban
     accountType: isAccountTypeFilterValue(accountTypeFromUrl)
       ? accountTypeFromUrl
       : defaultBankingDirectoryFilters.accountType,
+    customerType: isCustomerTypeFilterValue(customerTypeFromUrl)
+      ? customerTypeFromUrl
+      : defaultBankingDirectoryFilters.customerType,
     directDeposit: isDirectDepositFilterValue(directDepositFromUrl)
       ? directDepositFromUrl
       : defaultBankingDirectoryFilters.directDeposit,
@@ -229,6 +248,12 @@ export function buildBankingDirectorySearchParams(
     params.set('accountType', filters.accountType);
   } else {
     params.delete('accountType');
+  }
+
+  if (filters.customerType !== defaultBankingDirectoryFilters.customerType) {
+    params.set('customerType', filters.customerType);
+  } else {
+    params.delete('customerType');
   }
 
   if (filters.directDeposit !== defaultBankingDirectoryFilters.directDeposit) {
@@ -287,7 +312,7 @@ export function filterAndSortBankingOffers(
     if (!hasQuery) return true;
 
     const searchable = lower(
-      `${offer.bankName} ${offer.offerName} ${offer.headline} ${offer.accountType}`
+      `${offer.bankName} ${offer.offerName} ${offer.headline} ${offer.accountType} ${offer.customerType}`
     );
     return searchable.includes(queryLower);
   });
@@ -299,6 +324,7 @@ export function countActiveBankingDirectoryFilters(filters: BankingDirectoryFilt
   return [
     filters.query.trim().length > 0,
     filters.accountType !== defaultBankingDirectoryFilters.accountType,
+    filters.customerType !== defaultBankingDirectoryFilters.customerType,
     filters.directDeposit !== defaultBankingDirectoryFilters.directDeposit,
     filters.apy !== defaultBankingDirectoryFilters.apy,
     filters.difficulty !== defaultBankingDirectoryFilters.difficulty,
@@ -320,6 +346,14 @@ export function buildActiveBankingFilterChips(
     chips.push({
       key: 'accountType',
       label: accountTypeOptions.find((option) => option.value === filters.accountType)?.label ?? filters.accountType
+    });
+  }
+  if (filters.customerType !== defaultBankingDirectoryFilters.customerType) {
+    chips.push({
+      key: 'customerType',
+      label:
+        customerTypeOptions.find((option) => option.value === filters.customerType)?.label ??
+        filters.customerType
     });
   }
   if (filters.directDeposit !== defaultBankingDirectoryFilters.directDeposit) {

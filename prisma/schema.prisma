@@ -226,6 +226,7 @@ model BankingBonus {
   bankName                   String
   offerName                  String
   accountType                BankingAccountType
+  customerType               BankingCustomerType     @default(PERSONAL)
   headline                   String
   imageUrl                   String?
   bonusAmount                Decimal
@@ -254,6 +255,7 @@ model BankingBonus {
 
   @@index([isActive])
   @@index([accountType])
+  @@index([customerType])
   @@index([lastVerified])
 }
 
@@ -261,6 +263,11 @@ enum BankingAccountType {
   CHECKING
   SAVINGS
   BUNDLE
+}
+
+enum BankingCustomerType {
+  PERSONAL
+  BUSINESS
 }
 
 enum BankingBonusSourceType {

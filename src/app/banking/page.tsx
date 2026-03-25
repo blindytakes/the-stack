@@ -6,7 +6,7 @@ import { getBankingBonusesData } from '@/lib/banking-bonuses';
 export const metadata: Metadata = {
   title: 'Banking Bonuses',
   description:
-    'Browse checking and savings bank bonuses with net value estimates, requirements, and timelines.'
+    'Browse personal and business checking, savings, and bundle bonuses with net value estimates, requirements, and timelines.'
 };
 
 type SearchParams = Record<string, string | string[] | undefined>;

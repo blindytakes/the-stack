@@ -19,6 +19,7 @@ export async function GET(req: Request) {
     const url = new URL(req.url);
     const result = await getBankingBonusesList({
       accountType: url.searchParams.get('accountType') ?? undefined,
+      customerType: url.searchParams.get('customerType') ?? undefined,
       requiresDirectDeposit:
         url.searchParams.get('requiresDirectDeposit') ??
         url.searchParams.get('directDeposit') ??

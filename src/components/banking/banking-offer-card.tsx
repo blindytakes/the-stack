@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { EntityImage } from '@/components/ui/entity-image';
 import {
+  formatBankingCustomerType,
   formatBankingCurrency,
   getBankingOfferPrimaryRequirement,
   type BankingBonusListItem
@@ -87,6 +88,9 @@ export function BankingOfferCard({
         >
           {offer.offerName}
         </button>
+        <p className="mt-1 text-center text-[11px] uppercase tracking-[0.16em] text-text-muted">
+          {formatBankingCustomerType(offer.customerType)} {offer.accountType === 'bundle' ? 'bundle' : offer.accountType}
+        </p>
       </div>
 
       {/* Primary requirement */}

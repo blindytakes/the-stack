@@ -4,6 +4,7 @@
     "bankName": "Example National Bank",
     "offerName": "Premium Checking Bonus",
     "accountType": "checking",
+    "customerType": "personal",
     "headline": "Earn $400 after completing direct deposit and account activity requirements.",
     "bonusAmount": 400,
     "estimatedFees": 12,
@@ -26,6 +27,7 @@
     "offerUrl": "https://www.example.com/checking-bonus",
     "affiliateUrl": "https://www.example.com/checking-bonus?ref=thestack",
     "isActive": true,
+    "expiresAt": "2026-05-31T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -33,6 +35,7 @@
     "bankName": "Example Online Bank",
     "offerName": "High-Yield Savings Bonus",
     "accountType": "savings",
+    "customerType": "business",
     "headline": "Earn $250 by depositing fresh funds and maintaining the qualifying balance.",
     "bonusAmount": 250,
     "estimatedFees": 0,
@@ -51,6 +54,7 @@
     ],
     "offerUrl": "https://www.example.com/savings-bonus",
     "isActive": true,
+    "expiresAt": "2026-06-30T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   }
 ]

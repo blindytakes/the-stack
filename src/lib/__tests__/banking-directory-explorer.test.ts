@@ -13,13 +13,14 @@ describe('banking directory explorer helpers', () => {
   it('parses and rebuilds non-default filters from the URL', () => {
     const filters = parseBankingDirectoryFilters(
       new URLSearchParams(
-        'q=empire&accountType=checking&directDeposit=no&apy=3_plus&difficulty=low&cash=light&timeline=fast&stateLimited=yes&state=ny&sort=low_cash'
+        'q=empire&accountType=checking&customerType=business&directDeposit=no&apy=3_plus&difficulty=low&cash=light&timeline=fast&stateLimited=yes&state=ny&sort=low_cash'
       )
     );
 
     expect(filters).toEqual({
       query: 'empire',
       accountType: 'checking',
+      customerType: 'business',
       directDeposit: 'no',
       apy: '3_plus',
       difficulty: 'low',
@@ -31,9 +32,9 @@ describe('banking directory explorer helpers', () => {
     });
 
     expect(buildBankingDirectorySearchParams(new URLSearchParams(), filters).toString()).toBe(
-      'q=empire&accountType=checking&directDeposit=no&apy=3_plus&difficulty=low&cash=light&timeline=fast&stateLimited=yes&state=NY&sort=low_cash'
+      'q=empire&accountType=checking&customerType=business&directDeposit=no&apy=3_plus&difficulty=low&cash=light&timeline=fast&stateLimited=yes&state=NY&sort=low_cash'
     );
-    expect(countActiveBankingDirectoryFilters(filters)).toBe(9);
+    expect(countActiveBankingDirectoryFilters(filters)).toBe(10);
   });
 
   it('filters and sorts offers with search layered on top of banking filters', () => {
@@ -51,6 +52,7 @@ describe('banking directory explorer helpers', () => {
         slug: 'empire-checking',
         bankName: 'Empire National',
         offerName: 'Empire Checking Bonus',
+        customerType: 'business',
         directDeposit: { required: false },
         apyPercent: 3.25,
         apyDisplay: '3.25% APY',
@@ -83,6 +85,7 @@ describe('banking directory explorer helpers', () => {
       ...defaultBankingDirectoryFilters,
       query: 'checking',
       accountType: 'checking',
+      customerType: 'business',
       directDeposit: 'no',
       apy: '3_plus',
       sortBy: 'low_cash'
@@ -95,6 +98,7 @@ describe('banking directory explorer helpers', () => {
     const chips = buildActiveBankingFilterChips({
       ...defaultBankingDirectoryFilters,
       query: 'empire',
+      customerType: 'business',
       apy: '3_plus',
       cashRequirement: 'light',
       state: 'NY'
@@ -102,6 +106,7 @@ describe('banking directory explorer helpers', () => {
 
     expect(chips).toEqual([
       { key: 'query', label: 'Search: empire' },
+      { key: 'customerType', label: 'Business only' },
       { key: 'apy', label: '3.00%+ APY' },
       { key: 'cashRequirement', label: 'Up to $2.5k' },
       { key: 'state', label: 'Available in New York' }

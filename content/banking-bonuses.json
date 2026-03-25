@@ -55,6 +55,7 @@
     "notes": "Offer validity and footprint reflected in public summaries updated in February-March 2026.",
     "offerUrl": "https://www.usbank.com/bank-accounts/checking-accounts/smartly-checking-account.html",
     "isActive": true,
+    "expiresAt": "2026-04-01T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -82,6 +83,7 @@
     "notes": "NerdWallet reported expiration April 14, 2026 on its March 1, 2026 update.",
     "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
     "isActive": true,
+    "expiresAt": "2026-04-14T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -108,6 +110,7 @@
     "notes": "Public offers list expiration May 4, 2026 and ~100-day payout timing.",
     "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
     "isActive": true,
+    "expiresAt": "2026-05-04T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -178,6 +181,7 @@
     ],
     "offerUrl": "https://account.chase.com/consumer/banking/seo",
     "isActive": true,
+    "expiresAt": "2026-04-15T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -198,6 +202,7 @@
     ],
     "offerUrl": "https://account.chase.com/consumer/banking/secure",
     "isActive": true,
+    "expiresAt": "2026-07-15T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -224,6 +229,7 @@
     "notes": "Tiered bonuses from $300 to $2,000 were listed with expiration March 11, 2026.",
     "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
     "isActive": true,
+    "expiresAt": "2026-03-11T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -249,6 +255,7 @@
     "notes": "Offer listed with expiration May 31, 2026.",
     "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
     "isActive": true,
+    "expiresAt": "2026-05-31T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -275,6 +282,7 @@
     "notes": "Current public offer window runs through May 28, 2026.",
     "offerUrl": "https://www.pnc.com/en/personal-banking/banking/checking/bonus-offer.html",
     "isActive": true,
+    "expiresAt": "2026-05-28T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -300,6 +308,7 @@
     "notes": "Offer listed with expiration March 31, 2026.",
     "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
     "isActive": true,
+    "expiresAt": "2026-03-31T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -326,6 +335,7 @@
     ],
     "offerUrl": "https://account.chase.com/consumer/banking/chase-private-client-checking-account",
     "isActive": true,
+    "expiresAt": "2026-04-15T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -352,6 +362,7 @@
     ],
     "offerUrl": "https://support.sofi.com/hc/en-us/articles/6502391083789--300-Direct-Deposit-Welcome-Offer",
     "isActive": true,
+    "expiresAt": "2026-12-31T23:59:59.999-05:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -378,6 +389,7 @@
     "notes": "Offer deadline widely published as April 13, 2026 for the $325 enhanced-direct-deposit tier.",
     "offerUrl": "https://banking.citi.com/cbol/checking-accounts/checking-offer/default.htm",
     "isActive": true,
+    "expiresAt": "2026-04-13T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -405,6 +417,7 @@
     ],
     "offerUrl": "https://promo.alliantcreditunion.org",
     "isActive": true,
+    "expiresAt": "2026-06-30T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -430,6 +443,7 @@
     "notes": "TD published this offer with an end date of April 30, 2026.",
     "offerUrl": "https://www.td.com/us/en/personal-banking/checking-and-saving-bonus",
     "isActive": true,
+    "expiresAt": "2026-04-30T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -455,6 +469,7 @@
     "notes": "TD published this offer with an end date of April 30, 2026.",
     "offerUrl": "https://www.td.com/us/en/personal-banking/checking-and-saving-bonus",
     "isActive": true,
+    "expiresAt": "2026-04-30T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -482,6 +497,7 @@
     "notes": "KeyBank lists this promotional window through May 22, 2026 and payout within 60 days after qualification.",
     "offerUrl": "https://www.key.com/personal/checking/checking-account-bonus-offers.html",
     "isActive": true,
+    "expiresAt": "2026-05-22T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -509,6 +525,7 @@
     "notes": "KeyBank lists this promotional window through May 22, 2026 and payout within 60 days after qualification.",
     "offerUrl": "https://www.key.com/personal/checking/checking-account-bonus-offers.html",
     "isActive": true,
+    "expiresAt": "2026-05-22T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -536,6 +553,7 @@
     "notes": "Truist disclosure indicates offer window through March 25, 2026.",
     "offerUrl": "https://www.truist.com/open-account/banking-accounts",
     "isActive": true,
+    "expiresAt": "2026-03-25T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -563,6 +581,7 @@
     "notes": "Offer terms page lists enrollment deadline of March 11, 2026 with $100/$750/$1,500 tiers.",
     "offerUrl": "https://www.marcus.com/us/en/disclosure/savings-bonus-offer-details-2026",
     "isActive": true,
+    "expiresAt": "2026-03-11T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -603,6 +622,7 @@
     "notes": "Forbes reported this offer expiration as March 15, 2026 and state-based availability.",
     "offerUrl": "https://www.forbes.com/advisor/banking/huntington-bank-promotions/",
     "isActive": true,
+    "expiresAt": "2026-03-15T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   },
   {
@@ -643,6 +663,7 @@
     "notes": "Forbes reported this offer expiration as March 15, 2026 and state-based availability.",
     "offerUrl": "https://www.forbes.com/advisor/banking/huntington-bank-promotions/",
     "isActive": true,
+    "expiresAt": "2026-03-15T23:59:59.999-04:00",
     "lastVerified": "2026-03-04T00:00:00.000Z"
   }
 ]

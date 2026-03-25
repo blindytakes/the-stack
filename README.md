@@ -90,6 +90,9 @@ cp content/banking-bonuses.template.json content/banking-bonuses.json
 # 3) Import into DB
 npm run banking:import -- ./content/banking-bonuses.json
 
+# Optional: import an additive expansion batch such as business checking offers
+npm run banking:import -- ./content/banking-bonuses-business-expansion.json
+
 # Optional: deactivate DB offers not present in the file
 npm run banking:import -- ./content/banking-bonuses.json --deactivate-missing
 ```

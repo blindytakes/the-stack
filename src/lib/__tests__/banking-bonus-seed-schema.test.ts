@@ -21,6 +21,21 @@ describe('bankingBonusSeedRecordSchema', () => {
     expect(parsed.success).toBe(true);
   });
 
+  it('accepts structured expiration timestamps', () => {
+    const parsed = bankingBonusSeedRecordSchema.safeParse({
+      slug: 'test-bank-offer',
+      bankName: 'Test Bank',
+      offerName: 'Checking Bonus',
+      accountType: 'checking',
+      headline: 'Open an account and complete the steps.',
+      bonusAmount: 300,
+      expiresAt: '2026-05-31T23:59:59.999-04:00',
+      requiredActions: ['Open an account']
+    });
+
+    expect(parsed.success).toBe(true);
+  });
+
   it('rejects non-http image URLs', () => {
     const parsed = bankingBonusSeedRecordSchema.safeParse({
       slug: 'test-bank-offer',

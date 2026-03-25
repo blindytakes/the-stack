@@ -4,6 +4,7 @@ const ALLIANT_FAVICON_URL = 'https://www.alliantcreditunion.org/resources/favico
 const CHIME_FAVICON_URL = 'https://www.chime.com/img/favicon.png';
 
 const bankingBrandImageUrlByBankName: Record<string, string> = {
+  axos: 'https://www.axosbank.com/assets/images/global/favicon/apple-touch-icon.png',
   'bank of america':
     'https://www.bankofamerica.com/homepage/spa-assets/images/assets-images-global-favicon-apple-touch-icon-CSX889b28c.png',
   bmo: 'https://www.bmo.com/dist/favicon/apple-touch-icon.png',

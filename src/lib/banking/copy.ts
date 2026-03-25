@@ -26,6 +26,10 @@ export function formatBankingAccountType(accountType: BankingBonusRecord['accoun
   return 'Checking';
 }
 
+export function formatBankingCustomerType(customerType: BankingBonusRecord['customerType']) {
+  return customerType === 'business' ? 'Business' : 'Personal';
+}
+
 export function getBankingOfferAvailabilityLabel(
   offer: Pick<BankingBonusRecord, 'stateRestrictions'>
 ) {
