@@ -16,7 +16,9 @@ export const metadata: Metadata = {
 export default async function BusinessPage() {
   const [{ cards }, { bonuses }] = await Promise.all([getCardsData(), getBankingBonusesData()]);
   const businessCards = cards.filter((card) => card.cardType === 'business');
-  const businessBonuses = bonuses.filter((bonus) => bonus.customerType === 'business');
+  const businessBonuses = bonuses.filter(
+    (bonus) => bonus.customerType === 'business' && bonus.accountType === 'checking'
+  );
   const businessCardCount = businessCards.length;
   const businessBankingCount = businessBonuses.length;
 
@@ -60,7 +62,7 @@ export default async function BusinessPage() {
                 <p className="text-3xl font-semibold text-text-primary">
                   {businessBankingCount.toLocaleString()}
                 </p>
-                <p className="mt-2 text-sm text-text-secondary">Banking offers</p>
+                <p className="mt-2 text-sm text-text-secondary">Business checking offers</p>
               </div>
             </div>
           </aside>
