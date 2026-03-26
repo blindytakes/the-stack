@@ -3,6 +3,7 @@ import {
   derivePlannerBenefitsValue,
   deriveTotalBenefitsValue
 } from '@/lib/cards/planner-benefits';
+import { deriveOffsettingCreditsValue } from '@/lib/cards/presentation-metrics';
 import {
   resolveCardBrandImageUrl,
   resolveCardFallbackBenefits
@@ -136,6 +137,12 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
     ...benefit,
     estimatedValue: benefit.estimatedValue ?? null
   }));
+  const normalizedBenefitsForPresentation = resolvedBenefits.map((benefit) => ({
+    category: String(benefit.category),
+    name: benefit.name,
+    description: benefit.description,
+    estimatedValue: benefit.estimatedValue != null ? Number(benefit.estimatedValue) : null
+  }));
 
   return {
     slug: row.slug,
@@ -156,6 +163,7 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
     bestSignUpBonusValue: bestSignUpBonus?.bonusValue,
     bestSignUpBonusSpendRequired: bestSignUpBonus?.spendRequired,
     bestSignUpBonusSpendPeriodDays: bestSignUpBonus?.spendPeriodDays,
+    offsettingCreditsValue: deriveOffsettingCreditsValue(normalizedBenefitsForPresentation),
     totalBenefitsValue: deriveTotalBenefitsValue(resolvedBenefitValues),
     plannerBenefitsValue: derivePlannerBenefitsValue(resolvedBenefitValues)
   };

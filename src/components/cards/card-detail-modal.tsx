@@ -4,6 +4,13 @@ import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import type { CardDetail } from '@/lib/cards';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import {
+  formatCardCurrency,
+  formatSignedCardCurrency,
+  getCardDecisionMetrics,
+  getCardModeledFirstYearNet,
+  isOffsettingCreditBenefit
+} from '@/lib/cards/presentation-metrics';
 import { formatSpendCategoryLabel } from '@/lib/cards-directory-explorer';
 import { AffiliateLink } from '@/components/analytics/affiliate-link';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
@@ -80,31 +87,17 @@ export function CardDetailModal({
   const imagePresentation = getCardImagePresentation(slug);
   const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
 
-  const formatCreditTier = (tier: string) => {
-    if (tier === 'excellent') return 'Excellent';
-    if (tier === 'good') return 'Good+';
-    if (tier === 'fair') return 'Fair+';
-    return 'Building';
-  };
-
-  const formatForeignFee = (fee: number) => {
-    if (fee === 0) return 'None';
-    return `${fee}%`;
-  };
-
   const formatRewardRate = (rate: number, rateType: CardDetail['rewardType']) => {
     if (rateType === 'cashback') return `${rate}%`;
     return `${rate}x`;
   };
 
-  const formatCurrency = (value: number) => `$${Math.round(value).toLocaleString()}`;
-  const formatSignedCurrency = (value: number) =>
-    `${value >= 0 ? '+' : '-'}$${Math.abs(Math.round(value)).toLocaleString()}`;
-
   const activeBonuses = card?.signUpBonuses.filter((bonus) => bonus.isCurrentOffer !== false) ?? [];
   const bonusCandidates = activeBonuses.length > 0 ? activeBonuses : (card?.signUpBonuses ?? []);
   const primaryBonus = [...bonusCandidates].sort((a, b) => b.bonusValue - a.bonusValue)[0];
   const bestListedOfferValue = primaryBonus?.bonusValue ?? card?.bestSignUpBonusValue ?? 0;
+  const offsettingCredits = card?.benefits.filter(isOffsettingCreditBenefit) ?? [];
+  const offsettingCreditsValue = card?.offsettingCreditsValue ?? 0;
   const topRewards = card
     ? [...card.rewards]
         .sort((a, b) => b.rate - a.rate)
@@ -127,9 +120,8 @@ export function CardDetailModal({
         ? 'Miles'
         : 'Points'
     : '';
-  const estimatedFirstYearValue = card
-    ? (card.bestSignUpBonusValue ?? 0) + card.totalBenefitsValue - card.annualFee
-    : 0;
+  const estimatedFirstYearValue = card ? getCardModeledFirstYearNet(card) : 0;
+  const cardStats = card ? getCardDecisionMetrics(card) : [];
   const outboundApplyUrl = card ? card.affiliateUrl ?? card.applyUrl : null;
   const applyHref =
     card && outboundApplyUrl
@@ -258,49 +250,53 @@ export function CardDetailModal({
                       Best listed offer
                     </p>
                     <p className="mt-2 text-[2.05rem] font-semibold leading-none text-brand-gold">
-                      {bestListedOfferValue > 0 ? formatCurrency(bestListedOfferValue) : 'N/A'}
+                      {bestListedOfferValue > 0 ? formatCardCurrency(bestListedOfferValue) : 'N/A'}
                     </p>
                   </div>
 
                   <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] p-3">
                     <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">
-                      Estimated first-year net
+                      Modeled first-year net
                     </p>
                     <p
                       className={`mt-2 text-[2.05rem] font-semibold leading-none ${
                         estimatedFirstYearValue >= 0 ? 'text-brand-teal' : 'text-brand-coral'
                       }`}
                     >
-                      {formatSignedCurrency(estimatedFirstYearValue)}
+                      {formatSignedCardCurrency(estimatedFirstYearValue)}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-2.5">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Annual Fee</p>
-                <p className="mt-1 text-sm font-semibold text-text-primary">
-                  {card.annualFee === 0 ? 'No fee' : formatCurrency(card.annualFee)}
-                </p>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-2.5">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Credit Needed</p>
-                <p className="mt-1 text-sm font-semibold text-text-primary">
-                  {formatCreditTier(card.creditTierMin)}
-                </p>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-2.5">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Foreign Fee</p>
-                <p className="mt-1 text-sm font-semibold text-text-primary">
-                  {formatForeignFee(card.foreignTxFee)}
-                </p>
-              </div>
-              <div className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-2.5">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Reward Style</p>
-                <p className="mt-1 text-sm font-semibold text-text-primary">{rewardStyleLabel}</p>
-              </div>
+            <div className="mt-4 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-5">
+              {cardStats.map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-2.5"
+                >
+                  <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">{stat.label}</p>
+                  <p
+                    className={`mt-1 text-sm font-semibold ${
+                      stat.tone === 'positive'
+                        ? 'text-brand-teal'
+                        : stat.tone === 'warning'
+                          ? 'text-brand-gold'
+                          : stat.tone === 'negative'
+                            ? 'text-brand-coral'
+                            : 'text-text-primary'
+                    }`}
+                  >
+                    {stat.value}
+                  </p>
+                  <p className="mt-1 text-[11px] leading-4 text-text-muted">
+                    {stat.label === 'Offsetting credits' && offsettingCreditsValue > 0
+                      ? `${offsettingCredits.length} recurring credit${offsettingCredits.length === 1 ? '' : 's'} found`
+                      : stat.detail}
+                  </p>
+                </div>
+              ))}
             </div>
 
             <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1.02fr)_minmax(0,0.98fr)]">
@@ -321,7 +317,7 @@ export function CardDetailModal({
                             {(reward.notes || reward.capAmount != null) && (
                               <p className="mt-1 text-xs leading-5 text-text-secondary">
                                 {reward.notes ??
-                                  `Up to ${formatCurrency(reward.capAmount ?? 0)}${
+                                  `Up to ${formatCardCurrency(reward.capAmount ?? 0)}${
                                     reward.capPeriod ? `/${reward.capPeriod}` : ''
                                   }`}
                               </p>
@@ -349,7 +345,7 @@ export function CardDetailModal({
                             <p className="text-sm font-semibold text-text-primary">{benefit.name}</p>
                             {benefit.estimatedValue != null && (
                               <span className="shrink-0 text-sm font-semibold text-brand-teal">
-                                ~{formatCurrency(benefit.estimatedValue)}/yr
+                                ~{formatCardCurrency(benefit.estimatedValue)}/yr
                               </span>
                             )}
                           </div>

@@ -5,10 +5,10 @@ import { EntityImage } from '@/components/ui/entity-image';
 import {
   formatBankingCustomerType,
   formatBankingCurrency,
-  getBankingOfferPrimaryRequirement,
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
+import { getBankingDecisionMetrics } from '@/lib/banking/presentation-metrics';
 import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type BankingOfferCardProps = {
@@ -25,9 +25,8 @@ export function BankingOfferCard({
   const isCompact = variant === 'compact';
   const imagePresentation = getBankingImagePresentation(offer.bankName);
   const noDirectDeposit = !offer.directDeposit.required;
-  const stateLimited =
-    offer.stateRestrictions && offer.stateRestrictions.length > 0;
-  const primaryRequirement = getBankingOfferPrimaryRequirement(offer);
+  const stateLimited = offer.stateRestrictions && offer.stateRestrictions.length > 0;
+  const decisionMetrics = getBankingDecisionMetrics(offer);
 
   return (
     <article
@@ -89,14 +88,36 @@ export function BankingOfferCard({
           {offer.offerName}
         </button>
         <p className="mt-1 text-center text-[11px] uppercase tracking-[0.16em] text-text-muted">
-          {formatBankingCustomerType(offer.customerType)} {offer.accountType === 'bundle' ? 'bundle' : offer.accountType}
+          {formatBankingCustomerType(offer.customerType)}{' '}
+          {offer.accountType === 'bundle' ? 'bundle' : offer.accountType}
         </p>
       </div>
 
-      {/* Primary requirement */}
-      <p className="relative z-10 mt-2 min-h-[2.75rem] px-2 text-center text-xs leading-5 text-text-muted">
-        {primaryRequirement}
-      </p>
+      <div className="relative z-10 mt-4 grid grid-cols-2 gap-2">
+        {decisionMetrics.map((metric, metricIndex) => (
+          <div
+            key={metric.label}
+            className={`rounded-xl border border-white/5 bg-bg/40 px-3 py-2 ${
+              metricIndex === decisionMetrics.length - 1 ? 'col-span-2' : ''
+            }`}
+          >
+            <p className="text-[10px] uppercase tracking-[0.16em] text-text-muted">{metric.label}</p>
+            <p
+              className={`mt-1 text-sm font-semibold ${
+                metric.tone === 'positive'
+                  ? 'text-brand-teal'
+                  : metric.tone === 'warning'
+                    ? 'text-brand-gold'
+                    : metric.tone === 'negative'
+                      ? 'text-brand-coral'
+                      : 'text-text-primary'
+              }`}
+            >
+              {metric.value}
+            </p>
+          </div>
+        ))}
+      </div>
 
       {/* Action */}
       <div className="relative z-10 mt-auto mt-4 border-t border-white/5 pt-4">

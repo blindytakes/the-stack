@@ -37,6 +37,7 @@ export type CardRecord = {
   bestSignUpBonusValue?: number;
   bestSignUpBonusSpendRequired?: number;
   bestSignUpBonusSpendPeriodDays?: number;
+  offsettingCreditsValue?: number;
   totalBenefitsValue: number;
   plannerBenefitsValue: number;
 };

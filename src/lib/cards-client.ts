@@ -35,6 +35,7 @@ const cardRecordSchema = z.object({
   editorRating: z.number().finite().optional(),
   pros: z.array(z.string()).optional(),
   cons: z.array(z.string()).optional(),
+  offsettingCreditsValue: z.number().finite().default(0),
   totalBenefitsValue: z.number().finite().default(0),
   plannerBenefitsValue: z.number().finite().default(0)
 });

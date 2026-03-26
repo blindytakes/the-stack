@@ -11,15 +11,14 @@ import {
   formatBankingCurrency,
   getBankingOfferAvailabilityLabel,
   getBankingOfferBestFit,
-  getBankingOfferDifficulty,
   getBankingOfferExecutionSummary,
   getBankingOfferPrimaryConstraint,
   getBankingOfferPrimaryRequirement,
   getBankingOfferThinkTwiceIf,
-  getBankingOfferTimeline,
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
+import { getBankingDecisionMetrics } from '@/lib/banking/presentation-metrics';
 import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type BankingDetailModalProps = {
@@ -66,8 +65,6 @@ export function BankingDetailModal({
   const imagePresentation = getBankingImagePresentation(offer.bankName);
   const primaryRequirement = getBankingOfferPrimaryRequirement(offer);
   const primaryConstraint = getBankingOfferPrimaryConstraint(offer);
-  const timeline = getBankingOfferTimeline(offer);
-  const difficulty = getBankingOfferDifficulty(offer);
   const executionSummary = getBankingOfferExecutionSummary(offer);
   const bestFitBullets = getBankingOfferBestFit(offer).slice(0, 3);
   const cautionBullets = getBankingOfferThinkTwiceIf(offer).slice(0, 3);
@@ -85,47 +82,7 @@ export function BankingDetailModal({
         target: outboundOfferUrl
       }).toString()}`
     : null;
-  const openingDepositLabel =
-    typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0
-      ? formatBankingCurrency(offer.minimumOpeningDeposit)
-      : 'Low cash';
-  const directDepositLabel = offer.directDeposit.required
-    ? typeof offer.directDeposit.minimumAmount === 'number'
-      ? `${formatBankingCurrency(offer.directDeposit.minimumAmount)}+ DD`
-      : 'Direct deposit'
-    : 'No DD';
-  const statCards = [
-    {
-      label: 'Net bonus',
-      value: `+${formatBankingCurrency(offer.estimatedNetValue)}`,
-      tone: 'text-brand-teal'
-    },
-    {
-      label: 'Cash needed',
-      value: openingDepositLabel,
-      tone: 'text-text-primary'
-    },
-    {
-      label: 'Timeline',
-      value: timeline.shortLabel,
-      tone: 'text-text-primary'
-    },
-    {
-      label: 'Friction',
-      value: difficulty.shortLabel,
-      tone:
-        difficulty.level === 'low'
-          ? 'text-emerald-400'
-          : difficulty.level === 'high'
-            ? 'text-brand-coral'
-            : 'text-brand-gold'
-    },
-    {
-      label: offer.apyDisplay ? 'APY' : 'Direct deposit',
-      value: offer.apyDisplay ?? directDepositLabel,
-      tone: offer.apyDisplay ? 'text-brand-gold' : 'text-text-primary'
-    }
-  ];
+  const statCards = getBankingDecisionMetrics(offer);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -278,7 +235,20 @@ export function BankingDetailModal({
                       className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-3"
                     >
                       <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">{stat.label}</p>
-                      <p className={`mt-1.5 text-sm font-semibold ${stat.tone}`}>{stat.value}</p>
+                      <p
+                        className={`mt-1.5 text-sm font-semibold ${
+                          stat.tone === 'positive'
+                            ? 'text-brand-teal'
+                            : stat.tone === 'warning'
+                              ? 'text-brand-gold'
+                              : stat.tone === 'negative'
+                                ? 'text-brand-coral'
+                                : 'text-text-primary'
+                        }`}
+                      >
+                        {stat.value}
+                      </p>
+                      <p className="mt-1 text-[11px] leading-4 text-text-muted">{stat.detail}</p>
                     </div>
                   ))}
                 </div>

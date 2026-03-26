@@ -6,9 +6,9 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { CardRecord } from '@/lib/cards';
 import {
   formatBonusValue,
-  formatSpendCategoryLabel,
-  formatSpendRequirement
+  formatSpendCategoryLabel
 } from '@/lib/cards-directory-explorer';
+import { getCardDecisionMetrics } from '@/lib/cards/presentation-metrics';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { EntityImage } from '@/components/ui/entity-image';
 import { CardDetailModal } from '@/components/cards/card-detail-modal';
@@ -103,11 +103,9 @@ export function CardsDirectoryResults({
           const selectedForCompare = selectedCompare.includes(card.slug);
           const imagePresentation = getCardImagePresentation(card.slug);
           const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-          const spendRequirement = formatSpendRequirement(card);
           const topCategories = card.topCategories.filter((category) => category !== 'other');
-          const annualFeeLabel =
-            card.annualFee === 0 ? 'No annual fee' : `Annual fee: $${card.annualFee}/yr`;
           const bestCategory = (topCategories.length > 0 ? topCategories : (['all'] as const))[0];
+          const decisionMetrics = getCardDecisionMetrics(card);
           const shouldReveal = !prefersReducedMotion && isMeasured;
           const transitionDelay = shouldReveal && isVisible ? 180 + Math.min(index, 15) * 50 : 0;
 
@@ -170,26 +168,37 @@ export function CardsDirectoryResults({
                 >
                   {card.name}
                 </button>
+                <p className="mt-1 text-center text-[11px] uppercase tracking-[0.16em] text-text-muted">
+                  {formatRewardTypeLabel(card.rewardType)} · {formatBestCategoryLabel(bestCategory)}
+                </p>
               </div>
 
-              <p className="relative z-10 mt-2 min-h-[1.5rem] text-center text-xs font-medium leading-5 text-text-muted">
-                {annualFeeLabel}
-              </p>
-
-              <p className="relative z-10 mt-1 text-center text-xs text-text-muted">
-                {spendRequirement ?? 'See issuer terms for the latest spend requirement.'}
-              </p>
-
-              <div className="relative z-10 mt-3 flex flex-wrap justify-center gap-2">
-                <span className="rounded-full border border-brand-gold/20 bg-brand-gold/10 px-2.5 py-1 text-[11px] text-brand-gold">
-                  {formatRewardTypeLabel(card.rewardType)}
-                </span>
-              </div>
-
-              <div className="relative z-10 mt-3 flex justify-center">
-                <span className="inline-flex items-center whitespace-nowrap rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-text-secondary">
-                  {formatBestCategoryLabel(bestCategory)}
-                </span>
+              <div className="relative z-10 mt-4 grid grid-cols-2 gap-2">
+                {decisionMetrics.map((metric, metricIndex) => (
+                  <div
+                    key={metric.label}
+                    className={`rounded-xl border border-white/5 bg-bg/40 px-3 py-2 ${
+                      metricIndex === decisionMetrics.length - 1 ? 'col-span-2' : ''
+                    }`}
+                  >
+                    <p className="text-[10px] uppercase tracking-[0.16em] text-text-muted">
+                      {metric.label}
+                    </p>
+                    <p
+                      className={`mt-1 text-sm font-semibold ${
+                        metric.tone === 'positive'
+                          ? 'text-brand-teal'
+                          : metric.tone === 'warning'
+                            ? 'text-brand-gold'
+                            : metric.tone === 'negative'
+                              ? 'text-brand-coral'
+                              : 'text-text-primary'
+                      }`}
+                    >
+                      {metric.value}
+                    </p>
+                  </div>
+                ))}
               </div>
 
               <div className="relative z-10 mt-auto mt-4 flex gap-2 border-t border-white/5 pt-4">
