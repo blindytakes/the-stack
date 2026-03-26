@@ -18,28 +18,31 @@ import {
   type SortValue
 } from '@/lib/cards-directory-explorer';
 
-export function useCardsDirectoryState(cards: CardRecord[]) {
+export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams: string) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchParamsString = searchParams.toString();
   const hasHydratedFromUrl = useRef(false);
+  const issuerOptions = useMemo(() => buildIssuerOptions(cards), [cards]);
+  const initialFilters = useMemo(
+    () => parseCardsDirectoryFilters(new URLSearchParams(initialSearchParams), issuerOptions),
+    [initialSearchParams, issuerOptions]
+  );
 
-  const [query, setQuery] = useState(defaultCardsDirectoryFilters.query);
-  const [issuer, setIssuer] = useState(defaultCardsDirectoryFilters.issuer);
+  const [query, setQuery] = useState(initialFilters.query);
+  const [issuer, setIssuer] = useState(initialFilters.issuer);
   const [spendCategory, setSpendCategory] = useState<SpendCategoryFilterValue>(
-    defaultCardsDirectoryFilters.spendCategory
+    initialFilters.spendCategory
   );
   const [bonusFilter, setBonusFilter] = useState<BonusFilterValue>(
-    defaultCardsDirectoryFilters.bonusFilter
+    initialFilters.bonusFilter
   );
-  const [maxFee, setMaxFee] = useState<FeeFilterValue>(defaultCardsDirectoryFilters.maxFee);
-  const [cardType, setCardType] = useState<CardTypeFilterValue>(defaultCardsDirectoryFilters.cardType);
-  const [sortBy, setSortBy] = useState<SortValue>(defaultCardsDirectoryFilters.sortBy);
+  const [maxFee, setMaxFee] = useState<FeeFilterValue>(initialFilters.maxFee);
+  const [cardType, setCardType] = useState<CardTypeFilterValue>(initialFilters.cardType);
+  const [sortBy, setSortBy] = useState<SortValue>(initialFilters.sortBy);
   const [selectedCompare, setSelectedCompare] = useState<string[]>([]);
   const [compareError, setCompareError] = useState('');
-
-  const issuerOptions = useMemo(() => buildIssuerOptions(cards), [cards]);
 
   const filters = useMemo(
     () => ({

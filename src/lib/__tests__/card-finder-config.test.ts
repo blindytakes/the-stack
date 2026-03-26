@@ -29,5 +29,6 @@ describe('buildCardFinderSteps', () => {
 
     expect(monthlySpendStep?.title).toContain('business spend');
     expect(ownedCardsStep?.title).toContain('business cards');
+    expect(steps.some((step) => step.id === 'chase524Status')).toBe(false);
   });
 });

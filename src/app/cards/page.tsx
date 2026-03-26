@@ -22,9 +22,30 @@ export const metadata: Metadata = {
   description: 'Browse and compare cards by fit, welcome offers, rewards, fees, and real-world value.'
 };
 
-export default async function CardsPage() {
+type SearchParams = Record<string, string | string[] | undefined>;
+type Props = {
+  searchParams: Promise<SearchParams>;
+};
+
+function buildInitialSearchParams(searchParams: SearchParams) {
+  const params = new URLSearchParams();
+
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (Array.isArray(value)) {
+      if (value[0]) params.set(key, value[0]);
+      continue;
+    }
+
+    if (value) params.set(key, value);
+  }
+
+  return params.toString();
+}
+
+export default async function CardsPage({ searchParams }: Props) {
   const { cards } = await getCardsData();
   const directoryCards = filterCardsForDirectory(cards);
+  const initialSearchParams = buildInitialSearchParams(await searchParams);
   const snapshotDate = new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
@@ -43,7 +64,11 @@ export default async function CardsPage() {
   return (
     <div className="container-page pt-12 pb-16">
       {/* Cards immediately */}
-      <CardsDirectoryExplorer cards={directoryCards} learnArticles={featuredLearn} />
+      <CardsDirectoryExplorer
+        cards={directoryCards}
+        learnArticles={featuredLearn}
+        initialSearchParams={initialSearchParams}
+      />
 
       {/* Methodology, Terms, Data Snapshot */}
       <section className="mt-8 grid gap-3 md:grid-cols-3">

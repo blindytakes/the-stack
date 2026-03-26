@@ -133,11 +133,12 @@ export function buildCardFinderSteps(options: {
 } = {}): FinderQuestionStep[] {
   const audience = options.audience ?? 'consumer';
   const includeAvailableCash = options.directDeposit !== 'no';
+  const includeChase524Step = audience !== 'business';
 
   return [
     buildMonthlySpendStep(audience),
     buildDirectDepositStep(audience),
-    buildChase524Step(audience),
+    ...(includeChase524Step ? [buildChase524Step(audience)] : []),
     buildStateStep(audience),
     buildOwnedCardsStep(audience),
     ...(includeAvailableCash ? [buildAvailableCashStep(audience)] : []),

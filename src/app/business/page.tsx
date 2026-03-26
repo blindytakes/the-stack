@@ -18,12 +18,12 @@ const quizTopics = [
     description: 'How much normal business spend you can shift to a new card without forcing extra purchases.'
   },
   {
-    title: 'Chase status',
-    description: 'Your 5/24 position still matters for many Chase business-card approvals.'
+    title: 'Deposit readiness',
+    description: 'Whether your business can route qualifying deposits to a new bank account for bonus requirements.'
   },
   {
-    title: 'Business banking fit',
-    description: 'Whether your business can route qualifying deposits and how much cash it can park for bonus requirements.'
+    title: 'Business location',
+    description: 'State-based filters keep region-limited business banking offers out of the recommendation set.'
   },
   {
     title: 'Existing accounts',
@@ -37,8 +37,8 @@ const assumptionCards = [
     description: 'This path filters the final plan to business cards and business banking offers only.'
   },
   {
-    title: 'Still grounded in personal credit rules',
-    description: 'The intake keeps Chase 5/24 in view because many business cards still depend on your personal file.'
+    title: 'Region-aware offer filtering',
+    description: 'Business banking recommendations stay aligned with state-level eligibility before they reach the plan.'
   },
   {
     title: 'Built for real operating cash flow',

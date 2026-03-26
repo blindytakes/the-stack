@@ -11,9 +11,14 @@ import { useCardsDirectoryState } from '@/components/cards/use-cards-directory-s
 type CardsDirectoryExplorerProps = {
   cards: CardRecord[];
   learnArticles: LearnArticleCard[];
+  initialSearchParams: string;
 };
 
-export function CardsDirectoryExplorer({ cards, learnArticles }: CardsDirectoryExplorerProps) {
+export function CardsDirectoryExplorer({
+  cards,
+  learnArticles,
+  initialSearchParams
+}: CardsDirectoryExplorerProps) {
   const {
     query,
     issuer,
@@ -38,7 +43,7 @@ export function CardsDirectoryExplorer({ cards, learnArticles }: CardsDirectoryE
     setSortBy,
     clearFilters,
     clearCompare
-  } = useCardsDirectoryState(cards);
+  } = useCardsDirectoryState(cards, initialSearchParams);
   const noAnnualFeeCount = cards.filter((card) => card.annualFee === 0).length;
   const activeBonusCount = cards.filter((card) => (card.bestSignUpBonusValue ?? 0) > 0).length;
 
