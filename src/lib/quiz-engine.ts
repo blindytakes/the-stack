@@ -17,7 +17,11 @@ export type AvailableCash = (typeof availableCashValues)[number];
 export const bankAccountPreferenceValues = ['checking', 'savings', 'no_preference'] as const;
 export type BankAccountPreference = (typeof bankAccountPreferenceValues)[number];
 
+export const plannerAudienceValues = ['consumer', 'business'] as const;
+export type PlannerAudience = (typeof plannerAudienceValues)[number];
+
 export const quizRequestSchema = z.object({
+  audience: z.enum(plannerAudienceValues).default('consumer'),
   goal: z.enum(['cashback', 'travel', 'flexibility']),
   spend: z.enum(spendingCategoryValues),
   fee: z.enum(['no_fee', 'up_to_95', 'over_95_ok']),
@@ -63,6 +67,7 @@ export function rankQuizResults(cards: CardRecord[], input: QuizRequest): QuizRe
   const ownedCardSlugSet = new Set(input.ownedCardSlugs);
   const eligible = cards.filter(
     (card) =>
+      (input.audience !== 'business' || card.cardType === 'business') &&
       meetsCreditTier(card.creditTierMin, input.credit) &&
       !ownedCardSlugSet.has(card.slug) &&
       !isCardBlockedByIssuerRules(card, input)

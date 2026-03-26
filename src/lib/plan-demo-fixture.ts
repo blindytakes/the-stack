@@ -328,6 +328,7 @@ export function getDemoPlanPayload(options: {
   return buildPlanResultsPayload({
     savedAt,
     answers: {
+      audience: 'consumer',
       goal: 'travel',
       spend: 'dining',
       fee: 'over_95_ok',

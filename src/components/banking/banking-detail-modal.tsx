@@ -193,7 +193,11 @@ export function BankingDetailModal({
 
               <div className="mt-3 flex flex-col gap-2.5">
                 <Link
-                  href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
+                  href={buildSelectedOfferIntentHref({
+                    lane: 'banking',
+                    slug: offer.slug,
+                    audience: offer.customerType === 'business' ? 'business' : undefined
+                  })}
                   className="inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-5 py-3 text-base font-semibold text-black transition hover:opacity-90"
                 >
                   Add to my plan

@@ -8,6 +8,7 @@ const navItems = [
   { href: '/tools/card-finder?mode=full', activePath: '/tools/card-finder', label: 'Get My Plan' },
   { href: '/cards', label: 'Cards' },
   { href: '/banking', label: 'Banking' },
+  { href: '/business', label: 'Business' },
   { href: '/blog', label: 'Blog' },
   { href: '/newsletter', label: 'Newsletter' },
   { href: '/about', label: 'About' }

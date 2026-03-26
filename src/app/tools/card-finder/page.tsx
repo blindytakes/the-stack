@@ -3,6 +3,7 @@ import { CardFinderPathChooser, CardFinderTool } from '@/components/tools/card-f
 import { ToolPageShell } from '@/components/layout/tool-page-shell';
 import { getCardsData, type CardRecord } from '@/lib/cards';
 import { getBankingBonusesData, type BankingBonusListItem } from '@/lib/banking-bonuses';
+import type { PlannerAudience } from '@/lib/quiz-engine';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
 
 export const dynamic = 'force-dynamic';
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
 type Props = {
   searchParams: Promise<{
     mode?: string | string[];
+    audience?: string | string[];
     selectedLane?: string | string[];
     selectedSlug?: string | string[];
   }>;
@@ -79,6 +81,7 @@ function resolveSelectedOfferIntent(input: {
 export default async function CardFinderPage({ searchParams }: Props) {
   const search = await searchParams;
   const mode = firstParam(search.mode);
+  const plannerAudience: PlannerAudience = firstParam(search.audience) === 'business' ? 'business' : 'consumer';
   const selectedLane = firstParam(search.selectedLane);
   const selectedSlug = firstParam(search.selectedSlug);
   const showingChooser = mode === 'choose';
@@ -88,8 +91,14 @@ export default async function CardFinderPage({ searchParams }: Props) {
     ? await Promise.all([getCardsData(), getBankingBonusesData()])
     : [{ cards: [] }, { bonuses: [] }];
 
-  const cards = cardsResult.cards;
-  const bonuses = bankingResult.bonuses;
+  const cards =
+    plannerAudience === 'business'
+      ? cardsResult.cards.filter((card) => card.cardType === 'business')
+      : cardsResult.cards;
+  const bonuses =
+    plannerAudience === 'business'
+      ? bankingResult.bonuses.filter((bonus) => bonus.customerType === 'business')
+      : bankingResult.bonuses;
   const bankNames = getUniqueBankNames(bonuses);
   const selectedOfferIntent = showingFullPlanner
     ? resolveSelectedOfferIntent({
@@ -102,10 +111,14 @@ export default async function CardFinderPage({ searchParams }: Props) {
 
   return (
     <ToolPageShell
-      tool="card_finder"
+      tool={plannerAudience === 'business' ? 'business_plan' : 'card_finder'}
       path="/tools/card-finder"
-      title="The Stack Bonus Plan"
-      description=""
+      title={plannerAudience === 'business' ? 'The Stack Business Bonus Plan' : 'The Stack Bonus Plan'}
+      description={
+        plannerAudience === 'business'
+          ? 'Build a business-only bonus plan using your business spend, cash runway, Chase status, and business-banking constraints.'
+          : ''
+      }
     >
       {showingChooser ? (
         <CardFinderPathChooser />
@@ -114,6 +127,7 @@ export default async function CardFinderPage({ searchParams }: Props) {
           cards={cards}
           bankNames={bankNames}
           selectedOfferIntent={selectedOfferIntent}
+          audience={plannerAudience}
         />
       )}
     </ToolPageShell>

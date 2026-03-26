@@ -11,6 +11,7 @@ import {
 } from '@/components/tools/card-finder-sections';
 import { useCardFinderState } from '@/components/tools/card-finder-state';
 import type { CardRecord } from '@/lib/cards';
+import type { PlannerAudience } from '@/lib/quiz-engine';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
 
 export function CardFinderPathChooser() {
@@ -48,12 +49,15 @@ export function CardFinderPathChooser() {
 export function CardFinderTool({
   cards,
   bankNames = [],
-  selectedOfferIntent = null
+  selectedOfferIntent = null,
+  audience = 'consumer'
 }: {
   cards: CardRecord[];
   bankNames?: string[];
   selectedOfferIntent?: SelectedOfferIntent | null;
+  audience?: PlannerAudience;
 }) {
+  const isBusinessAudience = audience === 'business';
   const {
     steps,
     stepIndex,
@@ -75,7 +79,7 @@ export function CardFinderTool({
     goBack,
     goForward,
     submitQuiz
-  } = useCardFinderState(selectedOfferIntent);
+  } = useCardFinderState(selectedOfferIntent, audience);
   const selectionCards = currentStep.type !== 'card_selection' ? [] : cards;
 
   const isOptionalStep =
@@ -98,7 +102,8 @@ export function CardFinderTool({
           <p className="text-xs uppercase tracking-[0.22em] text-brand-teal">Selected offer</p>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-text-primary md:text-base">
             Building around <span className="font-semibold">{activeSelectedOfferIntent.title}</span> from{' '}
-            {activeSelectedOfferIntent.provider} if it still fits your profile, pace, and timeline.
+            {activeSelectedOfferIntent.provider} if it still fits your{' '}
+            {isBusinessAudience ? 'business profile' : 'profile'}, pace, and timeline.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
             <Link
@@ -134,9 +139,21 @@ export function CardFinderTool({
           onToggle={toggleCardSelection}
           onClear={clearCardSelection}
           searchId="owned-card-search"
-          searchLabel="Search cards"
-          searchPlaceholder="Search by card name or issuer"
-          selectedHeading="Already open"
+          searchLabel={isBusinessAudience ? 'Search business cards' : 'Search cards'}
+          searchPlaceholder={
+            isBusinessAudience ? 'Search by business card name or issuer' : 'Search by card name or issuer'
+          }
+          selectedHeading={isBusinessAudience ? 'Already open for business' : 'Already open'}
+          selectedSummary={(count) =>
+            isBusinessAudience
+              ? `We’ll exclude ${count} current business card${count === 1 ? '' : 's'} from new-business-card recommendations.`
+              : `We’ll exclude ${count} current card${count === 1 ? '' : 's'} from new-card recommendations.`
+          }
+          emptySelectionText={
+            isBusinessAudience
+              ? 'Search for business cards your business already has, or continue and add them later.'
+              : undefined
+          }
           browseAllLayout="modal"
         />
       ) : currentStep.type === 'bank_selection' ? (

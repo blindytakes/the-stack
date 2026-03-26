@@ -7,6 +7,7 @@ import {
 
 const basePayload = buildPlanResultsPayload({
   answers: {
+    audience: 'consumer',
     goal: 'cashback',
     spend: 'dining',
     fee: 'up_to_95',
@@ -42,6 +43,16 @@ describe('selected-offer-intent', () => {
     expect(
       buildSelectedOfferIntentHref({ lane: 'banking', slug: 'summit-national-checking-300' })
     ).toBe('/tools/card-finder?mode=full&selectedLane=banking&selectedSlug=summit-national-checking-300');
+  });
+
+  it('preserves business audience in planner hrefs', () => {
+    expect(
+      buildSelectedOfferIntentHref({
+        lane: 'cards',
+        slug: 'ink-business-preferred',
+        audience: 'business'
+      })
+    ).toBe('/tools/card-finder?mode=full&selectedLane=cards&selectedSlug=ink-business-preferred&audience=business');
   });
 
   it('returns included status when the selected offer is in recommendations', () => {

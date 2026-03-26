@@ -539,10 +539,12 @@ function SelectedOfferSummary({ selectedOfferStatus }: { selectedOfferStatus: Se
 function PlanSummary({
   payload,
   cardsOnlyMode,
+  plannerAudience,
   isDemo
 }: {
   payload: PlanResultsStoragePayload;
   cardsOnlyMode: boolean;
+  plannerAudience: 'consumer' | 'business';
   isDemo: boolean;
 }) {
   const planStart = useMemo(() => {
@@ -616,7 +618,11 @@ function PlanSummary({
                 isDemo ? 'mt-5' : 'mt-3'
               }`}
             >
-              {cardsOnlyMode ? 'Your Card Plan' : 'Your Bonus Plan'}
+              {cardsOnlyMode
+                ? 'Your Card Plan'
+                : plannerAudience === 'business'
+                  ? 'Your Business Bonus Plan'
+                  : 'Your Bonus Plan'}
             </h1>
           </div>
 
@@ -697,6 +703,7 @@ function PlanSummary({
 export function PlanResultsView() {
   const searchParams = useSearchParams();
   const cardsOnlyMode = searchParams.get('mode') === 'cards_only';
+  const businessModeParam = searchParams.get('audience') === 'business';
   const demoMode = searchParams.get('demo') === 'true';
   const [state, setState] = useState<LoadState>({ status: 'loading' });
 
@@ -714,17 +721,28 @@ export function PlanResultsView() {
     setState(loaded);
 
     if (loaded.status === 'fresh' || loaded.status === 'recovered') {
+      const plannerAudience = loaded.payload.answers.audience;
+      const businessMode = plannerAudience === 'business';
       trackFunnelEvent('plan_results_view', {
         source: cardsOnlyMode
           ? 'cards_only_path'
+          : businessMode
+            ? 'business_path'
           : loaded.status === 'fresh'
             ? loaded.source
             : 'local_recovery',
         path: '/plan/results',
-        tool: cardsOnlyMode ? 'cards_only_path' : 'card_finder'
+        tool: cardsOnlyMode ? 'cards_only_path' : businessMode ? 'business_plan' : 'card_finder'
       });
     }
   }, [cardsOnlyMode, demoMode]);
+
+  const plannerAudience =
+    state.status === 'fresh' || state.status === 'recovered'
+      ? state.payload.answers.audience
+      : businessModeParam
+        ? 'business'
+        : 'consumer';
 
   if (state.status === 'loading') {
     return (
@@ -742,14 +760,32 @@ export function PlanResultsView() {
           {state.status === 'stale'
             ? cardsOnlyMode
               ? 'Your previous card-only plan expired. Build a fresh plan to get up-to-date recommendations.'
+              : plannerAudience === 'business'
+                ? 'Your previous business bonus plan expired. Build a fresh plan to get up-to-date recommendations.'
               : 'Your previous plan expired. Build a fresh plan to get up-to-date recommendations.'
             : cardsOnlyMode
               ? 'Build a plan first to view your personalized credit card bonus actions.'
+              : plannerAudience === 'business'
+                ? 'Build a plan first to view your personalized business-card and business-banking actions.'
               : 'Build a plan first to view your personalized card and banking bonus actions.'}
         </p>
         <div className="mt-6">
-          <Link href={cardsOnlyMode ? '/cards/plan' : '/tools/card-finder?mode=full'}>
-            <Button>{cardsOnlyMode ? 'Build My Card-Only Plan' : 'Start My Bonus Plan'}</Button>
+          <Link
+            href={
+              cardsOnlyMode
+                ? '/cards/plan'
+                : plannerAudience === 'business'
+                  ? '/tools/card-finder?mode=full&audience=business'
+                  : '/tools/card-finder?mode=full'
+            }
+          >
+            <Button>
+              {cardsOnlyMode
+                ? 'Build My Card-Only Plan'
+                : plannerAudience === 'business'
+                  ? 'Build My Business Plan'
+                  : 'Start My Bonus Plan'}
+            </Button>
           </Link>
         </div>
       </div>
@@ -766,6 +802,7 @@ export function PlanResultsView() {
       <PlanSummary
         payload={state.payload}
         cardsOnlyMode={cardsOnlyMode}
+        plannerAudience={plannerAudience}
         isDemo={demoMode}
       />
     </div>

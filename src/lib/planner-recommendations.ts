@@ -289,6 +289,10 @@ export function buildPlanRecommendationsFromQuiz(
 
   const eligibleCards: PlannerRecommendation[] = [];
   for (const card of cardResults) {
+    if (input.audience === 'business' && card.cardType !== 'business') {
+      continue;
+    }
+
     if (ownedCardSlugSet.has(card.slug)) {
       continue;
     }
@@ -331,6 +335,10 @@ export function buildPlanRecommendationsFromQuiz(
 
   const eligibleBanking: PlannerRecommendation[] = [];
   for (const offer of bankingBonuses) {
+    if (input.audience === 'business' && offer.customerType !== 'business') {
+      continue;
+    }
+
     const reasons = getBankingExclusionReasons(offer, input);
     if (reasons.length > 0) {
       exclusions.push({

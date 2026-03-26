@@ -22,6 +22,7 @@ function makeCard(overrides: Partial<CardRecord> = {}): CardRecord {
 
 function makeInput(overrides: Partial<QuizRequest> = {}): QuizRequest {
   return {
+    audience: 'consumer',
     goal: 'cashback',
     spend: 'dining',
     fee: 'no_fee',
@@ -133,6 +134,18 @@ describe('rankQuizResults', () => {
     expect(results.every((r) => ['fair', 'building'].includes(r.creditTierMin))).toBe(true);
   });
 
+  it('limits ranked cards to business cards for the business audience', () => {
+    const results = rankQuizResults(
+      [
+        makeCard({ slug: 'personal-card', cardType: 'personal' }),
+        makeCard({ slug: 'business-card', cardType: 'business' })
+      ],
+      makeInput({ audience: 'business' })
+    );
+
+    expect(results.map((card) => card.slug)).toEqual(['business-card']);
+  });
+
   it('favors matching goal reward type', () => {
     const input = makeInput({ goal: 'cashback', spend: 'dining', fee: 'no_fee', credit: 'excellent' });
     const results = rankQuizResults(cards, input);
@@ -204,6 +217,7 @@ describe('quizRequestSchema', () => {
       expect(parsed.data.ownedCardSlugs).toEqual([]);
       expect(parsed.data.amexLifetimeBlockedSlugs).toEqual([]);
       expect(parsed.data.chase524Status).toBe('not_sure');
+      expect(parsed.data.audience).toBe('consumer');
     }
   });
 
@@ -223,6 +237,7 @@ describe('quizRequestSchema', () => {
       expect(parsed.data.ownedCardSlugs).toEqual([]);
       expect(parsed.data.amexLifetimeBlockedSlugs).toEqual([]);
       expect(parsed.data.chase524Status).toBe('not_sure');
+      expect(parsed.data.audience).toBe('consumer');
     }
   });
 
@@ -297,6 +312,25 @@ describe('quizRequestSchema', () => {
       expect(parsed.data.availableCash).toBe('from_2501_to_9999');
       expect(parsed.data.bankAccountPreference).toBe('no_preference');
       expect(parsed.data.ownedBankNames).toEqual([]);
+    }
+  });
+
+  it('accepts the business audience explicitly', () => {
+    const parsed = quizRequestSchema.safeParse({
+      audience: 'business',
+      goal: 'cashback',
+      spend: 'dining',
+      fee: 'no_fee',
+      credit: 'good',
+      directDeposit: 'yes',
+      state: 'NY',
+      monthlySpend: 'from_2500_to_5000',
+      pace: 'balanced'
+    });
+
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.audience).toBe('business');
     }
   });
 

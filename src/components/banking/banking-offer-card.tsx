@@ -118,7 +118,11 @@ export function BankingOfferCard({
               Details
             </button>
             <Link
-              href={buildSelectedOfferIntentHref({ lane: 'banking', slug: offer.slug })}
+              href={buildSelectedOfferIntentHref({
+                lane: 'banking',
+                slug: offer.slug,
+                audience: offer.customerType === 'business' ? 'business' : undefined
+              })}
               className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs font-semibold text-black transition hover:opacity-90"
             >
               Add to my plan

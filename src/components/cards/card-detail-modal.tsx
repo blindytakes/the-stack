@@ -202,7 +202,11 @@ export function CardDetailModal({
 
                 <div className="mx-auto mt-4 flex w-full max-w-[220px] flex-col gap-3">
                   <Link
-                    href={buildSelectedOfferIntentHref({ lane: 'cards', slug: card.slug })}
+                    href={buildSelectedOfferIntentHref({
+                      lane: 'cards',
+                      slug: card.slug,
+                      audience: card.cardType === 'business' ? 'business' : undefined
+                    })}
                     className="inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-5 py-3.5 text-base font-semibold text-black transition hover:opacity-90"
                   >
                     Add to my plan

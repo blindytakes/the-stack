@@ -11,6 +11,7 @@ import {
 import { getBankingBonusesData } from '../banking-bonuses';
 
 const baseInput: QuizRequest = {
+  audience: 'consumer',
   goal: 'cashback',
   spend: 'dining',
   fee: 'up_to_95',
@@ -222,6 +223,29 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     expect(
       bundle.exclusions.some((item) => item.reasons.includes('direct_deposit_required'))
     ).toBe(true);
+  });
+
+  it('keeps only business banking offers when the planner audience is business', () => {
+    const bundle = buildPlanRecommendationsFromQuiz(
+      [],
+      [
+        createBankingListItem({
+          slug: 'personal-offer',
+          customerType: 'personal'
+        }),
+        createBankingListItem({
+          slug: 'business-offer',
+          customerType: 'business'
+        })
+      ],
+      {
+        ...baseInput,
+        audience: 'business'
+      },
+      { maxBanking: 5 }
+    );
+
+    expect(bundle.recommendations.map((item) => item.id)).toEqual(['bank:business-offer']);
   });
 
   it('excludes bank offers that are not available in the selected state', async () => {

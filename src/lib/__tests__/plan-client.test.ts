@@ -29,6 +29,7 @@ function installWindow() {
 }
 
 const baseAnswers: QuizRequest = {
+  audience: 'consumer',
   goal: 'cashback',
   spend: 'dining',
   fee: 'up_to_95',

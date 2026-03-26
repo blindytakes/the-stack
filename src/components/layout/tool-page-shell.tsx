@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 
 type ToolPageShellProps = {
-  tool: 'card_finder' | 'hidden_benefits' | 'card_vs_card';
+  tool: 'card_finder' | 'business_plan' | 'hidden_benefits' | 'card_vs_card';
   path: '/tools/card-finder' | '/tools/hidden-benefits' | '/tools/card-vs-card';
   title: string;
   description: string;

@@ -2,7 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
+import {
+  quizRequestSchema,
+  type PlannerAudience,
+  type QuizRequest
+} from '@/lib/quiz-engine';
 import { submitPlanQuiz } from '@/lib/plan-client';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
@@ -15,7 +19,10 @@ import type {
 
 type QuizAnswers = Partial<QuizRequest>;
 
-export function useCardFinderState(initialSelectedOfferIntent: SelectedOfferIntent | null = null) {
+export function useCardFinderState(
+  initialSelectedOfferIntent: SelectedOfferIntent | null = null,
+  audience: PlannerAudience = 'consumer'
+) {
   const router = useRouter();
   const [stepIndex, setStepIndex] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswers>({});
@@ -26,8 +33,12 @@ export function useCardFinderState(initialSelectedOfferIntent: SelectedOfferInte
   const [error, setError] = useState('');
 
   const steps = useMemo(
-    () => buildCardFinderSteps(answers.directDeposit),
-    [answers.directDeposit]
+    () =>
+      buildCardFinderSteps({
+        directDeposit: answers.directDeposit,
+        audience
+      }),
+    [answers.directDeposit, audience]
   );
 
   useEffect(() => {
@@ -150,6 +161,7 @@ export function useCardFinderState(initialSelectedOfferIntent: SelectedOfferInte
 
     const parsedAnswers = quizRequestSchema.safeParse({
       ...answers,
+      audience,
       amexLifetimeBlockedSlugs: [],
       goal: 'flexibility',
       spend: 'all',
@@ -170,10 +182,10 @@ export function useCardFinderState(initialSelectedOfferIntent: SelectedOfferInte
       });
 
       trackFunnelEvent('quiz_completed', {
-        source: 'card_finder',
-        tool: 'card_finder'
+        source: audience === 'business' ? 'business_path' : 'card_finder',
+        tool: audience === 'business' ? 'business_plan' : 'card_finder'
       });
-      router.push('/plan/results');
+      router.push(audience === 'business' ? '/plan/results?audience=business' : '/plan/results');
     } catch {
       setError('Could not load recommendations.');
     } finally {

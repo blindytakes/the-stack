@@ -33,6 +33,7 @@ function installWindow() {
 
 const basePayload = buildPlanResultsPayload({
   answers: {
+    audience: 'consumer',
     goal: 'cashback',
     spend: 'dining',
     fee: 'up_to_95',

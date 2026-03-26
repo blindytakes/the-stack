@@ -1,5 +1,6 @@
 import type { PlanResultsStoragePayload } from '@/lib/plan-results-storage';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
+import type { PlannerAudience } from '@/lib/quiz-engine';
 
 export type SelectedOfferIntentStatus =
   | {
@@ -25,12 +26,17 @@ export type SelectedOfferIntentStatus =
       recommendationId: string;
     };
 
-export function buildSelectedOfferIntentHref(input: Pick<SelectedOfferIntent, 'lane' | 'slug'>) {
+export function buildSelectedOfferIntentHref(
+  input: Pick<SelectedOfferIntent, 'lane' | 'slug'> & { audience?: PlannerAudience }
+) {
   const params = new URLSearchParams({
     mode: 'full',
     selectedLane: input.lane,
     selectedSlug: input.slug
   });
+  if (input.audience === 'business') {
+    params.set('audience', 'business');
+  }
 
   return `/tools/card-finder?${params.toString()}`;
 }

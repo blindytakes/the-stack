@@ -4,6 +4,7 @@ import type { QuizRequest } from '../quiz-engine';
 
 function makeInput(overrides: Partial<QuizRequest> = {}): QuizRequest {
   return {
+    audience: 'consumer',
     goal: 'cashback',
     spend: 'dining',
     fee: 'up_to_95',
