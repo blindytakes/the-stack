@@ -70,16 +70,8 @@ export default async function CardsPage({ searchParams }: Props) {
         initialSearchParams={initialSearchParams}
       />
 
-      {/* Methodology, Terms, Data Snapshot */}
-      <section className="mt-8 grid gap-3 md:grid-cols-3">
-        <Link
-          href="/methodology"
-          className="rounded-2xl border border-white/10 bg-bg-surface p-4 transition hover:border-brand-teal/35 hover:bg-bg-elevated"
-        >
-          <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Methodology</p>
-          <p className="mt-2 text-sm font-semibold text-text-primary">How we evaluate cards</p>
-          <p className="mt-1 text-xs text-text-secondary">Scoring logic, fit criteria, and value assumptions.</p>
-        </Link>
+      {/* Terms and Data Snapshot */}
+      <section className="mt-8 grid gap-3 md:grid-cols-2">
         <Link
           href="/terms"
           className="rounded-2xl border border-white/10 bg-bg-surface p-4 transition hover:border-brand-teal/35 hover:bg-bg-elevated"

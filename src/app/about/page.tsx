@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getSupportEmail } from '@/lib/config/server';
 import { AboutContent } from './about-content';
 
 export const metadata: Metadata = {
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
-  return <AboutContent />;
+  return <AboutContent supportEmail={getSupportEmail()} />;
 }

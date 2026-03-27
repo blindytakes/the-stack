@@ -1,9 +1,11 @@
-'use client';
-
 import Link from 'next/link';
 import { NewsletterSignup } from '@/components/newsletter-signup';
 
-export function AboutContent() {
+type AboutContentProps = {
+  supportEmail: string | null;
+};
+
+export function AboutContent({ supportEmail }: AboutContentProps) {
   return (
     <div className="container-page pt-12 pb-16 max-w-5xl">
       <section className="mx-auto max-w-5xl text-center">
@@ -110,9 +112,18 @@ export function AboutContent() {
       <section className="mx-auto mt-16 max-w-4xl text-center">
         <p className="text-sm text-text-secondary">
           Have questions or want to reach out? Email us at{' '}
-          <a href="mailto:team@thestackhq.com" className="font-semibold text-brand-teal transition hover:underline">
-            team@thestackhq.com
-          </a>
+          {supportEmail ? (
+            <a
+              href={`mailto:${supportEmail}`}
+              className="font-semibold text-brand-teal transition hover:underline"
+            >
+              {supportEmail}
+            </a>
+          ) : (
+            <Link href="/contact" className="font-semibold text-brand-teal transition hover:underline">
+              the contact page
+            </Link>
+          )}
           .
         </p>
       </section>
