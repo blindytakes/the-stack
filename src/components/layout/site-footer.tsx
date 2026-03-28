@@ -44,7 +44,7 @@ export function SiteFooter() {
       <div className="container-page relative flex flex-col gap-6 py-12 text-base text-text-secondary md:flex-row md:items-start md:justify-between">
         <div>
           <div className="font-heading text-xl text-text-primary">The Stack</div>
-          <p className="mt-2 max-w-2xl leading-7">
+          <p className="mt-2 leading-7 xl:whitespace-nowrap">
             The rewards site that tells you exactly what to do next, with personalized bonus plans
             for cards and banking.
           </p>
