@@ -15,7 +15,8 @@ export function SiteFooter() {
     pathname !== '/' &&
     pathname !== '/about' &&
     pathname !== '/newsletter' &&
-    !pathname.startsWith('/tools/card-finder');
+    !pathname.startsWith('/tools/card-finder') &&
+    !pathname.startsWith('/plan/results');
   const year = new Date().getFullYear();
 
   return (

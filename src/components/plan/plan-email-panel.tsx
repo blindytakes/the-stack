@@ -1,15 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { type TimelineMilestone } from '@/components/plan/plan-results-utils';
 import { Turnstile, type TurnstileHandle } from '@/components/turnstile';
 import { Button } from '@/components/ui/button';
 import { getTurnstileSiteKey } from '@/lib/config/public';
 import {
-  buildPlanEmailBody,
-  buildPlanEmailSubject,
   buildReferenceDateKey,
-  toPlanEmailContent,
   type PlanSnapshotData
 } from '@/lib/plan-email';
 import type { PlannerRecommendation } from '@/lib/planner-recommendations';
@@ -20,6 +17,7 @@ type PlanEmailPanelProps = {
   totalValue: number;
   cardsOnlyMode: boolean;
   referenceDate: Date;
+  secondaryAction?: ReactNode;
 };
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,13 +28,12 @@ export function PlanEmailPanel({
   milestones,
   totalValue,
   cardsOnlyMode,
-  referenceDate
+  referenceDate,
+  secondaryAction
 }: PlanEmailPanelProps) {
   const turnstileEnabled = Boolean(getTurnstileSiteKey());
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<
-    'idle' | 'sending' | 'sent' | 'copied' | 'error'
-  >('idle');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [message, setMessage] = useState('');
   const [planId, setPlanId] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -72,21 +69,6 @@ export function PlanEmailPanel({
       }))
     }),
     [cardsOnlyMode, milestones, recommendations, totalValue]
-  );
-
-  const emailPlan = useMemo(
-    () => toPlanEmailContent(planSnapshot, referenceDate),
-    [planSnapshot, referenceDate]
-  );
-
-  const draft = useMemo(
-    () => ({
-      subject: buildPlanEmailSubject(emailPlan.totalValue, emailPlan.cardsOnlyMode),
-      body: buildPlanEmailBody(emailPlan, {
-        referenceDateKey: buildReferenceDateKey(referenceDate)
-      })
-    }),
-    [emailPlan, referenceDate]
   );
 
   useEffect(() => {
@@ -193,66 +175,45 @@ export function PlanEmailPanel({
     }
   }
 
-  async function handleCopySummary() {
-    try {
-      if (typeof navigator === 'undefined' || !navigator.clipboard) {
-        throw new Error('Clipboard unavailable');
-      }
-
-      await navigator.clipboard.writeText(`Subject: ${draft.subject}\n\n${draft.body}`);
-      setStatus('copied');
-      setMessage('Copied the email summary to your clipboard.');
-    } catch {
-      setStatus('error');
-      setMessage('Could not copy the email summary right now.');
-    }
-  }
-
   return (
-    <div className="mt-4 rounded-[1.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(45,212,191,0.07),rgba(255,255,255,0.025))] p-4">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="mt-4 rounded-[1.45rem] border border-white/[0.09] bg-[linear-gradient(180deg,rgba(45,212,191,0.07),rgba(255,255,255,0.025))] px-4 py-4 sm:px-5">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(500px,680px)] lg:items-center lg:gap-5">
         <div className="max-w-xl">
-          <p className="text-xs uppercase tracking-[0.22em] text-text-muted">Take it with you</p>
-          <h3 className="mt-1.5 text-lg font-semibold text-text-primary">Email this plan to yourself</h3>
-          <p className="mt-1 text-sm leading-6 text-text-secondary">
-            Get the 6-month estimate, next actions, and move stack delivered straight to your inbox.
+          <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-text-secondary">Take it with you</p>
+          <h3 className="mt-1.5 text-xl font-semibold text-text-primary">Send This Plan to Your Inbox</h3>
+          <p className="mt-1.5 text-[15px] leading-6 text-text-secondary">
+            Get your steps, timing, and value summary in one email.
           </p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-bg/30 px-4 py-2.5 text-sm text-text-secondary">
-          Includes:
-          <div className="mt-1 text-text-primary">Estimate, next actions, top moves</div>
-        </div>
-      </div>
 
-      <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center">
-        <input
-          type="email"
-          value={email}
-          onChange={(event) => {
-            setEmail(event.target.value);
-            if (status !== 'idle') {
-              setStatus('idle');
-              setMessage('');
-            }
-          }}
-          placeholder="you@example.com"
-          className="flex-1 rounded-full border border-white/10 bg-bg-surface px-4 py-3 text-sm text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none"
-        />
-        <Button
-          type="button"
-          onClick={handleSendEmail}
-          disabled={recommendations.length === 0 || status === 'sending'}
-        >
-          {status === 'sending' ? 'Sending…' : 'Send to my inbox'}
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={handleCopySummary}
-          disabled={recommendations.length === 0}
-        >
-          Copy summary
-        </Button>
+        <div className="space-y-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <input
+              type="email"
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                if (status !== 'idle') {
+                  setStatus('idle');
+                  setMessage('');
+                }
+              }}
+              placeholder="you@example.com"
+              className="min-w-0 flex-1 rounded-full border border-white/[0.12] bg-bg-surface px-5 py-4 text-base text-text-primary placeholder:text-text-muted transition focus:border-brand-teal focus:outline-none"
+            />
+            <div className="flex flex-wrap items-center gap-2.5 sm:justify-end">
+              <Button
+                type="button"
+                onClick={handleSendEmail}
+                disabled={recommendations.length === 0 || status === 'sending'}
+                className="px-7 py-3.5 text-base"
+              >
+                {status === 'sending' ? 'Sending…' : 'Send to my inbox'}
+              </Button>
+              {secondaryAction ? <div className="shrink-0">{secondaryAction}</div> : null}
+            </div>
+          </div>
+        </div>
       </div>
 
       {showTurnstile ? (

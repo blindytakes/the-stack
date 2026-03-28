@@ -19,6 +19,7 @@ export const plannerRecommendationSchema = z.object({
   kind: plannerRecommendationKindSchema,
   title: z.string().min(1),
   provider: z.string().min(1),
+  imageUrl: z.string().url().optional(),
   estimatedNetValue: z.number().finite(),
   valueBreakdown: z
     .object({

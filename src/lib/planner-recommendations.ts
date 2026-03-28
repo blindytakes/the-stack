@@ -63,6 +63,7 @@ export type PlannerRecommendation = {
   kind: PlannerRecommendationKind;
   title: string;
   provider: string;
+  imageUrl?: string;
   estimatedNetValue: number;
   valueBreakdown?: PlannerRecommendationValueBreakdown;
   priorityScore: number;
@@ -80,7 +81,7 @@ export type PlannerRecommendationBundle = {
   scheduleIssues: PlanScheduleIssue[];
 };
 
-export type CardPlannerInput = Pick<CardRecord, 'slug' | 'name' | 'issuer' | 'annualFee' | 'creditTierMin'> & {
+export type CardPlannerInput = Pick<CardRecord, 'slug' | 'name' | 'issuer' | 'imageUrl' | 'annualFee' | 'creditTierMin'> & {
   bonusValue: number;
   plannerBenefitsValue: number;
   spendRequired: number;
@@ -172,6 +173,7 @@ export function toPlannerRecommendationFromCard(input: CardPlannerInput): Planne
     kind: 'card_bonus',
     title: input.name,
     provider: input.issuer,
+    imageUrl: input.imageUrl ?? undefined,
     estimatedNetValue,
     valueBreakdown: {
       headlineValue: input.bonusValue,
@@ -207,6 +209,7 @@ export function toPlannerRecommendationFromBankingBonus(
     kind: 'bank_bonus',
     title: input.offerName,
     provider: input.bankName,
+    imageUrl: input.imageUrl ?? undefined,
     estimatedNetValue,
     valueBreakdown: {
       headlineValue: input.bonusAmount,
@@ -313,6 +316,7 @@ export function buildPlanRecommendationsFromQuiz(
       slug: card.slug,
       name: card.name,
       issuer: card.issuer,
+      imageUrl: card.imageUrl,
       annualFee: card.annualFee,
       creditTierMin: card.creditTierMin,
       bonusValue: card.bestSignUpBonusValue ?? 0,

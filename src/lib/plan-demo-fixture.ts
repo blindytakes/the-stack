@@ -14,6 +14,8 @@ const recommendations: PlannerRecommendation[] = [
     kind: 'card_bonus',
     title: 'Chase Sapphire Preferred Card',
     provider: 'Chase',
+    imageUrl:
+      'https://images.ctfassets.net/8qmz0ef3xzub/7iFzyweepMTrfGn2VrDdL5/6adcc35d50cef1e3087ced153d3b7bee/sapphire_preferred_card.png',
     estimatedNetValue: 905,
     valueBreakdown: {
       headlineValue: 1000,
@@ -69,6 +71,8 @@ const recommendations: PlannerRecommendation[] = [
     kind: 'card_bonus',
     title: 'American Express Gold Card',
     provider: 'American Express',
+    imageUrl:
+      'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/gold-card.png',
     estimatedNetValue: 845,
     valueBreakdown: {
       headlineValue: 1000,
@@ -124,6 +128,7 @@ const recommendations: PlannerRecommendation[] = [
     kind: 'card_bonus',
     title: 'Bilt Mastercard',
     provider: 'Bilt',
+    imageUrl: 'https://static.biltrewards.com/assets/seo/bilt_card2_coming_soon_seo.jpg',
     estimatedNetValue: 260,
     valueBreakdown: {
       headlineValue: 300,
@@ -177,6 +182,7 @@ const recommendations: PlannerRecommendation[] = [
     kind: 'card_bonus',
     title: 'Capital One SavorOne Rewards Card',
     provider: 'Capital One',
+    imageUrl: 'https://ecm.capitalone.com/WCM/card/products/new-savor-card-art.png',
     estimatedNetValue: 200,
     valueBreakdown: {
       headlineValue: 200,

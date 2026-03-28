@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { EntityImage } from '@/components/ui/entity-image';
 import {
   buildScheduledTimelineEntries,
   buildTimelineEntriesFallback,
@@ -33,8 +33,69 @@ import {
   getSelectedOfferIntentStatus,
   type SelectedOfferIntentStatus
 } from '@/lib/selected-offer-intent';
+import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
+import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
 
 type LoadState = { status: 'loading' } | PlanResultsLoadResult;
+
+function getRecommendationSlug(item: PlannerRecommendation): string | null {
+  const match = item.detailPath.match(/^\/(?:cards|banking)\/([^/?#]+)/);
+  return match?.[1] ?? null;
+}
+
+function RecommendationArtwork({
+  item,
+  className,
+  compact = false
+}: {
+  item: PlannerRecommendation;
+  className: string;
+  compact?: boolean;
+}) {
+  const slug = getRecommendationSlug(item);
+
+  if (item.lane === 'cards') {
+    const presentation = slug ? getCardImagePresentation(slug) : null;
+
+    return (
+      <EntityImage
+        src={item.imageUrl}
+        alt={`${item.title} image`}
+        label={item.title}
+        className={className}
+        imgClassName={presentation?.imgClassName ?? 'bg-black/10 p-2'}
+        fallbackClassName="bg-black/10"
+        fit={presentation?.fit}
+        position={presentation?.position}
+        scale={presentation?.scale}
+      />
+    );
+  }
+
+  const presentation = getBankingImagePresentation(item.provider);
+  const bankingScale = Math.min(
+    (presentation?.scale ?? 1.04) * (compact ? 1.45 : 1.3),
+    compact ? 1.7 : 1.55
+  );
+  const bankingImgClassName = compact ? 'bg-black/10 px-1.5 py-1.5' : 'bg-black/10 px-2 py-2';
+
+  return (
+    <EntityImage
+      src={resolveBankingBrandImageUrl(item.provider, item.imageUrl)}
+      alt={`${item.provider} logo`}
+      label={item.provider}
+      className={className}
+      imgClassName={bankingImgClassName}
+      fallbackClassName="bg-black/10"
+      fallbackVariant={compact ? 'initials' : 'wordmark'}
+      fallbackTextClassName={compact ? 'text-[10px] sm:text-xs' : 'text-xs sm:text-sm'}
+      fit={presentation?.fit}
+      position={presentation?.position}
+      scale={bankingScale}
+    />
+  );
+}
 
 function useCountUp(target: number, duration = 1200) {
   const [value, setValue] = useState(0);
@@ -103,231 +164,247 @@ function monthlySpendText(item: PlannerRecommendation): string | null {
   return `$${monthly.toLocaleString()}/mo`;
 }
 
-/* ─────────────────────────────────────────────────────────
- * Mini timeline — compact Gantt overview
- * ───────────────────────────────────────────────────────── */
+type TimelineGeometry = {
+  earliest: Date;
+  latest: Date;
+  totalDays: number;
+  monthLabels: { label: string; left: number }[];
+};
 
-function MiniTimeline({
-  entries,
-  recommendations
-}: {
-  entries: TimelineEntry[];
-  recommendations: PlannerRecommendation[];
-}) {
-  // Find the full date range across all entries
+function buildTimelineGeometry(entries: TimelineEntry[]): TimelineGeometry | null {
+  if (entries.length === 0) return null;
+
   const earliest = entries.reduce(
-    (min, e) => (e.startDate < min ? e.startDate : min),
+    (min, entry) => (entry.startDate < min ? entry.startDate : min),
     entries[0].startDate
   );
   const latest = entries.reduce(
-    (max, e) => (e.payoutDate > max ? e.payoutDate : max),
+    (max, entry) => (entry.payoutDate > max ? entry.payoutDate : max),
     entries[0].payoutDate
   );
   const totalDays = Math.max(1, diffDays(earliest, latest));
-
-  // Build month labels along the axis
   const monthLabels: { label: string; left: number }[] = [];
   const cursor = new Date(earliest);
+
   cursor.setDate(1);
-  cursor.setMonth(cursor.getMonth() + 1); // start from next full month
+  cursor.setMonth(cursor.getMonth() + 1);
+
   while (cursor <= latest) {
-    const pct = (diffDays(earliest, cursor) / totalDays) * 100;
     monthLabels.push({
       label: new Intl.DateTimeFormat('en-US', { month: 'short' }).format(cursor),
-      left: pct
+      left: (diffDays(earliest, cursor) / totalDays) * 100
     });
     cursor.setMonth(cursor.getMonth() + 1);
   }
 
-  // Map recommendation IDs to step numbers
-  const stepNumbers = new Map(recommendations.map((r, i) => [r.id, i + 1]));
-  const recommendationsById = new Map(recommendations.map((r) => [r.id, r]));
+  return { earliest, latest, totalDays, monthLabels };
+}
+
+function TimelineTrack({
+  entry,
+  geometry
+}: {
+  entry: TimelineEntry | undefined;
+  geometry: TimelineGeometry | null;
+}) {
+  if (!entry || !geometry) {
+    return (
+      <div className="flex h-12 items-center rounded-full border border-dashed border-white/[0.12] bg-white/[0.035] px-4 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+        Needs manual scheduling
+      </div>
+    );
+  }
+
+  const startPct = (diffDays(geometry.earliest, entry.startDate) / geometry.totalDays) * 100;
+  const widthPct = Math.max(2, (diffDays(entry.startDate, entry.completeDate) / geometry.totalDays) * 100);
+  const barColor =
+    entry.lane === 'cards'
+      ? 'bg-[linear-gradient(90deg,rgba(133,99,34,0.92)_0%,rgba(196,154,61,0.98)_55%,rgba(242,205,110,1)_100%)] shadow-[0_0_22px_rgba(210,166,69,0.28)]'
+      : 'bg-[linear-gradient(90deg,rgba(16,99,91,0.92)_0%,rgba(34,170,157,0.98)_55%,rgba(86,240,225,1)_100%)] shadow-[0_0_22px_rgba(45,212,191,0.26)]';
 
   return (
-    <div className="mt-5 rounded-2xl border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02))] px-5 py-5">
-      {/* Month axis */}
-      <div className="relative mb-4 h-5">
-        {monthLabels.map((m) => (
+    <div className="relative">
+      <div className="pointer-events-none absolute inset-0">
+        {geometry.monthLabels.map((month) => (
           <span
-            key={m.label}
-            className="absolute text-[11px] uppercase tracking-[0.15em] text-text-muted"
-            style={{ left: `${m.left}%`, transform: 'translateX(-50%)' }}
-          >
-            {m.label}
-          </span>
-        ))}
-      </div>
-
-      {/* Bars */}
-      <div className="space-y-2.5">
-        {entries.map((entry) => {
-          const startPct = (diffDays(earliest, entry.startDate) / totalDays) * 100;
-          const widthPct = Math.max(2, (diffDays(entry.startDate, entry.completeDate) / totalDays) * 100);
-          const rec = recommendationsById.get(entry.id);
-          const step = stepNumbers.get(entry.id) ?? 0;
-          const barColor =
-            entry.lane === 'cards'
-              ? 'bg-[linear-gradient(90deg,rgba(133,99,34,0.92)_0%,rgba(196,154,61,0.98)_55%,rgba(242,205,110,1)_100%)] shadow-[0_0_22px_rgba(210,166,69,0.28)]'
-              : 'bg-[linear-gradient(90deg,rgba(16,99,91,0.92)_0%,rgba(34,170,157,0.98)_55%,rgba(86,240,225,1)_100%)] shadow-[0_0_22px_rgba(45,212,191,0.26)]';
-
-          return (
-            <div
-              key={entry.id}
-              className="relative grid grid-cols-[22px_minmax(110px,150px)_minmax(0,1fr)] items-center gap-x-3"
-            >
-              {/* Step number */}
-              <span className="text-right text-xs font-semibold text-text-muted">
-                {step}
-              </span>
-
-              {/* Provider name */}
-              <span className="truncate pr-2 text-sm font-medium text-text-secondary sm:text-[15px]">
-                {rec?.provider ?? ''}
-              </span>
-
-              {/* Bar track */}
-              <div className="relative h-4 flex-1 rounded-full bg-white/[0.06] ring-1 ring-white/[0.04]">
-                {/* Active period bar */}
-                <motion.div
-                  className={`absolute top-0 h-4 origin-left rounded-full ${barColor}`}
-                  initial={{ opacity: 0, scaleX: 0 }}
-                  whileInView={{ opacity: 1, scaleX: 1 }}
-                  viewport={{ once: true, amount: 0.7 }}
-                  transition={{
-                    delay: step * 0.12,
-                    duration: 0.7,
-                    ease: [0.22, 1, 0.36, 1]
-                  }}
-                  style={{ left: `${startPct}%`, width: `${widthPct}%` }}
-                />
-                <motion.span
-                  className="absolute top-[3px] h-[2px] rounded-full bg-white/45 origin-left"
-                  initial={{ opacity: 0, scaleX: 0 }}
-                  whileInView={{ opacity: [0.1, 0.45, 0.18], scaleX: 1 }}
-                  viewport={{ once: true, amount: 0.7 }}
-                  transition={{
-                    delay: 0.18 + step * 0.12,
-                    duration: 0.8,
-                    ease: [0.22, 1, 0.36, 1]
-                  }}
-                  style={{
-                    left: `calc(${startPct}% + 8px)`,
-                    width: `max(calc(${widthPct}% - 16px), 12px)`
-                  }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Month grid lines */}
-      <div className="relative mt-1 h-px">
-        {monthLabels.map((m) => (
-          <span
-            key={`line-${m.label}`}
-            className="absolute top-0 h-px w-px bg-white/10"
-            style={{ left: `${m.left}%` }}
+            key={`${month.label}-${month.left}`}
+            className="absolute inset-y-[-8px] w-px bg-white/[0.1]"
+            style={{ left: `${month.left}%` }}
           />
         ))}
+      </div>
+
+      <div className="relative h-5 overflow-hidden rounded-full bg-white/[0.085] ring-1 ring-white/[0.06]">
+        <div
+          className={`absolute top-0 h-5 origin-left rounded-full ${barColor}`}
+          style={{ left: `${startPct}%`, width: `${widthPct}%` }}
+        />
+        <span
+          className="absolute top-[4px] h-[2px] rounded-full bg-white/50 origin-left"
+          style={{
+            left: `calc(${startPct}% + 8px)`,
+            width: `max(calc(${widthPct}% - 16px), 12px)`
+          }}
+        />
       </div>
     </div>
   );
 }
 
 /* ─────────────────────────────────────────────────────────
- * Step Card — one move in the plan
+ * Plan schedule board — timeline and details in one surface
  * ───────────────────────────────────────────────────────── */
 
-function StepCard({
+function PlanScheduleRow({
   item,
   entry,
   stepNumber,
+  geometry,
+  desktopGridClass,
   isSelectedOffer = false
 }: {
   item: PlannerRecommendation;
   entry: TimelineEntry | undefined;
   stepNumber: number;
+  geometry: TimelineGeometry | null;
+  desktopGridClass: string;
   isSelectedOffer?: boolean;
 }) {
-  const [expanded, setExpanded] = useState(false);
-
+  const isFirstStep = stepNumber === 1;
+  const [expanded, setExpanded] = useState(isFirstStep);
+  const detailsId = `plan-schedule-step-${item.id}`;
   const breakdown = item.valueBreakdown;
   const headlineValue = breakdown?.headlineValue ?? item.estimatedNetValue;
   const netValue = item.estimatedNetValue;
   const fee = breakdown?.annualFee ?? breakdown?.estimatedFees ?? 0;
   const monthly = monthlySpendText(item);
-  const isFirstStep = stepNumber === 1;
-
   const stepBg = item.lane === 'cards' ? 'bg-brand-gold/15 text-brand-gold' : 'bg-brand-teal/15 text-brand-teal';
   const netValueClass = item.lane === 'cards' ? 'text-brand-gold' : 'text-brand-teal';
   const actionDotClass = item.lane === 'cards' ? 'bg-brand-gold' : 'bg-brand-teal';
+  const dateRangeText = entry
+    ? `${formatShortDate(entry.startDate)} – ${formatShortDate(entry.completeDate)}`
+    : 'Not scheduled';
 
   return (
     <div
-      className={`rounded-2xl border transition-colors hover:bg-white/[0.04] ${
+      className={`overflow-hidden rounded-[1.5rem] border transition-colors hover:bg-white/[0.04] ${
         isFirstStep
-          ? 'border-brand-teal/20 bg-[linear-gradient(180deg,rgba(45,212,191,0.06),rgba(255,255,255,0.03))]'
-          : 'border-white/[0.06] bg-white/[0.02]'
+          ? 'border-brand-teal/22 bg-[linear-gradient(180deg,rgba(45,212,191,0.075),rgba(255,255,255,0.04))]'
+          : 'border-white/[0.07] bg-white/[0.026]'
       }`}
     >
-      {/* Collapsed header — always visible */}
       <button
         type="button"
         onClick={() => setExpanded((prev) => !prev)}
-        className="flex w-full items-center gap-4 px-5 py-4 text-left"
+        aria-expanded={expanded}
+        aria-controls={detailsId}
+        className="w-full px-4 py-4 text-left sm:px-5 lg:px-5"
       >
-        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${stepBg}`}>
-          {stepNumber}
-        </span>
+        <div className="lg:hidden">
+          <div className="flex items-start gap-4">
+            <span className={`mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${stepBg}`}>
+              {stepNumber}
+            </span>
 
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-base font-semibold text-text-primary">{item.title}</p>
-          <div className="mt-1 flex flex-wrap items-center gap-2">
-            <p className="text-sm text-text-muted">{item.provider}</p>
-            {isFirstStep ? (
-              <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-teal">
-                Start here
-              </span>
-            ) : null}
-            {isSelectedOffer ? (
-              <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-teal">
-                Selected offer
-              </span>
-            ) : null}
+            <RecommendationArtwork
+              item={item}
+              className="h-[4.75rem] w-[7.15rem] shrink-0 rounded-[1.2rem] border-white/[0.06] bg-white/[0.025]"
+            />
+
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="truncate text-[17px] font-semibold leading-6 text-text-primary">{item.title}</p>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                    <p className="text-sm text-text-secondary">{item.provider}</p>
+                    {isFirstStep ? (
+                      <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-teal">
+                        Start here
+                      </span>
+                    ) : null}
+                    {isSelectedOffer ? (
+                      <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-teal">
+                        Selected offer
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="flex shrink-0 items-start gap-2">
+                  <div className="text-right">
+                    <p className="text-[2.1rem] font-semibold leading-none text-text-primary">{formatValue(netValue)}</p>
+                  </div>
+                  <span
+                    className={`mt-0.5 shrink-0 text-xl text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
+                    aria-hidden
+                  >
+                    ▾
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4 rounded-[1.25rem] border border-white/[0.07] bg-white/[0.03] px-3.5 py-3.5">
+                <TimelineTrack entry={entry} geometry={geometry} />
+                <div className="mt-2.5 text-[11px] text-text-secondary">
+                  <span>{dateRangeText}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <span className="shrink-0 text-lg font-semibold text-text-primary">
-          {formatValue(netValue)}
-        </span>
-
-        {entry ? (
-          <span className="hidden shrink-0 text-sm text-text-muted sm:inline">
-            {formatShortDate(entry.startDate)} – {formatShortDate(entry.completeDate)}
+        <div className={`hidden lg:grid ${desktopGridClass} items-center gap-x-3`}>
+          <span className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold ${stepBg}`}>
+            {stepNumber}
           </span>
-        ) : null}
 
-        <span
-          className={`shrink-0 text-sm text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
-          aria-hidden
-        >
-          ▾
-        </span>
+          <RecommendationArtwork
+            item={item}
+            className="h-[4.75rem] w-[7.15rem] shrink-0 rounded-[1.2rem] border-white/[0.06] bg-white/[0.025]"
+          />
+
+          <div className="min-w-0 pr-3">
+            <p className="truncate text-[17px] font-semibold leading-6 text-text-primary">{item.title}</p>
+            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+              <p className="text-sm text-text-secondary">{item.provider}</p>
+              {isFirstStep ? (
+                <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-teal">
+                  Start here
+                </span>
+              ) : null}
+              {isSelectedOffer ? (
+                <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-teal">
+                  Selected offer
+                </span>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="min-w-0 rounded-[1.25rem] border border-white/[0.07] bg-white/[0.03] px-5 py-4">
+            <TimelineTrack entry={entry} geometry={geometry} />
+          </div>
+
+          <div className="text-right">
+            <p className="text-[2.1rem] font-semibold leading-none text-text-primary">{formatValue(netValue)}</p>
+          </div>
+
+          <span
+            className={`shrink-0 text-xl text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
+            aria-hidden
+          >
+            ▾
+          </span>
+        </div>
       </button>
 
-      {/* Expanded detail */}
       {expanded ? (
-        <div className="border-t border-white/[0.06] px-5 pb-5 pt-4">
-          {/* Value row */}
+        <div id={detailsId} className="border-t border-white/[0.06] px-5 pb-6 pt-5 sm:px-6">
           <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-text-muted">
                 {breakdown?.headlineLabel ?? 'Bonus value'}
               </p>
-              <p className="mt-1 font-heading text-4xl text-text-primary">
-                {formatValue(headlineValue)}
-              </p>
+              <p className="mt-1 font-heading text-4xl text-text-primary">{formatValue(headlineValue)}</p>
             </div>
 
             {fee > 0 ? (
@@ -335,18 +412,14 @@ function StepCard({
                 <p className="text-xs uppercase tracking-[0.2em] text-text-muted">
                   {item.kind === 'card_bonus' ? 'Annual fee' : 'Est. fees'}
                 </p>
-                <p className="mt-1 text-xl font-semibold text-brand-coral">
-                  −{formatValue(fee)}
-                </p>
+                <p className="mt-1 text-xl font-semibold text-brand-coral">−{formatValue(fee)}</p>
               </div>
             ) : null}
 
             {headlineValue !== netValue ? (
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Net value</p>
-                <p className={`mt-1 text-xl font-semibold ${netValueClass}`}>
-                  {formatValue(netValue)}
-                </p>
+                <p className={`mt-1 text-xl font-semibold ${netValueClass}`}>{formatValue(netValue)}</p>
               </div>
             ) : null}
 
@@ -362,48 +435,40 @@ function StepCard({
             <span className={`mt-2 h-2.5 w-2.5 shrink-0 rounded-full ${actionDotClass}`} aria-hidden />
             <div className="min-w-0">
               <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Next action</p>
-              <p className="mt-2 text-base leading-7 text-text-secondary">
-                {whatToDoText(item)}
-              </p>
+              <p className="mt-2 text-base leading-7 text-text-secondary">{whatToDoText(item)}</p>
             </div>
           </div>
 
-          {/* Timeline dates */}
           {entry ? (
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               <div className="rounded-xl border border-white/[0.06] px-3 py-2.5">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Start</p>
-                <p className="mt-1 text-base font-semibold text-text-primary">
-                  {formatShortDate(entry.startDate)}
-                </p>
+                <p className="mt-1 text-base font-semibold text-text-primary">{formatShortDate(entry.startDate)}</p>
               </div>
               <div className="rounded-xl border border-white/[0.06] px-3 py-2.5">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-                  Deadline
-                </p>
-                <p className="mt-1 text-base font-semibold text-text-primary">
-                  {formatShortDate(entry.completeDate)}
-                </p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Deadline</p>
+                <p className="mt-1 text-base font-semibold text-text-primary">{formatShortDate(entry.completeDate)}</p>
               </div>
               <div className="rounded-xl border border-white/[0.06] px-3 py-2.5">
-                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-                  Bonus expected
-                </p>
-                <p className="mt-1 text-base font-semibold text-text-primary">
-                  {formatShortDate(entry.payoutDate)}
-                </p>
+                <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Bonus expected</p>
+                <p className="mt-1 text-base font-semibold text-text-primary">{formatShortDate(entry.payoutDate)}</p>
               </div>
             </div>
-          ) : null}
+          ) : (
+            <div className="mt-4 rounded-xl border border-dashed border-white/10 bg-white/[0.02] px-4 py-3">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Scheduling note</p>
+              <p className="mt-2 text-sm leading-6 text-text-secondary">
+                This recommendation made the plan, but it does not have a scheduled window yet. Use the offer details to place it when you are ready.
+              </p>
+            </div>
+          )}
 
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
                 {item.effort} effort
               </span>
-              {monthly ? (
-                <span className="text-sm text-text-muted">{monthly} pace</span>
-              ) : null}
+              {monthly ? <span className="text-sm text-text-muted">{monthly} pace</span> : null}
             </div>
 
             <Link
@@ -415,6 +480,72 @@ function StepCard({
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function PlanScheduleBoard({
+  recommendations,
+  entriesById,
+  selectedRecommendationId
+}: {
+  recommendations: PlannerRecommendation[];
+  entriesById: Map<string, TimelineEntry>;
+  selectedRecommendationId?: string | null;
+}) {
+  const scheduledEntries = useMemo(
+    () =>
+      recommendations
+        .map((item) => entriesById.get(item.id))
+        .filter((entry): entry is TimelineEntry => Boolean(entry)),
+    [entriesById, recommendations]
+  );
+  const geometry = useMemo(() => buildTimelineGeometry(scheduledEntries), [scheduledEntries]);
+  const desktopGridClass =
+    'lg:grid-cols-[40px_114px_minmax(225px,320px)_minmax(430px,1fr)_92px_18px]';
+
+  return (
+    <div className="mt-5 overflow-hidden rounded-[1.8rem] border border-white/[0.09] bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+      {geometry ? (
+        <div className={`hidden lg:grid ${desktopGridClass} items-end gap-x-3 px-10 pb-2 pt-5`}>
+          <div className="col-span-3 h-5" />
+          <div className="px-5">
+            <div className="relative h-5">
+              {geometry.monthLabels.map((month) => (
+                <span
+                  key={`${month.label}-axis-${month.left}`}
+                  className="absolute text-[11px] font-medium uppercase tracking-[0.18em] text-text-secondary"
+                  style={{ left: `${month.left}%`, transform: 'translateX(-50%)' }}
+                >
+                  {month.label}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="col-span-2 h-5" />
+        </div>
+      ) : (
+        <div className="px-5 pt-5 lg:px-10">
+          <p className="text-sm text-text-muted">
+            Timing will appear once schedule windows are available for these moves.
+          </p>
+        </div>
+      )}
+
+      <div className="space-y-3 px-3 pb-3 pt-2 sm:px-4 sm:pb-4 lg:px-5 lg:pb-5">
+        {recommendations.map((item, index) => (
+          <div key={item.id}>
+            <PlanScheduleRow
+              item={item}
+              entry={entriesById.get(item.id)}
+              stepNumber={index + 1}
+              geometry={geometry}
+              desktopGridClass={desktopGridClass}
+              isSelectedOffer={selectedRecommendationId === item.id}
+            />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -439,25 +570,25 @@ function SaveActBar({
   referenceDate: Date;
 }) {
   return (
-    <section className="mt-10">
+    <section className="mt-8">
       <PlanEmailPanel
         recommendations={recommendations}
         milestones={milestones}
         totalValue={totalValue}
         cardsOnlyMode={cardsOnlyMode}
         referenceDate={referenceDate}
+        secondaryAction={
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={() => downloadTimelineCalendar(timelineEntries, recommendations)}
+            disabled={timelineEntries.length === 0}
+            className="px-5 py-3"
+          >
+            Add to calendar
+          </Button>
+        }
       />
-
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-        <button
-          type="button"
-          onClick={() => downloadTimelineCalendar(timelineEntries, recommendations)}
-          disabled={timelineEntries.length === 0}
-          className="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-2.5 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          📅 Add to calendar
-        </button>
-      </div>
     </section>
   );
 }
@@ -583,7 +714,6 @@ function PlanSummary({
   }, [scopedRecommendations, timelineEntries]);
 
   const totalValue = orderedRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
-  const moveCount = orderedRecommendations.length;
 
   const milestones = useMemo(() => buildTimelineMilestones(timelineEntries), [timelineEntries]);
 
@@ -600,11 +730,8 @@ function PlanSummary({
       {selectedOfferStatus ? <SelectedOfferSummary selectedOfferStatus={selectedOfferStatus} /> : null}
 
       {/* ── ① Hero ── */}
-      <motion.section
+      <section
         className="mt-2 rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-6 py-6 md:px-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] lg:items-end">
           <div className="max-w-3xl">
@@ -634,56 +761,19 @@ function PlanSummary({
         </div>
 
         <div className="mt-6 border-t border-white/[0.06] pt-5">
-          <motion.p
-            className="text-xs uppercase tracking-[0.22em] text-text-muted"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.0, duration: 0.3 }}
-          >
-            Your plan · {moveCount} move{moveCount === 1 ? '' : 's'}
-          </motion.p>
-
-          {timelineEntries.length > 0 ? (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.1, duration: 0.4 }}
-            >
-              <MiniTimeline
-                entries={timelineEntries}
-                recommendations={orderedRecommendations}
-              />
-            </motion.div>
-          ) : null}
-        </div>
-      </motion.section>
-
-      {/* ── ② Step cards ── */}
-      <section className="mt-4">
-
-        <div className="mt-4 space-y-3">
-          {orderedRecommendations.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2 + index * 0.12, duration: 0.4, ease: 'easeOut' }}
-            >
-              <StepCard
-                item={item}
-                entry={entriesById.get(item.id)}
-                stepNumber={index + 1}
-                isSelectedOffer={
-                  selectedOfferStatus?.status === 'included' &&
-                  selectedOfferStatus.recommendationId === item.id
-                }
-              />
-            </motion.div>
-          ))}
+          <div>
+            <PlanScheduleBoard
+              recommendations={orderedRecommendations}
+              entriesById={entriesById}
+              selectedRecommendationId={
+                selectedOfferStatus?.status === 'included' ? selectedOfferStatus.recommendationId : null
+              }
+            />
+          </div>
         </div>
       </section>
 
-      {/* ── ③ Save & Act ── */}
+      {/* ── ② Save & Act ── */}
       <SaveActBar
         recommendations={orderedRecommendations}
         milestones={milestones}
