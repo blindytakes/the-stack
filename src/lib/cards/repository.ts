@@ -7,13 +7,46 @@ export type CardsDataResponse = {
   source: 'db';
 };
 
+type CardsDataCacheEntry = {
+  value: CardsDataResponse;
+  expiresAt: number;
+};
+
+declare global {
+  var cardsDataCache: CardsDataCacheEntry | undefined;
+}
+
+const CARDS_DATA_CACHE_TTL_MS = 5 * 60 * 1000;
+let cardsDataInFlight: Promise<CardsDataResponse> | null = null;
+
 function assertCardsDatabaseConfigured() {
   if (!isDatabaseConfigured()) {
     throw new Error('DATABASE_URL is required for card data');
   }
 }
 
-export async function getCardsData(): Promise<CardsDataResponse> {
+function readCardsDataCache(now = Date.now()): CardsDataResponse | null {
+  const cached = globalThis.cardsDataCache;
+  if (!cached) return null;
+
+  if (cached.expiresAt <= now) {
+    globalThis.cardsDataCache = undefined;
+    return null;
+  }
+
+  return cached.value;
+}
+
+function writeCardsDataCache(value: CardsDataResponse): CardsDataResponse {
+  globalThis.cardsDataCache = {
+    value,
+    expiresAt: Date.now() + CARDS_DATA_CACHE_TTL_MS
+  };
+
+  return value;
+}
+
+async function loadCardsDataFromDb(): Promise<CardsDataResponse> {
   assertCardsDatabaseConfigured();
 
   const rows = await db.card.findMany({
@@ -26,6 +59,23 @@ export async function getCardsData(): Promise<CardsDataResponse> {
     cards: rows.map((row) => toCardRecordFromDb(row)),
     source: 'db'
   };
+}
+
+export async function getCardsData(): Promise<CardsDataResponse> {
+  const cached = readCardsDataCache();
+  if (cached) return cached;
+
+  if (cardsDataInFlight) {
+    return cardsDataInFlight;
+  }
+
+  cardsDataInFlight = loadCardsDataFromDb()
+    .then((value) => writeCardsDataCache(value))
+    .finally(() => {
+      cardsDataInFlight = null;
+    });
+
+  return cardsDataInFlight;
 }
 
 export async function getCardBySlug(slug: string): Promise<CardDetail | null> {

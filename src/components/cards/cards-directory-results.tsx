@@ -10,6 +10,7 @@ import {
 } from '@/lib/cards-directory-explorer';
 import { getCardDecisionMetrics } from '@/lib/cards/presentation-metrics';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import { isLowValueEntityImageUrl } from '@/lib/entity-image-source';
 import { EntityImage } from '@/components/ui/entity-image';
 import { CardDetailModal } from '@/components/cards/card-detail-modal';
 import { useFirstGridRowReveal } from '@/components/ui/use-first-grid-row-reveal';
@@ -103,6 +104,9 @@ export function CardsDirectoryResults({
           const selectedForCompare = selectedCompare.includes(card.slug);
           const imagePresentation = getCardImagePresentation(card.slug);
           const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
+          const usesLowValueImage = isLowValueEntityImageUrl(card.imageUrl);
+          const cardImageSrc = usesLowValueImage ? undefined : card.imageUrl;
+          const cardImageLabel = usesLowValueImage ? card.issuer : card.name;
           const topCategories = card.topCategories.filter((category) => category !== 'other');
           const bestCategory = (topCategories.length > 0 ? topCategories : (['all'] as const))[0];
           const decisionMetrics = getCardDecisionMetrics(card);
@@ -142,12 +146,13 @@ export function CardsDirectoryResults({
 
               <div className="relative z-10 mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02]">
                 <EntityImage
-                  src={card.imageUrl}
+                  src={cardImageSrc}
                   alt={`${card.name} card art`}
-                  label={card.name}
+                  label={cardImageLabel}
                   className="aspect-[1.586/1]"
                   imgClassName={imageClassName}
                   fallbackClassName="bg-black/10"
+                  fallbackVariant={usesLowValueImage ? 'wordmark' : 'initials'}
                   fit={imagePresentation?.fit}
                   position={imagePresentation?.position}
                   scale={imagePresentation?.scale}

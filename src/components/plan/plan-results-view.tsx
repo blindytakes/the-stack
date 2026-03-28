@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { EntityImage } from '@/components/ui/entity-image';
+import { isLowValueEntityImageUrl } from '@/lib/entity-image-source';
 import {
   buildScheduledTimelineEntries,
   buildTimelineEntriesFallback,
@@ -57,15 +58,17 @@ function RecommendationArtwork({
 
   if (item.lane === 'cards') {
     const presentation = slug ? getCardImagePresentation(slug) : null;
+    const usesLowValueImage = isLowValueEntityImageUrl(item.imageUrl);
 
     return (
       <EntityImage
-        src={item.imageUrl}
+        src={usesLowValueImage ? undefined : item.imageUrl}
         alt={`${item.title} image`}
-        label={item.title}
+        label={usesLowValueImage ? item.provider : item.title}
         className={className}
         imgClassName={presentation?.imgClassName ?? 'bg-black/10 p-2'}
         fallbackClassName="bg-black/10"
+        fallbackVariant={usesLowValueImage ? 'wordmark' : 'initials'}
         fit={presentation?.fit}
         position={presentation?.position}
         scale={presentation?.scale}
@@ -79,10 +82,11 @@ function RecommendationArtwork({
     compact ? 1.7 : 1.55
   );
   const bankingImgClassName = compact ? 'bg-black/10 px-1.5 py-1.5' : 'bg-black/10 px-2 py-2';
+  const bankingImageUrl = resolveBankingBrandImageUrl(item.provider, item.imageUrl);
 
   return (
     <EntityImage
-      src={resolveBankingBrandImageUrl(item.provider, item.imageUrl)}
+      src={isLowValueEntityImageUrl(bankingImageUrl) ? undefined : bankingImageUrl}
       alt={`${item.provider} logo`}
       label={item.provider}
       className={className}

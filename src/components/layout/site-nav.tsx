@@ -4,8 +4,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-const navItems = [
-  { href: '/tools/card-finder?mode=full', activePath: '/tools/card-finder', label: 'Start My Bonus Plan' },
+type NavItem = {
+  href: string;
+  label: string;
+  activePath?: string;
+};
+
+const navItems: NavItem[] = [
   { href: '/cards', label: 'Cards' },
   { href: '/banking', label: 'Banking' },
   { href: '/business', label: 'Business' },

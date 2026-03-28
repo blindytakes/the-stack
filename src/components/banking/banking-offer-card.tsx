@@ -7,6 +7,7 @@ import {
   formatBankingCurrency,
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
+import { isLowValueEntityImageUrl } from '@/lib/entity-image-source';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
 import { getBankingDecisionMetrics } from '@/lib/banking/presentation-metrics';
 import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
@@ -24,6 +25,7 @@ export function BankingOfferCard({
 }: BankingOfferCardProps) {
   const isCompact = variant === 'compact';
   const imagePresentation = getBankingImagePresentation(offer.bankName);
+  const displayImageUrl = isLowValueEntityImageUrl(offer.imageUrl) ? undefined : offer.imageUrl;
   const noDirectDeposit = !offer.directDeposit.required;
   const stateLimited = offer.stateRestrictions && offer.stateRestrictions.length > 0;
   const decisionMetrics = getBankingDecisionMetrics(offer);
@@ -54,7 +56,7 @@ export function BankingOfferCard({
       {/* Bank logo */}
       <div className="relative z-10 mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.035]">
         <EntityImage
-          src={offer.imageUrl}
+          src={displayImageUrl}
           alt={`${offer.bankName} logo`}
           label={offer.bankName}
           className={isCompact ? 'h-[104px] w-full' : 'h-[124px] w-full sm:h-[132px]'}

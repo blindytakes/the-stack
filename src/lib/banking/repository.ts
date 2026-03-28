@@ -9,6 +9,23 @@ import type {
   BankingBonusesDataSource
 } from '@/lib/banking/schema';
 
+type BankingBonusesDataResponse = {
+  bonuses: BankingBonusListItem[];
+  source: BankingBonusesDataSource;
+};
+
+type BankingBonusesCacheEntry = {
+  value: BankingBonusesDataResponse;
+  expiresAt: number;
+};
+
+declare global {
+  var bankingBonusesDataCache: BankingBonusesCacheEntry | undefined;
+}
+
+const BANKING_BONUSES_CACHE_TTL_MS = 5 * 60 * 1000;
+let bankingBonusesInFlight: Promise<BankingBonusesDataResponse> | null = null;
+
 const bankingBonusSeedData = bankingBonusesSeedDatasetSchema.parse([
   {
     slug: 'summit-national-checking-300',
@@ -220,10 +237,30 @@ async function getActiveDbBankingBonuses(): Promise<BankingBonusListItem[]> {
   return sortByNetValueDesc(rows.map(toRecordFromDb).map(toListItem));
 }
 
-export async function getBankingBonusesData(): Promise<{
-  bonuses: BankingBonusListItem[];
-  source: BankingBonusesDataSource;
-}> {
+function readBankingBonusesCache(now = Date.now()): BankingBonusesDataResponse | null {
+  const cached = globalThis.bankingBonusesDataCache;
+  if (!cached) return null;
+
+  if (cached.expiresAt <= now) {
+    globalThis.bankingBonusesDataCache = undefined;
+    return null;
+  }
+
+  return cached.value;
+}
+
+function writeBankingBonusesCache(
+  value: BankingBonusesDataResponse
+): BankingBonusesDataResponse {
+  globalThis.bankingBonusesDataCache = {
+    value,
+    expiresAt: Date.now() + BANKING_BONUSES_CACHE_TTL_MS
+  };
+
+  return value;
+}
+
+async function loadBankingBonusesData(): Promise<BankingBonusesDataResponse> {
   if (!shouldUseDbSource()) {
     return {
       bonuses: getActiveSeedBankingBonuses(),
@@ -249,6 +286,23 @@ export async function getBankingBonusesData(): Promise<{
     bonuses: getActiveSeedBankingBonuses(),
     source: 'seed'
   };
+}
+
+export async function getBankingBonusesData(): Promise<BankingBonusesDataResponse> {
+  const cached = readBankingBonusesCache();
+  if (cached) return cached;
+
+  if (bankingBonusesInFlight) {
+    return bankingBonusesInFlight;
+  }
+
+  bankingBonusesInFlight = loadBankingBonusesData()
+    .then((value) => writeBankingBonusesCache(value))
+    .finally(() => {
+      bankingBonusesInFlight = null;
+    });
+
+  return bankingBonusesInFlight;
 }
 
 export async function getBankingBonusBySlug(slug: string): Promise<BankingBonusListItem | null> {

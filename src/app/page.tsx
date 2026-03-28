@@ -240,6 +240,8 @@ const jsonLd = {
   ]
 };
 
+const MAX_HERO_OFFERS = 12;
+
 export const dynamic = 'force-dynamic';
 
 async function getHeroOffers(): Promise<HeroOffer[]> {
@@ -301,7 +303,7 @@ async function getHeroOffers(): Promise<HeroOffer[]> {
     if (i < sortedBanks.length) interleaved.push(sortedBanks[i]);
   }
 
-  return interleaved;
+  return interleaved.slice(0, MAX_HERO_OFFERS);
 }
 
 export default async function HomePage() {
