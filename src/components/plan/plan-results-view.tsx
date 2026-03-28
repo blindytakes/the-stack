@@ -281,6 +281,12 @@ function PlanScheduleRow({
   const stepBg = item.lane === 'cards' ? 'bg-brand-gold/15 text-brand-gold' : 'bg-brand-teal/15 text-brand-teal';
   const netValueClass = item.lane === 'cards' ? 'text-brand-gold' : 'text-brand-teal';
   const actionDotClass = item.lane === 'cards' ? 'bg-brand-gold' : 'bg-brand-teal';
+  const laneLabel = item.lane === 'cards' ? 'Card' : 'Bank';
+  const laneTextClass = item.lane === 'cards' ? 'text-brand-gold/80' : 'text-brand-teal/80';
+  const artworkClass =
+    item.lane === 'cards'
+      ? 'h-[4.75rem] w-[7.15rem] shrink-0 rounded-[1.2rem] border border-brand-gold/16 bg-white/[0.025] shadow-[inset_0_1px_0_rgba(242,205,110,0.06)]'
+      : 'h-[4.75rem] w-[7.15rem] shrink-0 rounded-[1.2rem] border border-brand-teal/16 bg-white/[0.025] shadow-[inset_0_1px_0_rgba(45,212,191,0.06)]';
   const dateRangeText = entry
     ? `${formatShortDate(entry.startDate)} – ${formatShortDate(entry.completeDate)}`
     : 'Not scheduled';
@@ -302,13 +308,18 @@ function PlanScheduleRow({
       >
         <div className="lg:hidden">
           <div className="flex items-start gap-4">
-            <span className={`mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold ${stepBg}`}>
-              {stepNumber}
-            </span>
+            <div className="mt-1 flex w-9 shrink-0 flex-col items-center">
+              <span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${stepBg}`}>
+                {stepNumber}
+              </span>
+              <span className={`mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${laneTextClass}`}>
+                {laneLabel}
+              </span>
+            </div>
 
             <RecommendationArtwork
               item={item}
-              className="h-[4.75rem] w-[7.15rem] shrink-0 rounded-[1.2rem] border-white/[0.06] bg-white/[0.025]"
+              className={artworkClass}
             />
 
             <div className="min-w-0 flex-1">
@@ -354,13 +365,18 @@ function PlanScheduleRow({
         </div>
 
         <div className={`hidden lg:grid ${desktopGridClass} items-center gap-x-3`}>
-          <span className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold ${stepBg}`}>
-            {stepNumber}
-          </span>
+          <div className="flex flex-col items-center">
+            <span className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold ${stepBg}`}>
+              {stepNumber}
+            </span>
+            <span className={`mt-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${laneTextClass}`}>
+              {laneLabel}
+            </span>
+          </div>
 
           <RecommendationArtwork
             item={item}
-            className="h-[4.75rem] w-[7.15rem] shrink-0 rounded-[1.2rem] border-white/[0.06] bg-white/[0.025]"
+            className={artworkClass}
           />
 
           <div className="min-w-0 pr-3">
