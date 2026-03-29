@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { EntityImage } from '@/components/ui/entity-image';
-import { isLowValueEntityImageUrl } from '@/lib/entity-image-source';
+import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 
 export type HeroOffer = {
   name: string;
@@ -78,7 +78,7 @@ function OfferCard({
     : 'rgba(234, 179, 8, 0.15)';
   const hrefBase = isCard ? '/cards' : '/banking';
   const pres = offer.imagePresentation;
-  const usesLowValueImage = isLowValueEntityImageUrl(offer.imageUrl);
+  const usesLowValueImage = isCard && isLowValueCardImageUrl(offer.imageUrl);
   const displayImageUrl = usesLowValueImage ? undefined : offer.imageUrl;
   const displayLabel = usesLowValueImage ? offer.issuer : isCard ? offer.name : offer.issuer;
   const fallbackVariant = usesLowValueImage || !isCard ? 'wordmark' : 'initials';

@@ -322,8 +322,27 @@ describe('derived banking presentation helpers', () => {
 
 describe('banking brand asset fallbacks', () => {
   it('fills missing images for real bank names in the live dataset', () => {
+    expect(resolveBankingBrandImageUrl('BMO')).toBe(
+      'https://www.bmo.com/dist/images/logos/bmo-blue-on-transparent-en.svg'
+    );
+    expect(resolveBankingBrandImageUrl('Capital One')).toBe('/bank-logos/capital-one.svg');
     expect(resolveBankingBrandImageUrl('Chase')).toBe(
-      'https://www.chase.com/etc/designs/chase-ux/favicon-152.png'
+      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+    );
+    expect(resolveBankingBrandImageUrl('Bank of America')).toBe(
+      'https://www1.bac-assets.com/homepage/spa-assets/images/assets-images-global-logos-bac-logo-v2-CSX3648cbbb.svg'
+    );
+    expect(resolveBankingBrandImageUrl('E*TRADE from Morgan Stanley Private Bank')).toBe(
+      'https://cdn2.etrade.net/1/26022716140.0/aempros/content/dam/etrade/retail/en_US/images/global/logos/etrade-from-morgan-stanley-logo-dark-theme.svg'
+    );
+    expect(resolveBankingBrandImageUrl('Huntington Bank')).toBe(
+      'https://www.huntington.com/-/media/Project/huntington/hcom/logo.svg?h=34&hash=C30EA1B787772E50AB6A58FFB6AB51F3&iar=0&rev=4e84f6b1d5ba431f90d0f8adb3200280&w=231'
+    );
+    expect(resolveBankingBrandImageUrl('KeyBank')).toBe(
+      'https://www.key.com/content/experience-fragments/kco/system/navigation/headers/key-at-work/master/_jcr_content/header/logo.coreimg.svg/1733170379196/kb-logo.svg'
+    );
+    expect(resolveBankingBrandImageUrl('Marcus by Goldman Sachs')).toBe(
+      'https://www.goldmansachs.com/images/migrated/our-firm/history/moments/150th-multimedia/2016-marcus/marcus.png'
     );
     expect(resolveBankingBrandImageUrl('U.S. Bank')).toBe(
       'https://www.usbank.com/etc.clientlibs/ecm-global/clientlibs/clientlib-resources/resources/images/svg/logo-personal.svg'
@@ -337,16 +356,80 @@ describe('banking brand asset fallbacks', () => {
     expect(resolveBankingBrandImageUrl('Summit National Bank')).toBeUndefined();
   });
 
-  it('drops the known-bad KeyBank favicon so the UI can fall back to a wordmark', () => {
+  it('replaces the known-bad KeyBank favicon with a curated brand asset', () => {
     expect(
       resolveBankingBrandImageUrl(
         'KeyBank',
         'https://www.key.com/etc.clientlibs/keybank-foundation/clientlibs/clientlib-base/resources/icons/favicon.ico'
       )
-    ).toBeUndefined();
+    ).toBe(
+      'https://www.key.com/content/experience-fragments/kco/system/navigation/headers/key-at-work/master/_jcr_content/header/logo.coreimg.svg/1733170379196/kb-logo.svg'
+    );
   });
 
-  it('replaces broken Chime favicon data and drops Alliant favicon data', () => {
+  it('replaces low-fidelity banking icons with curated brand assets when available', () => {
+    expect(
+      resolveBankingBrandImageUrl('BMO', 'https://www.bmo.com/dist/favicon/apple-touch-icon.png')
+    ).toBe('https://www.bmo.com/dist/images/logos/bmo-blue-on-transparent-en.svg');
+    expect(
+      resolveBankingBrandImageUrl(
+        'Capital One',
+        'https://www.capitalone.com/assets/shell/apple-touch-icon.png'
+      )
+    ).toBe('/bank-logos/capital-one.svg');
+    expect(
+      resolveBankingBrandImageUrl(
+        'Citibank',
+        'https://www.citi.com/cbol-hp-static-assets/assets/favicon.ico'
+      )
+    ).toBe(
+      'https://www.citi.com/content/dam/cfs/uspb/usmkt/cbol-homepage/en/static/images/citilogo-skelheader-compressed.png'
+    );
+    expect(
+      resolveBankingBrandImageUrl(
+        'E*TRADE from Morgan Stanley Private Bank',
+        'https://cdn2.etrade.net/1/21123117210.0/aempros/content/dam/etrade/global/pagemeta/images/apple-touch-icon.png'
+      )
+    ).toBe(
+      'https://cdn2.etrade.net/1/26022716140.0/aempros/content/dam/etrade/retail/en_US/images/global/logos/etrade-from-morgan-stanley-logo-dark-theme.svg'
+    );
+    expect(
+      resolveBankingBrandImageUrl(
+        'Huntington Bank',
+        'https://www.huntington.com/Presentation/images/apple-touch-icon-180.png'
+      )
+    ).toBe(
+      'https://www.huntington.com/-/media/Project/huntington/hcom/logo.svg?h=34&hash=C30EA1B787772E50AB6A58FFB6AB51F3&iar=0&rev=4e84f6b1d5ba431f90d0f8adb3200280&w=231'
+    );
+    expect(
+      resolveBankingBrandImageUrl(
+        'Marcus by Goldman Sachs',
+        'https://cdn.gs.com/images/goldman-sachs/v1/gs-favicon.ico'
+      )
+    ).toBe(
+      'https://www.goldmansachs.com/images/migrated/our-firm/history/moments/150th-multimedia/2016-marcus/marcus.png'
+    );
+    expect(
+      resolveBankingBrandImageUrl(
+        'PNC',
+        'https://www.pnc.com/etc.clientlibs/pnc-aem-base/clientlibs/clientlib-site/resources/apple-touch-icon.png'
+      )
+    ).toBe('https://www.pnc.com/content/dam/pnc-com/images/universal/pnc-logos/pnc_logo_rev.svg');
+    expect(
+      resolveBankingBrandImageUrl(
+        'TD Bank',
+        'https://www.td.com/etc.clientlibs/tdsite/clientlibs/clientlib-wealth/resources/images/favicon.ico'
+      )
+    ).toBe('https://www.td.com/content/dam/tdb/images/navigation-header-and-footer/td-logo-desktop.png');
+    expect(
+      resolveBankingBrandImageUrl(
+        'Wells Fargo',
+        'https://www17.wellsfargomedia.com/assets/images/icons/apple-touch-icon_120x120.png'
+      )
+    ).toBe('https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png');
+  });
+
+  it('replaces broken Chime favicon data and upgrades Alliant to a real logo', () => {
     expect(
       resolveBankingBrandImageUrl('Chime', 'https://www.chime.com/img/favicon.png')
     ).toBe(
@@ -357,10 +440,12 @@ describe('banking brand asset fallbacks', () => {
         'Alliant Credit Union',
         'https://www.alliantcreditunion.org/resources/favicon.ico'
       )
-    ).toBeUndefined();
+    ).toBe('https://www.alliantcreditunion.org/assets/dist/images/logo.png');
     expect(resolveBankingBrandImageUrl('Chime')).toBe(
       'https://chime-mobile-assets.prod-ext.chmfin.com/prod/images/ck.logo.chime.chime_green.medium.registered.dark%403x.png'
     );
-    expect(resolveBankingBrandImageUrl('Alliant Credit Union')).toBeUndefined();
+    expect(resolveBankingBrandImageUrl('Alliant Credit Union')).toBe(
+      'https://www.alliantcreditunion.org/assets/dist/images/logo.png'
+    );
   });
 });

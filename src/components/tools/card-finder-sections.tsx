@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { EntityImage } from '@/components/ui/entity-image';
-import { isLowValueEntityImageUrl } from '@/lib/entity-image-source';
+import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
@@ -103,7 +103,7 @@ function CompactCardChoice({
 }) {
   const imagePresentation = getCardImagePresentation(card.slug);
   const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-  const usesLowValueImage = isLowValueEntityImageUrl(card.imageUrl);
+  const usesLowValueImage = isLowValueCardImageUrl(card.imageUrl);
 
   return (
     <button
@@ -149,7 +149,7 @@ function DrawerCardRow({
 }) {
   const imagePresentation = getCardImagePresentation(card.slug);
   const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-  const usesLowValueImage = isLowValueEntityImageUrl(card.imageUrl);
+  const usesLowValueImage = isLowValueCardImageUrl(card.imageUrl);
 
   return (
     <button
@@ -226,7 +226,6 @@ function CompactBankChoice({
 
   const imagePresentation = getBankingImagePresentation(name);
   const imageUrl = resolveBankingBrandImageUrl(name);
-  const displayImageUrl = isLowValueEntityImageUrl(imageUrl) ? undefined : imageUrl;
   const normalizedScale = Math.min(imagePresentation?.scale ?? 1.04, 1.12);
 
   return (
@@ -236,11 +235,11 @@ function CompactBankChoice({
       className="group flex items-center gap-3 rounded-[1.35rem] border border-white/10 bg-white/[0.03] px-3.5 py-3 text-left transition hover:border-brand-teal/35 hover:bg-brand-teal/[0.06]"
     >
       <div className="flex h-11 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[0.95rem] bg-[linear-gradient(135deg,rgba(255,255,255,0.06),rgba(255,255,255,0.02))] ring-1 ring-white/8">
-        {displayImageUrl ? (
+        {imageUrl ? (
           // Banking logo URLs are curated brand assets from canonical sources.
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={displayImageUrl}
+            src={imageUrl}
             alt={`${name} logo`}
             loading="lazy"
             decoding="async"

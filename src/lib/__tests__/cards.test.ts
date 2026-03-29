@@ -356,7 +356,7 @@ describe('toCardRecordFromDb', () => {
     const row = makeDbCardRow({ issuer: 'Chase', imageUrl: null });
     const result = toCardRecordFromDb(row);
     expect(result.imageUrl).toBe(
-      'https://www.chase.com/etc/designs/chase-ux/favicon-152.png'
+      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
     );
   });
 

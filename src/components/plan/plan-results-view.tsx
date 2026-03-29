@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { EntityImage } from '@/components/ui/entity-image';
-import { isLowValueEntityImageUrl } from '@/lib/entity-image-source';
+import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import {
   buildScheduledTimelineEntries,
   buildTimelineEntriesFallback,
@@ -58,7 +58,7 @@ function RecommendationArtwork({
 
   if (item.lane === 'cards') {
     const presentation = slug ? getCardImagePresentation(slug) : null;
-    const usesLowValueImage = isLowValueEntityImageUrl(item.imageUrl);
+    const usesLowValueImage = isLowValueCardImageUrl(item.imageUrl);
 
     return (
       <EntityImage
@@ -86,7 +86,7 @@ function RecommendationArtwork({
 
   return (
     <EntityImage
-      src={isLowValueEntityImageUrl(bankingImageUrl) ? undefined : bankingImageUrl}
+      src={bankingImageUrl}
       alt={`${item.provider} logo`}
       label={item.provider}
       className={className}

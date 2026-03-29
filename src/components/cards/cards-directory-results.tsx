@@ -10,7 +10,7 @@ import {
 } from '@/lib/cards-directory-explorer';
 import { getCardDecisionMetrics } from '@/lib/cards/presentation-metrics';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
-import { isLowValueEntityImageUrl } from '@/lib/entity-image-source';
+import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import { EntityImage } from '@/components/ui/entity-image';
 import { CardDetailModal } from '@/components/cards/card-detail-modal';
 import { useFirstGridRowReveal } from '@/components/ui/use-first-grid-row-reveal';
@@ -104,7 +104,7 @@ export function CardsDirectoryResults({
           const selectedForCompare = selectedCompare.includes(card.slug);
           const imagePresentation = getCardImagePresentation(card.slug);
           const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-          const usesLowValueImage = isLowValueEntityImageUrl(card.imageUrl);
+          const usesLowValueImage = isLowValueCardImageUrl(card.imageUrl);
           const cardImageSrc = usesLowValueImage ? undefined : card.imageUrl;
           const cardImageLabel = usesLowValueImage ? card.issuer : card.name;
           const topCategories = card.topCategories.filter((category) => category !== 'other');
