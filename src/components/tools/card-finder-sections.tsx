@@ -358,17 +358,19 @@ export function CardFinderQuestion({
                   setTimeout(onAutoAdvance, 350);
                 }
               }}
+              type="button"
+              whileHover={active ? { y: -2, scale: 1.025 } : { y: -4, scale: 1.015 }}
               whileTap={{ scale: 0.97 }}
-              className={`flex min-h-[82px] items-center gap-4 rounded-2xl border px-6 py-5 text-left text-lg leading-snug transition-all duration-200 md:min-h-[90px] md:text-xl ${
+              className={`group flex min-h-[82px] items-center gap-4 rounded-2xl border px-6 py-5 text-left text-lg leading-snug transition-all duration-200 md:min-h-[90px] md:text-xl ${
                 active
-                  ? 'border-brand-teal bg-brand-teal/10 text-text-primary scale-[1.02]'
-                  : 'border-white/10 bg-bg-surface text-text-secondary hover:border-white/30'
+                  ? 'scale-[1.02] border-brand-teal/80 bg-brand-teal/[0.16] text-text-primary shadow-[0_20px_45px_rgba(45,212,191,0.2),0_0_0_1px_rgba(45,212,191,0.25)_inset]'
+                  : 'border-white/10 bg-bg-surface text-text-secondary hover:border-brand-teal/65 hover:bg-brand-teal/[0.12] hover:text-text-primary hover:shadow-[0_20px_45px_rgba(45,212,191,0.14),0_0_0_1px_rgba(45,212,191,0.2)_inset]'
               }`}
             >
               <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-all duration-200 ${
                 active
-                  ? 'border-brand-teal bg-brand-teal'
-                  : 'border-white/20'
+                  ? 'border-brand-teal bg-brand-teal shadow-[0_0_0_6px_rgba(45,212,191,0.12)]'
+                  : 'border-white/20 group-hover:border-brand-teal/55 group-hover:bg-brand-teal/20 group-hover:shadow-[0_0_0_6px_rgba(45,212,191,0.08)]'
               }`}>
                 {active && (
                   <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
@@ -376,7 +378,7 @@ export function CardFinderQuestion({
                   </svg>
                 )}
               </span>
-              <span>{option.label}</span>
+              <span className="transition-colors duration-200 group-hover:text-text-primary">{option.label}</span>
             </motion.button>
           );
         })}
