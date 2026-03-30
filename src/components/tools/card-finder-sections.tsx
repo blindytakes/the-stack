@@ -227,6 +227,7 @@ function CompactBankChoice({
   const imagePresentation = getBankingImagePresentation(name);
   const imageUrl = resolveBankingBrandImageUrl(name);
   const normalizedScale = Math.min(imagePresentation?.scale ?? 1.04, 1.12);
+  const imgClassName = imagePresentation?.compactImgClassName ?? 'bg-black/10 px-3 py-2';
 
   return (
     <button
@@ -247,7 +248,7 @@ function CompactBankChoice({
               ...(imagePresentation?.position ? { objectPosition: imagePresentation.position } : {}),
               ...(normalizedScale !== 1 ? { transform: `scale(${normalizedScale})` } : {})
             }}
-            className={`h-full w-full px-3 py-2 ${
+            className={`${imgClassName} h-full w-full ${
               imagePresentation?.fit === 'cover' ? 'object-cover' : 'object-contain'
             }`}
           />

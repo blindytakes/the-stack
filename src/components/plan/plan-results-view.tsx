@@ -81,7 +81,9 @@ function RecommendationArtwork({
     (presentation?.scale ?? 1.04) * (compact ? 1.45 : 1.3),
     compact ? 1.7 : 1.55
   );
-  const bankingImgClassName = compact ? 'bg-black/10 px-1.5 py-1.5' : 'bg-black/10 px-2 py-2';
+  const bankingImgClassName = compact
+    ? presentation?.microImgClassName ?? 'bg-black/10 px-1.5 py-1.5'
+    : presentation?.miniImgClassName ?? 'bg-black/10 px-2 py-2';
   const bankingImageUrl = resolveBankingBrandImageUrl(item.provider, item.imageUrl);
 
   return (
