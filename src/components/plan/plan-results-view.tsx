@@ -269,7 +269,6 @@ function PlanScheduleRow({
   stepNumber,
   geometry,
   desktopGridClass,
-  defaultExpanded = false,
   isSelectedOffer = false
 }: {
   item: PlannerRecommendation;
@@ -277,11 +276,10 @@ function PlanScheduleRow({
   stepNumber: number;
   geometry: TimelineGeometry | null;
   desktopGridClass: string;
-  defaultExpanded?: boolean;
   isSelectedOffer?: boolean;
 }) {
   const isFirstStep = stepNumber === 1;
-  const [expanded, setExpanded] = useState(defaultExpanded);
+  const [expanded, setExpanded] = useState(false);
   const detailsId = `plan-schedule-step-${item.id}`;
   const breakdown = item.valueBreakdown;
   const headlineValue = breakdown?.headlineValue ?? item.estimatedNetValue;
@@ -293,6 +291,10 @@ function PlanScheduleRow({
   const actionDotClass = item.lane === 'cards' ? 'bg-brand-gold' : 'bg-brand-teal';
   const laneLabel = item.lane === 'cards' ? 'Card' : 'Bank';
   const laneTextClass = item.lane === 'cards' ? 'text-brand-gold/80' : 'text-brand-teal/80';
+  const detailsPillClass = expanded
+    ? 'border-brand-teal/35 bg-brand-teal/10 text-brand-teal'
+    : 'border-white/[0.12] bg-white/[0.03] text-text-secondary';
+  const detailsLabel = expanded ? 'Hide details' : 'View details';
   const artworkClass =
     item.lane === 'cards'
       ? 'h-[4.75rem] w-[7.15rem] shrink-0 rounded-[1.2rem] border border-brand-gold/16 bg-white/[0.025] shadow-[inset_0_1px_0_rgba(242,205,110,0.06)]'
@@ -351,15 +353,20 @@ function PlanScheduleRow({
                   </div>
                 </div>
 
-                <div className="flex shrink-0 items-start gap-2">
+                <div className="flex shrink-0 flex-col items-end gap-2">
                   <div className="text-right">
                     <p className="text-[2.1rem] font-semibold leading-none text-text-primary">{formatValue(netValue)}</p>
                   </div>
                   <span
-                    className={`mt-0.5 shrink-0 text-xl text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
-                    aria-hidden
+                    className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors ${detailsPillClass}`}
                   >
-                    ▾
+                    {detailsLabel}
+                    <span
+                      className={`text-xs transition-transform ${expanded ? 'rotate-180' : ''}`}
+                      aria-hidden
+                    >
+                      ▾
+                    </span>
                   </span>
                 </div>
               </div>
@@ -415,10 +422,15 @@ function PlanScheduleRow({
           </div>
 
           <span
-            className={`shrink-0 text-xl text-text-muted transition-transform ${expanded ? 'rotate-180' : ''}`}
-            aria-hidden
+            className={`inline-flex items-center justify-self-end gap-1 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors ${detailsPillClass}`}
           >
-            ▾
+            {detailsLabel}
+            <span
+              className={`text-xs transition-transform ${expanded ? 'rotate-180' : ''}`}
+              aria-hidden
+            >
+              ▾
+            </span>
           </span>
         </div>
       </button>
@@ -520,12 +532,10 @@ function PlanScheduleBoard({
   selectedRecommendationId?: string | null;
 }) {
   const defaultVisibleCount = 4;
-  const [showAll, setShowAll] = useState(false);
   const visibleRecommendations = useMemo(
-    () => (showAll ? recommendations : recommendations.slice(0, defaultVisibleCount)),
-    [recommendations, showAll]
+    () => recommendations.slice(0, defaultVisibleCount),
+    [recommendations]
   );
-  const hiddenCount = Math.max(0, recommendations.length - visibleRecommendations.length);
   const scheduledEntries = useMemo(
     () =>
       visibleRecommendations
@@ -533,40 +543,11 @@ function PlanScheduleBoard({
         .filter((entry): entry is TimelineEntry => Boolean(entry)),
     [entriesById, visibleRecommendations]
   );
-  const defaultExpandedIds = useMemo(() => {
-    const expandedIds = new Set<string>();
-    let expandedCards = 0;
-    let expandedBanks = 0;
-
-    for (const item of visibleRecommendations) {
-      if (item.lane === 'cards' && expandedCards < 2) {
-        expandedIds.add(item.id);
-        expandedCards += 1;
-        continue;
-      }
-
-      if (item.lane === 'banking' && expandedBanks < 2) {
-        expandedIds.add(item.id);
-        expandedBanks += 1;
-      }
-    }
-
-    for (const item of visibleRecommendations) {
-      if (expandedIds.size >= Math.min(defaultVisibleCount, visibleRecommendations.length)) {
-        break;
-      }
-      expandedIds.add(item.id);
-    }
-
-    return expandedIds;
-  }, [visibleRecommendations]);
   const geometry = useMemo(() => buildTimelineGeometry(scheduledEntries), [scheduledEntries]);
   const desktopGridClass =
-    'lg:grid-cols-[40px_124px_minmax(225px,320px)_minmax(430px,1fr)_92px_18px]';
-  const summaryEyebrow = showAll ? `Full ${recommendations.length}-move plan` : 'Featured 4 moves';
-  const summaryText = showAll
-    ? 'Showing the full recommendation sequence for this plan.'
-    : 'These are the four moves we would prioritize first. Open the full plan if you want every recommendation.';
+    'lg:grid-cols-[40px_124px_minmax(225px,320px)_minmax(430px,1fr)_92px_132px]';
+  const summaryEyebrow = `Featured ${visibleRecommendations.length} move${visibleRecommendations.length === 1 ? '' : 's'}`;
+  const summaryText = 'These are the moves we would prioritize first for this plan. Use the details control on the right to expand each one.';
 
   return (
     <div className="mt-5 overflow-hidden rounded-[1.8rem] border border-white/[0.09] bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
@@ -575,15 +556,6 @@ function PlanScheduleBoard({
           <p className="text-[11px] uppercase tracking-[0.22em] text-brand-teal">{summaryEyebrow}</p>
           <p className="mt-2 max-w-2xl text-sm text-text-secondary">{summaryText}</p>
         </div>
-        {recommendations.length > defaultVisibleCount ? (
-          <button
-            type="button"
-            onClick={() => setShowAll((current) => !current)}
-            className="text-sm font-semibold text-brand-teal transition hover:underline"
-          >
-            {showAll ? 'Back to featured 4' : `View full ${recommendations.length}-move plan`}
-          </button>
-        ) : null}
       </div>
 
       {geometry ? (
@@ -621,16 +593,10 @@ function PlanScheduleBoard({
               stepNumber={index + 1}
               geometry={geometry}
               desktopGridClass={desktopGridClass}
-              defaultExpanded={defaultExpandedIds.has(item.id)}
               isSelectedOffer={selectedRecommendationId === item.id}
             />
           </div>
         ))}
-        {!showAll && hiddenCount > 0 ? (
-          <p className="px-1 text-sm text-text-muted">
-            {hiddenCount} more {hiddenCount === 1 ? 'move is' : 'moves are'} available in the full plan.
-          </p>
-        ) : null}
       </div>
     </div>
   );
@@ -798,16 +764,40 @@ function PlanSummary({
     const unscheduled = scopedRecommendations.filter((item) => !scheduledIds.has(item.id));
     return [...scheduled, ...unscheduled];
   }, [scopedRecommendations, timelineEntries]);
-
-  const totalValue = orderedRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
-
-  const milestones = useMemo(() => buildTimelineMilestones(timelineEntries), [timelineEntries]);
-
-  const entriesById = useMemo(
-    () => new Map(timelineEntries.map((entry) => [entry.id, entry])),
-    [timelineEntries]
-  );
   const selectedOfferStatus = useMemo(() => getSelectedOfferIntentStatus(payload), [payload]);
+  const featuredRecommendations = useMemo(() => {
+    const maxRecommendations = 4;
+    const initial = orderedRecommendations.slice(0, maxRecommendations);
+
+    if (
+      selectedOfferStatus?.status === 'included' &&
+      !initial.some((item) => item.id === selectedOfferStatus.recommendationId)
+    ) {
+      const selectedRecommendation = orderedRecommendations.find(
+        (item) => item.id === selectedOfferStatus.recommendationId
+      );
+
+      if (selectedRecommendation) {
+        return [...initial.slice(0, Math.max(0, maxRecommendations - 1)), selectedRecommendation];
+      }
+    }
+
+    return initial;
+  }, [orderedRecommendations, selectedOfferStatus]);
+  const featuredRecommendationIds = useMemo(
+    () => new Set(featuredRecommendations.map((item) => item.id)),
+    [featuredRecommendations]
+  );
+  const featuredTimelineEntries = useMemo(
+    () => timelineEntries.filter((entry) => featuredRecommendationIds.has(entry.id)),
+    [featuredRecommendationIds, timelineEntries]
+  );
+  const totalValue = featuredRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
+  const milestones = useMemo(() => buildTimelineMilestones(featuredTimelineEntries), [featuredTimelineEntries]);
+  const entriesById = useMemo(
+    () => new Map(featuredTimelineEntries.map((entry) => [entry.id, entry])),
+    [featuredTimelineEntries]
+  );
 
   const animatedTotal = useCountUp(totalValue);
 
@@ -849,7 +839,7 @@ function PlanSummary({
         <div className="mt-6 border-t border-white/[0.06] pt-5">
           <div>
             <PlanScheduleBoard
-              recommendations={orderedRecommendations}
+              recommendations={featuredRecommendations}
               entriesById={entriesById}
               selectedRecommendationId={
                 selectedOfferStatus?.status === 'included' ? selectedOfferStatus.recommendationId : null
@@ -861,11 +851,11 @@ function PlanSummary({
 
       {/* ── ② Save & Act ── */}
       <SaveActBar
-        recommendations={orderedRecommendations}
+        recommendations={featuredRecommendations}
         milestones={milestones}
         totalValue={totalValue}
         cardsOnlyMode={cardsOnlyMode}
-        timelineEntries={timelineEntries}
+        timelineEntries={featuredTimelineEntries}
         referenceDate={referenceDate}
       />
     </div>
