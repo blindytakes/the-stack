@@ -326,9 +326,7 @@ describe('banking brand asset fallbacks', () => {
       'https://www.bmo.com/dist/images/logos/bmo-blue-on-transparent-en.svg'
     );
     expect(resolveBankingBrandImageUrl('Capital One')).toBe('/bank-logos/capital-one.svg');
-    expect(resolveBankingBrandImageUrl('Chase')).toBe(
-      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
-    );
+    expect(resolveBankingBrandImageUrl('Chase')).toBe('/bank-logos/chase.svg');
     expect(resolveBankingBrandImageUrl('Bank of America')).toBe(
       'https://www1.bac-assets.com/homepage/spa-assets/images/assets-images-global-logos-bac-logo-v2-CSX3648cbbb.svg'
     );
@@ -375,6 +373,12 @@ describe('banking brand asset fallbacks', () => {
         'https://www.capitalone.com/assets/shell/apple-touch-icon.png'
       )
     ).toBe('/bank-logos/capital-one.svg');
+    expect(
+      resolveBankingBrandImageUrl(
+        'Chase',
+        'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+      )
+    ).toBe('/bank-logos/chase.svg');
     expect(
       resolveBankingBrandImageUrl(
         'Citibank',

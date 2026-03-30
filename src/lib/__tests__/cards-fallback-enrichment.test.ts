@@ -7,6 +7,7 @@ describe('resolveCardBrandImageUrl', () => {
     expect(resolveCardBrandImageUrl('American Express')).toBe('/card-logos/american-express.svg');
     expect(resolveCardBrandImageUrl('Apple')).toBe('/card-logos/apple.svg');
     expect(resolveCardBrandImageUrl('Barclays')).toBe('/card-logos/barclays.svg');
+    expect(resolveCardBrandImageUrl('Chase')).toBe('/card-logos/chase.svg');
     expect(resolveCardBrandImageUrl('Citi')).toBe('/card-logos/citi.svg');
     expect(resolveCardBrandImageUrl('Discover')).toBe('/card-logos/discover.svg');
     expect(resolveCardBrandImageUrl('Fidelity')).toBe('/card-logos/fidelity.svg');
@@ -15,21 +16,25 @@ describe('resolveCardBrandImageUrl', () => {
     expect(resolveCardBrandImageUrl('Venmo')).toBe('/card-logos/venmo.svg');
   });
 
-  it('reuses banking-brand fallbacks for bank issuers and avoids low-value assets', () => {
+  it('reuses banking-brand fallbacks when there is no curated card logo', () => {
     const usBank = resolveCardBrandImageUrl('U.S. Bank');
-    const chase = resolveCardBrandImageUrl('Chase');
 
     expect(usBank).toBe('/bank-logos/us-bank.svg');
-    expect(chase).toBe(
-      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
-    );
     expect(isLowValueCardImageUrl(usBank)).toBe(false);
-    expect(isLowValueCardImageUrl(chase)).toBe(false);
   });
 
   it('preserves explicit card imagery when a record already has imageUrl', () => {
     expect(resolveCardBrandImageUrl('American Express', 'https://assets.example.com/card.png')).toBe(
       'https://assets.example.com/card.png'
     );
+  });
+
+  it('replaces Chase header/footer logo URLs with the curated card logo', () => {
+    expect(
+      resolveCardBrandImageUrl(
+        'Chase',
+        'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+      )
+    ).toBe('/card-logos/chase.svg');
   });
 });

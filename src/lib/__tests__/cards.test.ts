@@ -355,9 +355,7 @@ describe('toCardRecordFromDb', () => {
   it('falls back to an issuer image when card art is missing for a known issuer', () => {
     const row = makeDbCardRow({ issuer: 'Chase', imageUrl: null });
     const result = toCardRecordFromDb(row);
-    expect(result.imageUrl).toBe(
-      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
-    );
+    expect(result.imageUrl).toBe('/card-logos/chase.svg');
   });
 
   it('derives rewardType from first reward rateType', () => {
