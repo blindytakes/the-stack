@@ -80,11 +80,11 @@
       "Receive at least $1,000 in qualifying direct deposits within 90 days.",
       "Keep the account open and above $0 through bonus payout."
     ],
-    "notes": "NerdWallet reported expiration April 14, 2026 on its March 1, 2026 update.",
-    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "notes": "Wells Fargo's official bonus page advertised the $325 Everyday Checking offer through April 14, 2026 when re-verified on March 29, 2026.",
+    "offerUrl": "https://accountoffers.wellsfargo.com/checkingoffer/",
     "isActive": true,
     "expiresAt": "2026-04-14T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-03-29T00:00:00.000Z"
   },
   {
     "slug": "bmo-smart-advantage-checking-400",
@@ -107,11 +107,11 @@
       "Receive qualifying direct deposits totaling at least $4,000 within 90 days.",
       "Keep the account in good standing through payout."
     ],
-    "notes": "Public offers list expiration May 4, 2026 and ~100-day payout timing.",
-    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "notes": "BMO's official personal checking promo page advertised the $400 offer through May 4, 2026 when re-verified on March 29, 2026.",
+    "offerUrl": "https://www.bmo.com/en-us/main/personal/checking-accounts/digital-offer/",
     "isActive": true,
     "expiresAt": "2026-05-04T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-03-29T00:00:00.000Z"
   },
   {
     "slug": "capital-one-360-checking-250",
@@ -156,10 +156,9 @@
       "Receive a qualifying direct deposit of at least $200 within 30 days to earn the first $100.",
       "Repeat qualifying direct deposits in each of the next two consecutive months to earn the remaining bonus tiers."
     ],
-    "notes": "Offer listed as ongoing as of March 1, 2026.",
-    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
-    "isActive": true,
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "notes": "No current public Chime-owned checking bonus page could be confirmed on chime.com or help.chime.com when re-verified on March 29, 2026.",
+    "isActive": false,
+    "lastVerified": "2026-03-29T00:00:00.000Z"
   },
   {
     "slug": "chase-total-checking-400",
@@ -226,11 +225,11 @@
       "Fund the account within 30 days of opening.",
       "Maintain qualifying balances for at least 45 additional days after the initial funding window."
     ],
-    "notes": "Tiered bonuses from $300 to $2,000 were listed with expiration March 11, 2026.",
-    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
-    "isActive": true,
+    "notes": "E*TRADE's official savings promotion flow was no longer live when re-verified on March 29, 2026 after the March 11, 2026 enrollment deadline.",
+    "offerUrl": "https://us.etrade.com/what-we-offer/our-accounts",
+    "isActive": false,
     "expiresAt": "2026-03-11T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-03-29T00:00:00.000Z"
   },
   {
     "slug": "bank-of-america-advantage-checking-500",
@@ -252,11 +251,11 @@
       "Receive qualifying direct deposits totaling at least $2,000 within 90 days for the first bonus tier.",
       "Hit higher direct deposit tiers ($5,000 and $10,000) for larger payouts."
     ],
-    "notes": "Offer listed with expiration May 31, 2026.",
-    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "notes": "Bank of America's Advantage Banking flow still appeared to be the official public path on March 29, 2026, but the bonus terms remain partially gated behind ZIP or application state and should be re-confirmed in a full browser before the next refresh.",
+    "offerUrl": "https://www.bankofamerica.com/deposits/checking/advantage-banking/?view_page=compare",
     "isActive": true,
     "expiresAt": "2026-05-31T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-03-29T00:00:00.000Z"
   },
   {
     "slug": "pnc-virtual-wallet-performance-select-400",
@@ -305,11 +304,11 @@
       "Receive at least two direct deposits of at least $1,500 each within 90 days.",
       "Keep the account in good standing through payout."
     ],
-    "notes": "Offer listed with expiration March 31, 2026.",
-    "offerUrl": "https://www.nerdwallet.com/banking/best/bank-bonuses-and-promotions",
+    "notes": "E*TRADE's official accounts page still advertised the $300 checking bonus through March 31, 2026 when re-verified on March 29, 2026.",
+    "offerUrl": "https://us.etrade.com/what-we-offer/our-accounts",
     "isActive": true,
     "expiresAt": "2026-03-31T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-03-29T00:00:00.000Z"
   },
   {
     "slug": "chase-private-client-checking-3000",
@@ -550,11 +549,11 @@
       "Receive at least two qualifying direct deposits totaling at least $2,000 within 120 days of account opening.",
       "Complete at least 20 qualifying debit card purchases within 120 days of account opening."
     ],
-    "notes": "Truist disclosure indicates offer window through March 25, 2026.",
+    "notes": "Truist's official offer terms on the account-opening page showed the Truist One Checking bonus window ending March 25, 2026 when re-verified on March 29, 2026.",
     "offerUrl": "https://www.truist.com/open-account/banking-accounts",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-03-25T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-03-29T00:00:00.000Z"
   },
   {
     "slug": "marcus-online-savings-1500",
@@ -578,11 +577,11 @@
       "Deposit at least $100,000 in eligible new funds within the 10-day funding period for the top bonus tier.",
       "Maintain the required balance for the 90-day maintenance period."
     ],
-    "notes": "Offer terms page lists enrollment deadline of March 11, 2026 with $100/$750/$1,500 tiers.",
-    "offerUrl": "https://www.marcus.com/us/en/disclosure/savings-bonus-offer-details-2026",
-    "isActive": true,
+    "notes": "Marcus's official savings bonus page explicitly stated that the offer ended on March 11, 2026 when re-verified on March 29, 2026.",
+    "offerUrl": "https://www.marcus.com/us/en/savings/osa-savingsbonus",
+    "isActive": false,
     "expiresAt": "2026-03-11T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-03-29T00:00:00.000Z"
   },
   {
     "slug": "huntington-perks-checking-400",
@@ -619,11 +618,11 @@
       "WV",
       "WI"
     ],
-    "notes": "Forbes reported this offer expiration as March 15, 2026 and state-based availability.",
-    "offerUrl": "https://www.forbes.com/advisor/banking/huntington-bank-promotions/",
-    "isActive": true,
+    "notes": "Huntington's official personal checking promotions page no longer supported this personal Perks offer when re-verified on March 29, 2026 after the March 15, 2026 deadline.",
+    "offerUrl": "https://www.huntington.com/checking-account-promotions-bonuses-offers",
+    "isActive": false,
     "expiresAt": "2026-03-15T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-03-29T00:00:00.000Z"
   },
   {
     "slug": "huntington-platinum-perks-checking-600",
@@ -660,10 +659,10 @@
       "WV",
       "WI"
     ],
-    "notes": "Forbes reported this offer expiration as March 15, 2026 and state-based availability.",
-    "offerUrl": "https://www.forbes.com/advisor/banking/huntington-bank-promotions/",
-    "isActive": true,
+    "notes": "Huntington's official personal checking promotions page no longer supported this Platinum Perks offer when re-verified on March 29, 2026 after the March 15, 2026 deadline.",
+    "offerUrl": "https://www.huntington.com/checking-account-promotions-bonuses-offers",
+    "isActive": false,
     "expiresAt": "2026-03-15T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-03-29T00:00:00.000Z"
   }
 ]

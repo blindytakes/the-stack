@@ -344,9 +344,7 @@ describe('banking brand asset fallbacks', () => {
     expect(resolveBankingBrandImageUrl('Marcus by Goldman Sachs')).toBe(
       'https://www.goldmansachs.com/images/migrated/our-firm/history/moments/150th-multimedia/2016-marcus/marcus.png'
     );
-    expect(resolveBankingBrandImageUrl('U.S. Bank')).toBe(
-      'https://www.usbank.com/etc.clientlibs/ecm-global/clientlibs/clientlib-resources/resources/images/svg/logo-personal.svg'
-    );
+    expect(resolveBankingBrandImageUrl('U.S. Bank')).toBe('/bank-logos/us-bank.svg');
   });
 
   it('preserves explicit image URLs and leaves unknown banks unresolved', () => {

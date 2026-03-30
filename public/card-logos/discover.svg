@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">Discover fallback logo</title>
+  <desc id="desc">Curated fallback card-style logo for Discover.</desc>
+  <rect width="320" height="200" rx="28" fill="#ffffff"/>
+  <rect x="18" y="18" width="284" height="164" rx="20" fill="none" stroke="#d6dde8"/>
+  <ellipse cx="220" cy="102" rx="52" ry="28" fill="#f58220" opacity="0.9"/>
+  <text x="46" y="114" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="700" letter-spacing="0.8">DISCOVER</text>
+</svg>

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">Venmo fallback logo</title>
+  <desc id="desc">Curated fallback card-style logo for Venmo.</desc>
+  <rect width="320" height="200" rx="28" fill="#ffffff"/>
+  <rect x="18" y="18" width="284" height="164" rx="20" fill="none" stroke="#d9e3ef"/>
+  <text x="58" y="118" fill="#118cdf" font-family="Arial, Helvetica, sans-serif" font-size="52" font-weight="700" letter-spacing="0.4">venmo</text>
+</svg>

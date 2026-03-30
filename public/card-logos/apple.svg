@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">Apple fallback logo</title>
+  <desc id="desc">Curated fallback card-style logo for Apple.</desc>
+  <rect width="320" height="200" rx="28" fill="#111111"/>
+  <circle cx="82" cy="100" r="28" fill="#ffffff" opacity="0.12"/>
+  <text x="126" y="112" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="700" letter-spacing="1.6">Apple</text>
+</svg>

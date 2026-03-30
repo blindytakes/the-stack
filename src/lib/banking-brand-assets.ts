@@ -23,6 +23,7 @@ const MARCUS_LOGO_URL =
 const PNC_LOGO_URL = 'https://www.pnc.com/content/dam/pnc-com/images/universal/pnc-logos/pnc_logo_rev.svg';
 const SOFI_LOGO_URL = 'https://d32ijn7u0aqfv4.cloudfront.net/git/svgs/sofi-logo.svg';
 const TD_LOGO_URL = 'https://www.td.com/content/dam/tdb/images/navigation-header-and-footer/td-logo-desktop.png';
+const US_BANK_LOGO_URL = '/bank-logos/us-bank.svg';
 const WELLS_FARGO_LOGO_URL = 'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png';
 
 const LOW_FIDELITY_BANK_IMAGE_TOKENS = ['favicon', 'apple-touch-icon', 'logo-personal.svg'] as const;
@@ -45,8 +46,7 @@ const bankingBrandImageUrlByBankName: Record<string, string> = {
   sofi: SOFI_LOGO_URL,
   'td bank': TD_LOGO_URL,
   truist: 'https://static.truist.com/content/dam/global-images/truist-logo-purple.svg',
-  'u.s. bank':
-    'https://www.usbank.com/etc.clientlibs/ecm-global/clientlibs/clientlib-resources/resources/images/svg/logo-personal.svg',
+  'u.s. bank': US_BANK_LOGO_URL,
   'wells fargo': WELLS_FARGO_LOGO_URL
 };
 

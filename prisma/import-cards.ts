@@ -15,10 +15,17 @@ import {
   type CardSeedRecord,
   type SpendingCategoryValue
 } from '../src/lib/card-seed-schema';
+import { readAllCardSeedDatasets } from '../src/lib/card-seed-files';
 
 type CliOptions = {
-  filePath: string;
+  filePaths: string[];
+  importAll: boolean;
   deactivateMissing: boolean;
+};
+
+type CardImportDataset = {
+  filePath: string;
+  records: CardSeedRecord[];
 };
 
 const cardTypeToDb: Record<NonNullable<CardSeedRecord['cardType']>, CardType> = {
@@ -86,17 +93,20 @@ const partnerTypeToDb: Record<string, PartnerType> = {
 
 function usage() {
   console.info(
-    'Usage: npm run cards:import -- <path-to-json> [--deactivate-missing]\n\n' +
+    'Usage: npm run cards:import -- <path-to-json> [more-paths...] [--deactivate-missing]\n' +
+      '   or: npm run cards:import -- --all [--deactivate-missing]\n\n' +
       'Accepted JSON formats:\n' +
       '1) Array of card records\n' +
       '2) Object with { "cards": [...] }\n\n' +
       'Example:\n' +
-      'npm run cards:import -- ./content/cards-expansion.json'
+      'npm run cards:import -- ./content/cards-expansion.json\n' +
+      'npm run cards:import -- --all'
   );
 }
 
 function parseArgs(argv: string[]): CliOptions {
-  let filePath = '';
+  const filePaths: string[] = [];
+  let importAll = false;
   let deactivateMissing = false;
 
   for (const arg of argv) {
@@ -105,13 +115,18 @@ function parseArgs(argv: string[]): CliOptions {
       continue;
     }
 
-    if (!arg.startsWith('-') && !filePath) {
-      filePath = arg;
+    if (arg === '--all') {
+      importAll = true;
+      continue;
+    }
+
+    if (!arg.startsWith('-')) {
+      filePaths.push(arg);
       continue;
     }
   }
 
-  return { filePath, deactivateMissing };
+  return { filePaths, importAll, deactivateMissing };
 }
 
 function extractRows(raw: unknown): unknown {
@@ -203,36 +218,52 @@ function toTransferPartnerRows(cardId: string, record: CardSeedRecord) {
   }));
 }
 
+async function loadImportDatasets(options: CliOptions): Promise<CardImportDataset[]> {
+  if (options.importAll) {
+    const datasets = await readAllCardSeedDatasets();
+    return datasets.map((dataset) => ({
+      filePath: dataset.filePath,
+      records: dataset.cards
+    }));
+  }
+
+  const datasets: CardImportDataset[] = [];
+  for (const filePath of options.filePaths) {
+    const resolvedPath = path.resolve(process.cwd(), filePath);
+    const rawText = await fs.readFile(resolvedPath, 'utf8');
+
+    let parsedJson: unknown;
+    try {
+      parsedJson = JSON.parse(rawText);
+    } catch (error) {
+      throw new Error(
+        `[cards:import] Invalid JSON in ${resolvedPath}: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+
+    const rowsInput = extractRows(parsedJson);
+    const parsed = cardsSeedDatasetSchema.safeParse(rowsInput);
+    if (!parsed.success) {
+      throw new Error(
+        `[cards:import] Validation failed for ${resolvedPath}: ${JSON.stringify(parsed.error.issues)}`
+      );
+    }
+
+    datasets.push({
+      filePath,
+      records: parsed.data
+    });
+  }
+
+  return datasets;
+}
+
 async function run() {
   const options = parseArgs(process.argv.slice(2));
-  if (!options.filePath) {
+  if (!options.importAll && options.filePaths.length === 0) {
     usage();
-    process.exitCode = 1;
-    return;
-  }
-
-  const resolvedPath = path.resolve(process.cwd(), options.filePath);
-  const rawText = await fs.readFile(resolvedPath, 'utf8');
-
-  let parsedJson: unknown;
-  try {
-    parsedJson = JSON.parse(rawText);
-  } catch (error) {
-    console.error('[cards:import] Invalid JSON', {
-      file: resolvedPath,
-      error: error instanceof Error ? error.message : String(error)
-    });
-    process.exitCode = 1;
-    return;
-  }
-
-  const rowsInput = extractRows(parsedJson);
-  const parsed = cardsSeedDatasetSchema.safeParse(rowsInput);
-  if (!parsed.success) {
-    console.error('[cards:import] Validation failed', {
-      file: resolvedPath,
-      issues: parsed.error.issues
-    });
     process.exitCode = 1;
     return;
   }
@@ -240,73 +271,76 @@ async function run() {
   const prisma = new PrismaClient();
 
   try {
+    const datasets = await loadImportDatasets(options);
     const importedSlugs: string[] = [];
 
-    for (const record of parsed.data) {
-      const data = toCardData(record);
+    for (const dataset of datasets) {
+      for (const record of dataset.records) {
+        const data = toCardData(record);
 
-      await prisma.$transaction(async (tx) => {
-        const card = await tx.card.upsert({
-          where: { slug: data.slug },
-          create: data,
-          update: data,
-          select: { id: true, slug: true }
+        await prisma.$transaction(async (tx) => {
+          const card = await tx.card.upsert({
+            where: { slug: data.slug },
+            create: data,
+            update: data,
+            select: { id: true, slug: true }
+          });
+
+          if (record.rewards !== undefined) {
+            await tx.rewardStructure.deleteMany({
+              where: { cardId: card.id }
+            });
+
+            const rewards = toRewardRows(card.id, record);
+            if (rewards.length > 0) {
+              await tx.rewardStructure.createMany({
+                data: rewards
+              });
+            }
+          }
+
+          if (record.signUpBonuses !== undefined) {
+            await tx.signUpBonus.deleteMany({
+              where: { cardId: card.id }
+            });
+
+            const bonuses = toSignUpBonusRows(card.id, record);
+            if (bonuses.length > 0) {
+              await tx.signUpBonus.createMany({
+                data: bonuses
+              });
+            }
+          }
+
+          if (record.benefits !== undefined) {
+            await tx.benefit.deleteMany({
+              where: { cardId: card.id }
+            });
+
+            const benefits = toBenefitRows(card.id, record);
+            if (benefits.length > 0) {
+              await tx.benefit.createMany({
+                data: benefits
+              });
+            }
+          }
+
+          if (record.transferPartners !== undefined) {
+            await tx.transferPartner.deleteMany({
+              where: { cardId: card.id }
+            });
+
+            const partners = toTransferPartnerRows(card.id, record);
+            if (partners.length > 0) {
+              await tx.transferPartner.createMany({
+                data: partners
+              });
+            }
+          }
         });
 
-        if (record.rewards !== undefined) {
-          await tx.rewardStructure.deleteMany({
-            where: { cardId: card.id }
-          });
-
-          const rewards = toRewardRows(card.id, record);
-          if (rewards.length > 0) {
-            await tx.rewardStructure.createMany({
-              data: rewards
-            });
-          }
-        }
-
-        if (record.signUpBonuses !== undefined) {
-          await tx.signUpBonus.deleteMany({
-            where: { cardId: card.id }
-          });
-
-          const bonuses = toSignUpBonusRows(card.id, record);
-          if (bonuses.length > 0) {
-            await tx.signUpBonus.createMany({
-              data: bonuses
-            });
-          }
-        }
-
-        if (record.benefits !== undefined) {
-          await tx.benefit.deleteMany({
-            where: { cardId: card.id }
-          });
-
-          const benefits = toBenefitRows(card.id, record);
-          if (benefits.length > 0) {
-            await tx.benefit.createMany({
-              data: benefits
-            });
-          }
-        }
-
-        if (record.transferPartners !== undefined) {
-          await tx.transferPartner.deleteMany({
-            where: { cardId: card.id }
-          });
-
-          const partners = toTransferPartnerRows(card.id, record);
-          if (partners.length > 0) {
-            await tx.transferPartner.createMany({
-              data: partners
-            });
-          }
-        }
-      });
-
-      importedSlugs.push(data.slug);
+        importedSlugs.push(data.slug);
+      }
     }
 
     let deactivatedCount = 0;
@@ -326,7 +360,7 @@ async function run() {
     }
 
     console.info('[cards:import] Complete', {
-      file: resolvedPath,
+      files: datasets.map((dataset) => dataset.filePath),
       imported: importedSlugs.length,
       deactivated: deactivatedCount,
       deactivateMissing: options.deactivateMissing
@@ -337,8 +371,10 @@ async function run() {
 }
 
 run().catch((error) => {
-  console.error('[cards:import] unexpected failure', {
-    error: error instanceof Error ? error.message : String(error)
-  });
+  console.error(
+    error instanceof Error
+      ? error.message
+      : '[cards:import] unexpected failure: ' + String(error)
+  );
   process.exit(1);
 });

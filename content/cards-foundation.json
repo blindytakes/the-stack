@@ -1,0 +1,2505 @@
+{
+  "cards": [
+    {
+      "slug": "amex-blue-cash-everyday",
+      "name": "Blue Cash Everyday Card from American Express",
+      "issuer": "American Express",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "groceries",
+        "gas",
+        "online_shopping",
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "$200 statement credit after qualifying spend",
+      "description": "No-annual-fee cash back card with U.S. supermarket, gas station, and online retail bonus categories.",
+      "longDescription": "Blue Cash Everyday has no annual fee and elevated cash back for common household spending categories.",
+      "pros": [
+        "No annual fee",
+        "Bonus cash back on U.S. supermarkets, U.S. gas stations, and U.S. online retail purchases",
+        "Straightforward everyday-use structure"
+      ],
+      "cons": [
+        "Foreign transaction fee",
+        "Category caps apply to several bonus categories"
+      ],
+      "network": "amex",
+      "foreignTxFee": 2.7,
+      "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/blue-cash-everyday.png",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/blue-cash-everyday/",
+      "isActive": true,
+      "lastVerified": "2026-03-29T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "groceries",
+          "rate": 3,
+          "rateType": "cashback",
+          "notes": "U.S. supermarkets on up to $6,000 per year in purchases, then 1%."
+        },
+        {
+          "category": "gas",
+          "rate": 3,
+          "rateType": "cashback",
+          "notes": "U.S. gas stations on up to $6,000 per year in purchases, then 1%."
+        },
+        {
+          "category": "online_shopping",
+          "rate": 3,
+          "rateType": "cashback",
+          "notes": "U.S. online retail purchases on up to $6,000 per year in purchases, then 1%."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "statement_credit",
+          "displayHeadline": "$200 back",
+          "displayDescription": "Earn $200 back after you spend $2,000 in purchases on your new Card in your first 6 months. You will receive the $200 back in the form of a statement credit.",
+          "spendRequired": 2000,
+          "spendPeriodDays": 180,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "STREAMING_CREDITS",
+          "name": "$84 Disney Bundle Credit",
+          "description": "Up to $7 back each month after spending at least the required amount on an eligible Disney Bundle subscription.",
+          "estimatedValue": 84,
+          "activationMethod": "Enroll and pay for an eligible Disney Bundle subscription with the card.",
+          "finePrint": "Enrollment required. Monthly threshold and eligible subscription terms apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible purchases against accidental damage, theft, or loss for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty",
+          "description": "Can extend the original manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and retain supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "RETURN_PROTECTION",
+          "name": "Return Protection",
+          "description": "Can help when an eligible merchant will not take back a qualifying purchase within the stated time window.",
+          "activationMethod": "Use the card for eligible purchases and submit a qualifying claim.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Car Rental Loss and Damage Insurance",
+          "description": "Coverage for eligible rental car damage or theft when the rental is reserved and paid for with the card.",
+          "activationMethod": "Reserve and pay for the full rental with the card and decline the rental company's collision damage waiver.",
+          "finePrint": "Coverage type, limits, exclusions, and territory rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "amex-blue-cash-preferred",
+      "name": "Blue Cash Preferred Card from American Express",
+      "issuer": "American Express",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "groceries",
+        "streaming",
+        "gas",
+        "utilities",
+        "all"
+      ],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "$250 statement credit after qualifying spend",
+      "description": "Cash back card with high U.S. supermarket and streaming rewards, plus transit and gas categories.",
+      "longDescription": "Blue Cash Preferred has a $0 intro annual fee for the first year, then $95, with elevated cash back in select everyday categories.",
+      "pros": [
+        "High rewards at U.S. supermarkets and select U.S. streaming services",
+        "Solid bonus rates for transit and U.S. gas stations",
+        "$0 intro annual fee first year before standard annual fee"
+      ],
+      "cons": [
+        "Annual fee after intro year",
+        "Foreign transaction fee"
+      ],
+      "network": "amex",
+      "foreignTxFee": 2.7,
+      "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/blue-cash-preferred.png",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/blue-cash-preferred/",
+      "isActive": true,
+      "lastVerified": "2026-03-29T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "groceries",
+          "rate": 6,
+          "rateType": "cashback",
+          "notes": "U.S. supermarkets on up to $6,000 per year in purchases, then 1%."
+        },
+        {
+          "category": "streaming",
+          "rate": 6,
+          "rateType": "cashback",
+          "notes": "Select U.S. streaming subscriptions."
+        },
+        {
+          "category": "gas",
+          "rate": 3,
+          "rateType": "cashback",
+          "notes": "U.S. gas stations."
+        },
+        {
+          "category": "utilities",
+          "rate": 3,
+          "rateType": "cashback",
+          "notes": "Transit category represented as utilities in current schema mapping."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 250,
+          "bonusType": "statement_credit",
+          "displayHeadline": "$250 back",
+          "displayDescription": "Earn $250 back in the form of a statement credit after you spend $3,000 in purchases on the Card in your first 6 months of Membership.",
+          "spendRequired": 3000,
+          "spendPeriodDays": 180,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "STREAMING_CREDITS",
+          "name": "$120 Disney Bundle Credit",
+          "description": "Up to $10 back each month after spending at least the required amount on an eligible Disney Bundle subscription.",
+          "estimatedValue": 120,
+          "activationMethod": "Enroll and pay for an eligible Disney Bundle subscription with the card.",
+          "finePrint": "Enrollment required. Monthly threshold and eligible subscription terms apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible purchases against accidental damage, theft, or loss for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty",
+          "description": "Can extend the original manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and retain supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "RETURN_PROTECTION",
+          "name": "Return Protection",
+          "description": "Can help when an eligible merchant will not take back a qualifying purchase within the stated time window.",
+          "activationMethod": "Use the card for eligible purchases and submit a qualifying claim.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Car Rental Loss and Damage Insurance",
+          "description": "Coverage for eligible rental car damage or theft when the rental is reserved and paid for with the card.",
+          "activationMethod": "Reserve and pay for the full rental with the card and decline the rental company's collision damage waiver.",
+          "finePrint": "Coverage type, limits, exclusions, and territory rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "amex-gold-card",
+      "name": "American Express Gold Card",
+      "issuer": "American Express",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "all"
+      ],
+      "annualFee": 325,
+      "creditTierMin": "good",
+      "headline": "Dining- and grocery-heavy Membership Rewards card with rich statement credits.",
+      "description": "A points card oriented toward restaurant and supermarket spend, plus travel transfer flexibility through Membership Rewards.",
+      "pros": [
+        "Strong rewards profile for dining and groceries",
+        "No foreign transaction fees",
+        "Access to Membership Rewards transfer partners"
+      ],
+      "cons": [
+        "Annual fee may not fit low-spend households",
+        "Credit value depends on redemption strategy"
+      ],
+      "network": "amex",
+      "foreignTxFee": 0,
+      "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/gold-card.png",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/gold-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-29T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "dining",
+          "rate": 4,
+          "rateType": "points",
+          "notes": "4X Membership Rewards points at restaurants worldwide on up to $50,000 in purchases per calendar year, then 1X."
+        },
+        {
+          "category": "groceries",
+          "rate": 4,
+          "rateType": "points",
+          "notes": "4X Membership Rewards points at U.S. supermarkets on up to $25,000 in purchases per calendar year, then 1X."
+        },
+        {
+          "category": "travel",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3X Membership Rewards points on flights booked directly with airlines or on AmexTravel.com."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [],
+      "benefits": [
+        {
+          "category": "DINING_CREDITS",
+          "name": "$100 Resy Credit",
+          "description": "Up to $50 in statement credits from January through June and again from July through December for eligible U.S. Resy purchases.",
+          "estimatedValue": 100,
+          "activationMethod": "Enroll and use the Gold Card at eligible U.S. Resy restaurants or other eligible Resy purchases.",
+          "finePrint": "Enrollment required. Semi-annual cap applies."
+        },
+        {
+          "category": "DINING_CREDITS",
+          "name": "$84 Dunkin' Credit",
+          "description": "Up to $7 in monthly statement credits at eligible U.S. Dunkin' locations.",
+          "estimatedValue": 84,
+          "activationMethod": "Enroll and use the Gold Card at eligible U.S. Dunkin' locations.",
+          "finePrint": "Enrollment required. Monthly cap applies."
+        },
+        {
+          "category": "DINING_CREDITS",
+          "name": "$120 Dining Credit",
+          "description": "Up to $10 in monthly statement credits at eligible partners such as Grubhub, The Cheesecake Factory, Goldbelly, Wine.com, and Five Guys.",
+          "estimatedValue": 120,
+          "activationMethod": "Enroll and use the Gold Card with participating dining partners.",
+          "finePrint": "Enrollment required. Monthly cap applies."
+        },
+        {
+          "category": "OTHER",
+          "name": "$120 Uber Cash",
+          "description": "Get $10 in Uber Cash each month for eligible Uber rides and orders in the U.S.",
+          "estimatedValue": 120,
+          "activationMethod": "Add the Gold Card to your Uber account and select an Amex Card for the transaction.",
+          "finePrint": "Monthly credits do not roll over and are limited to eligible U.S. rides and orders."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "The Hotel Collection Benefit",
+          "description": "Eligible bookings through Amex Travel include a property credit toward eligible charges at participating hotels.",
+          "activationMethod": "Book an eligible stay through Amex Travel using the Gold Card.",
+          "finePrint": "Two-night minimum stay required. Eligible charges vary by property."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Baggage Insurance Plan",
+          "description": "Coverage for eligible lost, damaged, or stolen baggage when covered travel is charged to the card.",
+          "activationMethod": "Charge eligible common-carrier travel to the Gold Card.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Car Rental Loss and Damage Insurance",
+          "description": "Coverage for eligible rental car damage or theft when the rental is reserved and paid for with the card.",
+          "activationMethod": "Reserve and pay for the full rental with the Gold Card and decline the rental company's collision damage waiver.",
+          "finePrint": "Coverage type, limits, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Insurance",
+          "description": "Can reimburse certain additional expenses when a covered trip is delayed beyond the stated threshold.",
+          "activationMethod": "Pay for an eligible round-trip fare with the Gold Card.",
+          "finePrint": "Coverage limits and claim conditions apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "Global Assist Hotline",
+          "description": "24/7 emergency coordination services when traveling more than 100 miles from home.",
+          "activationMethod": "Call the assistance line when traveling and support is needed.",
+          "finePrint": "Card Members are responsible for third-party service charges."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty",
+          "description": "Can extend the original manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the Gold Card for eligible purchases and retain supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible purchases against accidental damage, theft, or loss for a limited period after purchase.",
+          "activationMethod": "Use the Gold Card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and terms apply."
+        }
+      ]
+    },
+    {
+      "slug": "amex-platinum-card",
+      "name": "The Platinum Card from American Express",
+      "issuer": "American Express",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "all"
+      ],
+      "annualFee": 895,
+      "creditTierMin": "excellent",
+      "headline": "Premium travel card built around lounge access, hotel benefits, and statement credits.",
+      "description": "A premium travel rewards card focused on airport lounge access, travel benefits, and flexible Membership Rewards points.",
+      "pros": [
+        "Premium lounge access portfolio",
+        "No foreign transaction fees",
+        "High-value travel and lifestyle credits for eligible cardmembers"
+      ],
+      "cons": [
+        "High annual fee",
+        "$895 annual fee requires substantial value capture"
+      ],
+      "network": "amex",
+      "foreignTxFee": 0,
+      "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/platinum-card.png",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/platinum/",
+      "isActive": true,
+      "lastVerified": "2026-03-29T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "points",
+          "notes": "5X Membership Rewards points on flights booked directly with airlines or through American Express Travel, up to $500,000 per calendar year, and on prepaid hotels booked through American Express Travel."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [],
+      "benefits": [
+        {
+          "category": "LOUNGE_ACCESS",
+          "name": "American Express Global Lounge Collection",
+          "description": "Access to Centurion Lounges, select Delta Sky Club visits when flying Delta, Priority Pass Select enrollment, and other partner lounges.",
+          "activationMethod": "Use your eligible Platinum Card and enroll in partner programs where required.",
+          "finePrint": "Access rules, guest policies, and visit limits vary by lounge and partner."
+        },
+        {
+          "category": "OTHER",
+          "name": "$200 Uber Cash",
+          "description": "Get $15 in Uber Cash each month plus a $20 bonus in December for eligible Uber rides and orders in the U.S.",
+          "estimatedValue": 200,
+          "activationMethod": "Add the Platinum Card to your Uber account and select an Amex Card for the transaction.",
+          "finePrint": "Monthly credits do not roll over and are limited to eligible U.S. rides and orders."
+        },
+        {
+          "category": "OTHER",
+          "name": "$120 Uber One Credit",
+          "description": "Up to $120 in statement credits each calendar year after purchase of an eligible auto-renewing Uber One membership in the U.S.",
+          "activationMethod": "Pay for an eligible auto-renewing Uber One membership with the Platinum Card.",
+          "finePrint": "Available on eligible U.S. memberships."
+        },
+        {
+          "category": "STREAMING_CREDITS",
+          "name": "$300 Digital Entertainment Credit",
+          "description": "Up to $25 per month in statement credits for eligible purchases with select digital entertainment partners.",
+          "estimatedValue": 300,
+          "activationMethod": "Enroll and pay eligible providers directly with the Platinum Card.",
+          "finePrint": "Enrollment required. Eligible partners and terms may change."
+        },
+        {
+          "category": "DINING_CREDITS",
+          "name": "$400 Resy Credit",
+          "description": "Up to $100 in statement credits each quarter for eligible Resy purchases, including dining at eligible U.S. Resy restaurants.",
+          "estimatedValue": 400,
+          "activationMethod": "Enroll in the benefit and use the Platinum Card for eligible Resy purchases.",
+          "finePrint": "Enrollment required. Quarterly cap applies."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$600 Hotel Credit",
+          "description": "Up to $300 back semi-annually on prepaid Fine Hotels + Resorts or The Hotel Collection bookings through Amex Travel.",
+          "activationMethod": "Book eligible prepaid stays through Amex Travel and pay with the Platinum Card.",
+          "finePrint": "The Hotel Collection requires a two-night minimum stay."
+        },
+        {
+          "category": "OTHER",
+          "name": "Premium Hotel Status",
+          "description": "Complimentary hotel status and on-property benefits are available with participating programs.",
+          "activationMethod": "Enroll through the applicable Amex benefit portal.",
+          "finePrint": "Benefits vary by property and are subject to availability."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$200 Airline Fee Credit",
+          "description": "Up to $200 in statement credits per calendar year for incidental fees with one selected qualifying airline.",
+          "estimatedValue": 200,
+          "activationMethod": "Select one qualifying airline first, then pay eligible incidental fees with the Platinum Card.",
+          "finePrint": "Enrollment required. Airfare does not qualify."
+        },
+        {
+          "category": "OTHER",
+          "name": "$209 CLEAR Plus Credit",
+          "description": "Up to $209 in statement credits per calendar year for an eligible CLEAR Plus membership.",
+          "estimatedValue": 209,
+          "activationMethod": "Enroll and pay for CLEAR Plus with the Platinum Card.",
+          "finePrint": "Subject to auto-renewal and excludes applicable taxes and fees."
+        },
+        {
+          "category": "OTHER",
+          "name": "$200 Oura Ring Credit",
+          "description": "Up to $200 back in statement credits each calendar year on eligible Oura Ring purchases through ouraring.com.",
+          "activationMethod": "Enroll and use the Platinum Card for eligible purchases through ouraring.com.",
+          "finePrint": "Enrollment required."
+        },
+        {
+          "category": "OTHER",
+          "name": "Platinum Nights by Resy",
+          "description": "Special access to exclusive reservations on select nights at participating Resy restaurants in select markets.",
+          "activationMethod": "Access through eligible Resy or Amex channels.",
+          "finePrint": "Availability is limited and market-specific."
+        },
+        {
+          "category": "TSA_GLOBAL_ENTRY",
+          "name": "Global Entry or TSA PreCheck Application Credit",
+          "description": "Receive either a statement credit for Global Entry every 4 years or TSA PreCheck every 4.5 years when the application fee is charged to the card.",
+          "estimatedValue": 30,
+          "activationMethod": "Pay the eligible application fee with the Platinum Card.",
+          "finePrint": "Only one program credit is available during each eligibility window."
+        },
+        {
+          "category": "OTHER",
+          "name": "$100 Saks Fifth Avenue Credit",
+          "description": "Up to $50 in statement credits semi-annually for purchases at Saks Fifth Avenue or saks.com.",
+          "estimatedValue": 100,
+          "activationMethod": "Enroll and use the Platinum Card at Saks Fifth Avenue or saks.com.",
+          "finePrint": "Enrollment required. Semi-annual cap applies."
+        },
+        {
+          "category": "OTHER",
+          "name": "$300 Equinox Credit",
+          "description": "Up to $300 in statement credits each calendar year on an eligible Equinox club membership or Equinox+ digital subscription.",
+          "activationMethod": "Enroll and use the Platinum Card for eligible Equinox charges.",
+          "finePrint": "Enrollment required."
+        },
+        {
+          "category": "OTHER",
+          "name": "Walmart+ Monthly Membership Credit",
+          "description": "Monthly statement credit for one eligible Walmart+ membership paid with the Platinum Card.",
+          "estimatedValue": 155,
+          "activationMethod": "Pay for one eligible monthly Walmart+ membership with the Platinum Card.",
+          "finePrint": "Subject to auto-renewal. Excludes Plus Ups."
+        },
+        {
+          "category": "OTHER",
+          "name": "$300 lululemon Credit",
+          "description": "Up to $75 in statement credits each quarter for eligible U.S. lululemon store purchases.",
+          "activationMethod": "Enroll and use the Platinum Card for eligible lululemon purchases.",
+          "finePrint": "Enrollment required. Quarterly cap applies."
+        }
+      ]
+    },
+    {
+      "slug": "bilt-mastercard",
+      "name": "Bilt Blue Card",
+      "issuer": "Bilt",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": [
+        "other",
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "No-annual-fee Bilt card centered on housing rewards and partner earning.",
+      "description": "Current no-annual-fee Bilt card focused on eligible housing rewards, flexible Bilt Cash back options, and partner ecosystem earnings.",
+      "longDescription": "Bilt Blue Card is the current no-annual-fee Bilt consumer card. Cardholders can choose between a Housing-only Option that earns up to 1.25x Bilt Points on eligible housing payments based on Everyday Spend Ratio thresholds, or a Flexible Bilt Cash Option that earns 4% Bilt Cash on everyday spend and can be redeemed to unlock up to 1x Bilt Points on housing payments. Other eligible purchases earn 1x Bilt Points, and members can access broader Bilt partner earning opportunities across Lyft, Bilt Dining, Bilt Travel, Bilt Fitness, Metropolis parking, Walgreens, and home delivery offers under the Bilt Rewards program.",
+      "pros": [
+        "No annual fee",
+        "$100 in Bilt Cash at account opening on the current Blue offer",
+        "Up to 1.25x points on eligible housing payments with no transaction fee",
+        "Access to Bilt partner earning opportunities across travel, dining, and lifestyle"
+      ],
+      "cons": [
+        "Base earning on non-housing purchases is modest",
+        "Best housing rewards depend on your selected option and Everyday Spend Ratio",
+        "Premium Bilt perks now sit on the paid Obsidian and Palladium tiers"
+      ],
+      "network": "visa",
+      "foreignTxFee": 0,
+      "imageUrl": "https://static.biltrewards.com/assets/seo/bilt_card2_coming_soon_seo.jpg",
+      "applyUrl": "https://www.biltrewards.com/card",
+      "isActive": true,
+      "lastVerified": "2026-03-29T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "other",
+          "rate": 1.25,
+          "rateType": "points",
+          "notes": "Up to 1.25x Bilt Points on eligible housing payments under the Housing-only Option, based on Everyday Spend Ratio thresholds, with a monthly floor of 250 points."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points",
+          "notes": "1x Bilt Points on other eligible purchases."
+        }
+      ],
+      "signUpBonuses": [],
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "Rewards on Eligible Housing Payments",
+          "description": "The current no-annual-fee Bilt card can earn rewards on eligible rent or mortgage payments made through the Bilt app or website without a transaction fee.",
+          "activationMethod": "Use the Bilt app or website for eligible housing payments and maintain an open Bilt card account.",
+          "finePrint": "Earning structure depends on the rewards option selected and Bilt program terms."
+        },
+        {
+          "category": "OTHER",
+          "name": "Flexible Rewards Options",
+          "description": "Cardholders can choose between a Housing-only Option that earns Bilt Points on eligible housing payments or a Flexible Bilt Cash Option that earns Bilt Cash on everyday spend.",
+          "activationMethod": "Select your preferred rewards option in the Bilt experience and use the card for qualifying purchases.",
+          "finePrint": "Housing rewards and redemption mechanics vary by option and may depend on Everyday Spend Ratio thresholds."
+        },
+        {
+          "category": "OTHER",
+          "name": "Bilt Partner Rewards",
+          "description": "The broader Bilt Rewards ecosystem includes additional partner earning opportunities across Lyft, Bilt Dining, Bilt Travel, Bilt Fitness, Walgreens, Metropolis parking, and home delivery offers.",
+          "activationMethod": "Link and use participating partners through eligible Bilt channels.",
+          "finePrint": "Partner availability, earning rates, and offer terms can change by merchant and market."
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-quicksilver",
+      "name": "Capital One Quicksilver Cash Rewards Credit Card",
+      "issuer": "Capital One",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "all",
+        "travel"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Capital One Quicksilver Cash Rewards Credit Card with no annual fee",
+      "description": "No-annual-fee flat-rate cash back card with no foreign transaction fees.",
+      "longDescription": "Quicksilver earns unlimited 1.5% cash back on purchases and elevated rewards on Capital One Travel bookings.",
+      "pros": [
+        "No annual fee",
+        "Simple flat-rate cash back",
+        "No foreign transaction fees"
+      ],
+      "cons": [
+        "Lower base earn than some 2% cash back cards",
+        "Highest travel rewards require Capital One Travel booking"
+      ],
+      "foreignTxFee": 0,
+      "imageUrl": "https://ecm.capitalone.com/WCM/card/products/qs_cardart_prim_323x203.png",
+      "applyUrl": "https://www.capitalone.com/credit-cards/quicksilver/",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:35.062Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 1.5,
+          "rateType": "cashback"
+        },
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Hotels, vacation rentals, rental cars, and activities through Capital One Travel."
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "statement_credit",
+          "spendRequired": 500,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "PRICE_PROTECTION",
+          "name": "Capital One Travel Protections",
+          "description": "Capital One Travel includes booking tools such as price monitoring, price drop protection, price match, and flexible booking features on eligible bookings.",
+          "activationMethod": "Book through Capital One Travel and use supported features where available.",
+          "finePrint": "Feature availability and terms vary by booking type."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Entertainment Access",
+          "description": "Access to eligible entertainment, sports, and dining events through Capital One Entertainment.",
+          "activationMethod": "Sign in with an eligible card account and purchase available event inventory.",
+          "finePrint": "Inventory is limited and event access varies."
+        },
+        {
+          "category": "OTHER",
+          "name": "Hertz Five Star Status",
+          "description": "Eligible cardholders can enroll in Hertz Five Star status for added rental benefits.",
+          "activationMethod": "Enroll through the eligible Capital One benefits portal.",
+          "finePrint": "Enrollment required. Terms and expiration windows apply."
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-savor-rewards",
+      "name": "Capital One Savor Cash Rewards Credit Card",
+      "issuer": "Capital One",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "dining",
+        "groceries",
+        "entertainment",
+        "streaming",
+        "travel",
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Capital One Savor Cash Rewards Credit Card with no annual fee",
+      "description": "No-annual-fee cash back card focused on dining, entertainment, streaming, and grocery spending.",
+      "longDescription": "Savor earns unlimited 3% cash back on dining, entertainment, popular streaming services, and grocery stores, plus elevated Capital One Travel rewards.",
+      "pros": [
+        "No annual fee",
+        "Strong cash back rates in common lifestyle categories",
+        "No foreign transaction fees"
+      ],
+      "cons": [
+        "Category rewards centered on specific spend buckets",
+        "Highest travel rewards require Capital One Travel portal"
+      ],
+      "foreignTxFee": 0,
+      "imageUrl": "https://ecm.capitalone.com/WCM/card/products/new-savor-card-art.png",
+      "applyUrl": "https://www.capitalone.com/credit-cards/savor/",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:35.608Z",
+      "rewards": [
+        {
+          "category": "dining",
+          "rate": 3,
+          "rateType": "cashback"
+        },
+        {
+          "category": "groceries",
+          "rate": 3,
+          "rateType": "cashback"
+        },
+        {
+          "category": "entertainment",
+          "rate": 3,
+          "rateType": "cashback"
+        },
+        {
+          "category": "streaming",
+          "rate": 3,
+          "rateType": "cashback"
+        },
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Hotels, vacation rentals, rental cars, and activities through Capital One Travel."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "statement_credit",
+          "spendRequired": 500,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "PRICE_PROTECTION",
+          "name": "Capital One Travel Protections",
+          "description": "Capital One Travel includes booking tools such as price monitoring, price drop protection, price match, and flexible booking features on eligible bookings.",
+          "activationMethod": "Book through Capital One Travel and use supported features where available.",
+          "finePrint": "Feature availability and terms vary by booking type."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Entertainment Access",
+          "description": "Access to eligible entertainment, sports, and dining events through Capital One Entertainment.",
+          "activationMethod": "Sign in with an eligible card account and purchase available event inventory.",
+          "finePrint": "Inventory is limited and event access varies."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Dining Access",
+          "description": "Access to select dining reservations and culinary experiences through Capital One Dining.",
+          "activationMethod": "Sign in with an eligible card account and book available offerings.",
+          "finePrint": "Availability varies by city and partner."
+        },
+        {
+          "category": "OTHER",
+          "name": "Hertz Five Star Status",
+          "description": "Eligible cardholders can enroll in Hertz Five Star status for added rental benefits.",
+          "activationMethod": "Enroll through the eligible Capital One benefits portal.",
+          "finePrint": "Enrollment required. Terms and expiration windows apply."
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-spark-cash-plus",
+      "name": "Capital One Spark Cash Plus",
+      "issuer": "Capital One",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": [
+        "all",
+        "travel"
+      ],
+      "annualFee": 150,
+      "creditTierMin": "good",
+      "headline": "$2,000 cash bonus",
+      "description": "Business charge card with flat-rate cash back and no preset spending limit.",
+      "longDescription": "Spark Cash Plus earns unlimited 2% cash back on purchases and elevated cash back on hotels and rental cars booked through Capital One Travel.",
+      "pros": [
+        "Unlimited 2% cash back on business spend",
+        "No foreign transaction fees",
+        "No preset spending limit (charge card terms apply)"
+      ],
+      "cons": [
+        "Annual fee",
+        "Balance is generally expected to be paid in full (charge card structure)"
+      ],
+      "network": "visa",
+      "foreignTxFee": 0,
+      "imageUrl": "https://ecm.capitalone.com/WCM/card/products/spark-cash-plus.png",
+      "applyUrl": "https://www.capitalone.com/small-business/credit-cards/spark-cash-plus/",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:36.159Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 2,
+          "rateType": "cashback"
+        },
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Hotels and rental cars booked through Capital One Travel."
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 2000,
+          "bonusType": "statement_credit",
+          "displayHeadline": "$2,000 cash bonus",
+          "displayDescription": "Spend $30,000 in the first 3 months. Plus an additional $2,000 bonus for every $500,000 spent in the first year.",
+          "spendRequired": 30000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "$150 Annual Travel Credit After $150,000 Spend",
+          "description": "An annual travel credit is available after meeting the stated annual spend threshold on the account.",
+          "activationMethod": "Meet the qualifying annual spend threshold and redeem through the eligible travel flow.",
+          "finePrint": "This benefit is contingent on meeting the issuer's spend requirement."
+        },
+        {
+          "category": "OTHER",
+          "name": "Flexible Spending Capacity",
+          "description": "The card has no preset spending limit and adapts based on account factors.",
+          "activationMethod": "Use the account normally and manage payments on time.",
+          "finePrint": "Available spending power is not unlimited and changes over time."
+        },
+        {
+          "category": "OTHER",
+          "name": "Employee and Virtual Cards",
+          "description": "Business tools include employee cards and virtual card numbers to help manage spending.",
+          "activationMethod": "Set up employee cards or virtual cards in your Capital One business account.",
+          "finePrint": "Feature availability can vary by account setup."
+        },
+        {
+          "category": "OTHER",
+          "name": "Downloadable Purchase Records",
+          "description": "Business account tools include downloadable purchase records and reporting features.",
+          "activationMethod": "Access reporting tools through your Capital One business account.",
+          "finePrint": "Available features can vary by account and platform."
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-venture-rewards",
+      "name": "Capital One Venture Rewards Credit Card",
+      "issuer": "Capital One",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": [
+        "all",
+        "travel"
+      ],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "$250 travel credit + 75,000 bonus miles",
+      "description": "Mid-tier travel rewards card with strong flat-rate miles and no foreign transaction fees.",
+      "longDescription": "Venture Rewards offers unlimited 2X miles on purchases, elevated earn on Capital One Travel bookings, and a $95 annual fee.",
+      "pros": [
+        "Unlimited 2X miles on every purchase",
+        "5X miles on hotels, vacation rentals and rental cars through Capital One Travel",
+        "No foreign transaction fees"
+      ],
+      "cons": [
+        "Annual fee",
+        "Highest category rates require booking through Capital One Travel"
+      ],
+      "network": "visa",
+      "foreignTxFee": 0,
+      "imageUrl": "https://ecm.capitalone.com/WCM/card/products/venture-card-art.png",
+      "applyUrl": "https://www.capitalone.com/credit-cards/venture/",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:36.708Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 2,
+          "rateType": "miles",
+          "notes": "2X miles on every purchase."
+        },
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "miles",
+          "notes": "5X miles on hotels, vacation rentals and rental cars booked through Capital One Travel."
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1250,
+          "bonusType": "miles",
+          "displayHeadline": "$250 travel credit + 75,000 bonus miles",
+          "displayDescription": "Spend $4,000 in the first 3 months from account opening.",
+          "bonusPoints": 75000,
+          "spendRequired": 4000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "TSA_GLOBAL_ENTRY",
+          "name": "Global Entry or TSA PreCheck Credit",
+          "description": "Receive a statement credit for one qualifying Global Entry or TSA PreCheck application fee during the eligibility window.",
+          "estimatedValue": 30,
+          "activationMethod": "Pay the eligible application fee with the card.",
+          "finePrint": "Credit frequency is limited by the issuer's stated eligibility window."
+        },
+        {
+          "category": "OTHER",
+          "name": "$50 Lifestyle Collection Experience Credit",
+          "description": "Eligible Lifestyle Collection hotel stays can include a $50 experience credit.",
+          "activationMethod": "Book a qualifying stay through Capital One Travel and pay with the card.",
+          "finePrint": "Eligible properties and booking rules apply."
+        },
+        {
+          "category": "PRICE_PROTECTION",
+          "name": "Capital One Travel Protections",
+          "description": "Capital One Travel includes booking tools such as price monitoring, price drop protection, price match, and flexible booking features on eligible bookings.",
+          "activationMethod": "Book through Capital One Travel and use supported features where available.",
+          "finePrint": "Feature availability and terms vary by booking type."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Dining Access",
+          "description": "Access to select dining reservations and culinary experiences through Capital One Dining.",
+          "activationMethod": "Sign in with an eligible card account and book available offerings.",
+          "finePrint": "Availability varies by city and partner."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Entertainment Access",
+          "description": "Access to eligible entertainment, sports, and dining events through Capital One Entertainment.",
+          "activationMethod": "Sign in with an eligible card account and purchase available event inventory.",
+          "finePrint": "Inventory is limited and event access varies."
+        },
+        {
+          "category": "OTHER",
+          "name": "Hertz Five Star Status",
+          "description": "Eligible cardholders can enroll in Hertz Five Star status for added rental benefits.",
+          "activationMethod": "Enroll through the eligible Capital One benefits portal.",
+          "finePrint": "Enrollment required. Terms and expiration windows apply."
+        }
+      ]
+    },
+    {
+      "slug": "capital-one-venture-x",
+      "name": "Capital One Venture X Rewards Credit Card",
+      "issuer": "Capital One",
+      "cardType": "personal",
+      "rewardType": "miles",
+      "topCategories": [
+        "all",
+        "travel"
+      ],
+      "annualFee": 395,
+      "creditTierMin": "excellent",
+      "headline": "Capital One Venture X Rewards Credit Card",
+      "description": "Premium travel rewards card with elevated Capital One Travel earning and lounge benefits.",
+      "longDescription": "Venture X is a premium travel card with a $395 annual fee, unlimited 2X miles on everyday purchases, and higher earn rates through Capital One Travel.",
+      "pros": [
+        "Unlimited 2X miles on everyday purchases",
+        "10X hotels and rental cars, 5X flights and vacation rentals through Capital One Travel",
+        "No foreign transaction fees"
+      ],
+      "cons": [
+        "High annual fee",
+        "Best rewards depend on using Capital One Travel portal"
+      ],
+      "network": "visa",
+      "foreignTxFee": 0,
+      "imageUrl": "https://ecm.capitalone.com/WCM/card/products/venture-x-card-art.png",
+      "applyUrl": "https://www.capitalone.com/credit-cards/venture-x/",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:37.421Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 2,
+          "rateType": "miles",
+          "notes": "2X miles on all other purchases."
+        },
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "miles",
+          "notes": "5X miles on flights and vacation rentals booked through Capital One Travel."
+        },
+        {
+          "category": "travel",
+          "rate": 10,
+          "rateType": "miles",
+          "notes": "10X miles on hotels and rental cars booked through Capital One Travel."
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 750,
+          "bonusType": "miles",
+          "bonusPoints": 75000,
+          "spendRequired": 4000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$300 Annual Travel Credit",
+          "description": "Receive up to $300 back annually on eligible travel bookings made through Capital One Travel.",
+          "estimatedValue": 300,
+          "activationMethod": "Book eligible travel through Capital One Travel with the card.",
+          "finePrint": "Issuer booking rules and eligible purchase terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "10,000 Anniversary Bonus Miles",
+          "description": "Receive 10,000 bonus miles each year starting on the first account anniversary.",
+          "estimatedValue": 100,
+          "activationMethod": "Keep the account open through the applicable anniversary date.",
+          "finePrint": "Miles are awarded after the anniversary according to issuer terms."
+        },
+        {
+          "category": "TSA_GLOBAL_ENTRY",
+          "name": "Global Entry or TSA PreCheck Credit",
+          "description": "Receive a statement credit for one qualifying Global Entry or TSA PreCheck application fee during the eligibility window.",
+          "estimatedValue": 30,
+          "activationMethod": "Pay the eligible application fee with the card.",
+          "finePrint": "Credit frequency is limited by the issuer's stated eligibility window."
+        },
+        {
+          "category": "LOUNGE_ACCESS",
+          "name": "Capital One Lounge Access",
+          "description": "Access to Capital One Lounges and eligible landing locations for cardholders and permitted guests.",
+          "activationMethod": "Present the eligible card or digital credentials where required.",
+          "finePrint": "Access terms and guest rules can change."
+        },
+        {
+          "category": "LOUNGE_ACCESS",
+          "name": "Priority Pass Select Membership",
+          "description": "Eligible cardholders can enroll in Priority Pass Select for participating airport lounge access.",
+          "activationMethod": "Enroll through the Capital One benefits portal and present active membership credentials.",
+          "finePrint": "Enrollment required. Participating lounges and rules vary."
+        },
+        {
+          "category": "OTHER",
+          "name": "Complimentary PRIOR Subscription",
+          "description": "Eligible cardholders receive a complimentary PRIOR subscription.",
+          "activationMethod": "Activate through the eligible Capital One benefit flow.",
+          "finePrint": "Enrollment or activation may be required."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "Premier Collection and Lifestyle Collection Benefits",
+          "description": "Eligible hotel bookings can include experience credits and space-available property perks.",
+          "activationMethod": "Book qualifying hotels through Capital One Travel and pay with the card.",
+          "finePrint": "Eligible properties and booking rules apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "Hertz President's Circle Status",
+          "description": "Eligible cardholders can enroll in Hertz President's Circle status for enhanced rental benefits.",
+          "activationMethod": "Enroll through the eligible Capital One benefits portal.",
+          "finePrint": "Enrollment required. Terms and expiration windows apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Dining Access",
+          "description": "Access to select dining reservations and culinary experiences through Capital One Dining.",
+          "activationMethod": "Sign in with an eligible card account and book available offerings.",
+          "finePrint": "Availability varies by city and partner."
+        },
+        {
+          "category": "OTHER",
+          "name": "Capital One Entertainment Access",
+          "description": "Access to eligible entertainment, sports, and dining events through Capital One Entertainment.",
+          "activationMethod": "Sign in with an eligible card account and purchase available event inventory.",
+          "finePrint": "Inventory is limited and event access varies."
+        }
+      ]
+    },
+    {
+      "slug": "chase-freedom-flex",
+      "name": "Chase Freedom Flex",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "other",
+        "travel",
+        "dining",
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Chase Freedom Flex with no annual fee",
+      "description": "No-annual-fee rotating-category cash back card with additional fixed bonus categories.",
+      "longDescription": "Freedom Flex earns 5% in rotating quarterly categories (activation required), plus elevated rewards on Chase Travel, dining, and drugstores.",
+      "pros": [
+        "No annual fee",
+        "High quarterly 5% bonus categories when activated",
+        "Additional fixed bonus categories year-round"
+      ],
+      "cons": [
+        "5% categories require activation and have quarterly cap",
+        "Foreign transaction fee"
+      ],
+      "network": "mastercard",
+      "foreignTxFee": 3,
+      "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/freedom_flex_card_alt.png",
+      "applyUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/flex",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:37.991Z",
+      "rewards": [
+        {
+          "category": "other",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Up to $1,500 in combined rotating-category purchases each quarter after activation."
+        },
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Travel purchased through Chase Travel."
+        },
+        {
+          "category": "dining",
+          "rate": 3,
+          "rateType": "cashback"
+        },
+        {
+          "category": "other",
+          "rate": 3,
+          "rateType": "cashback",
+          "notes": "Drugstore purchases."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "statement_credit",
+          "spendRequired": 500,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "DashPass Membership and Quarterly Promos",
+          "description": "Cardholders can receive a complimentary DashPass membership window plus rotating non-restaurant DoorDash promos.",
+          "activationMethod": "Activate the offer with DoorDash using the eligible card.",
+          "finePrint": "Enrollment required. Promotional windows and terms can change."
+        },
+        {
+          "category": "OTHER",
+          "name": "Lyft Partner Offer",
+          "description": "Eligible Lyft purchases can qualify for an elevated partner offer during the issuer's promotional period.",
+          "activationMethod": "Pay eligible Lyft purchases with the card during the active promotion.",
+          "finePrint": "Offer terms and expiration dates apply."
+        },
+        {
+          "category": "CELL_PHONE",
+          "name": "Cell Phone Protection",
+          "description": "Can provide coverage for eligible cell phone damage or theft when the monthly bill is paid with the card.",
+          "activationMethod": "Pay the eligible monthly wireless bill with the card and file a qualifying claim when needed.",
+          "finePrint": "Coverage limits, deductibles, exclusions, and claim rules apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Auto Rental Collision Damage Waiver",
+          "description": "Can provide theft and collision coverage for eligible rental vehicles.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Insurance",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Reimbursement",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "chase-freedom-unlimited",
+      "name": "Chase Freedom Unlimited",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "travel",
+        "dining",
+        "other",
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Chase Freedom Unlimited with no annual fee",
+      "description": "No-annual-fee cash back card with elevated dining, drugstore, and Chase Travel rewards.",
+      "longDescription": "Freedom Unlimited earns 1.5% cash back on most purchases with higher rates on Chase Travel, dining, and drugstore spend.",
+      "pros": [
+        "No annual fee",
+        "Strong everyday earn for a no-fee card",
+        "Extra rewards on dining, drugstores, and Chase Travel"
+      ],
+      "cons": [
+        "Foreign transaction fee",
+        "Best travel earn rate requires Chase Travel booking"
+      ],
+      "network": "visa",
+      "foreignTxFee": 3,
+      "imageUrl": "https://images.ctfassets.net/8qmz0ef3xzub/302fEMopacO8lPIOANH1Kr/92aa401d22ec4244b1521a02d9ea1e19/freedom_unlimited_card_alt.png",
+      "applyUrl": "https://creditcards.chase.com/cash-back-credit-cards/freedom/unlimited",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:38.551Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Travel purchased through Chase Travel."
+        },
+        {
+          "category": "dining",
+          "rate": 3,
+          "rateType": "cashback"
+        },
+        {
+          "category": "other",
+          "rate": 3,
+          "rateType": "cashback",
+          "notes": "Drugstore purchases."
+        },
+        {
+          "category": "all",
+          "rate": 1.5,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "statement_credit",
+          "spendRequired": 500,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "DashPass Membership and Quarterly Promos",
+          "description": "Cardholders can receive a complimentary DashPass membership window plus rotating non-restaurant DoorDash promos.",
+          "activationMethod": "Activate the offer with DoorDash using the eligible card.",
+          "finePrint": "Enrollment required. Promotional windows and terms can change."
+        },
+        {
+          "category": "OTHER",
+          "name": "Lyft Partner Offer",
+          "description": "Eligible Lyft purchases can qualify for an elevated partner offer during the issuer's promotional period.",
+          "activationMethod": "Pay eligible Lyft purchases with the card during the active promotion.",
+          "finePrint": "Offer terms and expiration dates apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Auto Rental Collision Damage Waiver",
+          "description": "Can provide theft and collision coverage for eligible rental vehicles.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Insurance",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Reimbursement",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "chase-ink-business-cash",
+      "name": "Ink Business Cash Credit Card",
+      "issuer": "Chase",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": [
+        "other",
+        "gas",
+        "dining",
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Ink Business Cash Credit Card with no annual fee",
+      "description": "No-annual-fee business cash back card with elevated office and telecom categories.",
+      "longDescription": "Ink Business Cash earns 5% on office supply stores and internet/cable/phone services (up to annual cap), 2% at gas stations and restaurants (up to annual cap), then 1% on everything else.",
+      "pros": [
+        "No annual fee",
+        "High rewards in key business expense categories",
+        "Useful companion card in Chase business ecosystem"
+      ],
+      "cons": [
+        "Foreign transaction fee",
+        "Bonus categories have annual caps"
+      ],
+      "network": "visa",
+      "foreignTxFee": 3,
+      "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/ink_cash_card.png",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/ink/cash",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:40.216Z",
+      "rewards": [
+        {
+          "category": "other",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Office supply stores and internet/cable/phone services on up to $25,000 combined purchases each account anniversary year."
+        },
+        {
+          "category": "gas",
+          "rate": 2,
+          "rateType": "cashback",
+          "notes": "Gas stations on up to $25,000 combined purchases each account anniversary year."
+        },
+        {
+          "category": "dining",
+          "rate": 2,
+          "rateType": "cashback",
+          "notes": "Restaurants on up to $25,000 combined purchases each account anniversary year."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 750,
+          "bonusType": "statement_credit",
+          "spendRequired": 6000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "RENTAL_CAR",
+          "name": "Auto Rental Collision Damage Waiver",
+          "description": "Can provide theft and collision coverage for eligible rental vehicles used for business purposes.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Travel and Emergency Assistance Services",
+          "description": "Access to emergency referrals and support while traveling away from home.",
+          "activationMethod": "Call the eligible assistance line when support is needed.",
+          "finePrint": "Cardholders are responsible for charges from third-party service providers."
+        },
+        {
+          "category": "OTHER",
+          "name": "Roadside Dispatch",
+          "description": "Access to a pay-per-use roadside assistance dispatch service.",
+          "activationMethod": "Call the roadside dispatch number when eligible assistance is needed.",
+          "finePrint": "Service fees apply and coverage is subject to program terms."
+        }
+      ]
+    },
+    {
+      "slug": "chase-ink-business-preferred",
+      "name": "Ink Business Preferred Credit Card",
+      "issuer": "Chase",
+      "cardType": "business",
+      "rewardType": "points",
+      "topCategories": [
+        "travel",
+        "other",
+        "all"
+      ],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Ink Business Preferred Credit Card",
+      "description": "Business points card with elevated rewards in select business spending categories.",
+      "longDescription": "Ink Business Preferred earns 3X points in select business categories on up to $150,000 in combined annual spend, then 1X after the cap.",
+      "pros": [
+        "Strong points earn rate on key business categories",
+        "No foreign transaction fees",
+        "Transferable Ultimate Rewards ecosystem"
+      ],
+      "cons": [
+        "Annual fee",
+        "3X categories capped at annual spend limit"
+      ],
+      "network": "visa",
+      "foreignTxFee": 0,
+      "imageUrl": "https://images.ctfassets.net/8qmz0ef3xzub/5MgLwpFlYyNXdq1uJK2RGS/2c9967d41c02902355130c832b249e71/ink_preferred_card.png",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/ink/business-preferred",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:40.778Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "Part of combined 3X categories, up to $150,000 per account anniversary year."
+        },
+        {
+          "category": "other",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "Shipping, internet/cable/phone, and social/search advertising are in combined 3X categories up to annual cap."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1000,
+          "bonusType": "points",
+          "bonusPoints": 100000,
+          "spendRequired": 8000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "CELL_PHONE",
+          "name": "Cell Phone Protection",
+          "description": "Can provide coverage for eligible cell phone damage or theft when the monthly bill is paid with the card.",
+          "activationMethod": "Pay the eligible monthly wireless bill with the card and file a qualifying claim when needed.",
+          "finePrint": "Coverage limits, deductibles, exclusions, and claim rules apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "DashPass Membership and Quarterly Promos",
+          "description": "Cardholders can receive a complimentary DashPass membership window plus rotating non-restaurant DoorDash promos.",
+          "activationMethod": "Activate the offer with DoorDash using the eligible card.",
+          "finePrint": "Enrollment required. Promotional windows and terms can change."
+        },
+        {
+          "category": "OTHER",
+          "name": "Lyft Partner Offer",
+          "description": "Eligible Lyft purchases can qualify for an elevated partner offer during the issuer's promotional period.",
+          "activationMethod": "Pay eligible Lyft purchases with the card during the active promotion.",
+          "finePrint": "Offer terms and expiration dates apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Primary Auto Rental Coverage",
+          "description": "Can provide primary coverage for theft and collision damage on eligible rental cars used for business purposes.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Insurance",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Reimbursement",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "chase-ink-business-unlimited",
+      "name": "Ink Business Unlimited Credit Card",
+      "issuer": "Chase",
+      "cardType": "business",
+      "rewardType": "cashback",
+      "topCategories": [
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Ink Business Unlimited Credit Card with no annual fee",
+      "description": "No-annual-fee business card with flat-rate cash back on all purchases.",
+      "longDescription": "Ink Business Unlimited offers unlimited 1.5% cash back on every purchase with no annual fee.",
+      "pros": [
+        "No annual fee",
+        "Simple unlimited flat-rate earning",
+        "Good baseline business spend card"
+      ],
+      "cons": [
+        "Foreign transaction fee",
+        "Lower upside than category-optimized business cards"
+      ],
+      "network": "visa",
+      "foreignTxFee": 3,
+      "imageUrl": "https://images.ctfassets.net/8qmz0ef3xzub/4YXfIeQQuE30hdT533LXlJ/3b56d1c9eacdff6dd87077a224097f10/ink_unlimited_card.png",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/ink/unlimited",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:41.375Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 1.5,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 750,
+          "bonusType": "statement_credit",
+          "spendRequired": 6000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "RENTAL_CAR",
+          "name": "Auto Rental Collision Damage Waiver",
+          "description": "Can provide theft and collision coverage for eligible rental vehicles used for business purposes.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Travel and Emergency Assistance Services",
+          "description": "Access to emergency referrals and support while traveling away from home.",
+          "activationMethod": "Call the eligible assistance line when support is needed.",
+          "finePrint": "Cardholders are responsible for charges from third-party service providers."
+        },
+        {
+          "category": "OTHER",
+          "name": "Roadside Dispatch",
+          "description": "Access to a pay-per-use roadside assistance dispatch service.",
+          "activationMethod": "Call the roadside dispatch number when eligible assistance is needed.",
+          "finePrint": "Service fees apply and coverage is subject to program terms."
+        }
+      ]
+    },
+    {
+      "slug": "chase-sapphire-preferred",
+      "name": "Chase Sapphire Preferred Card",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": [
+        "travel",
+        "dining",
+        "groceries",
+        "streaming",
+        "all"
+      ],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Chase Sapphire Preferred Card",
+      "description": "A mid-tier travel card with transferable Chase Ultimate Rewards points and no foreign transaction fees.",
+      "pros": [
+        "Low annual fee for a transferable-points card",
+        "Flexible redemptions and transfer partners",
+        "No foreign transaction fees"
+      ],
+      "cons": [
+        "Lower premium benefits than top-tier travel cards"
+      ],
+      "network": "visa",
+      "foreignTxFee": 0,
+      "imageUrl": "https://images.ctfassets.net/8qmz0ef3xzub/7iFzyweepMTrfGn2VrDdL5/6adcc35d50cef1e3087ced153d3b7bee/sapphire_preferred_card.png",
+      "applyUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/preferred",
+      "isActive": true,
+      "lastVerified": "2026-03-29T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "points",
+          "notes": "5X total points on travel purchased through Chase Travel, excluding hotel purchases that qualify for the $50 Annual Chase Travel Hotel Credit."
+        },
+        {
+          "category": "dining",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3X points on dining at restaurants, including eligible delivery services, takeout, and dining out."
+        },
+        {
+          "category": "groceries",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3X points on select online grocery purchases, excluding Target, Walmart, and wholesale clubs."
+        },
+        {
+          "category": "streaming",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3X points on select streaming services."
+        },
+        {
+          "category": "travel",
+          "rate": 2,
+          "rateType": "points",
+          "notes": "2X points on other travel purchases."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 750,
+          "bonusType": "points",
+          "displayHeadline": "75,000 bonus points",
+          "displayDescription": "Earn 75,000 bonus points after you spend $5,000 on purchases in the first 3 months from account opening.",
+          "bonusPoints": 75000,
+          "spendRequired": 5000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$50 Annual Hotel Credit",
+          "description": "Receive up to $50 in statement credits each account anniversary year for eligible hotel stays booked through Chase Travel.",
+          "estimatedValue": 50,
+          "activationMethod": "Book eligible hotel stays through Chase Travel and pay with the card.",
+          "finePrint": "Eligible booking rules and Chase Travel terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "DashPass Membership",
+          "description": "Cardholders can receive a complimentary DashPass membership window with DoorDash benefits.",
+          "activationMethod": "Activate the offer with DoorDash using the eligible card.",
+          "finePrint": "Enrollment required. Promotional window and terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "DoorDash Monthly Promo",
+          "description": "Eligible cardholders can receive a monthly DoorDash promotional benefit during the active program window.",
+          "activationMethod": "Use the eligible card with DoorDash during the promotion period.",
+          "finePrint": "Promotional windows and merchant terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "10% Anniversary Points Boost",
+          "description": "Each account anniversary, you can receive bonus points equal to 10% of the total purchases made during the prior year.",
+          "activationMethod": "Keep the account open through the anniversary and meet issuer terms.",
+          "finePrint": "Points are awarded under the issuer's anniversary calculation rules."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Insurance",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Reimbursement",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Baggage Delay Insurance",
+          "description": "Can reimburse essential purchases when baggage is delayed on a covered trip.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Primary Auto Rental Coverage",
+          "description": "Can provide primary coverage for theft and collision damage on eligible rental cars.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "PURCHASE_PROTECTION",
+          "name": "Purchase Protection",
+          "description": "Can help protect eligible new purchases against damage or theft for a limited period after purchase.",
+          "activationMethod": "Use the card for eligible purchases and file a claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "EXTENDED_WARRANTY",
+          "name": "Extended Warranty Protection",
+          "description": "Can extend the original U.S. manufacturer's warranty on eligible purchases.",
+          "activationMethod": "Use the card for eligible purchases and keep supporting documentation.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "chase-sapphire-reserve",
+      "name": "Chase Sapphire Reserve",
+      "issuer": "Chase",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": [
+        "travel",
+        "dining",
+        "all"
+      ],
+      "annualFee": 795,
+      "creditTierMin": "excellent",
+      "headline": "Chase Sapphire Reserve",
+      "description": "A premium travel card designed for frequent travelers who can maximize lounge access, credits, and transfer partner value.",
+      "pros": [
+        "Premium travel protections and benefits",
+        "No foreign transaction fees",
+        "Strong points ecosystem via Chase Ultimate Rewards"
+      ],
+      "cons": [
+        "High annual fee compared with mid-tier cards"
+      ],
+      "network": "visa",
+      "foreignTxFee": 0,
+      "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/sapphire_reserve_card_Halo.png",
+      "applyUrl": "https://creditcards.chase.com/rewards-credit-cards/sapphire/reserve",
+      "isActive": true,
+      "lastVerified": "2026-03-29T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 8,
+          "rateType": "points",
+          "notes": "8X points on all purchases through Chase Travel, including The Edit."
+        },
+        {
+          "category": "travel",
+          "rate": 4,
+          "rateType": "points",
+          "notes": "4X points on flights booked direct and 4X points on hotels booked direct."
+        },
+        {
+          "category": "dining",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3X points on dining worldwide."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1250,
+          "bonusType": "points",
+          "displayHeadline": "125,000 points",
+          "displayDescription": "Earn 125,000 points after you spend $6,000 in purchases in the first 3 months from account opening.",
+          "bonusPoints": 125000,
+          "spendRequired": 6000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Baggage Delay Insurance",
+          "description": "Can reimburse essential purchases when baggage is delayed on a covered trip.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$300 Annual Travel Credit",
+          "description": "Up to $300 in statement credits each account anniversary year for eligible travel purchases.",
+          "estimatedValue": 300,
+          "activationMethod": "Use the card for eligible travel purchases.",
+          "finePrint": "Purchases that qualify for the credit do not earn points."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$500 Credit for Stays with The Edit",
+          "description": "Up to $250 per prepaid booking, up to $500 annually, for eligible stays booked through The Edit by Chase Travel.",
+          "activationMethod": "Book eligible prepaid stays through The Edit by Chase Travel and pay with the card.",
+          "finePrint": "Two-night minimum required. Purchases that qualify do not earn points."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$250 Credit for Select Chase Travel Hotels",
+          "description": "Up to $250 in statement credits through December 31, 2026 on eligible prepaid Chase Travel hotel bookings at select hotel groups.",
+          "activationMethod": "Book eligible prepaid stays through Chase Travel and pay with the card.",
+          "finePrint": "Two-night minimum required. Benefit is limited to qualifying hotel groups and expires December 31, 2026."
+        },
+        {
+          "category": "LOUNGE_ACCESS",
+          "name": "Chase Sapphire Reserve Lounge Network",
+          "description": "Access to Chase Sapphire Lounges by The Club and Priority Pass airport lounges with permitted guests.",
+          "activationMethod": "Present the eligible card or activated lounge credentials where required.",
+          "finePrint": "Access rules, guest policies, and participating lounge availability may change."
+        },
+        {
+          "category": "TSA_GLOBAL_ENTRY",
+          "name": "Global Entry, TSA PreCheck, or NEXUS Fee Credit",
+          "description": "Receive one statement credit of up to the listed amount every four years for a qualifying application fee.",
+          "estimatedValue": 30,
+          "activationMethod": "Pay the eligible application fee with the card.",
+          "finePrint": "Only qualifying Global Entry, TSA PreCheck, or NEXUS application fees are eligible."
+        },
+        {
+          "category": "DINING_CREDITS",
+          "name": "$300 Dining Credit",
+          "description": "Up to $150 in statement credits from January through June and again from July through December at eligible Sapphire Exclusive Tables restaurants on OpenTable.",
+          "estimatedValue": 300,
+          "activationMethod": "Use the card at eligible Sapphire Exclusive Tables restaurants on OpenTable.",
+          "finePrint": "Semi-annual cap applies and eligible restaurants may change."
+        },
+        {
+          "category": "STREAMING_CREDITS",
+          "name": "$288 in Apple TV and Apple Music Subscriptions",
+          "description": "Statement credits for Apple TV+ and Apple Music subscriptions up to the issuer's stated annual limit.",
+          "estimatedValue": 288,
+          "activationMethod": "Activate the offer and pay eligible Apple subscriptions with the card.",
+          "finePrint": "Activation and partner terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "$120 DashPass Membership",
+          "description": "Cardholders can receive a complimentary DashPass membership window with DoorDash benefits.",
+          "activationMethod": "Activate the offer with DoorDash using the eligible card.",
+          "finePrint": "Enrollment required. Promotional window and terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "$300 in DoorDash Promos",
+          "description": "Eligible cardholders can receive a DoorDash promotional benefit during the active program window.",
+          "activationMethod": "Use the eligible card with DoorDash during the promotion period.",
+          "finePrint": "Promotional windows and merchant terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "$300 in StubHub Credits",
+          "description": "Eligible StubHub purchases can qualify for statement credits during the active program window.",
+          "activationMethod": "Use the card for eligible StubHub purchases during the promotion period.",
+          "finePrint": "Activation, merchant, and promotional terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "$120 in Lyft Credits",
+          "description": "Eligible Lyft purchases can receive statement credits during the active program window.",
+          "activationMethod": "Use the card for eligible Lyft purchases during the promotion period.",
+          "finePrint": "Activation, merchant, and promotional terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "IHG One Rewards Platinum Elite Status",
+          "description": "Eligible cardholders can enroll in hotel elite status benefits with IHG One Rewards.",
+          "activationMethod": "Complete the issuer's activation or enrollment flow.",
+          "finePrint": "Enrollment required. Hotel benefits vary by property and stay."
+        },
+        {
+          "category": "OTHER",
+          "name": "Reserve Travel Designers",
+          "description": "Cardholders can access travel planning assistance through the issuer's travel advisor program.",
+          "activationMethod": "Contact the eligible travel service channel.",
+          "finePrint": "Availability and service scope may vary."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Primary Auto Rental Coverage",
+          "description": "Can provide primary coverage for theft and collision damage on eligible rental cars.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision insurance.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Insurance",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Reimbursement",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Lost Luggage Reimbursement",
+          "description": "Can reimburse eligible losses when baggage is lost or damaged on a covered trip.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "citi-custom-cash-card",
+      "name": "Citi Custom Cash Card",
+      "issuer": "Citi",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "other",
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Citi Custom Cash Card with no annual fee",
+      "description": "No-annual-fee card that automatically earns 5% on your top eligible spend category each billing cycle up to a cap.",
+      "longDescription": "Citi Custom Cash automatically applies the highest reward tier to your top eligible category each billing cycle up to $500 in spend, then 1% thereafter.",
+      "pros": [
+        "No annual fee",
+        "Automatic 5% category optimization each cycle",
+        "Simple earning without manual category selection"
+      ],
+      "cons": [
+        "5% tier capped at $500 per billing cycle",
+        "Foreign transaction fee"
+      ],
+      "network": "mastercard",
+      "foreignTxFee": 3,
+      "imageUrl": "https://aemapi.citi.com/content/dam/cfs/uspb/usmkt/cards/en/static/images/citi-custom-cash-credit-card/citi-custom-cash-credit-card_306x192.webp",
+      "applyUrl": "https://www.citi.com/credit-cards/citi-custom-cash-credit-card",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:41.921Z",
+      "rewards": [
+        {
+          "category": "other",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Top eligible spend category each billing cycle, up to $500."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "statement_credit",
+          "spendRequired": 1500,
+          "spendPeriodDays": 180,
+          "isCurrentOffer": true
+        }
+      ]
+    },
+    {
+      "slug": "citi-double-cash-card",
+      "name": "Citi Double Cash Card",
+      "issuer": "Citi",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "all",
+        "travel"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Citi Double Cash Card with no annual fee",
+      "description": "No-annual-fee flat-rate card earning 2% cash back (1% when you buy and 1% as you pay).",
+      "longDescription": "Citi Double Cash is a straightforward no-annual-fee card offering 2% total cash back on purchases as long as balances are paid.",
+      "pros": [
+        "No annual fee",
+        "Simple flat-rate 2% total cash back",
+        "No category activation required"
+      ],
+      "cons": [
+        "Foreign transaction fee",
+        "Requires payment behavior to realize full 2% structure"
+      ],
+      "network": "mastercard",
+      "foreignTxFee": 3,
+      "imageUrl": "https://aemapi.citi.com/content/dam/cfs/uspb/usmkt/cards/en/static/images/citi-double-cash-credit-card/citi-double-cash-credit-card_306x192.webp",
+      "applyUrl": "https://www.citi.com/credit-cards/citi-double-cash-credit-card",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:42.474Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 2,
+          "rateType": "cashback",
+          "notes": "1% when you buy plus 1% as you pay."
+        },
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Total 5% on eligible hotels, car rentals, and attractions booked with Citi Travel."
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "statement_credit",
+          "spendRequired": 1500,
+          "spendPeriodDays": 180,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "Citi Entertainment",
+          "description": "Eligible cardholders can access select tickets, experiences, and presales through Citi Entertainment.",
+          "activationMethod": "Use an eligible Citi card and follow the Citi Entertainment purchase flow.",
+          "finePrint": "Inventory is limited and terms vary by event."
+        },
+        {
+          "category": "OTHER",
+          "name": "Citi Travel Access",
+          "description": "Cardholders can book eligible travel through Citi Travel and access current portal offers.",
+          "activationMethod": "Sign in to Citi Travel with an eligible account and book through the platform.",
+          "finePrint": "Portal terms, inventory, and offer availability can change."
+        }
+      ]
+    },
+    {
+      "slug": "citi-strata-premier-card",
+      "name": "Citi Strata Premier Card",
+      "issuer": "Citi",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": [
+        "travel",
+        "dining",
+        "groceries",
+        "gas",
+        "all"
+      ],
+      "annualFee": 95,
+      "creditTierMin": "good",
+      "headline": "Citi Strata Premier Card",
+      "description": "A mid-tier points card with a $95 annual fee and broad category coverage for travel and everyday spending.",
+      "pros": [
+        "Broad bonus categories including travel and dining",
+        "No foreign transaction fees",
+        "Access to ThankYou transfer partners"
+      ],
+      "cons": [
+        "Benefits are less premium than top-tier travel cards"
+      ],
+      "network": "mastercard",
+      "foreignTxFee": 0,
+      "imageUrl": "https://aemapi.citi.com/content/dam/cfs/uspb/usmkt/cards/en/static/images/citi-strata-premier-credit-card/citi-strata-premier-credit-card_306x192.webp",
+      "applyUrl": "https://www.citi.com/credit-cards/citi-strata-premier-credit-card",
+      "isActive": true,
+      "lastVerified": "2026-03-29T00:00:00.000Z",
+      "rewards": [
+        {
+          "category": "travel",
+          "rate": 10,
+          "rateType": "points",
+          "notes": "10 ThankYou Points per $1 on hotels, car rentals, and attractions booked through Citi Travel."
+        },
+        {
+          "category": "travel",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3 ThankYou Points per $1 on air travel and other hotel purchases."
+        },
+        {
+          "category": "dining",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3 ThankYou Points per $1 at restaurants."
+        },
+        {
+          "category": "groceries",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3 ThankYou Points per $1 at supermarkets."
+        },
+        {
+          "category": "gas",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3 ThankYou Points per $1 at gas and EV charging stations."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 700,
+          "bonusType": "points",
+          "displayHeadline": "70,000 bonus points",
+          "displayDescription": "Earn 70,000 bonus points after spending $4,000 in the first 3 months of account opening.",
+          "bonusPoints": 70000,
+          "spendRequired": 4000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "$100 Annual Hotel Benefit",
+          "description": "Eligible hotel stays booked through Citi Travel can receive a $100 benefit once per calendar year.",
+          "estimatedValue": 100,
+          "activationMethod": "Book an eligible hotel stay through Citi Travel and pay with the card.",
+          "finePrint": "Issuer minimum stay and booking rules apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "Citi Entertainment",
+          "description": "Eligible cardholders can access select tickets, experiences, and presales through Citi Entertainment.",
+          "activationMethod": "Use an eligible Citi card and follow the Citi Entertainment purchase flow.",
+          "finePrint": "Inventory is limited and terms vary by event."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Cancellation and Interruption Protection",
+          "description": "Can reimburse covered prepaid travel expenses when a qualifying trip is canceled or interrupted for a covered reason.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Trip Delay Protection",
+          "description": "Can reimburse eligible out-of-pocket expenses when a covered trip is delayed beyond the issuer's threshold.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Baggage Delay Protection",
+          "description": "Can reimburse essential purchases when baggage is delayed on a covered trip.",
+          "activationMethod": "Pay for eligible travel with the card and submit a qualifying claim when needed.",
+          "finePrint": "Coverage limits, exclusions, and claim rules apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Car Rental Protection",
+          "description": "Can provide coverage for eligible rental car damage or theft on qualifying rentals.",
+          "activationMethod": "Pay for the full rental with the card and follow issuer claim requirements.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "discover-it-cash-back",
+      "name": "Discover it Cash Back",
+      "issuer": "Discover",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "other",
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Unlimited Cashback Match",
+      "description": "No-annual-fee rotating-category cash back card with first-year Cashback Match.",
+      "longDescription": "Discover it Cash Back earns 5% cash back in rotating quarterly categories (activation required) and 1% on other purchases, with first-year Cashback Match for new cardmembers.",
+      "pros": [
+        "No annual fee",
+        "5% rotating categories each quarter after activation",
+        "First-year Cashback Match for new cardmembers"
+      ],
+      "cons": [
+        "Rotating categories require activation and quarterly caps",
+        "Acceptance may be narrower than Visa/Mastercard in some locations"
+      ],
+      "network": "discover",
+      "foreignTxFee": 0,
+      "imageUrl": "https://www.discover.com/content/dam/discover/en_us/credit-cards/card-acquisitions/grey-redesign/global/images/background/bg-cards-itcards-388-350.png",
+      "applyUrl": "https://www.discover.com/credit-cards/cash-back/it-card.html",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:43.588Z",
+      "rewards": [
+        {
+          "category": "other",
+          "rate": 5,
+          "rateType": "cashback",
+          "notes": "Rotating quarterly categories, up to quarterly maximum, activation required."
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 0,
+          "bonusType": "cashback_match",
+          "displayHeadline": "Unlimited Cashback Match",
+          "displayDescription": "Discover automatically matches all cash back earned at the end of your first year.",
+          "spendRequired": 0,
+          "spendPeriodDays": 365,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "OTHER",
+          "name": "Free Social Security Number Alerts",
+          "description": "Discover can monitor for certain Social Security number activity and alert eligible cardholders when it finds matches.",
+          "activationMethod": "Activate the benefit through your Discover account.",
+          "finePrint": "Monitoring scope and alert terms apply."
+        },
+        {
+          "category": "OTHER",
+          "name": "$0 Fraud Liability Guarantee",
+          "description": "Discover states you are not responsible for unauthorized purchases on your card account.",
+          "activationMethod": "Report suspected unauthorized charges to Discover.",
+          "finePrint": "Issuer fraud liability terms apply."
+        }
+      ]
+    },
+    {
+      "slug": "wells-fargo-active-cash",
+      "name": "Wells Fargo Active Cash Card",
+      "issuer": "Wells Fargo",
+      "cardType": "personal",
+      "rewardType": "cashback",
+      "topCategories": [
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Wells Fargo Active Cash Card with no annual fee",
+      "description": "No-annual-fee flat-rate cash rewards card with simple 2% earning.",
+      "longDescription": "Active Cash earns unlimited 2% cash rewards on purchases with no annual fee.",
+      "pros": [
+        "No annual fee",
+        "Unlimited flat 2% cash rewards",
+        "Straightforward everyday use"
+      ],
+      "cons": [
+        "Foreign transaction fee",
+        "Fewer premium travel benefits than annual-fee cards"
+      ],
+      "network": "visa",
+      "foreignTxFee": 3,
+      "imageUrl": "https://creditcards.wellsfargo.com/W-Card-MarketPlace/v3-10-26/images/Products/ActiveCash/WF_ActiveCash_VS_Collateral_Front_RGB.png",
+      "applyUrl": "https://creditcards.wellsfargo.com/active-cash-credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:44.149Z",
+      "rewards": [
+        {
+          "category": "all",
+          "rate": 2,
+          "rateType": "cashback"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "statement_credit",
+          "spendRequired": 500,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "CELL_PHONE",
+          "name": "Cellular Telephone Protection",
+          "description": "Can provide coverage for eligible cell phone damage or theft when the monthly wireless bill is paid with the card.",
+          "activationMethod": "Pay the eligible monthly wireless bill with the card and file a qualifying claim when needed.",
+          "finePrint": "Coverage limits, deductibles, exclusions, and claim rules apply."
+        }
+      ]
+    },
+    {
+      "slug": "wells-fargo-autograph",
+      "name": "Wells Fargo Autograph Card",
+      "issuer": "Wells Fargo",
+      "cardType": "personal",
+      "rewardType": "points",
+      "topCategories": [
+        "dining",
+        "travel",
+        "gas",
+        "utilities",
+        "streaming",
+        "all"
+      ],
+      "annualFee": 0,
+      "creditTierMin": "good",
+      "headline": "Wells Fargo Autograph Card with no annual fee",
+      "description": "No-annual-fee travel and everyday rewards card with broad 3X categories.",
+      "longDescription": "Autograph earns 3X points in common categories including restaurants, travel, gas, transit, streaming, and phone plans, with no annual fee.",
+      "pros": [
+        "No annual fee",
+        "Broad 3X category coverage",
+        "No foreign transaction fees"
+      ],
+      "cons": [
+        "Travel transfer and premium benefits are more limited than premium cards"
+      ],
+      "network": "visa",
+      "foreignTxFee": 0,
+      "imageUrl": "https://creditcards.wellsfargo.com/W-Card-MarketPlace/v3-10-26/images/Products/Autograph/Autograph-No-Fee-Card-RGB_d.png",
+      "applyUrl": "https://creditcards.wellsfargo.com/autograph-visa-credit-card/",
+      "isActive": true,
+      "lastVerified": "2026-03-12T14:20:44.708Z",
+      "rewards": [
+        {
+          "category": "dining",
+          "rate": 3,
+          "rateType": "points"
+        },
+        {
+          "category": "travel",
+          "rate": 3,
+          "rateType": "points"
+        },
+        {
+          "category": "gas",
+          "rate": 3,
+          "rateType": "points"
+        },
+        {
+          "category": "utilities",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "Transit and select phone plans represented under utilities category."
+        },
+        {
+          "category": "streaming",
+          "rate": 3,
+          "rateType": "points"
+        },
+        {
+          "category": "all",
+          "rate": 1,
+          "rateType": "points"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "points",
+          "bonusPoints": 20000,
+          "spendRequired": 1000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
+      ],
+      "benefits": [
+        {
+          "category": "CELL_PHONE",
+          "name": "Cellular Telephone Protection",
+          "description": "Can provide coverage for eligible cell phone damage or theft when the monthly wireless bill is paid with the card.",
+          "activationMethod": "Pay the eligible monthly wireless bill with the card and file a qualifying claim when needed.",
+          "finePrint": "Coverage limits, deductibles, exclusions, and claim rules apply."
+        },
+        {
+          "category": "RENTAL_CAR",
+          "name": "Auto Rental Collision Damage Waiver",
+          "description": "Can provide coverage for eligible rental car damage or theft on qualifying rentals.",
+          "activationMethod": "Pay for the full rental with the card and decline the rental company's collision damage waiver.",
+          "finePrint": "Coverage type, exclusions, and territory rules apply."
+        },
+        {
+          "category": "TRAVEL_INSURANCE",
+          "name": "Travel and Emergency Assistance Services",
+          "description": "Access to referrals and coordination support while traveling away from home.",
+          "activationMethod": "Call the eligible assistance line when support is needed.",
+          "finePrint": "Cardholders are responsible for charges from third-party service providers."
+        },
+        {
+          "category": "OTHER",
+          "name": "Roadside Dispatch",
+          "description": "Access to a pay-per-use roadside assistance dispatch service.",
+          "activationMethod": "Call the roadside dispatch number when eligible assistance is needed.",
+          "finePrint": "Service fees apply and coverage is subject to program terms."
+        },
+        {
+          "category": "CONCIERGE",
+          "name": "Visa Signature Concierge",
+          "description": "Eligible cardholders can request concierge assistance for travel, dining, and event planning needs.",
+          "activationMethod": "Contact the concierge service with an eligible card account.",
+          "finePrint": "Service availability and scope can vary."
+        },
+        {
+          "category": "TRAVEL_CREDITS",
+          "name": "Visa Signature Luxury Hotel Collection",
+          "description": "Eligible bookings can include space-available upgrades and on-property hotel benefits.",
+          "activationMethod": "Book qualifying stays through the Visa Signature Luxury Hotel Collection portal.",
+          "finePrint": "Eligible properties and booking rules apply."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">PayPal fallback logo</title>
+  <desc id="desc">Curated fallback card-style logo for PayPal.</desc>
+  <rect width="320" height="200" rx="28" fill="#eef6ff"/>
+  <path d="M76 56h34c23 0 40 16 40 37 0 24-19 41-45 41H88l-7 32H53l22-110Z" fill="#003087"/>
+  <path d="M104 56h34c23 0 40 16 40 37 0 24-19 41-45 41h-17l-6 32H82l22-110Z" fill="#009cde" opacity="0.78"/>
+  <text x="176" y="116" fill="#003087" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">PayPal</text>
+</svg>

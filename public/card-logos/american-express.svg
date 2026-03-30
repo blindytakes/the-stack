@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">American Express fallback logo</title>
+  <desc id="desc">Curated fallback card-style logo for American Express.</desc>
+  <rect width="320" height="200" rx="28" fill="#0f7ee8"/>
+  <rect x="34" y="36" width="252" height="128" rx="16" fill="none" stroke="#ffffff" stroke-width="8"/>
+  <text x="58" y="96" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700" letter-spacing="1.6">AMERICAN</text>
+  <text x="58" y="136" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700" letter-spacing="1.6">EXPRESS</text>
+</svg>

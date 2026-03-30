@@ -25,15 +25,15 @@ export type FallbackBenefit = {
 };
 
 const cardBrandImageUrlByIssuer: Record<string, string> = {
-  'american express': 'https://www.americanexpress.com/favicon.ico',
-  apple: 'https://www.apple.com/favicon.ico',
-  barclays: 'https://cards.barclaycardus.com/favicon.ico',
-  citi: 'https://www.citi.com/cbol-hp-static-assets/assets/favicon.ico',
-  discover: 'https://www.discover.com/favicon.ico',
-  fidelity: 'https://www.fidelity.com/favicon.ico',
-  paypal: 'https://www.paypalobjects.com/webstatic/icon/favicon.ico',
-  robinhood: 'https://robinhood.com/favicon.ico',
-  venmo: 'https://venmo.com/favicon.ico'
+  'american express': '/card-logos/american-express.svg',
+  apple: '/card-logos/apple.svg',
+  barclays: '/card-logos/barclays.svg',
+  citi: '/card-logos/citi.svg',
+  discover: '/card-logos/discover.svg',
+  fidelity: '/card-logos/fidelity.svg',
+  paypal: '/card-logos/paypal.svg',
+  robinhood: '/card-logos/robinhood.svg',
+  venmo: '/card-logos/venmo.svg'
 };
 
 function normalizeKey(value: string) {
