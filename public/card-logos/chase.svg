@@ -1,29 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
   <title id="title">Chase fallback logo</title>
-  <desc id="desc">Curated fallback card-style logo for Chase.</desc>
-  <defs>
-    <linearGradient id="chase-bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#fbfdff"/>
-      <stop offset="100%" stop-color="#edf4ff"/>
-    </linearGradient>
-  </defs>
-  <rect width="320" height="200" rx="28" fill="url(#chase-bg)"/>
-  <rect x="16" y="16" width="288" height="168" rx="24" fill="none" stroke="#c6daf6" stroke-width="2"/>
-  <g transform="translate(40 69)">
+  <desc id="desc">Transparent Chase fallback logo for card slots.</desc>
+  <g fill="#005eb8">
     <text
-      x="0"
-      y="46"
-      fill="#005eb8"
+      x="38"
+      y="118"
       font-family="Arial, Helvetica, sans-serif"
-      font-size="56"
+      font-size="58"
       font-weight="700"
-      letter-spacing="1.4"
+      letter-spacing="1.8"
     >
       CHASE
     </text>
-    <g transform="translate(220 7)">
-      <path d="M18 0h20l18 18v20L38 56H18L0 38V18Z" fill="#005eb8"/>
-      <rect x="18" y="18" width="20" height="20" fill="#edf4ff"/>
-    </g>
+    <path
+      fill-rule="evenodd"
+      d="M238 64h24l22 22v24l-22 22h-24l-22-22V86Zm0 22v24h24V86Z"
+    />
   </g>
 </svg>

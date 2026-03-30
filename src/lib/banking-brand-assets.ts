@@ -8,7 +8,8 @@ const BANK_OF_AMERICA_LOGO_URL =
   'https://www1.bac-assets.com/homepage/spa-assets/images/assets-images-global-logos-bac-logo-v2-CSX3648cbbb.svg';
 const BMO_LOGO_URL = 'https://www.bmo.com/dist/images/logos/bmo-blue-on-transparent-en.svg';
 const CAPITAL_ONE_LOGO_URL = '/bank-logos/capital-one.svg';
-const CHASE_LOGO_URL = '/bank-logos/chase.svg';
+const CHASE_LOGO_URL =
+  'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg';
 const CITI_LOGO_URL =
   'https://www.citi.com/content/dam/cfs/uspb/usmkt/cbol-homepage/en/static/images/citilogo-skelheader-compressed.png';
 const ETRADE_LOGO_URL =
@@ -28,8 +29,7 @@ const WELLS_FARGO_LOGO_URL = 'https://www17.wellsfargomedia.com/assets/images/rw
 const LOW_FIDELITY_BANK_IMAGE_TOKENS = [
   'favicon',
   'apple-touch-icon',
-  'logo-personal.svg',
-  'logo_chase_headerfooter.svg'
+  'logo-personal.svg'
 ] as const;
 
 const bankingBrandImageUrlByBankName: Record<string, string> = {

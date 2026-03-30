@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { EntityImage } from '@/components/ui/entity-image';
+import { getCardFallbackLabel } from '@/lib/card-image-fallback';
 import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
@@ -101,9 +102,9 @@ function CompactCardChoice({
   card: CardRecord;
   onSelect: (slug: string) => void;
 }) {
-  const imagePresentation = getCardImagePresentation(card.slug);
+  const imagePresentation = getCardImagePresentation(card.slug, card.imageUrl);
   const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-  const usesLowValueImage = isLowValueCardImageUrl(card.imageUrl);
+  const hasRenderableImage = Boolean(card.imageUrl) && !isLowValueCardImageUrl(card.imageUrl);
 
   return (
     <button
@@ -113,13 +114,14 @@ function CompactCardChoice({
     >
       <div className="w-16 shrink-0">
         <EntityImage
-          src={usesLowValueImage ? undefined : card.imageUrl}
+          src={hasRenderableImage ? card.imageUrl : undefined}
           alt={`${card.name} card art`}
-          label={usesLowValueImage ? card.issuer : card.name}
+          label={hasRenderableImage ? card.name : getCardFallbackLabel(card.name, card.issuer)}
           className="aspect-[1.586/1] rounded-[0.95rem]"
           imgClassName={imageClassName}
           fallbackClassName="bg-black/10"
-          fallbackVariant={usesLowValueImage ? 'wordmark' : 'initials'}
+          fallbackVariant={hasRenderableImage ? 'initials' : 'wordmark'}
+          fallbackTextClassName="text-[10px] sm:text-xs"
           fit={imagePresentation?.fit}
           position={imagePresentation?.position}
           scale={imagePresentation?.scale}
@@ -147,9 +149,9 @@ function DrawerCardRow({
   card: CardRecord;
   onSelect: (slug: string) => void;
 }) {
-  const imagePresentation = getCardImagePresentation(card.slug);
+  const imagePresentation = getCardImagePresentation(card.slug, card.imageUrl);
   const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-  const usesLowValueImage = isLowValueCardImageUrl(card.imageUrl);
+  const hasRenderableImage = Boolean(card.imageUrl) && !isLowValueCardImageUrl(card.imageUrl);
 
   return (
     <button
@@ -159,13 +161,14 @@ function DrawerCardRow({
     >
       <div className="w-24 shrink-0">
         <EntityImage
-          src={usesLowValueImage ? undefined : card.imageUrl}
+          src={hasRenderableImage ? card.imageUrl : undefined}
           alt={`${card.name} card art`}
-          label={usesLowValueImage ? card.issuer : card.name}
+          label={hasRenderableImage ? card.name : getCardFallbackLabel(card.name, card.issuer)}
           className="aspect-[1.586/1] rounded-[0.95rem]"
           imgClassName={imageClassName}
           fallbackClassName="bg-black/10"
-          fallbackVariant={usesLowValueImage ? 'wordmark' : 'initials'}
+          fallbackVariant={hasRenderableImage ? 'initials' : 'wordmark'}
+          fallbackTextClassName="text-[11px] sm:text-xs"
           fit={imagePresentation?.fit}
           position={imagePresentation?.position}
           scale={imagePresentation?.scale}

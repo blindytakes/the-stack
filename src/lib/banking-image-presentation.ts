@@ -31,6 +31,10 @@ const microLightPlaque =
   'bg-[linear-gradient(180deg,rgba(248,246,240,0.96),rgba(235,231,221,0.92))] px-1.5 py-1.5'
 const microLightPlaqueNarrow =
   'bg-[linear-gradient(180deg,rgba(248,246,240,0.96),rgba(235,231,221,0.92))] px-1 py-1.5'
+const chaseWhitePlaque = 'bg-white px-4 py-2'
+const compactChaseWhitePlaque = 'bg-white px-2.5 py-1.5'
+const miniChaseWhitePlaque = 'bg-white px-2 py-1'
+const microChaseWhitePlaque = 'bg-white px-1 py-0.5'
 
 const darkBankImagePresentation = {
   imgClassName: darkPlaque,
@@ -67,6 +71,13 @@ const lightNarrowBankImagePresentation = {
   microImgClassName: microLightPlaqueNarrow
 } as const;
 
+const chaseWhiteBankImagePresentation = {
+  imgClassName: chaseWhitePlaque,
+  compactImgClassName: compactChaseWhitePlaque,
+  miniImgClassName: miniChaseWhitePlaque,
+  microImgClassName: microChaseWhitePlaque
+} as const;
+
 const presentationByBankName: Record<string, BankingImagePresentation> = {
   'alliant credit union': {
     ...lightWideBankImagePresentation,
@@ -85,7 +96,7 @@ const presentationByBankName: Record<string, BankingImagePresentation> = {
     scale: 1.12
   },
   chase: {
-    ...lightBankImagePresentation,
+    ...chaseWhiteBankImagePresentation,
     scale: 1.08
   },
   chime: {

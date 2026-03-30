@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { EntityImage } from '@/components/ui/entity-image';
+import { getCardFallbackLabel } from '@/lib/card-image-fallback';
 import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import {
   buildScheduledTimelineEntries,
@@ -57,18 +58,19 @@ function RecommendationArtwork({
   const slug = getRecommendationSlug(item);
 
   if (item.lane === 'cards') {
-    const presentation = slug ? getCardImagePresentation(slug) : null;
-    const usesLowValueImage = isLowValueCardImageUrl(item.imageUrl);
+    const presentation = slug ? getCardImagePresentation(slug, item.imageUrl) : null;
+    const hasRenderableImage = Boolean(item.imageUrl) && !isLowValueCardImageUrl(item.imageUrl);
 
     return (
       <EntityImage
-        src={usesLowValueImage ? undefined : item.imageUrl}
+        src={hasRenderableImage ? item.imageUrl : undefined}
         alt={`${item.title} image`}
-        label={usesLowValueImage ? item.provider : item.title}
+        label={hasRenderableImage ? item.title : getCardFallbackLabel(item.title, item.provider)}
         className={className}
         imgClassName={presentation?.imgClassName ?? 'bg-black/10 p-2'}
         fallbackClassName="bg-black/10"
-        fallbackVariant={usesLowValueImage ? 'wordmark' : 'initials'}
+        fallbackVariant={hasRenderableImage ? 'initials' : 'wordmark'}
+        fallbackTextClassName="text-xs sm:text-sm"
         fit={presentation?.fit}
         position={presentation?.position}
         scale={presentation?.scale}

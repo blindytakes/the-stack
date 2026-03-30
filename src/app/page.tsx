@@ -251,7 +251,7 @@ async function getHeroOffers(): Promise<HeroOffer[]> {
     const { cards } = await getCardsData();
     for (const card of cards) {
       if (card.bestSignUpBonusValue && card.bestSignUpBonusValue > 0) {
-        const pres = getCardImagePresentation(card.slug);
+        const pres = getCardImagePresentation(card.slug, card.imageUrl);
         offers.push({
           name: card.name,
           issuer: card.issuer,

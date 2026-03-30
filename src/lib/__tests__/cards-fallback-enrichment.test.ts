@@ -7,7 +7,9 @@ describe('resolveCardBrandImageUrl', () => {
     expect(resolveCardBrandImageUrl('American Express')).toBe('/card-logos/american-express.svg');
     expect(resolveCardBrandImageUrl('Apple')).toBe('/card-logos/apple.svg');
     expect(resolveCardBrandImageUrl('Barclays')).toBe('/card-logos/barclays.svg');
-    expect(resolveCardBrandImageUrl('Chase')).toBe('/card-logos/chase.svg');
+    expect(resolveCardBrandImageUrl('Chase')).toBe(
+      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+    );
     expect(resolveCardBrandImageUrl('Citi')).toBe('/card-logos/citi.svg');
     expect(resolveCardBrandImageUrl('Discover')).toBe('/card-logos/discover.svg');
     expect(resolveCardBrandImageUrl('Fidelity')).toBe('/card-logos/fidelity.svg');
@@ -33,8 +35,26 @@ describe('resolveCardBrandImageUrl', () => {
     expect(
       resolveCardBrandImageUrl(
         'Chase',
-        'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+        'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg',
+        'Chase Sapphire Preferred Card'
       )
-    ).toBe('/card-logos/chase.svg');
+    ).toBe(
+      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+    );
+  });
+
+  it('keeps Chase co-branded cards on the Chase logo when art is missing', () => {
+    expect(resolveCardBrandImageUrl('Chase', undefined, 'IHG One Rewards Premier Business Credit Card')).toBe(
+      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+    );
+    expect(
+      resolveCardBrandImageUrl(
+        'Chase',
+        'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg',
+        'United Quest Card'
+      )
+    ).toBe(
+      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+    );
   });
 });

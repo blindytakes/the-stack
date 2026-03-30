@@ -1,4 +1,5 @@
 import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
+import { cardNameReferencesIssuer } from '@/lib/card-image-fallback';
 import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import type {
   CardTypeValue,
@@ -29,7 +30,8 @@ const cardBrandImageUrlByIssuer: Record<string, string> = {
   'american express': '/card-logos/american-express.svg',
   apple: '/card-logos/apple.svg',
   barclays: '/card-logos/barclays.svg',
-  chase: '/card-logos/chase.svg',
+  chase:
+    'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg',
   citi: '/card-logos/citi.svg',
   discover: '/card-logos/discover.svg',
   fidelity: '/card-logos/fidelity.svg',
@@ -675,16 +677,25 @@ function discoverBenefits(source: CardFallbackSource): FallbackBenefit[] {
   return [];
 }
 
-export function resolveCardBrandImageUrl(issuer: string, imageUrl?: string | null) {
+export function resolveCardBrandImageUrl(
+  issuer: string,
+  imageUrl?: string | null,
+  cardName?: string
+) {
   const curatedCardImageUrl = cardBrandImageUrlByIssuer[normalizeKey(issuer)];
+  const canUseIssuerFallback = cardNameReferencesIssuer(cardName, issuer);
 
   if (imageUrl) {
     const normalizedImageUrl = imageUrl.trim();
     if (curatedCardImageUrl && isLowValueCardImageUrl(normalizedImageUrl)) {
-      return curatedCardImageUrl;
+      return canUseIssuerFallback ? curatedCardImageUrl : undefined;
     }
 
     return normalizedImageUrl;
+  }
+
+  if (!canUseIssuerFallback) {
+    return undefined;
   }
 
   return curatedCardImageUrl ?? resolveBankingBrandImageUrl(issuer);

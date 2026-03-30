@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 140" role="img" aria-labelledby="title desc">
   <title id="title">Chase bank logo</title>
-  <desc id="desc">Curated Chase bank logo for banking offer fallbacks.</desc>
+  <desc id="desc">Transparent Chase bank logo for banking offer fallbacks.</desc>
   <g fill="#005eb8">
     <text
       x="28"
@@ -12,9 +12,9 @@
     >
       CHASE
     </text>
-    <g transform="translate(312 31)">
-      <path d="M22 0h24l22 22v24L46 68H22L0 46V22Z"/>
-      <rect x="22" y="22" width="24" height="24" fill="#ffffff"/>
-    </g>
+    <path
+      fill-rule="evenodd"
+      d="M334 31h24l22 22v24l-22 22h-24l-22-22V53Zm0 22v24h24V53Z"
+    />
   </g>
 </svg>

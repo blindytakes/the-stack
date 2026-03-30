@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { EntityImage } from '@/components/ui/entity-image';
+import { getCardFallbackLabel } from '@/lib/card-image-fallback';
 import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 
 export type HeroOffer = {
@@ -78,10 +79,15 @@ function OfferCard({
     : 'rgba(234, 179, 8, 0.15)';
   const hrefBase = isCard ? '/cards' : '/banking';
   const pres = offer.imagePresentation;
-  const usesLowValueImage = isCard && isLowValueCardImageUrl(offer.imageUrl);
-  const displayImageUrl = usesLowValueImage ? undefined : offer.imageUrl;
-  const displayLabel = usesLowValueImage ? offer.issuer : isCard ? offer.name : offer.issuer;
-  const fallbackVariant = usesLowValueImage || !isCard ? 'wordmark' : 'initials';
+  const hasRenderableCardImage =
+    !isCard || (Boolean(offer.imageUrl) && !isLowValueCardImageUrl(offer.imageUrl));
+  const displayImageUrl = hasRenderableCardImage ? offer.imageUrl : undefined;
+  const displayLabel = isCard
+    ? hasRenderableCardImage
+      ? offer.name
+      : getCardFallbackLabel(offer.name, offer.issuer)
+    : offer.issuer;
+  const fallbackVariant = isCard ? (hasRenderableCardImage ? 'initials' : 'wordmark') : 'wordmark';
   const content = (
     <>
       <EntityImage
@@ -95,7 +101,7 @@ function OfferCard({
         }
         fallbackClassName="bg-black/10"
         fallbackVariant={fallbackVariant}
-        fallbackTextClassName={isCard ? 'text-sm' : 'px-4 text-lg sm:text-xl'}
+        fallbackTextClassName={isCard ? 'px-4 text-sm sm:text-base' : 'px-4 text-lg sm:text-xl'}
         fit={pres?.fit}
         position={pres?.position}
         scale={pres?.scale}

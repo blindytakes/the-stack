@@ -84,7 +84,7 @@ export function CardDetailModal({
     [onClose]
   );
 
-  const imagePresentation = getCardImagePresentation(slug);
+  const imagePresentation = getCardImagePresentation(slug, card?.imageUrl);
   const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
 
   const formatRewardRate = (rate: number, rateType: CardDetail['rewardType']) => {

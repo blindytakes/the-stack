@@ -8,11 +8,6 @@ describe('isLowValueCardImageUrl', () => {
     ).toBe(true);
     expect(
       isLowValueCardImageUrl(
-        'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
-      )
-    ).toBe(true);
-    expect(
-      isLowValueCardImageUrl(
         'https://www.bankofamerica.com/homepage/spa-assets/images/assets-images-global-favicon-apple-touch-icon-CSX889b28c.png'
       )
     ).toBe(true);
@@ -33,6 +28,11 @@ describe('isLowValueCardImageUrl', () => {
   });
 
   it('keeps real card art URLs eligible for the cards grid', () => {
+    expect(
+      isLowValueCardImageUrl(
+        'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+      )
+    ).toBe(false);
     expect(
       isLowValueCardImageUrl('https://ecm.capitalone.com/WCM/card/products/new-savor-card-art.png')
     ).toBe(false);

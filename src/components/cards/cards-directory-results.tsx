@@ -8,6 +8,7 @@ import {
   formatBonusValue,
   formatSpendCategoryLabel
 } from '@/lib/cards-directory-explorer';
+import { getCardFallbackLabel } from '@/lib/card-image-fallback';
 import { getCardDecisionMetrics } from '@/lib/cards/presentation-metrics';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
@@ -102,11 +103,13 @@ export function CardsDirectoryResults({
       <div ref={gridRef} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {cards.map((card, index) => {
           const selectedForCompare = selectedCompare.includes(card.slug);
-          const imagePresentation = getCardImagePresentation(card.slug);
+          const imagePresentation = getCardImagePresentation(card.slug, card.imageUrl);
           const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-          const usesLowValueImage = isLowValueCardImageUrl(card.imageUrl);
-          const cardImageSrc = usesLowValueImage ? undefined : card.imageUrl;
-          const cardImageLabel = usesLowValueImage ? card.issuer : card.name;
+          const hasRenderableImage = Boolean(card.imageUrl) && !isLowValueCardImageUrl(card.imageUrl);
+          const cardImageSrc = hasRenderableImage ? card.imageUrl : undefined;
+          const cardImageLabel = hasRenderableImage
+            ? card.name
+            : getCardFallbackLabel(card.name, card.issuer);
           const topCategories = card.topCategories.filter((category) => category !== 'other');
           const bestCategory = (topCategories.length > 0 ? topCategories : (['all'] as const))[0];
           const decisionMetrics = getCardDecisionMetrics(card);
@@ -152,7 +155,8 @@ export function CardsDirectoryResults({
                   className="aspect-[1.586/1]"
                   imgClassName={imageClassName}
                   fallbackClassName="bg-black/10"
-                  fallbackVariant={usesLowValueImage ? 'wordmark' : 'initials'}
+                  fallbackVariant={hasRenderableImage ? 'initials' : 'wordmark'}
+                  fallbackTextClassName="px-4 text-sm sm:text-base"
                   fit={imagePresentation?.fit}
                   position={imagePresentation?.position}
                   scale={imagePresentation?.scale}

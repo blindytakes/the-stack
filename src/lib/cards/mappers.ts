@@ -148,7 +148,7 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
     slug: row.slug,
     name: row.name,
     issuer: row.issuer,
-    imageUrl: resolveCardBrandImageUrl(row.issuer, row.imageUrl ?? undefined),
+    imageUrl: resolveCardBrandImageUrl(row.issuer, row.imageUrl ?? undefined, row.name),
     cardType: cardTypeFromDb[row.cardType],
     rewardType: deriveRewardType(row.rewards),
     topCategories: deriveTopCategories(row.rewards),

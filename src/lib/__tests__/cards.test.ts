@@ -352,10 +352,28 @@ describe('toCardRecordFromDb', () => {
     expect(result.imageUrl).toBe('https://assets.example.com/test-card.png');
   });
 
-  it('falls back to an issuer image when card art is missing for a known issuer', () => {
-    const row = makeDbCardRow({ issuer: 'Chase', imageUrl: null });
+  it('falls back to an issuer image when issuer-branded card art is missing', () => {
+    const row = makeDbCardRow({
+      issuer: 'Chase',
+      name: 'Chase Sapphire Preferred Card',
+      imageUrl: null
+    });
     const result = toCardRecordFromDb(row);
-    expect(result.imageUrl).toBe('/card-logos/chase.svg');
+    expect(result.imageUrl).toBe(
+      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+    );
+  });
+
+  it('keeps Chase issuer logos for co-branded cards with missing art', () => {
+    const row = makeDbCardRow({
+      issuer: 'Chase',
+      name: 'IHG One Rewards Premier Business Credit Card',
+      imageUrl: null
+    });
+    const result = toCardRecordFromDb(row);
+    expect(result.imageUrl).toBe(
+      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
+    );
   });
 
   it('derives rewardType from first reward rateType', () => {
