@@ -80,12 +80,12 @@ function RecommendationArtwork({
 
   const presentation = getBankingImagePresentation(item.provider);
   const bankingScale = Math.min(
-    (presentation?.scale ?? 1.04) * (compact ? 1.45 : 1.3),
-    compact ? 1.7 : 1.55
+    (presentation?.scale ?? 1.04) * (compact ? 1.18 : 1.08),
+    compact ? 1.36 : 1.24
   );
   const bankingImgClassName = compact
     ? presentation?.microImgClassName ?? 'bg-black/10 px-1.5 py-1.5'
-    : presentation?.miniImgClassName ?? 'bg-black/10 px-2 py-2';
+    : presentation?.compactImgClassName ?? 'bg-black/10 px-3 py-2';
   const bankingImageUrl = resolveBankingBrandImageUrl(item.provider, item.imageUrl);
 
   return (
@@ -269,6 +269,7 @@ function PlanScheduleRow({
   stepNumber,
   geometry,
   desktopGridClass,
+  defaultExpanded = false,
   isSelectedOffer = false
 }: {
   item: PlannerRecommendation;
@@ -276,10 +277,11 @@ function PlanScheduleRow({
   stepNumber: number;
   geometry: TimelineGeometry | null;
   desktopGridClass: string;
+  defaultExpanded?: boolean;
   isSelectedOffer?: boolean;
 }) {
   const isFirstStep = stepNumber === 1;
-  const [expanded, setExpanded] = useState(isFirstStep);
+  const [expanded, setExpanded] = useState(defaultExpanded);
   const detailsId = `plan-schedule-step-${item.id}`;
   const breakdown = item.valueBreakdown;
   const headlineValue = breakdown?.headlineValue ?? item.estimatedNetValue;
@@ -294,7 +296,7 @@ function PlanScheduleRow({
   const artworkClass =
     item.lane === 'cards'
       ? 'h-[4.75rem] w-[7.15rem] shrink-0 rounded-[1.2rem] border border-brand-gold/16 bg-white/[0.025] shadow-[inset_0_1px_0_rgba(242,205,110,0.06)]'
-      : 'h-[4.75rem] w-[7.15rem] shrink-0 rounded-[1.2rem] border border-brand-teal/16 bg-white/[0.025] shadow-[inset_0_1px_0_rgba(45,212,191,0.06)]';
+      : 'h-[4.2rem] w-[7.5rem] shrink-0 rounded-[1.15rem] border border-brand-teal/16 bg-white/[0.025] shadow-[inset_0_1px_0_rgba(45,212,191,0.06)] lg:w-full';
   const dateRangeText = entry
     ? `${formatShortDate(entry.startDate)} – ${formatShortDate(entry.completeDate)}`
     : 'Not scheduled';
@@ -517,16 +519,50 @@ function PlanScheduleBoard({
   entriesById: Map<string, TimelineEntry>;
   selectedRecommendationId?: string | null;
 }) {
+  const defaultVisibleCount = 4;
+  const [showAll, setShowAll] = useState(false);
+  const visibleRecommendations = useMemo(
+    () => (showAll ? recommendations : recommendations.slice(0, defaultVisibleCount)),
+    [recommendations, showAll]
+  );
+  const hiddenCount = Math.max(0, recommendations.length - visibleRecommendations.length);
   const scheduledEntries = useMemo(
     () =>
-      recommendations
+      visibleRecommendations
         .map((item) => entriesById.get(item.id))
         .filter((entry): entry is TimelineEntry => Boolean(entry)),
-    [entriesById, recommendations]
+    [entriesById, visibleRecommendations]
   );
+  const defaultExpandedIds = useMemo(() => {
+    const expandedIds = new Set<string>();
+    let expandedCards = 0;
+    let expandedBanks = 0;
+
+    for (const item of visibleRecommendations) {
+      if (item.lane === 'cards' && expandedCards < 2) {
+        expandedIds.add(item.id);
+        expandedCards += 1;
+        continue;
+      }
+
+      if (item.lane === 'banking' && expandedBanks < 2) {
+        expandedIds.add(item.id);
+        expandedBanks += 1;
+      }
+    }
+
+    for (const item of visibleRecommendations) {
+      if (expandedIds.size >= Math.min(defaultVisibleCount, visibleRecommendations.length)) {
+        break;
+      }
+      expandedIds.add(item.id);
+    }
+
+    return expandedIds;
+  }, [visibleRecommendations]);
   const geometry = useMemo(() => buildTimelineGeometry(scheduledEntries), [scheduledEntries]);
   const desktopGridClass =
-    'lg:grid-cols-[40px_114px_minmax(225px,320px)_minmax(430px,1fr)_92px_18px]';
+    'lg:grid-cols-[40px_124px_minmax(225px,320px)_minmax(430px,1fr)_92px_18px]';
 
   return (
     <div className="mt-5 overflow-hidden rounded-[1.8rem] border border-white/[0.09] bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
@@ -557,7 +593,7 @@ function PlanScheduleBoard({
       )}
 
       <div className="space-y-3 px-3 pb-3 pt-2 sm:px-4 sm:pb-4 lg:px-5 lg:pb-5">
-        {recommendations.map((item, index) => (
+        {visibleRecommendations.map((item, index) => (
           <div key={item.id}>
             <PlanScheduleRow
               item={item}
@@ -565,10 +601,28 @@ function PlanScheduleBoard({
               stepNumber={index + 1}
               geometry={geometry}
               desktopGridClass={desktopGridClass}
+              defaultExpanded={defaultExpandedIds.has(item.id)}
               isSelectedOffer={selectedRecommendationId === item.id}
             />
           </div>
         ))}
+
+        {recommendations.length > defaultVisibleCount ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.25rem] border border-white/[0.06] bg-white/[0.02] px-4 py-3.5">
+            <p className="text-sm text-text-secondary">
+              {showAll
+                ? `Showing all ${recommendations.length} moves in your plan.`
+                : `Showing the first ${visibleRecommendations.length} moves. ${hiddenCount} more ${hiddenCount === 1 ? 'move' : 'moves'} are available.`}
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowAll((current) => !current)}
+              className="text-sm font-semibold text-brand-teal transition hover:underline"
+            >
+              {showAll ? 'Show fewer moves' : `Show remaining ${hiddenCount} ${hiddenCount === 1 ? 'move' : 'moves'}`}
+            </button>
+          </div>
+        ) : null}
       </div>
     </div>
   );
