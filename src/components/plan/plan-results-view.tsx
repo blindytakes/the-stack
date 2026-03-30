@@ -563,11 +563,31 @@ function PlanScheduleBoard({
   const geometry = useMemo(() => buildTimelineGeometry(scheduledEntries), [scheduledEntries]);
   const desktopGridClass =
     'lg:grid-cols-[40px_124px_minmax(225px,320px)_minmax(430px,1fr)_92px_18px]';
+  const summaryEyebrow = showAll ? `Full ${recommendations.length}-move plan` : 'Featured 4 moves';
+  const summaryText = showAll
+    ? 'Showing the full recommendation sequence for this plan.'
+    : 'These are the four moves we would prioritize first. Open the full plan if you want every recommendation.';
 
   return (
     <div className="mt-5 overflow-hidden rounded-[1.8rem] border border-white/[0.09] bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/[0.06] px-5 pb-4 pt-5 lg:px-10 lg:pt-6">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-brand-teal">{summaryEyebrow}</p>
+          <p className="mt-2 max-w-2xl text-sm text-text-secondary">{summaryText}</p>
+        </div>
+        {recommendations.length > defaultVisibleCount ? (
+          <button
+            type="button"
+            onClick={() => setShowAll((current) => !current)}
+            className="text-sm font-semibold text-brand-teal transition hover:underline"
+          >
+            {showAll ? 'Back to featured 4' : `View full ${recommendations.length}-move plan`}
+          </button>
+        ) : null}
+      </div>
+
       {geometry ? (
-        <div className={`hidden lg:grid ${desktopGridClass} items-end gap-x-3 px-10 pb-2 pt-5`}>
+        <div className={`hidden lg:grid ${desktopGridClass} items-end gap-x-3 px-10 pb-2 pt-4`}>
           <div className="col-span-3 h-5" />
           <div className="px-5">
             <div className="relative h-5">
@@ -585,7 +605,7 @@ function PlanScheduleBoard({
           <div className="col-span-2 h-5" />
         </div>
       ) : (
-        <div className="px-5 pt-5 lg:px-10">
+        <div className="px-5 pt-4 lg:px-10">
           <p className="text-sm text-text-muted">
             Timing will appear once schedule windows are available for these moves.
           </p>
@@ -606,22 +626,10 @@ function PlanScheduleBoard({
             />
           </div>
         ))}
-
-        {recommendations.length > defaultVisibleCount ? (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[1.25rem] border border-white/[0.06] bg-white/[0.02] px-4 py-3.5">
-            <p className="text-sm text-text-secondary">
-              {showAll
-                ? `Showing all ${recommendations.length} moves in your plan.`
-                : `Showing the first ${visibleRecommendations.length} moves. ${hiddenCount} more ${hiddenCount === 1 ? 'move' : 'moves'} are available.`}
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowAll((current) => !current)}
-              className="text-sm font-semibold text-brand-teal transition hover:underline"
-            >
-              {showAll ? 'Show fewer moves' : `Show remaining ${hiddenCount} ${hiddenCount === 1 ? 'move' : 'moves'}`}
-            </button>
-          </div>
+        {!showAll && hiddenCount > 0 ? (
+          <p className="px-1 text-sm text-text-muted">
+            {hiddenCount} more {hiddenCount === 1 ? 'move is' : 'moves are'} available in the full plan.
+          </p>
         ) : null}
       </div>
     </div>
