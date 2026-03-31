@@ -12,7 +12,7 @@ function AccordionItem({ item, isOpen, onToggle }: { item: FaqItem; isOpen: bool
 
   return (
     <div
-      className={`rounded-2xl border bg-white/[0.03] p-5 backdrop-blur-sm transition-all duration-300 ${
+      className={`rounded-2xl border bg-white/[0.03] p-6 backdrop-blur-sm transition-all duration-300 ${
         isOpen
           ? 'border-brand-teal/30 shadow-[0_0_15px_rgba(45,212,191,0.06)]'
           : 'border-white/10'
@@ -20,12 +20,12 @@ function AccordionItem({ item, isOpen, onToggle }: { item: FaqItem; isOpen: bool
     >
       <button
         onClick={onToggle}
-        className="flex w-full cursor-pointer items-center justify-between gap-4 text-left text-lg font-semibold text-text-primary md:text-xl"
+        className="flex w-full cursor-pointer items-center justify-between gap-4 text-left text-xl font-semibold leading-snug text-text-primary md:text-[1.7rem]"
         aria-expanded={isOpen}
       >
         <span>{item.question}</span>
         <span
-          className={`text-xl text-brand-teal transition-transform duration-300 ${
+          className={`text-2xl text-brand-teal transition-transform duration-300 ${
             isOpen ? 'rotate-45' : 'rotate-0'
           }`}
         >
@@ -39,7 +39,7 @@ function AccordionItem({ item, isOpen, onToggle }: { item: FaqItem; isOpen: bool
           opacity: isOpen ? 1 : 0,
         }}
       >
-        <p ref={contentRef} className="pt-3 pr-8 text-base leading-8 text-text-secondary md:text-lg">
+        <p ref={contentRef} className="pt-4 pr-8 text-lg leading-8 text-text-secondary md:text-xl md:leading-9">
           {item.answer}
         </p>
       </div>

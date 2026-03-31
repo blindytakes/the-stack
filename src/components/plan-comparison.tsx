@@ -1,22 +1,82 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { EntityImage } from '@/components/ui/entity-image';
+import { getCardFallbackLabel } from '@/lib/card-image-fallback';
+import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
+import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
 
 interface GanttRow {
   name: string;
   type: 'card' | 'bank';
+  provider: string;
   action: string;
   value: string;
   startCol: number;
   endCol: number;
+  slug?: string;
+  imageUrl?: string;
 }
 
+const CHASE_SAPPHIRE_PREFERRED_ART_URL =
+  'https://images.ctfassets.net/8qmz0ef3xzub/7iFzyweepMTrfGn2VrDdL5/6adcc35d50cef1e3087ced153d3b7bee/sapphire_preferred_card.png';
+const AMEX_GOLD_CARD_ART_URL =
+  'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/gold-card.png';
+const GRID_COLUMNS_CLASS_NAME =
+  'grid-cols-[190px_repeat(6,minmax(0,1fr))] md:grid-cols-[230px_repeat(6,minmax(0,1fr))]';
+
 const ganttRows: GanttRow[] = [
-  { name: 'Chase Sapphire Preferred', type: 'card', action: 'Spend $4k in 3 months', value: '$1,250', startCol: 1, endCol: 4 },
-  { name: 'Chase Total Checking', type: 'bank', action: 'Direct deposit × 2 months', value: '$400', startCol: 2, endCol: 4 },
-  { name: 'Amex Gold Card', type: 'card', action: 'Spend $6k in 6 months', value: '$1,200', startCol: 3, endCol: 6 },
-  { name: 'SoFi Checking & Savings', type: 'bank', action: 'Direct deposit $1k', value: '$650', startCol: 4, endCol: 6 },
-  { name: 'Capital One Venture X', type: 'card', action: 'Spend $4k in 3 months', value: '$1,500', startCol: 5, endCol: 7 },
+  {
+    name: 'Chase Sapphire Preferred',
+    type: 'card',
+    provider: 'Chase',
+    action: 'Spend $4k in 3 months',
+    value: '$1,250',
+    startCol: 1,
+    endCol: 4,
+    slug: 'chase-sapphire-preferred',
+    imageUrl: CHASE_SAPPHIRE_PREFERRED_ART_URL
+  },
+  {
+    name: 'Chase Total Checking',
+    type: 'bank',
+    provider: 'Chase',
+    action: 'Direct deposit × 2 months',
+    value: '$400',
+    startCol: 2,
+    endCol: 4
+  },
+  {
+    name: 'Amex Gold Card',
+    type: 'card',
+    provider: 'American Express',
+    action: 'Spend $6k in 6 months',
+    value: '$1,200',
+    startCol: 3,
+    endCol: 6,
+    slug: 'amex-gold-card',
+    imageUrl: AMEX_GOLD_CARD_ART_URL
+  },
+  {
+    name: 'SoFi Checking & Savings',
+    type: 'bank',
+    provider: 'SoFi',
+    action: 'Direct deposit $1k',
+    value: '$650',
+    startCol: 4,
+    endCol: 6
+  },
+  {
+    name: 'Capital One Venture X',
+    type: 'card',
+    provider: 'Capital One',
+    action: 'Spend $4k in 3 months',
+    value: '$1,500',
+    startCol: 5,
+    endCol: 7,
+    slug: 'capital-one-venture-x'
+  },
 ];
 
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -24,6 +84,53 @@ const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'S
 function getUpcomingMonths(count: number): string[] {
   const now = new Date();
   return Array.from({ length: count }, (_, i) => MONTH_LABELS[(now.getMonth() + i) % 12]);
+}
+
+function GanttRowArtwork({ row }: { row: GanttRow }) {
+  if (row.type === 'bank') {
+    const presentation = getBankingImagePresentation(row.provider);
+    const imageUrl = resolveBankingBrandImageUrl(row.provider, row.imageUrl);
+
+    return (
+      <EntityImage
+        src={imageUrl}
+        alt={`${row.provider} logo`}
+        label={row.provider}
+        className="h-8 w-10 shrink-0 md:h-10 md:w-14"
+        imgClassName={presentation?.miniImgClassName ?? 'bg-black/10 px-2 py-2'}
+        fallbackClassName="bg-black/10"
+        fit={presentation?.fit}
+        position={presentation?.position}
+        scale={Math.min((presentation?.scale ?? 1.04) * 1.06, 1.22)}
+      />
+    );
+  }
+
+  const issuerPresentation = row.imageUrl ? null : getBankingImagePresentation(row.provider);
+  const imageUrl = row.imageUrl ?? resolveBankingBrandImageUrl(row.provider);
+  const presentation = row.slug ? getCardImagePresentation(row.slug, imageUrl) : null;
+  const isIssuerLogo = !row.imageUrl;
+
+  return (
+    <EntityImage
+      src={imageUrl}
+      alt={`${row.name} ${isIssuerLogo ? 'logo' : 'card art'}`}
+      label={isIssuerLogo ? getCardFallbackLabel(row.name, row.provider) : row.name}
+      className="h-8 w-10 shrink-0 md:h-10 md:w-14"
+      imgClassName={
+        presentation?.imgClassName ??
+        issuerPresentation?.miniImgClassName ??
+        'bg-black/10 p-0.5 md:p-1'
+      }
+      fallbackClassName="bg-black/10"
+      fit={presentation?.fit ?? issuerPresentation?.fit}
+      position={presentation?.position ?? issuerPresentation?.position}
+      scale={
+        presentation?.scale ??
+        (issuerPresentation ? Math.min((issuerPresentation.scale ?? 1.04) * 1.06, 1.22) : 1)
+      }
+    />
+  );
 }
 
 export function PlanComparison() {
@@ -59,7 +166,7 @@ export function PlanComparison() {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.12),transparent_45%)]" />
 
         {/* Month headers */}
-        <div className="relative grid grid-cols-[180px_repeat(6,1fr)] md:grid-cols-[220px_repeat(6,1fr)]">
+        <div className={`relative grid ${GRID_COLUMNS_CLASS_NAME}`}>
           <div className="px-5 py-4">
             <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-text-muted/60">
               Move
@@ -78,7 +185,6 @@ export function PlanComparison() {
 
         {/* Rows */}
         {ganttRows.map((row, i) => {
-          const dotColor = 'bg-brand-teal shadow-[0_0_6px_rgba(45,212,191,0.3)]';
           const barGradient = 'bg-gradient-to-r from-brand-teal/25 via-brand-teal/15 to-brand-teal/25';
           const barBorder = 'border-brand-teal/25';
           const barGlow = 'shadow-[inset_0_1px_0_rgba(45,212,191,0.2),0_0_20px_rgba(45,212,191,0.08)]';
@@ -86,8 +192,8 @@ export function PlanComparison() {
 
           return (
             <div
-              key={i}
-              className="relative grid grid-cols-[180px_repeat(6,1fr)] md:grid-cols-[220px_repeat(6,1fr)]"
+              key={row.name}
+              className={`relative grid ${GRID_COLUMNS_CLASS_NAME}`}
             >
               {/* Subtle row divider */}
               {i > 0 && (
@@ -96,12 +202,12 @@ export function PlanComparison() {
 
               {/* Label */}
               <div
-                className={`flex items-center gap-3 px-5 py-5 transition-all duration-700 ${
+                className={`flex items-center gap-2.5 px-5 py-5 transition-all duration-700 md:gap-3 ${
                   isVisible ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
                 }`}
                 style={{ transitionDelay: `${i * 150}ms` }}
               >
-                <div className={`h-2.5 w-2.5 shrink-0 rounded-full ${dotColor}`} />
+                <GanttRowArtwork row={row} />
                 <div className="min-w-0">
                   <p className="truncate text-xs font-semibold text-text-primary">{row.name}</p>
                 </div>

@@ -111,7 +111,7 @@ const differentiationCards = [
   {
     title: 'Filtered to what you qualify for',
     description:
-      'Your monthly spend, credit score, and goals determine which bonuses show up — so every recommendation is one you can actually hit.',
+      'Your monthly spend, credit score, and goals determine which bonuses show up — so every recommendation is one you can actually earn.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M10 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM4.5 14.5c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -188,32 +188,37 @@ const sampleReviews = [
   {
     name: 'Ashley P.',
     quote:
-      'I was overwhelmed by card lists. The Stack gave me a clear order, and I ended up earning just over $3,000 in my first 12 months.',
-    result: '$3,000+ earned in the first year'
+      'I was overwhelmed by card lists. The Stack gave me a clear order, and I ended up earning just over $6,300 in my first 12 months.',
+    resultAmount: '$6,300+',
+    resultDetail: 'earned in the first year'
   },
   {
     name: 'Marcus T.',
     quote:
       'I had a rough idea of what cards I wanted, but no idea what order to open them in. The Stack laid it out step by step with deadlines I could actually follow.',
-    result: '$2,400 in bonuses · clear sequencing strategy'
+    resultAmount: '$5,800',
+    resultDetail: 'in bonuses with a clear sequencing strategy'
   },
   {
     name: 'Priya R.',
     quote:
-      'I liked that it included a bank bonus too. It felt like an actual plan, and I did not need a spreadsheet to keep up with it.',
-    result: '$1,800 across cards and bank bonuses'
+      'I liked that it included a bank bonus too. It felt like an actual plan, and I crossed $6,000 without needing a spreadsheet to keep up with it.',
+    resultAmount: '$6,050',
+    resultDetail: 'across cards and bank bonuses'
   },
   {
     name: 'Daniel K.',
     quote:
       'I already knew the cards I wanted. What surprised me was the order — it flagged a Chase 5/24 conflict I hadn\'t considered.',
-    result: '$4,200 earned · avoided a 5/24 mistake'
+    resultAmount: '$7,200',
+    resultDetail: 'earned while avoiding a 5/24 mistake'
   },
   {
     name: 'Lauren S.',
     quote:
       'I used to spend hours comparing cards in browser tabs. This just told me which one to get now and which to wait on. Saved me a ton of time.',
-    result: '$2,100 earned · replaced hours of research'
+    resultAmount: '$6,400',
+    resultDetail: 'earned with far less research time'
   }
 ] as const;
 
@@ -497,9 +502,14 @@ export default async function HomePage() {
               &ldquo;{featuredReview.quote}&rdquo;
             </blockquote>
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <span className="rounded-full border border-brand-coral/30 bg-brand-coral/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-brand-coral">
-                {featuredReview.result}
-              </span>
+              <div className="rounded-[1.35rem] border border-brand-coral/30 bg-brand-coral/10 px-4 py-3">
+                <p className="font-heading text-2xl leading-none text-brand-coral md:text-[2.2rem]">
+                  {featuredReview.resultAmount}
+                </p>
+                <p className="mt-1 text-sm font-medium text-brand-coral/90">
+                  {featuredReview.resultDetail}
+                </p>
+              </div>
               <span className="text-sm font-medium text-text-secondary">
                 {featuredReview.name}
               </span>
@@ -511,9 +521,14 @@ export default async function HomePage() {
                 key={review.name}
                 className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5 backdrop-blur-sm"
               >
-                <p className="text-xs uppercase tracking-[0.2em] text-brand-gold">
-                  {review.result}
-                </p>
+                <div>
+                  <p className="font-heading text-[1.9rem] leading-none text-brand-gold md:text-[2.25rem]">
+                    {review.resultAmount}
+                  </p>
+                  <p className="mt-1 text-sm font-medium text-brand-gold/85">
+                    {review.resultDetail}
+                  </p>
+                </div>
                 <p className="mt-3 text-lg leading-8 text-text-primary">
                   &ldquo;{review.quote}&rdquo;
                 </p>
@@ -527,7 +542,7 @@ export default async function HomePage() {
       </section>
 
       <section className="mt-20">
-        <div className="mx-auto max-w-3xl">
+        <div className="mx-auto max-w-4xl">
           <div className="text-center">
             <p className="text-base font-medium uppercase tracking-[0.24em] text-brand-gold">FAQ</p>
             <h2 className="mt-3 font-heading text-3xl text-text-primary md:text-4xl">
