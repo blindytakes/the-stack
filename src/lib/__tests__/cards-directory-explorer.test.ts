@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CardRecord } from '@/lib/cards';
+import { filterCardsForDirectory } from '@/lib/cards-directory';
 import {
   buildCardsDirectoryCompareHref,
   buildCardsDirectorySearchParams,
@@ -62,7 +63,7 @@ describe('cards-directory-explorer', () => {
         bonus: '750',
         fee: '95',
         type: 'personal',
-        sort: 'bonus_minus_fee'
+        sort: 'lowest_fee'
       }),
       issuerOptions
     );
@@ -75,7 +76,7 @@ describe('cards-directory-explorer', () => {
       maxFee: '95',
 
       cardType: 'personal',
-      sortBy: 'bonus_minus_fee'
+      sortBy: 'lowest_fee'
     });
 
     expect(
@@ -86,7 +87,7 @@ describe('cards-directory-explorer', () => {
     ).toEqual(defaultCardsDirectoryFilters);
   });
 
-  it('filters cards and sorts by bonus net of fee', () => {
+  it('filters cards and sorts by lowest annual fee', () => {
     const cards = [
       createCard({
         slug: 'travel-max',
@@ -138,10 +139,49 @@ describe('cards-directory-explorer', () => {
       maxFee: '95',
 
       cardType: 'personal',
-      sortBy: 'bonus_minus_fee'
+      sortBy: 'lowest_fee'
     });
 
-    expect(filtered.map((card) => card.slug)).toEqual(['travel-max', 'travel-lite']);
+    expect(filtered.map((card) => card.slug)).toEqual(['travel-lite', 'travel-max']);
+  });
+
+  it('excludes business cards from the consumer directory dataset', () => {
+    const cards = [
+      createCard({
+        slug: 'travel-max',
+        name: 'Travel Max',
+        issuer: 'Chase',
+        headline: 'Travel points powerhouse',
+        annualFee: 95,
+        bestSignUpBonusValue: 900,
+        creditTierMin: 'good',
+        cardType: 'personal'
+      }),
+      createCard({
+        slug: 'student-start',
+        name: 'Student Start',
+        issuer: 'Discover',
+        headline: 'Starter card',
+        annualFee: 0,
+        bestSignUpBonusValue: 200,
+        creditTierMin: 'fair',
+        cardType: 'student'
+      }),
+      createCard({
+        slug: 'business-cash',
+        name: 'Business Cash',
+        issuer: 'Chase',
+        headline: 'Business spend card',
+        annualFee: 0,
+        bestSignUpBonusValue: 800,
+        creditTierMin: 'good',
+        cardType: 'business'
+      })
+    ];
+
+    const filtered = filterCardsForDirectory(cards);
+
+    expect(filtered.map((card) => card.slug)).toEqual(['travel-max', 'student-start']);
   });
 
   it('builds query params from non-default filters and counts active filters', () => {
@@ -152,11 +192,11 @@ describe('cards-directory-explorer', () => {
       bonusFilter: '750' as const,
       maxFee: '95' as const,
       cardType: 'personal' as const,
-      sortBy: 'bonus_minus_fee' as const
+      sortBy: 'lowest_fee' as const
     };
 
     expect(buildCardsDirectorySearchParams(new URLSearchParams(), filters).toString()).toBe(
-      'q=chase+sapphire&issuer=chase&spend=travel&bonus=750&fee=95&type=personal&sort=bonus_minus_fee'
+      'q=chase+sapphire&issuer=chase&spend=travel&bonus=750&fee=95&type=personal&sort=lowest_fee'
     );
     expect(countActiveCardsDirectoryFilters(filters)).toBe(6);
   });

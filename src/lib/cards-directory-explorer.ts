@@ -5,10 +5,10 @@ import {
 } from '@/lib/cards';
 import { issuerKey, normalizeIssuerLabel } from '@/lib/cards-directory';
 
-export type SortValue = 'highest_bonus' | 'bonus_minus_fee' | 'lowest_fee' | 'highest_rating';
+export type SortValue = 'highest_bonus' | 'lowest_fee';
 export type BonusFilterValue = 'any' | 'has_bonus' | '500' | '750' | '1000';
 export type FeeFilterValue = 'any' | '0' | '95' | '250' | '10000';
-export type CardTypeFilterValue = 'all' | CardRecord['cardType'];
+export type CardTypeFilterValue = 'all' | Exclude<CardRecord['cardType'], 'business'>;
 export type SpendCategoryFilterValue = 'any' | SpendingCategoryValue;
 export type IssuerOption = { value: string; label: string; count: number };
 
@@ -34,9 +34,7 @@ export const defaultCardsDirectoryFilters: CardsDirectoryFilters = {
 
 export const sortOptions: Array<{ value: SortValue; label: string }> = [
   { value: 'highest_bonus', label: 'Highest Welcome Value' },
-  { value: 'bonus_minus_fee', label: 'Best Bonus Net of Fee' },
-  { value: 'lowest_fee', label: 'Lowest Annual Fee' },
-  { value: 'highest_rating', label: 'Highest Editor Rating' }
+  { value: 'lowest_fee', label: 'Lowest Annual Fee' }
 ];
 
 export const bonusOptions: Array<{ value: BonusFilterValue; label: string }> = [
@@ -58,7 +56,6 @@ export const feeOptions: Array<{ value: FeeFilterValue; label: string }> = [
 export const cardTypeOptions: Array<{ value: CardTypeFilterValue; label: string }> = [
   { value: 'all', label: 'All card types' },
   { value: 'personal', label: 'Personal' },
-  { value: 'business', label: 'Business' },
   { value: 'student', label: 'Student' },
   { value: 'secured', label: 'Secured' }
 ];
@@ -108,9 +105,7 @@ function lower(value: string) {
 export function isSortValue(value: string | null): value is SortValue {
   return (
     value === 'highest_bonus' ||
-    value === 'bonus_minus_fee' ||
-    value === 'lowest_fee' ||
-    value === 'highest_rating'
+    value === 'lowest_fee'
   );
 }
 
@@ -130,7 +125,6 @@ export function isCardTypeFilterValue(value: string | null): value is CardTypeFi
   return (
     value === 'all' ||
     value === 'personal' ||
-    value === 'business' ||
     value === 'student' ||
     value === 'secured'
   );
@@ -249,7 +243,9 @@ export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryF
       return false;
     }
 
-    if (filters.cardType !== 'all' && card.cardType !== filters.cardType) return false;
+    if (filters.cardType !== 'all' && card.cardType !== filters.cardType) {
+      return false;
+    }
 
     const bonusValue = card.bestSignUpBonusValue ?? 0;
     if (filters.bonusFilter === 'has_bonus' && bonusValue <= 0) return false;
@@ -269,22 +265,9 @@ export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryF
     const bonusDiff = (b.bestSignUpBonusValue ?? 0) - (a.bestSignUpBonusValue ?? 0);
     if (filters.sortBy === 'highest_bonus' && bonusDiff !== 0) return bonusDiff;
 
-    if (filters.sortBy === 'bonus_minus_fee') {
-      const netDiff =
-        (b.bestSignUpBonusValue ?? 0) -
-        b.annualFee -
-        ((a.bestSignUpBonusValue ?? 0) - a.annualFee);
-      if (netDiff !== 0) return netDiff;
-    }
-
     if (filters.sortBy === 'lowest_fee') {
       const feeDiff = a.annualFee - b.annualFee;
       if (feeDiff !== 0) return feeDiff;
-    }
-
-    if (filters.sortBy === 'highest_rating') {
-      const ratingDiff = (b.editorRating ?? 0) - (a.editorRating ?? 0);
-      if (ratingDiff !== 0) return ratingDiff;
     }
 
     if (bonusDiff !== 0) return bonusDiff;

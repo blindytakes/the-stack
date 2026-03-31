@@ -1,16 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
-  bonusOptions,
-  cardTypeOptions,
-  feeOptions,
   spendCategoryOptions,
   sortOptions,
-  type BonusFilterValue,
-  type CardTypeFilterValue,
-  type FeeFilterValue,
   type IssuerOption,
   type SpendCategoryFilterValue,
   type SortValue
@@ -25,17 +18,11 @@ type CardsDirectoryFilterPanelProps = {
   query: string;
   issuer: string;
   spendCategory: SpendCategoryFilterValue;
-  bonusFilter: BonusFilterValue;
-  maxFee: FeeFilterValue;
-  cardType: CardTypeFilterValue;
   sortBy: SortValue;
   issuerOptions: IssuerOption[];
   onQueryChange: (value: string) => void;
   onIssuerChange: (value: string) => void;
   onSpendCategoryChange: (value: SpendCategoryFilterValue) => void;
-  onBonusFilterChange: (value: BonusFilterValue) => void;
-  onMaxFeeChange: (value: FeeFilterValue) => void;
-  onCardTypeChange: (value: CardTypeFilterValue) => void;
   onSortByChange: (value: SortValue) => void;
   onReset: () => void;
 };
@@ -49,25 +36,15 @@ export function CardsDirectoryFilterPanel({
   query,
   issuer,
   spendCategory,
-  bonusFilter,
-  maxFee,
-  cardType,
   sortBy,
   issuerOptions,
   onQueryChange,
   onIssuerChange,
   onSpendCategoryChange,
-  onBonusFilterChange,
-  onMaxFeeChange,
-  onCardTypeChange,
   onSortByChange,
   onReset
 }: CardsDirectoryFilterPanelProps) {
   const prefersReducedMotion = useReducedMotion();
-  const moreFilterCount = [bonusFilter !== 'any', maxFee !== 'any', cardType !== 'all'].filter(
-    Boolean
-  ).length;
-  const [showMore, setShowMore] = useState(moreFilterCount > 0);
   const introShellTransition = prefersReducedMotion
     ? { duration: 0 }
     : { duration: 0.44, ease: [0.22, 1, 0.36, 1] as const };
@@ -118,10 +95,6 @@ export function CardsDirectoryFilterPanel({
       percent: totalCards > 0 ? (activeBonusCount / totalCards) * 100 : 0
     }
   ] as const;
-
-  useEffect(() => {
-    if (moreFilterCount > 0) setShowMore(true);
-  }, [moreFilterCount]);
 
   return (
     <section className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,32,0.96),rgba(12,13,22,0.98))] p-4 shadow-[0_24px_90px_rgba(0,0,0,0.24)] md:p-5">
@@ -250,13 +223,7 @@ export function CardsDirectoryFilterPanel({
       </div>
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-bg-elevated/65 p-3">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Spend Fit</p>
-            <p className="mt-1 text-sm text-text-secondary">
-              Start with where most of your monthly spend goes.
-            </p>
-          </div>
+        <div className="flex justify-end">
           {spendCategory !== 'any' && (
             <button
               type="button"
@@ -289,78 +256,8 @@ export function CardsDirectoryFilterPanel({
         </div>
       </div>
 
-      {showMore && (
-        <div className="mt-3 grid gap-3 md:grid-cols-3">
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Sign-Up Bonus
-            </span>
-            <select
-              value={bonusFilter}
-              onChange={(event) => onBonusFilterChange(event.target.value as BonusFilterValue)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-            >
-              {bonusOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Annual Fee
-            </span>
-            <select
-              value={maxFee}
-              onChange={(event) => onMaxFeeChange(event.target.value as FeeFilterValue)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-            >
-              {feeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Card Type
-            </span>
-            <select
-              value={cardType}
-              onChange={(event) => onCardTypeChange(event.target.value as CardTypeFilterValue)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-            >
-              {cardTypeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
-      )}
-
-      {/* Footer: count · more filters · reset */}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setShowMore((prev) => !prev)}
-            className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
-          >
-            {showMore ? 'Fewer filters' : 'More filters'}
-            {!showMore && moreFilterCount > 0 && (
-              <span className="ml-1.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-brand-teal/20 text-[10px] font-bold text-brand-teal">
-                {moreFilterCount}
-              </span>
-            )}
-          </button>
-        </div>
-        {activeFilterCount > 0 && (
+      {activeFilterCount > 0 && (
+        <div className="mt-4 flex justify-end">
           <button
             type="button"
             onClick={onReset}
@@ -368,8 +265,8 @@ export function CardsDirectoryFilterPanel({
           >
             Reset filters
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </section>
   );
 }

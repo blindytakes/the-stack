@@ -1,6 +1,20 @@
 import type { CardRecord, CreditTierValue } from '@/lib/cards/schema';
 
 export type DecisionMetricTone = 'default' | 'positive' | 'warning' | 'negative';
+export type CardMetric = {
+  label: string;
+  value: string;
+  detail: string;
+  tone: DecisionMetricTone;
+};
+export type CardDirectoryMetric = {
+  label: string;
+  value: string;
+  supportingText?: string;
+  tone: DecisionMetricTone;
+  fullWidth?: boolean;
+  supportingTone?: 'default' | 'emphasized';
+};
 
 const creditLikeBenefitCategories = new Set([
   'streaming credits',
@@ -24,20 +38,30 @@ export function formatCardCreditTier(tier: CreditTierValue) {
   return 'Building';
 }
 
-export function formatCardSpendWindow(days?: number) {
+export function formatCardSpendWindow(
+  days?: number,
+  options?: {
+    abbreviated?: boolean;
+  }
+) {
   if (typeof days !== 'number' || days <= 0) return null;
+  const abbreviated = options?.abbreviated ?? true;
 
   if (days % 30 === 0) {
     const months = Math.round(days / 30);
-    return `${months} mo${months === 1 ? '' : 's'}`;
+    return abbreviated
+      ? `${months} mo${months === 1 ? '' : 's'}`
+      : `${months} month${months === 1 ? '' : 's'}`;
   }
 
   if (days % 7 === 0 && days < 60) {
     const weeks = Math.round(days / 7);
-    return `${weeks} wk${weeks === 1 ? '' : 's'}`;
+    return abbreviated
+      ? `${weeks} wk${weeks === 1 ? '' : 's'}`
+      : `${weeks} week${weeks === 1 ? '' : 's'}`;
   }
 
-  return `${days} days`;
+  return `${days} day${days === 1 ? '' : 's'}`;
 }
 
 export function isOffsettingCreditBenefit(
@@ -124,7 +148,7 @@ export function getCardDecisionMetrics(
     | 'creditTierMin'
     | 'offsettingCreditsValue'
   >
-) {
+): CardMetric[] {
   const spendRoi = getCardSpendRoi(card);
   const offsettingCreditsValue = card.offsettingCreditsValue ?? 0;
 
@@ -170,6 +194,51 @@ export function getCardDecisionMetrics(
           : spendRoi >= 0
             ? ('positive' as DecisionMetricTone)
             : ('negative' as DecisionMetricTone)
+    }
+  ];
+}
+
+export function getCardDirectoryMetrics(
+  card: Pick<
+    CardRecord,
+    | 'annualFee'
+    | 'bestSignUpBonusSpendPeriodDays'
+    | 'bestSignUpBonusSpendRequired'
+    | 'offsettingCreditsValue'
+    | 'bestSignUpBonusValue'
+  >
+): CardDirectoryMetric[] {
+  const spendRoi = getCardSpendRoi(card);
+  const spendRequired =
+    typeof card.bestSignUpBonusSpendRequired === 'number' && card.bestSignUpBonusSpendRequired > 0;
+  const spendWindow = spendRequired
+    ? formatCardSpendWindow(card.bestSignUpBonusSpendPeriodDays, { abbreviated: false })
+    : null;
+
+  return [
+    {
+      label: 'Annual fee',
+      value: card.annualFee === 0 ? 'No fee' : formatCardCurrency(card.annualFee),
+      tone: 'default'
+    },
+    {
+      label: 'ROI',
+      value: spendRoi != null ? `${spendRoi.toFixed(1)}%` : 'N/A',
+      supportingText: spendRoi != null ? undefined : 'Needs listed threshold',
+      tone:
+        spendRoi == null
+          ? 'default'
+          : spendRoi >= 0
+            ? 'positive'
+            : 'negative'
+    },
+    {
+      label: 'Required spend',
+      value: spendRequired ? formatCardCurrency(card.bestSignUpBonusSpendRequired ?? 0) : 'No listed offer',
+      supportingText: spendWindow ? `in ${spendWindow}` : 'No active bonus threshold',
+      tone: 'default',
+      fullWidth: true,
+      supportingTone: spendWindow ? 'emphasized' : 'default'
     }
   ];
 }

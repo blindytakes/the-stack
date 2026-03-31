@@ -23,9 +23,6 @@ export function CardsDirectoryExplorer({
     query,
     issuer,
     spendCategory,
-    bonusFilter,
-    maxFee,
-    cardType,
     sortBy,
     selectedCompare,
     compareError,
@@ -37,9 +34,6 @@ export function CardsDirectoryExplorer({
     setQuery,
     setIssuer,
     setSpendCategory,
-    setBonusFilter,
-    setMaxFee,
-    setCardType,
     setSortBy,
     clearFilters,
     clearCompare
@@ -58,17 +52,11 @@ export function CardsDirectoryExplorer({
         query={query}
         issuer={issuer}
         spendCategory={spendCategory}
-        bonusFilter={bonusFilter}
-        maxFee={maxFee}
-        cardType={cardType}
         sortBy={sortBy}
         issuerOptions={issuerOptions}
         onQueryChange={setQuery}
         onIssuerChange={setIssuer}
         onSpendCategoryChange={setSpendCategory}
-        onBonusFilterChange={setBonusFilter}
-        onMaxFeeChange={setMaxFee}
-        onCardTypeChange={setCardType}
         onSortByChange={setSortBy}
         onReset={clearFilters}
       />

@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { CardRecord } from '@/lib/cards';
 import {
@@ -9,7 +9,7 @@ import {
   formatSpendCategoryLabel
 } from '@/lib/cards-directory-explorer';
 import { getCardFallbackLabel } from '@/lib/card-image-fallback';
-import { getCardDecisionMetrics } from '@/lib/cards/presentation-metrics';
+import { getCardDirectoryMetrics } from '@/lib/cards/presentation-metrics';
 import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import { EntityImage } from '@/components/ui/entity-image';
@@ -37,6 +37,25 @@ export function CardsDirectoryResults({
   const { gridRef, isVisible, isMeasured, prefersReducedMotion } = useFirstGridRowReveal(
     cards.length
   );
+  const [isRevealDelayActive, setIsRevealDelayActive] = useState(true);
+
+  useEffect(() => {
+    if (prefersReducedMotion || !isMeasured) {
+      setIsRevealDelayActive(false);
+      return;
+    }
+
+    setIsRevealDelayActive(true);
+
+    if (!isVisible) return;
+
+    const maxIndex = Math.min(cards.length - 1, 15);
+    const timeoutId = window.setTimeout(() => {
+      setIsRevealDelayActive(false);
+    }, 180 + Math.max(maxIndex, 0) * 50 + 220);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [cards.length, isMeasured, isVisible, prefersReducedMotion]);
 
   const openModal = useCallback(
     (slug: string) => {
@@ -112,28 +131,29 @@ export function CardsDirectoryResults({
             : getCardFallbackLabel(card.name, card.issuer);
           const topCategories = card.topCategories.filter((category) => category !== 'other');
           const bestCategory = (topCategories.length > 0 ? topCategories : (['all'] as const))[0];
-          const decisionMetrics = getCardDecisionMetrics(card);
+          const decisionMetrics = getCardDirectoryMetrics(card);
           const shouldReveal = !prefersReducedMotion && isMeasured;
-          const transitionDelay = shouldReveal && isVisible ? 180 + Math.min(index, 15) * 50 : 0;
+          const transitionDelay =
+            shouldReveal && isRevealDelayActive ? 180 + Math.min(index, 15) * 50 : 0;
 
           return (
             <article
               key={card.slug}
               data-reveal-index={index}
-              className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-bg-surface p-5 transition-all duration-500 ${
+              className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-bg-surface p-5 transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out will-change-transform ${
                 shouldReveal && !isVisible
                   ? 'translate-y-6 scale-[0.985] opacity-0'
                   : 'translate-y-0 scale-100 opacity-100'
               } ${
                 selectedForCompare
-                  ? 'border-brand-teal/45 shadow-[0_0_24px_rgba(45,212,191,0.14)]'
-                  : 'border-white/10 shadow-[0_0_16px_rgba(45,212,191,0.04)] hover:-translate-y-1.5 hover:border-brand-teal/30 hover:shadow-[0_4px_32px_rgba(45,212,191,0.14)]'
+                  ? 'border-brand-teal/45 shadow-[0_0_24px_rgba(45,212,191,0.14)] hover:z-10 hover:-translate-y-2 hover:scale-[1.012] hover:border-brand-teal/70 hover:bg-bg-elevated hover:shadow-[0_22px_54px_rgba(4,10,18,0.6),0_0_42px_rgba(45,212,191,0.2)]'
+                  : 'border-white/10 shadow-[0_0_16px_rgba(45,212,191,0.04)] hover:z-10 hover:-translate-y-2 hover:scale-[1.012] hover:border-brand-teal/45 hover:bg-bg-elevated hover:shadow-[0_22px_54px_rgba(4,10,18,0.58),0_0_36px_rgba(45,212,191,0.16)]'
               }`}
               style={{ transitionDelay: `${transitionDelay}ms` }}
             >
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.16),transparent_56%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.24),transparent_58%)] opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100"
               />
 
               {card.cardType === 'business' && (
@@ -147,7 +167,7 @@ export function CardsDirectoryResults({
                 </div>
               )}
 
-              <div className="relative z-10 mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.02]">
+              <div className="relative z-10 mb-4 overflow-hidden rounded-xl transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.035]">
                 <EntityImage
                   src={cardImageSrc}
                   alt={`${card.name} card art`}
@@ -186,15 +206,15 @@ export function CardsDirectoryResults({
                 {decisionMetrics.map((metric, metricIndex) => (
                   <div
                     key={metric.label}
-                    className={`rounded-xl border border-white/5 bg-bg/40 px-3 py-2 ${
-                      metricIndex === decisionMetrics.length - 1 ? 'col-span-2' : ''
+                    className={`flex min-h-[88px] flex-col items-center justify-center rounded-xl border border-white/5 bg-bg/40 px-3 py-3 text-center ${
+                      metric.fullWidth || metricIndex === decisionMetrics.length - 1 ? 'col-span-2' : ''
                     }`}
                   >
-                    <p className="text-[10px] uppercase tracking-[0.16em] text-text-muted">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
                       {metric.label}
                     </p>
                     <p
-                      className={`mt-1 text-sm font-semibold ${
+                      className={`mt-2 text-[1.05rem] font-semibold leading-tight ${
                         metric.tone === 'positive'
                           ? 'text-brand-teal'
                           : metric.tone === 'warning'
@@ -206,6 +226,17 @@ export function CardsDirectoryResults({
                     >
                       {metric.value}
                     </p>
+                    {metric.supportingText ? (
+                      <p
+                        className={`mt-1 leading-4 ${
+                          metric.supportingTone === 'emphasized'
+                            ? 'text-[13px] font-medium text-text-secondary'
+                            : 'text-[11px] text-text-muted'
+                        }`}
+                      >
+                        {metric.supportingText}
+                      </p>
+                    ) : null}
                   </div>
                 ))}
               </div>
@@ -224,9 +255,13 @@ export function CardsDirectoryResults({
                     slug: card.slug,
                     audience: card.cardType === 'business' ? 'business' : undefined
                   })}
-                  className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs font-semibold text-black transition hover:opacity-90"
+                  className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs font-semibold text-black transition hover:opacity-90"
                 >
-                  Add to my plan
+                  <span className="block leading-[1.15]">
+                    Add to
+                    <br />
+                    my plan
+                  </span>
                 </Link>
               </div>
             </article>

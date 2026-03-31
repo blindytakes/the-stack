@@ -11,9 +11,6 @@ import {
   defaultCardsDirectoryFilters,
   filterAndSortCards,
   parseCardsDirectoryFilters,
-  type BonusFilterValue,
-  type CardTypeFilterValue,
-  type FeeFilterValue,
   type SpendCategoryFilterValue,
   type SortValue
 } from '@/lib/cards-directory-explorer';
@@ -35,11 +32,6 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
   const [spendCategory, setSpendCategory] = useState<SpendCategoryFilterValue>(
     initialFilters.spendCategory
   );
-  const [bonusFilter, setBonusFilter] = useState<BonusFilterValue>(
-    initialFilters.bonusFilter
-  );
-  const [maxFee, setMaxFee] = useState<FeeFilterValue>(initialFilters.maxFee);
-  const [cardType, setCardType] = useState<CardTypeFilterValue>(initialFilters.cardType);
   const [sortBy, setSortBy] = useState<SortValue>(initialFilters.sortBy);
   const [selectedCompare, setSelectedCompare] = useState<string[]>([]);
   const [compareError, setCompareError] = useState('');
@@ -49,12 +41,12 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
       query,
       issuer,
       spendCategory,
-      bonusFilter,
-      maxFee,
-      cardType,
+      bonusFilter: defaultCardsDirectoryFilters.bonusFilter,
+      maxFee: defaultCardsDirectoryFilters.maxFee,
+      cardType: defaultCardsDirectoryFilters.cardType,
       sortBy
     }),
-    [bonusFilter, cardType, issuer, maxFee, query, sortBy, spendCategory]
+    [issuer, query, sortBy, spendCategory]
   );
 
   useEffect(() => {
@@ -63,9 +55,6 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
     setQuery(nextFilters.query);
     setIssuer(nextFilters.issuer);
     setSpendCategory(nextFilters.spendCategory);
-    setBonusFilter(nextFilters.bonusFilter);
-    setMaxFee(nextFilters.maxFee);
-    setCardType(nextFilters.cardType);
     setSortBy(nextFilters.sortBy);
 
     hasHydratedFromUrl.current = true;
@@ -107,9 +96,6 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
     setQuery(defaultCardsDirectoryFilters.query);
     setIssuer(defaultCardsDirectoryFilters.issuer);
     setSpendCategory(defaultCardsDirectoryFilters.spendCategory);
-    setBonusFilter(defaultCardsDirectoryFilters.bonusFilter);
-    setMaxFee(defaultCardsDirectoryFilters.maxFee);
-    setCardType(defaultCardsDirectoryFilters.cardType);
     setSortBy(defaultCardsDirectoryFilters.sortBy);
   }
 
@@ -139,9 +125,6 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
     query,
     issuer,
     spendCategory,
-    bonusFilter,
-    maxFee,
-    cardType,
     sortBy,
     selectedCompare,
     compareError,
@@ -153,9 +136,6 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
     setQuery,
     setIssuer,
     setSpendCategory,
-    setBonusFilter,
-    setMaxFee,
-    setCardType,
     setSortBy,
     clearFilters,
     toggleCompare,
