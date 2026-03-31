@@ -20,6 +20,7 @@ function createCard(overrides: Partial<CardRecord> = {}): CardRecord {
     rewardType: overrides.rewardType ?? 'points',
     topCategories: overrides.topCategories ?? ['travel'],
     annualFee: overrides.annualFee ?? 95,
+    foreignTxFee: overrides.foreignTxFee ?? 0,
     creditTierMin: overrides.creditTierMin ?? 'good',
     headline: overrides.headline ?? 'Strong travel value',
     description: overrides.description,
@@ -30,6 +31,7 @@ function createCard(overrides: Partial<CardRecord> = {}): CardRecord {
     bestSignUpBonusValue: overrides.bestSignUpBonusValue ?? 750,
     bestSignUpBonusSpendRequired: overrides.bestSignUpBonusSpendRequired,
     bestSignUpBonusSpendPeriodDays: overrides.bestSignUpBonusSpendPeriodDays,
+    offsettingCreditsValue: overrides.offsettingCreditsValue,
     totalBenefitsValue: overrides.totalBenefitsValue ?? 0,
     plannerBenefitsValue: overrides.plannerBenefitsValue ?? 0
   };
@@ -59,10 +61,12 @@ describe('cards-directory-explorer', () => {
       new URLSearchParams({
         issuer: 'American Express',
         spend: 'travel',
+        intl: '0',
+        reward: 'cashback',
         bonus: '750',
         fee: '95',
         type: 'personal',
-        sort: 'lowest_fee'
+        sort: 'highest_bonus_roi'
       }),
       issuerOptions
     );
@@ -70,16 +74,24 @@ describe('cards-directory-explorer', () => {
     expect(filters).toEqual({
       issuer: 'american-express',
       spendCategory: 'travel',
+      foreignFee: '0',
+      rewardType: 'cashback',
       bonusFilter: '750',
       maxFee: '95',
 
       cardType: 'personal',
-      sortBy: 'lowest_fee'
+      sortBy: 'highest_bonus_roi'
     });
 
     expect(
       parseCardsDirectoryFilters(
-        new URLSearchParams({ issuer: 'Unknown Bank', bonus: 'bogus', sort: 'bogus' }),
+        new URLSearchParams({
+          issuer: 'Unknown Bank',
+          spend: 'all',
+          reward: 'bogus',
+          bonus: 'bogus',
+          sort: 'bogus'
+        }),
         issuerOptions
       )
     ).toEqual(defaultCardsDirectoryFilters);
@@ -132,6 +144,8 @@ describe('cards-directory-explorer', () => {
     const filtered = filterAndSortCards(cards, {
       issuer: 'all',
       spendCategory: 'travel',
+      foreignFee: 'any',
+      rewardType: 'any',
       bonusFilter: '500',
       maxFee: '95',
 
@@ -140,6 +154,72 @@ describe('cards-directory-explorer', () => {
     });
 
     expect(filtered.map((card) => card.slug)).toEqual(['travel-lite', 'travel-max']);
+  });
+
+  it('filters for no international fees and sorts by bonus ROI', () => {
+    const cards = [
+      createCard({
+        slug: 'roi-best',
+        issuer: 'Chase',
+        annualFee: 95,
+        foreignTxFee: 0,
+        bestSignUpBonusValue: 900,
+        bestSignUpBonusSpendRequired: 3000,
+        offsettingCreditsValue: 0
+      }),
+      createCard({
+        slug: 'roi-mid',
+        issuer: 'Amex',
+        annualFee: 0,
+        foreignTxFee: 0,
+        bestSignUpBonusValue: 1000,
+        bestSignUpBonusSpendRequired: 5000,
+        offsettingCreditsValue: 0
+      }),
+      createCard({
+        slug: 'has-foreign-fee',
+        issuer: 'Citi',
+        annualFee: 95,
+        foreignTxFee: 3,
+        bestSignUpBonusValue: 1200,
+        bestSignUpBonusSpendRequired: 4000,
+        offsettingCreditsValue: 0
+      })
+    ];
+
+    const filtered = filterAndSortCards(cards, {
+      issuer: 'all',
+      spendCategory: 'any',
+      foreignFee: '0',
+      rewardType: 'any',
+      bonusFilter: 'any',
+      maxFee: 'any',
+      cardType: 'all',
+      sortBy: 'highest_bonus_roi'
+    });
+
+    expect(filtered.map((card) => card.slug)).toEqual(['roi-best', 'roi-mid']);
+  });
+
+  it('filters for cashback cards only', () => {
+    const cards = [
+      createCard({ slug: 'cashback-card', rewardType: 'cashback' }),
+      createCard({ slug: 'miles-card', rewardType: 'miles' }),
+      createCard({ slug: 'points-card', rewardType: 'points' })
+    ];
+
+    const filtered = filterAndSortCards(cards, {
+      issuer: 'all',
+      spendCategory: 'any',
+      foreignFee: 'any',
+      rewardType: 'cashback',
+      bonusFilter: 'any',
+      maxFee: 'any',
+      cardType: 'all',
+      sortBy: 'highest_bonus'
+    });
+
+    expect(filtered.map((card) => card.slug)).toEqual(['cashback-card']);
   });
 
   it('excludes business cards from the consumer directory dataset', () => {
@@ -185,16 +265,18 @@ describe('cards-directory-explorer', () => {
     const filters = {
       issuer: 'chase',
       spendCategory: 'travel' as const,
+      foreignFee: '0' as const,
+      rewardType: 'cashback' as const,
       bonusFilter: '750' as const,
       maxFee: '95' as const,
       cardType: 'personal' as const,
-      sortBy: 'lowest_fee' as const
+      sortBy: 'highest_bonus_roi' as const
     };
 
     expect(buildCardsDirectorySearchParams(new URLSearchParams(), filters).toString()).toBe(
-      'issuer=chase&spend=travel&bonus=750&fee=95&type=personal&sort=lowest_fee'
+      'issuer=chase&spend=travel&intl=0&reward=cashback&bonus=750&fee=95&type=personal&sort=highest_bonus_roi'
     );
-    expect(countActiveCardsDirectoryFilters(filters)).toBe(5);
+    expect(countActiveCardsDirectoryFilters(filters)).toBe(7);
   });
 
   it('builds compare links only when exactly two cards are selected', () => {

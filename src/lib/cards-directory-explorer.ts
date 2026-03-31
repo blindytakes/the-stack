@@ -4,17 +4,22 @@ import {
   type SpendingCategoryValue
 } from '@/lib/cards';
 import { issuerKey, normalizeIssuerLabel } from '@/lib/cards-directory';
+import { getCardSpendRoi } from '@/lib/cards/presentation-metrics';
 
-export type SortValue = 'highest_bonus' | 'lowest_fee';
+export type SortValue = 'highest_bonus' | 'lowest_fee' | 'highest_bonus_roi';
 export type BonusFilterValue = 'any' | 'has_bonus' | '500' | '750' | '1000';
 export type FeeFilterValue = 'any' | '0' | '95' | '250' | '10000';
+export type ForeignFeeFilterValue = 'any' | '0';
+export type RewardTypeFilterValue = 'any' | 'cashback';
 export type CardTypeFilterValue = 'all' | Exclude<CardRecord['cardType'], 'business'>;
-export type SpendCategoryFilterValue = 'any' | SpendingCategoryValue;
+export type SpendCategoryFilterValue = 'any' | Exclude<SpendingCategoryValue, 'all'>;
 export type IssuerOption = { value: string; label: string; count: number };
 
 export type CardsDirectoryFilters = {
   issuer: string;
   spendCategory: SpendCategoryFilterValue;
+  foreignFee: ForeignFeeFilterValue;
+  rewardType: RewardTypeFilterValue;
   bonusFilter: BonusFilterValue;
   maxFee: FeeFilterValue;
   cardType: CardTypeFilterValue;
@@ -24,6 +29,8 @@ export type CardsDirectoryFilters = {
 export const defaultCardsDirectoryFilters: CardsDirectoryFilters = {
   issuer: 'all',
   spendCategory: 'any',
+  foreignFee: 'any',
+  rewardType: 'any',
   bonusFilter: 'any',
   maxFee: 'any',
   cardType: 'all',
@@ -32,7 +39,17 @@ export const defaultCardsDirectoryFilters: CardsDirectoryFilters = {
 
 export const sortOptions: Array<{ value: SortValue; label: string }> = [
   { value: 'highest_bonus', label: 'Highest Welcome Value' },
-  { value: 'lowest_fee', label: 'Lowest Annual Fee' }
+  { value: 'lowest_fee', label: 'Lowest Annual Fee' },
+  { value: 'highest_bonus_roi', label: 'Highest Sign-Up Bonus ROI' }
+];
+
+export const foreignFeeOptions: Array<{ value: ForeignFeeFilterValue; label: string }> = [
+  { value: 'any', label: 'Any international fee' },
+  { value: '0', label: 'No international fees' }
+];
+
+export const rewardTypeOptions: Array<{ value: RewardTypeFilterValue; label: string }> = [
+  { value: 'cashback', label: 'Cash Back' }
 ];
 
 export const bonusOptions: Array<{ value: BonusFilterValue; label: string }> = [
@@ -66,8 +83,7 @@ export const spendCategoryOptions: Array<{
   { value: 'dining', label: 'Dining' },
   { value: 'groceries', label: 'Groceries' },
   { value: 'travel', label: 'Travel' },
-  { value: 'gas', label: 'Gas' },
-  { value: 'all', label: 'General spend' }
+  { value: 'gas', label: 'Gas' }
 ];
 
 export function formatCardType(value: CardRecord['cardType']) {
@@ -99,7 +115,8 @@ export function formatSpendRequirement(card: CardRecord) {
 export function isSortValue(value: string | null): value is SortValue {
   return (
     value === 'highest_bonus' ||
-    value === 'lowest_fee'
+    value === 'lowest_fee' ||
+    value === 'highest_bonus_roi'
   );
 }
 
@@ -115,6 +132,14 @@ export function isFeeFilterValue(value: string | null): value is FeeFilterValue 
   );
 }
 
+export function isForeignFeeFilterValue(value: string | null): value is ForeignFeeFilterValue {
+  return value === 'any' || value === '0';
+}
+
+export function isRewardTypeFilterValue(value: string | null): value is RewardTypeFilterValue {
+  return value === 'any' || value === 'cashback';
+}
+
 export function isCardTypeFilterValue(value: string | null): value is CardTypeFilterValue {
   return (
     value === 'all' ||
@@ -127,7 +152,7 @@ export function isCardTypeFilterValue(value: string | null): value is CardTypeFi
 export function isSpendCategoryFilterValue(value: string | null): value is SpendCategoryFilterValue {
   return (
     value === 'any' ||
-    spendingCategoryValues.includes(value as SpendingCategoryValue)
+    (value !== 'all' && spendingCategoryValues.includes(value as SpendingCategoryValue))
   );
 }
 
@@ -153,6 +178,8 @@ export function parseCardsDirectoryFilters(
 ): CardsDirectoryFilters {
   const issuerFromUrl = searchParams.get('issuer');
   const spendFromUrl = searchParams.get('spend');
+  const foreignFeeFromUrl = searchParams.get('intl');
+  const rewardTypeFromUrl = searchParams.get('reward');
   const bonusFromUrl = searchParams.get('bonus');
   const feeFromUrl = searchParams.get('fee');
   const typeFromUrl = searchParams.get('type');
@@ -169,6 +196,12 @@ export function parseCardsDirectoryFilters(
     spendCategory: isSpendCategoryFilterValue(spendFromUrl)
       ? spendFromUrl
       : defaultCardsDirectoryFilters.spendCategory,
+    foreignFee: isForeignFeeFilterValue(foreignFeeFromUrl)
+      ? foreignFeeFromUrl
+      : defaultCardsDirectoryFilters.foreignFee,
+    rewardType: isRewardTypeFilterValue(rewardTypeFromUrl)
+      ? rewardTypeFromUrl
+      : defaultCardsDirectoryFilters.rewardType,
     bonusFilter: isBonusFilterValue(bonusFromUrl)
       ? bonusFromUrl
       : defaultCardsDirectoryFilters.bonusFilter,
@@ -192,6 +225,18 @@ export function buildCardsDirectorySearchParams(
     params.set('spend', filters.spendCategory);
   } else {
     params.delete('spend');
+  }
+
+  if (filters.foreignFee !== defaultCardsDirectoryFilters.foreignFee) {
+    params.set('intl', filters.foreignFee);
+  } else {
+    params.delete('intl');
+  }
+
+  if (filters.rewardType !== defaultCardsDirectoryFilters.rewardType) {
+    params.set('reward', filters.rewardType);
+  } else {
+    params.delete('reward');
   }
 
   if (filters.bonusFilter !== defaultCardsDirectoryFilters.bonusFilter) {
@@ -222,6 +267,14 @@ export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryF
       return false;
     }
 
+    if (filters.foreignFee === '0' && (card.foreignTxFee ?? Number.POSITIVE_INFINITY) > 0) {
+      return false;
+    }
+
+    if (filters.rewardType === 'cashback' && card.rewardType !== 'cashback') {
+      return false;
+    }
+
     if (filters.cardType !== 'all' && card.cardType !== filters.cardType) {
       return false;
     }
@@ -241,6 +294,9 @@ export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryF
   });
 
   return [...filtered].sort((a, b) => {
+    const roiA = getCardSpendRoi(a) ?? Number.NEGATIVE_INFINITY;
+    const roiB = getCardSpendRoi(b) ?? Number.NEGATIVE_INFINITY;
+    const roiDiff = roiB - roiA;
     const bonusDiff = (b.bestSignUpBonusValue ?? 0) - (a.bestSignUpBonusValue ?? 0);
     if (filters.sortBy === 'highest_bonus' && bonusDiff !== 0) return bonusDiff;
 
@@ -248,6 +304,8 @@ export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryF
       const feeDiff = a.annualFee - b.annualFee;
       if (feeDiff !== 0) return feeDiff;
     }
+
+    if (filters.sortBy === 'highest_bonus_roi' && roiDiff !== 0) return roiDiff;
 
     if (bonusDiff !== 0) return bonusDiff;
     const issuerDiff = normalizeIssuerLabel(a.issuer).localeCompare(normalizeIssuerLabel(b.issuer));
@@ -260,6 +318,8 @@ export function countActiveCardsDirectoryFilters(filters: CardsDirectoryFilters)
   return [
     filters.issuer !== defaultCardsDirectoryFilters.issuer,
     filters.spendCategory !== defaultCardsDirectoryFilters.spendCategory,
+    filters.foreignFee !== defaultCardsDirectoryFilters.foreignFee,
+    filters.rewardType !== defaultCardsDirectoryFilters.rewardType,
     filters.bonusFilter !== defaultCardsDirectoryFilters.bonusFilter,
     filters.maxFee !== defaultCardsDirectoryFilters.maxFee,
     filters.cardType !== defaultCardsDirectoryFilters.cardType

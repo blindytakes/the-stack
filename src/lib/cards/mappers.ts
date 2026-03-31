@@ -153,6 +153,7 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
     rewardType: deriveRewardType(row.rewards),
     topCategories: deriveTopCategories(row.rewards),
     annualFee: Number(row.annualFee),
+    foreignTxFee: Number(row.foreignTxFee),
     creditTierMin: creditTierFromDb[row.creditScoreMin],
     headline: `${row.name} by ${row.issuer}${Number(row.annualFee) === 0 ? ' with no annual fee' : ''}`.trim(),
     description: row.description ?? undefined,

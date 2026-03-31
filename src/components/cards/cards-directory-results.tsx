@@ -19,16 +19,12 @@ import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type CardsDirectoryResultsProps = {
   cards: CardRecord[];
-  activeFilterCount: number;
   selectedCompare: string[];
-  onClearFilters: () => void;
 };
 
 export function CardsDirectoryResults({
   cards,
-  activeFilterCount,
-  selectedCompare,
-  onClearFilters
+  selectedCompare
 }: CardsDirectoryResultsProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -94,31 +90,12 @@ export function CardsDirectoryResults({
         <p className="mt-2 text-sm text-text-secondary">
           Try broadening spend fit, issuer, bonus threshold, or annual fee filters.
         </p>
-        <button
-          type="button"
-          onClick={onClearFilters}
-          className="mt-4 rounded-full border border-white/10 px-4 py-2 text-sm text-text-secondary transition hover:border-white/30 hover:text-text-primary"
-        >
-          Clear filters
-        </button>
       </section>
     );
   }
 
   return (
     <section className="mt-6">
-      {activeFilterCount > 0 && (
-        <div className="mb-4 flex justify-end">
-          <button
-            type="button"
-            onClick={onClearFilters}
-            className="rounded-full border border-white/10 px-4 py-2 text-sm text-text-secondary transition hover:border-white/30 hover:text-text-primary"
-          >
-            Clear filters
-          </button>
-        </div>
-      )}
-
       <div ref={gridRef} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {cards.map((card, index) => {
           const selectedForCompare = selectedCompare.includes(card.slug);

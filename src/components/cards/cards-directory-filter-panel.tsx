@@ -2,21 +2,25 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import {
+  rewardTypeOptions,
   spendCategoryOptions,
   sortOptions,
+  type ForeignFeeFilterValue,
   type IssuerOption,
+  type RewardTypeFilterValue,
   type SpendCategoryFilterValue,
   type SortValue
 } from '@/lib/cards-directory-explorer';
 
 type CardsDirectoryFilterPanelProps = {
-  activeFilterCount: number;
   totalCards: number;
   filteredCardsCount: number;
   noAnnualFeeCount: number;
   activeBonusCount: number;
   issuer: string;
   spendCategory: SpendCategoryFilterValue;
+  foreignFee: ForeignFeeFilterValue;
+  rewardType: RewardTypeFilterValue;
   sortBy: SortValue;
   issuerOptions: IssuerOption[];
   eyebrowLabel?: string;
@@ -24,18 +28,20 @@ type CardsDirectoryFilterPanelProps = {
   description?: string;
   onIssuerChange: (value: string) => void;
   onSpendCategoryChange: (value: SpendCategoryFilterValue) => void;
+  onForeignFeeChange: (value: ForeignFeeFilterValue) => void;
+  onRewardTypeChange: (value: RewardTypeFilterValue) => void;
   onSortByChange: (value: SortValue) => void;
-  onReset: () => void;
 };
 
 export function CardsDirectoryFilterPanel({
-  activeFilterCount,
   totalCards,
   filteredCardsCount,
   noAnnualFeeCount,
   activeBonusCount,
   issuer,
   spendCategory,
+  foreignFee,
+  rewardType,
   sortBy,
   issuerOptions,
   eyebrowLabel = 'Card Directory',
@@ -43,10 +49,14 @@ export function CardsDirectoryFilterPanel({
   description = 'When you find a card you like, The Stack builds your bonus plan around it.',
   onIssuerChange,
   onSpendCategoryChange,
-  onSortByChange,
-  onReset
+  onForeignFeeChange,
+  onRewardTypeChange,
+  onSortByChange
 }: CardsDirectoryFilterPanelProps) {
+  type SortControlValue = SortValue | 'no_international_fee';
   const prefersReducedMotion = useReducedMotion();
+  const sortControlValue: SortControlValue =
+    foreignFee === '0' ? 'no_international_fee' : sortBy;
   const introShellTransition = prefersReducedMotion
     ? { duration: 0 }
     : { duration: 0.44, ease: [0.22, 1, 0.36, 1] as const };
@@ -190,10 +200,23 @@ export function CardsDirectoryFilterPanel({
         </label>
 
         <label className="block">
-          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Sort</span>
+          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+            Sort
+          </span>
           <select
-            value={sortBy}
-            onChange={(event) => onSortByChange(event.target.value as SortValue)}
+            value={sortControlValue}
+            onChange={(event) => {
+              const value = event.target.value as SortControlValue;
+
+              if (value === 'no_international_fee') {
+                onForeignFeeChange('0');
+                onSortByChange('highest_bonus');
+                return;
+              }
+
+              onForeignFeeChange('any');
+              onSortByChange(value);
+            }}
             className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
           >
             {sortOptions.map((option) => (
@@ -201,31 +224,66 @@ export function CardsDirectoryFilterPanel({
                 {option.label}
               </option>
             ))}
+            <option value="no_international_fee">No International Fee</option>
           </select>
         </label>
       </div>
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-bg-elevated/65 p-3">
-        <div className="flex justify-end">
-          {spendCategory !== 'any' && (
-            <button
-              type="button"
-              onClick={() => onSpendCategoryChange('any')}
-              className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-text-secondary transition hover:border-white/30 hover:text-text-primary"
-            >
-              Clear spend filter
-            </button>
-          )}
-        </div>
         <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-6">
-          {spendCategoryOptions.map((option) => {
-            const isActive = spendCategory === option.value;
+          {spendCategoryOptions.slice(0, 1).map((option) => {
+            const isActive = rewardType === 'any' && spendCategory === option.value;
 
             return (
               <button
                 key={option.value}
                 type="button"
-                onClick={() => onSpendCategoryChange(option.value)}
+                onClick={() => {
+                  onRewardTypeChange('any');
+                  onSpendCategoryChange(option.value);
+                }}
+                className={`inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                  isActive
+                    ? 'border border-brand-teal/30 bg-brand-teal text-black'
+                    : 'border border-white/10 bg-bg text-text-secondary hover:border-brand-teal/35 hover:text-brand-teal'
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+          {rewardTypeOptions.map((option) => {
+            const isActive = rewardType === option.value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onSpendCategoryChange('any');
+                  onRewardTypeChange(option.value);
+                }}
+                className={`inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                  isActive
+                    ? 'border border-brand-teal/30 bg-brand-teal text-black'
+                    : 'border border-white/10 bg-bg text-text-secondary hover:border-brand-teal/35 hover:text-brand-teal'
+                }`}
+              >
+                {option.label}
+              </button>
+            );
+          })}
+          {spendCategoryOptions.slice(1).map((option) => {
+            const isActive = rewardType === 'any' && spendCategory === option.value;
+
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={() => {
+                  onRewardTypeChange('any');
+                  onSpendCategoryChange(option.value);
+                }}
                 className={`inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-medium transition ${
                   isActive
                     ? 'border border-brand-teal/30 bg-brand-teal text-black'
@@ -239,17 +297,6 @@ export function CardsDirectoryFilterPanel({
         </div>
       </div>
 
-      {activeFilterCount > 0 && (
-        <div className="mt-4 flex justify-end">
-          <button
-            type="button"
-            onClick={onReset}
-            className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-text-secondary transition hover:border-white/30 hover:text-text-primary"
-          >
-            Reset filters
-          </button>
-        </div>
-      )}
     </section>
   );
 }

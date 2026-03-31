@@ -27,6 +27,7 @@ export type CardRecord = {
   rewardType: RewardTypeValue;
   topCategories: SpendingCategoryValue[];
   annualFee: number;
+  foreignTxFee?: number;
   creditTierMin: CreditTierValue;
   headline: string;
   description?: string;

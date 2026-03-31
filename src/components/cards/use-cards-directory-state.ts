@@ -11,6 +11,8 @@ import {
   defaultCardsDirectoryFilters,
   filterAndSortCards,
   parseCardsDirectoryFilters,
+  type ForeignFeeFilterValue,
+  type RewardTypeFilterValue,
   type SpendCategoryFilterValue,
   type SortValue
 } from '@/lib/cards-directory-explorer';
@@ -31,6 +33,8 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
   const [spendCategory, setSpendCategory] = useState<SpendCategoryFilterValue>(
     initialFilters.spendCategory
   );
+  const [foreignFee, setForeignFee] = useState<ForeignFeeFilterValue>(initialFilters.foreignFee);
+  const [rewardType, setRewardType] = useState<RewardTypeFilterValue>(initialFilters.rewardType);
   const [sortBy, setSortBy] = useState<SortValue>(initialFilters.sortBy);
   const [selectedCompare, setSelectedCompare] = useState<string[]>([]);
   const [compareError, setCompareError] = useState('');
@@ -39,12 +43,14 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
     () => ({
       issuer,
       spendCategory,
+      foreignFee,
+      rewardType,
       bonusFilter: defaultCardsDirectoryFilters.bonusFilter,
       maxFee: defaultCardsDirectoryFilters.maxFee,
       cardType: defaultCardsDirectoryFilters.cardType,
       sortBy
     }),
-    [issuer, sortBy, spendCategory]
+    [foreignFee, issuer, rewardType, sortBy, spendCategory]
   );
 
   useEffect(() => {
@@ -52,6 +58,8 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
 
     setIssuer(nextFilters.issuer);
     setSpendCategory(nextFilters.spendCategory);
+    setForeignFee(nextFilters.foreignFee);
+    setRewardType(nextFilters.rewardType);
     setSortBy(nextFilters.sortBy);
 
     hasHydratedFromUrl.current = true;
@@ -92,6 +100,8 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
   function clearFilters() {
     setIssuer(defaultCardsDirectoryFilters.issuer);
     setSpendCategory(defaultCardsDirectoryFilters.spendCategory);
+    setForeignFee(defaultCardsDirectoryFilters.foreignFee);
+    setRewardType(defaultCardsDirectoryFilters.rewardType);
     setSortBy(defaultCardsDirectoryFilters.sortBy);
   }
 
@@ -120,6 +130,8 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
   return {
     issuer,
     spendCategory,
+    foreignFee,
+    rewardType,
     sortBy,
     selectedCompare,
     compareError,
@@ -130,6 +142,8 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
     activeFilterCount,
     setIssuer,
     setSpendCategory,
+    setForeignFee,
+    setRewardType,
     setSortBy,
     clearFilters,
     toggleCompare,

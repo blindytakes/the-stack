@@ -22,6 +22,8 @@ export function CardsDirectoryExplorer({
   const {
     issuer,
     spendCategory,
+    foreignFee,
+    rewardType,
     sortBy,
     selectedCompare,
     compareError,
@@ -29,11 +31,11 @@ export function CardsDirectoryExplorer({
     filteredSortedCards,
     selectedCompareCards,
     compareHref,
-    activeFilterCount,
     setIssuer,
     setSpendCategory,
+    setForeignFee,
+    setRewardType,
     setSortBy,
-    clearFilters,
     clearCompare
   } = useCardsDirectoryState(cards, initialSearchParams);
   const noAnnualFeeCount = filteredSortedCards.filter((card) => card.annualFee === 0).length;
@@ -44,28 +46,28 @@ export function CardsDirectoryExplorer({
   return (
     <div>
       <CardsDirectoryFilterPanel
-        activeFilterCount={activeFilterCount}
         totalCards={cards.length}
-    filteredCardsCount={filteredSortedCards.length}
-    noAnnualFeeCount={noAnnualFeeCount}
-    activeBonusCount={activeBonusCount}
-    issuer={issuer}
-    spendCategory={spendCategory}
-    sortBy={sortBy}
-    issuerOptions={issuerOptions}
-    onIssuerChange={setIssuer}
-    onSpendCategoryChange={setSpendCategory}
-    onSortByChange={setSortBy}
-        onReset={clearFilters}
+        filteredCardsCount={filteredSortedCards.length}
+        noAnnualFeeCount={noAnnualFeeCount}
+        activeBonusCount={activeBonusCount}
+        issuer={issuer}
+        spendCategory={spendCategory}
+        foreignFee={foreignFee}
+        rewardType={rewardType}
+        sortBy={sortBy}
+        issuerOptions={issuerOptions}
+        onIssuerChange={setIssuer}
+        onSpendCategoryChange={setSpendCategory}
+        onForeignFeeChange={setForeignFee}
+        onRewardTypeChange={setRewardType}
+        onSortByChange={setSortBy}
       />
 
       {compareError && <p className="mt-3 text-sm text-brand-coral">{compareError}</p>}
 
       <CardsDirectoryResults
         cards={filteredSortedCards}
-        activeFilterCount={activeFilterCount}
         selectedCompare={selectedCompare}
-        onClearFilters={clearFilters}
       />
 
       <CardsDirectoryLearnSection learnArticles={learnArticles} />

@@ -339,6 +339,12 @@ describe('toCardRecordFromDb', () => {
     expect(result.annualFee).toBe(0);
   });
 
+  it('maps foreignTxFee onto card records', () => {
+    const row = makeDbCardRow({ foreignTxFee: new Prisma.Decimal(0) });
+    const result = toCardRecordFromDb(row);
+    expect(result.foreignTxFee).toBe(0);
+  });
+
   it('returns undefined for null description/longDescription', () => {
     const row = makeDbCardRow({ description: null, longDescription: null });
     const result = toCardRecordFromDb(row);

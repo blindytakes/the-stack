@@ -27,6 +27,8 @@ import {
   countActiveCardsDirectoryFilters,
   defaultCardsDirectoryFilters,
   filterAndSortCards,
+  type ForeignFeeFilterValue,
+  type RewardTypeFilterValue,
   type SpendCategoryFilterValue,
   type SortValue
 } from '@/lib/cards-directory-explorer';
@@ -59,6 +61,12 @@ export function BusinessOffersExplorer({
   const [cardsIssuer, setCardsIssuer] = useState(defaultCardsDirectoryFilters.issuer);
   const [cardsSpendCategory, setCardsSpendCategory] = useState<SpendCategoryFilterValue>(
     defaultCardsDirectoryFilters.spendCategory
+  );
+  const [cardsForeignFee, setCardsForeignFee] = useState<ForeignFeeFilterValue>(
+    defaultCardsDirectoryFilters.foreignFee
+  );
+  const [cardsRewardType, setCardsRewardType] = useState<RewardTypeFilterValue>(
+    defaultCardsDirectoryFilters.rewardType
   );
   const [cardsSortBy, setCardsSortBy] = useState<SortValue>(defaultCardsDirectoryFilters.sortBy);
 
@@ -107,12 +115,14 @@ export function BusinessOffersExplorer({
     () => ({
       issuer: cardsIssuer,
       spendCategory: cardsSpendCategory,
+      foreignFee: cardsForeignFee,
+      rewardType: cardsRewardType,
       bonusFilter: defaultCardsDirectoryFilters.bonusFilter,
       maxFee: defaultCardsDirectoryFilters.maxFee,
       cardType: defaultCardsDirectoryFilters.cardType,
       sortBy: cardsSortBy
     }),
-    [cardsIssuer, cardsSortBy, cardsSpendCategory]
+    [cardsForeignFee, cardsIssuer, cardsRewardType, cardsSortBy, cardsSpendCategory]
   );
 
   const bankingFilters = useMemo(
@@ -172,12 +182,6 @@ export function BusinessOffersExplorer({
     (offer) => !offer.directDeposit.required
   ).length;
   const numericApyBusinessOffers = businessOffers.filter((offer) => offer.apyPercent != null).length;
-
-  function clearCardFilters() {
-    setCardsIssuer(defaultCardsDirectoryFilters.issuer);
-    setCardsSpendCategory(defaultCardsDirectoryFilters.spendCategory);
-    setCardsSortBy(defaultCardsDirectoryFilters.sortBy);
-  }
 
   function clearBankingFilters() {
     setBankingQuery(defaultBankingDirectoryFilters.query);
@@ -260,13 +264,14 @@ export function BusinessOffersExplorer({
         {view === 'cards' ? (
           <>
             <CardsDirectoryFilterPanel
-              activeFilterCount={cardFilterCount}
               totalCards={businessCards.length}
               filteredCardsCount={filteredBusinessCards.length}
               noAnnualFeeCount={noAnnualFeeBusinessCards}
               activeBonusCount={activeBonusBusinessCards}
               issuer={cardsIssuer}
               spendCategory={cardsSpendCategory}
+              foreignFee={cardsForeignFee}
+              rewardType={cardsRewardType}
               sortBy={cardsSortBy}
               issuerOptions={issuerOptions}
               eyebrowLabel="Business Cards"
@@ -274,15 +279,14 @@ export function BusinessOffersExplorer({
               description="Browse the business-only card lineup with the same card view and ranking logic as the main consumer directory."
               onIssuerChange={setCardsIssuer}
               onSpendCategoryChange={setCardsSpendCategory}
+              onForeignFeeChange={setCardsForeignFee}
+              onRewardTypeChange={setCardsRewardType}
               onSortByChange={setCardsSortBy}
-              onReset={clearCardFilters}
             />
 
             <CardsDirectoryResults
               cards={filteredBusinessCards}
-              activeFilterCount={cardFilterCount}
               selectedCompare={[]}
-              onClearFilters={clearCardFilters}
             />
           </>
         ) : (
