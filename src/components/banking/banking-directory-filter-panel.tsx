@@ -43,6 +43,11 @@ type BankingDirectoryFilterPanelProps = {
   stateLimited: StateLimitedFilterValue;
   state: string;
   sortBy: BankingBonusesSort;
+  eyebrowLabel?: string;
+  title?: string;
+  description?: string;
+  searchPlaceholder?: string;
+  showCustomerTypeFilter?: boolean;
   onQueryChange: (value: string) => void;
   onAccountTypeChange: (value: AccountTypeFilterValue) => void;
   onCustomerTypeChange: (value: CustomerTypeFilterValue) => void;
@@ -76,6 +81,11 @@ export function BankingDirectoryFilterPanel({
   stateLimited,
   state,
   sortBy,
+  eyebrowLabel = 'Banking Bonuses',
+  title = 'Find the right bank bonus for you.',
+  description = 'Compare personal and business bank bonuses in one place, then let The Stack build your bonus plan around the offer that fits.',
+  searchPlaceholder = 'Search bank, offer, or requirement...',
+  showCustomerTypeFilter = true,
   onQueryChange,
   onAccountTypeChange,
   onCustomerTypeChange,
@@ -93,7 +103,7 @@ export function BankingDirectoryFilterPanel({
   const prefersReducedMotion = useReducedMotion();
   const advancedFilterCount = [
     accountType !== 'all',
-    customerType !== 'all',
+    showCustomerTypeFilter && customerType !== 'all',
     difficulty !== 'any',
     cashRequirement !== 'any',
     timeline !== 'any',
@@ -178,15 +188,14 @@ export function BankingDirectoryFilterPanel({
             <div className="inline-flex items-center gap-2 rounded-full border border-brand-gold/20 bg-brand-gold/10 px-3 py-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" aria-hidden="true" />
               <span className="text-[10px] uppercase tracking-[0.32em] text-brand-gold">
-                Banking Bonuses
+                {eyebrowLabel}
               </span>
             </div>
             <h1 className="mt-4 w-full font-heading text-[clamp(2.15rem,2.9vw,3.35rem)] leading-[1] tracking-[-0.035em] text-white">
-              Find the right bank bonus for you.
+              {title}
             </h1>
             <p className="mt-4 w-full max-w-[62rem] text-base leading-7 text-text-secondary md:text-lg md:leading-8">
-              Compare personal and business bank bonuses in one place, then let The Stack build
-              your bonus plan around the offer that fits.
+              {description}
             </p>
           </div>
 
@@ -245,7 +254,7 @@ export function BankingDirectoryFilterPanel({
           type="text"
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="Search bank, offer, or requirement..."
+          placeholder={searchPlaceholder}
           className="w-full rounded-2xl border border-white/10 bg-bg-elevated/90 py-3 pr-4 pl-11 text-sm text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
         />
       </div>
@@ -304,7 +313,11 @@ export function BankingDirectoryFilterPanel({
       </div>
 
       {showMore && (
-        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-7">
+        <div
+          className={`mt-3 grid gap-3 md:grid-cols-2 ${
+            showCustomerTypeFilter ? 'xl:grid-cols-7' : 'xl:grid-cols-6'
+          }`}
+        >
           <label className="block">
             <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
               Account Type
@@ -322,24 +335,26 @@ export function BankingDirectoryFilterPanel({
             </select>
           </label>
 
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Customer Type
-            </span>
-            <select
-              value={customerType}
-              onChange={(event) =>
-                onCustomerTypeChange(event.target.value as CustomerTypeFilterValue)
-              }
-              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-            >
-              {customerTypeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+          {showCustomerTypeFilter && (
+            <label className="block">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+                Customer Type
+              </span>
+              <select
+                value={customerType}
+                onChange={(event) =>
+                  onCustomerTypeChange(event.target.value as CustomerTypeFilterValue)
+                }
+                className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+              >
+                {customerTypeOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
 
           <label className="block">
             <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">

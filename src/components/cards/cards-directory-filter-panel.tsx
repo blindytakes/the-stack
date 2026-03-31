@@ -20,6 +20,10 @@ type CardsDirectoryFilterPanelProps = {
   spendCategory: SpendCategoryFilterValue;
   sortBy: SortValue;
   issuerOptions: IssuerOption[];
+  eyebrowLabel?: string;
+  title?: string;
+  description?: string;
+  searchPlaceholder?: string;
   onQueryChange: (value: string) => void;
   onIssuerChange: (value: string) => void;
   onSpendCategoryChange: (value: SpendCategoryFilterValue) => void;
@@ -38,6 +42,10 @@ export function CardsDirectoryFilterPanel({
   spendCategory,
   sortBy,
   issuerOptions,
+  eyebrowLabel = 'Card Directory',
+  title = 'Find the Best Credit Card Bonus for your plan.',
+  description = 'When you find a card you like, The Stack builds your bonus plan around it.',
+  searchPlaceholder = 'Search card, issuer, perk, or reward style...',
   onQueryChange,
   onIssuerChange,
   onSpendCategoryChange,
@@ -118,14 +126,14 @@ export function CardsDirectoryFilterPanel({
             <div className="inline-flex items-center gap-2 rounded-full border border-brand-gold/20 bg-brand-gold/10 px-3 py-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-brand-gold" aria-hidden="true" />
               <span className="text-[10px] uppercase tracking-[0.32em] text-brand-gold">
-                Card Directory
+                {eyebrowLabel}
               </span>
             </div>
             <h1 className="mt-4 w-full font-heading text-[clamp(2.15rem,2.9vw,3.35rem)] leading-[1] tracking-[-0.035em] text-white md:whitespace-nowrap">
-              Find the Best Credit Card Bonus for your plan.
+              {title}
             </h1>
             <p className="mt-4 w-full text-xl leading-8 text-text-secondary md:text-2xl md:leading-9">
-              When you find a card you like, The Stack builds your bonus plan around it.
+              {description}
             </p>
           </div>
 
@@ -184,7 +192,7 @@ export function CardsDirectoryFilterPanel({
           type="text"
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="Search card, issuer, perk, or reward style..."
+          placeholder={searchPlaceholder}
           className="w-full rounded-2xl border border-white/10 bg-bg-elevated/90 py-3 pr-4 pl-11 text-sm text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
         />
       </div>
