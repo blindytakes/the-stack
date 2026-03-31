@@ -11,7 +11,7 @@ type NavItem = {
 };
 
 const navItems: NavItem[] = [
-  { href: '/cards', label: 'Cards' },
+  { href: '/cards', label: 'Credit Cards' },
   { href: '/banking', label: 'Banking' },
   { href: '/business', label: 'Business' },
   { href: '/blog', label: 'Blog' },
