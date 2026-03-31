@@ -20,6 +20,13 @@ export type BankAccountPreference = (typeof bankAccountPreferenceValues)[number]
 export const plannerAudienceValues = ['consumer', 'business'] as const;
 export type PlannerAudience = (typeof plannerAudienceValues)[number];
 
+export const recentCardOpenings24MonthsValues = [
+  'two_or_less',
+  'three_to_four',
+  'five_or_more'
+] as const;
+export type RecentCardOpenings24Months = (typeof recentCardOpenings24MonthsValues)[number];
+
 export const quizRequestSchema = z.object({
   audience: z.enum(plannerAudienceValues).default('consumer'),
   goal: z.enum(['cashback', 'travel', 'flexibility']),
@@ -36,6 +43,7 @@ export const quizRequestSchema = z.object({
     .max(50)
     .default([])
     .transform((slugs) => Array.from(new Set(slugs))),
+  recentCardOpenings24Months: z.enum(recentCardOpenings24MonthsValues).optional(),
   chase524Status: z.enum(['under_5_24', 'at_or_over_5_24', 'not_sure']).default('not_sure'),
   directDeposit: z.enum(['yes', 'no']).default('yes'),
   state: z
@@ -60,6 +68,20 @@ export const quizRequestSchema = z.object({
 export type QuizRequest = z.infer<typeof quizRequestSchema>;
 
 export type QuizResult = CardRecord & { score: number };
+
+export function getChase524StatusFromRecentCardOpenings(
+  value: RecentCardOpenings24Months | undefined
+): QuizRequest['chase524Status'] {
+  if (value === 'five_or_more') {
+    return 'at_or_over_5_24';
+  }
+
+  if (value === 'two_or_less' || value === 'three_to_four') {
+    return 'under_5_24';
+  }
+
+  return 'not_sure';
+}
 
 // Return highest scoring eligible cards first. Keep the list focused on
 // net-new openings and issuer-eligible bonuses.

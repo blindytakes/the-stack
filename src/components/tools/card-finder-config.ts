@@ -42,19 +42,19 @@ function buildDirectDepositStep(audience: PlannerAudience): FinderQuestionStep {
   };
 }
 
-function buildChase524Step(audience: PlannerAudience): FinderQuestionStep {
+function buildRecentCardOpeningsStep(audience: PlannerAudience): FinderQuestionStep {
   return {
-    id: 'chase524Status',
+    id: 'recentCardOpenings24Months',
     type: 'options',
-    title: 'What is your Chase 5/24 status?',
+    title: 'How many credit cards have you opened in the last 24 months?',
     description:
       audience === 'business'
-        ? 'Most business-card applications still lean on your personal credit profile, so 5/24 can change which Chase business cards stay viable.'
-        : '5/24 is a Chase rule that limits you to 5 new credit card accounts every 24 months. This impacts which Chase cards you can open and how we sequence your plan.',
+        ? 'Most business-card applications still lean on your personal credit profile, so this helps estimate whether Chase business cards stay viable.'
+        : 'We use this to estimate your Chase 5/24 status. If you have opened 5 or more cards, Chase cards stay out of the plan.',
     options: [
-      { label: 'Under 5/24', value: 'under_5_24' },
-      { label: 'At or over 5/24', value: 'at_or_over_5_24' },
-      { label: 'Not sure', value: 'not_sure' }
+      { label: '2 or less', value: 'two_or_less' },
+      { label: '3-4', value: 'three_to_four' },
+      { label: '5 or more', value: 'five_or_more' }
     ]
   };
 }
@@ -138,7 +138,7 @@ export function buildCardFinderSteps(options: {
   return [
     buildMonthlySpendStep(audience),
     buildDirectDepositStep(audience),
-    ...(includeChase524Step ? [buildChase524Step(audience)] : []),
+    ...(includeChase524Step ? [buildRecentCardOpeningsStep(audience)] : []),
     buildStateStep(audience),
     buildOwnedCardsStep(audience),
     ...(includeAvailableCash ? [buildAvailableCashStep(audience)] : []),

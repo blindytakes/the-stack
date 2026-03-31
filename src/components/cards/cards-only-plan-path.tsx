@@ -13,12 +13,16 @@ import {
   type FinderQuestionStep
 } from '@/components/tools/card-finder-sections';
 import { submitPlanQuiz } from '@/lib/plan-client';
-import { quizRequestSchema, type QuizRequest } from '@/lib/quiz-engine';
+import {
+  getChase524StatusFromRecentCardOpenings,
+  quizRequestSchema,
+  type QuizRequest
+} from '@/lib/quiz-engine';
 import type { CardRecord } from '@/lib/cards';
 
 type CardOnlyQuestionId =
   | 'ownedCardSlugs'
-  | 'chase524Status'
+  | 'recentCardOpenings24Months'
   | 'spend'
   | 'monthlySpend'
   | 'credit';
@@ -26,7 +30,7 @@ type CardOnlyAnswers = Partial<
   Pick<
     QuizRequest,
     | 'ownedCardSlugs'
-    | 'chase524Status'
+    | 'recentCardOpenings24Months'
     | 'spend'
     | 'monthlySpend'
     | 'credit'
@@ -72,14 +76,14 @@ const cardOnlySteps: CardOnlyStep[] = [
     ]
   },
   {
-    id: 'chase524Status',
+    id: 'recentCardOpenings24Months',
     type: 'options',
-    title: 'What is your Chase 5/24 status?',
-    description: 'This mostly affects Chase cards, but it can change the top of the plan.',
+    title: 'How many credit cards have you opened in the last 24 months?',
+    description: 'We use this to estimate your Chase 5/24 status, which can change the top of the plan.',
     options: [
-      { label: 'Under 5/24', value: 'under_5_24' },
-      { label: 'At or over 5/24', value: 'at_or_over_5_24' },
-      { label: 'Not sure', value: 'not_sure' }
+      { label: '2 or less', value: 'two_or_less' },
+      { label: '3-4', value: 'three_to_four' },
+      { label: '5 or more', value: 'five_or_more' }
     ]
   },
   {
@@ -166,7 +170,8 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
     const parsedAnswers = quizRequestSchema.safeParse({
       ownedCardSlugs: answers.ownedCardSlugs ?? [],
       amexLifetimeBlockedSlugs: [],
-      chase524Status: answers.chase524Status,
+      recentCardOpenings24Months: answers.recentCardOpenings24Months,
+      chase524Status: getChase524StatusFromRecentCardOpenings(answers.recentCardOpenings24Months),
       goal: 'flexibility',
       spend: answers.spend,
       monthlySpend: answers.monthlySpend,
@@ -211,8 +216,9 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
           <p className="text-xs uppercase tracking-[0.3em] text-brand-teal">Card-Only Path</p>
           <h2 className="mt-2 font-heading text-3xl text-text-primary">Build My 6-Month Card Plan</h2>
           <p className="mt-2 max-w-2xl text-sm text-text-secondary">
-            Start with your spend capacity and credit profile, then layer in Chase status and
-            cards you already hold to get a focused roadmap based only on welcome bonuses.
+            Start with your spend capacity and credit profile, then layer in how many cards
+            you have opened recently and the cards you already hold to get a focused roadmap
+            based only on welcome bonuses.
           </p>
         </div>
         <Link href="/cards" className="text-sm text-text-secondary transition hover:text-text-primary">

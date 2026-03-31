@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { rankQuizResults, quizRequestSchema } from '../quiz-engine';
+import {
+  getChase524StatusFromRecentCardOpenings,
+  rankQuizResults,
+  quizRequestSchema
+} from '../quiz-engine';
 import type { QuizRequest } from '../quiz-engine';
 import type { CardRecord } from '../cards';
 
@@ -199,6 +203,13 @@ describe('rankQuizResults', () => {
 });
 
 describe('quizRequestSchema', () => {
+  it('maps recent card opening ranges to Chase 5/24 status', () => {
+    expect(getChase524StatusFromRecentCardOpenings('two_or_less')).toBe('under_5_24');
+    expect(getChase524StatusFromRecentCardOpenings('three_to_four')).toBe('under_5_24');
+    expect(getChase524StatusFromRecentCardOpenings('five_or_more')).toBe('at_or_over_5_24');
+    expect(getChase524StatusFromRecentCardOpenings(undefined)).toBe('not_sure');
+  });
+
   it('validates a correct request', () => {
     const parsed = quizRequestSchema.safeParse({
       goal: 'cashback',
@@ -207,12 +218,14 @@ describe('quizRequestSchema', () => {
       credit: 'good',
       directDeposit: 'yes',
       state: 'ny',
+      recentCardOpenings24Months: 'three_to_four',
       monthlySpend: 'from_2500_to_5000',
       pace: 'balanced'
     });
     expect(parsed.success).toBe(true);
     if (parsed.success) {
       expect(parsed.data.state).toBe('NY');
+      expect(parsed.data.recentCardOpenings24Months).toBe('three_to_four');
       expect(parsed.data.monthlySpend).toBe('from_2500_to_5000');
       expect(parsed.data.ownedCardSlugs).toEqual([]);
       expect(parsed.data.amexLifetimeBlockedSlugs).toEqual([]);

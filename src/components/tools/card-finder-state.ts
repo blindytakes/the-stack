@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
+  getChase524StatusFromRecentCardOpenings,
   quizRequestSchema,
   type PlannerAudience,
   type QuizRequest
@@ -162,6 +163,7 @@ export function useCardFinderState(
     const parsedAnswers = quizRequestSchema.safeParse({
       ...answers,
       audience,
+      chase524Status: getChase524StatusFromRecentCardOpenings(answers.recentCardOpenings24Months),
       amexLifetimeBlockedSlugs: [],
       goal: 'flexibility',
       spend: 'all',
