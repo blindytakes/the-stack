@@ -112,4 +112,10 @@ describe('banking directory explorer helpers', () => {
       { key: 'state', label: 'Available in New York' }
     ]);
   });
+
+  it('normalizes the legacy easiest sort to the default visible sort', () => {
+    const filters = parseBankingDirectoryFilters(new URLSearchParams('sort=easy'));
+
+    expect(filters.sortBy).toBe(defaultBankingDirectoryFilters.sortBy);
+  });
 });

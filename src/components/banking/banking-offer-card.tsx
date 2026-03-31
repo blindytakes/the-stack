@@ -26,7 +26,13 @@ export function BankingOfferCard({
   const imagePresentation = getBankingImagePresentation(offer.bankName);
   const noDirectDeposit = !offer.directDeposit.required;
   const stateLimited = offer.stateRestrictions && offer.stateRestrictions.length > 0;
-  const decisionMetrics = getBankingDecisionMetrics(offer);
+  const decisionMetrics = getBankingDecisionMetrics(offer).filter(
+    (metric) =>
+      metric.label !== 'Activity req.' &&
+      metric.label !== 'Direct deposit' &&
+      metric.label !== 'Opening deposit' &&
+      metric.label !== 'Hold period'
+  );
 
   return (
     <article
@@ -94,29 +100,41 @@ export function BankingOfferCard({
       </div>
 
       <div className="relative z-10 mt-4 grid grid-cols-2 gap-2">
-        {decisionMetrics.map((metric, metricIndex) => (
-          <div
-            key={metric.label}
-            className={`rounded-xl border border-white/5 bg-bg/40 px-3 py-2 ${
-              metricIndex === decisionMetrics.length - 1 ? 'col-span-2' : ''
-            }`}
-          >
-            <p className="text-[10px] uppercase tracking-[0.16em] text-text-muted">{metric.label}</p>
-            <p
-              className={`mt-1 text-sm font-semibold ${
-                metric.tone === 'positive'
-                  ? 'text-brand-teal'
-                  : metric.tone === 'warning'
-                    ? 'text-brand-gold'
-                    : metric.tone === 'negative'
-                      ? 'text-brand-coral'
-                      : 'text-text-primary'
+        {decisionMetrics.map((metric, metricIndex) => {
+          const isCenteredMetric = metric.label === 'Fee' || metric.label === 'ROI';
+
+          return (
+            <div
+              key={metric.label}
+              className={`rounded-xl border border-white/5 bg-bg/40 px-3 py-2 ${
+                decisionMetrics.length % 2 === 1 && metricIndex === decisionMetrics.length - 1
+                  ? 'col-span-2'
+                  : ''
               }`}
             >
-              {metric.value}
-            </p>
-          </div>
-        ))}
+              <p
+                className={`text-[10px] uppercase tracking-[0.16em] text-text-muted ${
+                  isCenteredMetric ? 'text-center' : ''
+                }`}
+              >
+                {metric.label}
+              </p>
+              <p
+                className={`mt-1 text-sm font-semibold ${
+                  metric.tone === 'positive'
+                    ? 'text-brand-teal'
+                    : metric.tone === 'warning'
+                      ? 'text-brand-gold'
+                      : metric.tone === 'negative'
+                        ? 'text-brand-coral'
+                        : 'text-text-primary'
+                } ${isCenteredMetric ? 'text-center' : ''}`}
+              >
+                {metric.value}
+              </p>
+            </div>
+          );
+        })}
       </div>
 
       {/* Action */}
@@ -146,7 +164,11 @@ export function BankingOfferCard({
               })}
               className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs font-semibold text-black transition hover:opacity-90"
             >
-              Add to my plan
+              <span className="leading-tight">
+                Add to
+                <br />
+                my plan
+              </span>
             </Link>
           </div>
         )}

@@ -105,9 +105,8 @@ export function getBankingDecisionMetrics(
       tone: 'default' as DecisionMetricTone
     },
     {
-      label: 'Fee drag',
-      value:
-        offer.estimatedFees > 0 ? `~${formatBankingCurrency(offer.estimatedFees)}` : 'No fee drag',
+      label: 'Fee',
+      value: offer.estimatedFees > 0 ? `~${formatBankingCurrency(offer.estimatedFees)}` : 'No fee',
       detail:
         offer.estimatedFees > 0 ? 'Missed waivers shrink payout' : 'No recurring fee modeled',
       tone: offer.estimatedFees > 0 ? ('warning' as DecisionMetricTone) : ('default' as DecisionMetricTone)

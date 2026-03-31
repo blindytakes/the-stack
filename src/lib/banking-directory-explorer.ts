@@ -61,7 +61,6 @@ export const defaultBankingDirectoryFilters: BankingDirectoryFilters = {
 
 export const bankingSortOptions: Array<{ value: BankingBonusesSort; label: string }> = [
   { value: 'net', label: 'Highest Bonus Value' },
-  { value: 'easy', label: 'Easiest to Complete' },
   { value: 'fast', label: 'Fastest Timeline' },
   { value: 'low_cash', label: 'Lowest Cash Needed' }
 ];
@@ -228,9 +227,12 @@ export function parseBankingDirectoryFilters(searchParams: URLSearchParams): Ban
       ? stateLimitedFromUrl
       : defaultBankingDirectoryFilters.stateLimited,
     state: validStates.has(stateFromUrl) ? stateFromUrl : defaultBankingDirectoryFilters.state,
-    sortBy: isBankingSortValue(sortFromUrl)
-      ? sortFromUrl
-      : defaultBankingDirectoryFilters.sortBy
+    sortBy:
+      sortFromUrl === 'easy'
+        ? defaultBankingDirectoryFilters.sortBy
+        : isBankingSortValue(sortFromUrl)
+          ? sortFromUrl
+          : defaultBankingDirectoryFilters.sortBy
   };
 }
 
