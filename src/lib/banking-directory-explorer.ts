@@ -45,7 +45,7 @@ export type BankingActiveFilterChip = {
 
 export const defaultBankingDirectoryFilters: BankingDirectoryFilters = {
   accountType: 'all',
-  customerType: 'all',
+  customerType: 'personal',
   directDeposit: 'any',
   apy: 'any',
   difficulty: 'any',

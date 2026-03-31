@@ -15,27 +15,21 @@ export function BankingDirectoryExplorer({
   initialSearchParams
 }: BankingDirectoryExplorerProps) {
   const {
-    accountType,
     customerType,
     directDeposit,
     apy,
-    difficulty,
     cashRequirement,
     timeline,
-    stateLimited,
     state,
     sortBy,
     filteredSortedOffers,
     activeFilterCount,
     activeFilterChips,
-    setAccountType,
     setCustomerType,
     setDirectDeposit,
     setApy,
-    setDifficulty,
     setCashRequirement,
     setTimeline,
-    setStateLimited,
     setState,
     setSortBy,
     clearFilters,
@@ -53,24 +47,18 @@ export function BankingDirectoryExplorer({
         filteredOffersCount={filteredSortedOffers.length}
         noDirectDepositCount={noDirectDepositCount}
         numericApyCount={numericApyCount}
-        accountType={accountType}
         customerType={customerType}
         directDeposit={directDeposit}
         apy={apy}
-        difficulty={difficulty}
         cashRequirement={cashRequirement}
         timeline={timeline}
-        stateLimited={stateLimited}
         state={state}
         sortBy={sortBy}
-        onAccountTypeChange={setAccountType}
         onCustomerTypeChange={setCustomerType}
         onDirectDepositChange={setDirectDeposit}
         onApyChange={setApy}
-        onDifficultyChange={setDifficulty}
         onCashRequirementChange={setCashRequirement}
         onTimelineChange={setTimeline}
-        onStateLimitedChange={setStateLimited}
         onStateChange={setState}
         onSortByChange={setSortBy}
         onRemoveFilter={removeFilter}

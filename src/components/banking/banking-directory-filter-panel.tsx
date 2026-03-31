@@ -4,23 +4,17 @@ import { useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { usStateOptions } from '@/lib/us-state-options';
 import {
-  accountTypeOptions,
   apyOptions,
   bankingSortOptions,
   cashRequirementOptions,
   customerTypeOptions,
   directDepositOptions,
-  difficultyOptions,
-  stateLimitedOptions,
   timelineOptions,
-  type AccountTypeFilterValue,
   type ApyFilterValue,
   type BankingActiveFilterChip,
   type CashRequirementFilterValue,
   type CustomerTypeFilterValue,
-  type DifficultyFilterValue,
   type DirectDepositFilterValue,
-  type StateLimitedFilterValue,
   type TimelineFilterValue
 } from '@/lib/banking-directory-explorer';
 import type { BankingBonusesSort } from '@/lib/banking-bonuses';
@@ -32,28 +26,22 @@ type BankingDirectoryFilterPanelProps = {
   filteredOffersCount: number;
   noDirectDepositCount: number;
   numericApyCount: number;
-  accountType: AccountTypeFilterValue;
   customerType: CustomerTypeFilterValue;
   directDeposit: DirectDepositFilterValue;
   apy: ApyFilterValue;
-  difficulty: DifficultyFilterValue;
   cashRequirement: CashRequirementFilterValue;
   timeline: TimelineFilterValue;
-  stateLimited: StateLimitedFilterValue;
   state: string;
   sortBy: BankingBonusesSort;
   eyebrowLabel?: string;
   title?: string;
   description?: string;
   showCustomerTypeFilter?: boolean;
-  onAccountTypeChange: (value: AccountTypeFilterValue) => void;
   onCustomerTypeChange: (value: CustomerTypeFilterValue) => void;
   onDirectDepositChange: (value: DirectDepositFilterValue) => void;
   onApyChange: (value: ApyFilterValue) => void;
-  onDifficultyChange: (value: DifficultyFilterValue) => void;
   onCashRequirementChange: (value: CashRequirementFilterValue) => void;
   onTimelineChange: (value: TimelineFilterValue) => void;
-  onStateLimitedChange: (value: StateLimitedFilterValue) => void;
   onStateChange: (value: string) => void;
   onSortByChange: (value: BankingBonusesSort) => void;
   onRemoveFilter: (key: BankingActiveFilterChip['key']) => void;
@@ -67,28 +55,22 @@ export function BankingDirectoryFilterPanel({
   filteredOffersCount,
   noDirectDepositCount,
   numericApyCount,
-  accountType,
   customerType,
   directDeposit,
   apy,
-  difficulty,
   cashRequirement,
   timeline,
-  stateLimited,
   state,
   sortBy,
   eyebrowLabel = 'Banking Bonuses',
   title = 'Find the right bank bonus for you.',
   description = 'Compare personal and business bank bonuses in one place, then let The Stack build your bonus plan around the offer that fits.',
   showCustomerTypeFilter = true,
-  onAccountTypeChange,
   onCustomerTypeChange,
   onDirectDepositChange,
   onApyChange,
-  onDifficultyChange,
   onCashRequirementChange,
   onTimelineChange,
-  onStateLimitedChange,
   onStateChange,
   onSortByChange,
   onRemoveFilter,
@@ -96,12 +78,9 @@ export function BankingDirectoryFilterPanel({
 }: BankingDirectoryFilterPanelProps) {
   const prefersReducedMotion = useReducedMotion();
   const advancedFilterCount = [
-    accountType !== 'all',
     showCustomerTypeFilter && customerType !== 'all',
-    difficulty !== 'any',
     cashRequirement !== 'any',
     timeline !== 'any',
-    stateLimited !== 'any',
     state.length > 0
   ].filter(Boolean).length;
   const [showMore, setShowMore] = useState(advancedFilterCount > 0);
@@ -256,13 +235,17 @@ export function BankingDirectoryFilterPanel({
           </label>
 
           <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">APY</span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+              Cash Needed
+            </span>
             <select
-              value={apy}
-              onChange={(event) => onApyChange(event.target.value as ApyFilterValue)}
+              value={cashRequirement}
+              onChange={(event) =>
+                onCashRequirementChange(event.target.value as CashRequirementFilterValue)
+              }
               className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
             >
-              {apyOptions.map((option) => (
+              {cashRequirementOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -290,30 +273,13 @@ export function BankingDirectoryFilterPanel({
       {showMore && (
         <div
           className={`mt-3 grid gap-3 md:grid-cols-2 ${
-            showCustomerTypeFilter ? 'xl:grid-cols-7' : 'xl:grid-cols-6'
+            showCustomerTypeFilter ? 'xl:grid-cols-4' : 'xl:grid-cols-3'
           }`}
         >
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Account Type
-            </span>
-            <select
-              value={accountType}
-              onChange={(event) => onAccountTypeChange(event.target.value as AccountTypeFilterValue)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-            >
-              {accountTypeOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
           {showCustomerTypeFilter && (
             <label className="block">
               <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-                Customer Type
+                Account Type
               </span>
               <select
                 value={customerType}
@@ -332,17 +298,13 @@ export function BankingDirectoryFilterPanel({
           )}
 
           <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Cash Needed
-            </span>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">APY</span>
             <select
-              value={cashRequirement}
-              onChange={(event) =>
-                onCashRequirementChange(event.target.value as CashRequirementFilterValue)
-              }
+              value={apy}
+              onChange={(event) => onApyChange(event.target.value as ApyFilterValue)}
               className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
             >
-              {cashRequirementOptions.map((option) => (
+              {apyOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -358,42 +320,6 @@ export function BankingDirectoryFilterPanel({
               className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
             >
               {timelineOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Difficulty
-            </span>
-            <select
-              value={difficulty}
-              onChange={(event) => onDifficultyChange(event.target.value as DifficultyFilterValue)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-            >
-              {difficultyOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Availability
-            </span>
-            <select
-              value={stateLimited}
-              onChange={(event) =>
-                onStateLimitedChange(event.target.value as StateLimitedFilterValue)
-              }
-              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-            >
-              {stateLimitedOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>

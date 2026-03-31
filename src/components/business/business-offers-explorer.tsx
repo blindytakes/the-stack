@@ -12,13 +12,11 @@ import {
   countActiveBankingDirectoryFilters,
   defaultBankingDirectoryFilters,
   filterAndSortBankingOffers,
-  type AccountTypeFilterValue,
   type ApyFilterValue,
   type BankingDirectoryFilterKey,
   type CashRequirementFilterValue,
-  type DifficultyFilterValue,
+  type CustomerTypeFilterValue,
   type DirectDepositFilterValue,
-  type StateLimitedFilterValue,
   type TimelineFilterValue
 } from '@/lib/banking-directory-explorer';
 import type { CardRecord } from '@/lib/cards';
@@ -48,6 +46,8 @@ function getBusinessBrowseView(value: string | null): BusinessBrowseView {
   return isBusinessBrowseView(value) ? value : 'cards';
 }
 
+const businessExplorerCustomerType: CustomerTypeFilterValue = 'all';
+
 export function BusinessOffersExplorer({
   businessCards,
   businessOffers
@@ -70,24 +70,15 @@ export function BusinessOffersExplorer({
   );
   const [cardsSortBy, setCardsSortBy] = useState<SortValue>(defaultCardsDirectoryFilters.sortBy);
 
-  const [bankingAccountType, setBankingAccountType] = useState<AccountTypeFilterValue>(
-    defaultBankingDirectoryFilters.accountType
-  );
   const [bankingDirectDeposit, setBankingDirectDeposit] = useState<DirectDepositFilterValue>(
     defaultBankingDirectoryFilters.directDeposit
   );
   const [bankingApy, setBankingApy] = useState<ApyFilterValue>(defaultBankingDirectoryFilters.apy);
-  const [bankingDifficulty, setBankingDifficulty] = useState<DifficultyFilterValue>(
-    defaultBankingDirectoryFilters.difficulty
-  );
   const [bankingCashRequirement, setBankingCashRequirement] = useState<CashRequirementFilterValue>(
     defaultBankingDirectoryFilters.cashRequirement
   );
   const [bankingTimeline, setBankingTimeline] = useState<TimelineFilterValue>(
     defaultBankingDirectoryFilters.timeline
-  );
-  const [bankingStateLimited, setBankingStateLimited] = useState<StateLimitedFilterValue>(
-    defaultBankingDirectoryFilters.stateLimited
   );
   const [bankingState, setBankingState] = useState(defaultBankingDirectoryFilters.state);
   const [bankingSortBy, setBankingSortBy] = useState<BankingBonusesSort>(
@@ -126,26 +117,23 @@ export function BusinessOffersExplorer({
 
   const bankingFilters = useMemo(
     () => ({
-      accountType: bankingAccountType,
-      customerType: defaultBankingDirectoryFilters.customerType,
+      accountType: defaultBankingDirectoryFilters.accountType,
+      customerType: businessExplorerCustomerType,
       directDeposit: bankingDirectDeposit,
       apy: bankingApy,
-      difficulty: bankingDifficulty,
+      difficulty: defaultBankingDirectoryFilters.difficulty,
       cashRequirement: bankingCashRequirement,
       timeline: bankingTimeline,
-      stateLimited: bankingStateLimited,
+      stateLimited: defaultBankingDirectoryFilters.stateLimited,
       state: bankingState,
       sortBy: bankingSortBy
     }),
     [
-      bankingAccountType,
       bankingApy,
       bankingCashRequirement,
-      bankingDifficulty,
       bankingDirectDeposit,
       bankingSortBy,
       bankingState,
-      bankingStateLimited,
       bankingTimeline
     ]
   );
@@ -181,13 +169,10 @@ export function BusinessOffersExplorer({
   const numericApyBusinessOffers = businessOffers.filter((offer) => offer.apyPercent != null).length;
 
   function clearBankingFilters() {
-    setBankingAccountType(defaultBankingDirectoryFilters.accountType);
     setBankingDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
     setBankingApy(defaultBankingDirectoryFilters.apy);
-    setBankingDifficulty(defaultBankingDirectoryFilters.difficulty);
     setBankingCashRequirement(defaultBankingDirectoryFilters.cashRequirement);
     setBankingTimeline(defaultBankingDirectoryFilters.timeline);
-    setBankingStateLimited(defaultBankingDirectoryFilters.stateLimited);
     setBankingState(defaultBankingDirectoryFilters.state);
     setBankingSortBy(defaultBankingDirectoryFilters.sortBy);
   }
@@ -201,16 +186,13 @@ export function BusinessOffersExplorer({
   }
 
   function removeBankingFilter(key: BankingDirectoryFilterKey) {
-    if (key === 'accountType') setBankingAccountType(defaultBankingDirectoryFilters.accountType);
     if (key === 'customerType') return;
     if (key === 'directDeposit') setBankingDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
     if (key === 'apy') setBankingApy(defaultBankingDirectoryFilters.apy);
-    if (key === 'difficulty') setBankingDifficulty(defaultBankingDirectoryFilters.difficulty);
     if (key === 'cashRequirement') {
       setBankingCashRequirement(defaultBankingDirectoryFilters.cashRequirement);
     }
     if (key === 'timeline') setBankingTimeline(defaultBankingDirectoryFilters.timeline);
-    if (key === 'stateLimited') setBankingStateLimited(defaultBankingDirectoryFilters.stateLimited);
     if (key === 'state') setBankingState(defaultBankingDirectoryFilters.state);
   }
 
@@ -303,28 +285,22 @@ export function BusinessOffersExplorer({
               filteredOffersCount={filteredBusinessOffers.length}
               noDirectDepositCount={noDirectDepositBusinessOffers}
               numericApyCount={numericApyBusinessOffers}
-              accountType={bankingAccountType}
-              customerType={defaultBankingDirectoryFilters.customerType}
+              customerType={businessExplorerCustomerType}
               directDeposit={bankingDirectDeposit}
               apy={bankingApy}
-              difficulty={bankingDifficulty}
               cashRequirement={bankingCashRequirement}
               timeline={bankingTimeline}
-              stateLimited={bankingStateLimited}
               state={bankingState}
               sortBy={bankingSortBy}
               eyebrowLabel="Business Banking"
               title="Find the right business bank bonus for your plan."
               description="Browse business checking and savings bonuses with the same filter treatment and offer cards used in the main banking directory."
               showCustomerTypeFilter={false}
-              onAccountTypeChange={setBankingAccountType}
               onCustomerTypeChange={() => {}}
               onDirectDepositChange={setBankingDirectDeposit}
               onApyChange={setBankingApy}
-              onDifficultyChange={setBankingDifficulty}
               onCashRequirementChange={setBankingCashRequirement}
               onTimelineChange={setBankingTimeline}
-              onStateLimitedChange={setBankingStateLimited}
               onStateChange={setBankingState}
               onSortByChange={setBankingSortBy}
               onRemoveFilter={removeBankingFilter}

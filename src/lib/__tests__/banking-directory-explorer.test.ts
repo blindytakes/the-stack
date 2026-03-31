@@ -10,6 +10,14 @@ import {
 } from '@/lib/banking-directory-explorer';
 
 describe('banking directory explorer helpers', () => {
+  it('defaults the banking directory to personal-only offers', () => {
+    const filters = parseBankingDirectoryFilters(new URLSearchParams());
+
+    expect(filters.customerType).toBe('personal');
+    expect(buildBankingDirectorySearchParams(new URLSearchParams(), filters).toString()).toBe('');
+    expect(countActiveBankingDirectoryFilters(filters)).toBe(0);
+  });
+
   it('parses and rebuilds non-default filters from the URL', () => {
     const filters = parseBankingDirectoryFilters(
       new URLSearchParams(
