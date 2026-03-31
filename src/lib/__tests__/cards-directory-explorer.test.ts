@@ -49,7 +49,7 @@ describe('cards-directory-explorer', () => {
     ]);
   });
 
-  it('parses query params using valid issuer options and default fallbacks', () => {
+  it('parses card directory params using valid issuer options and default fallbacks', () => {
     const issuerOptions = buildIssuerOptions([
       createCard({ slug: 'amex-1', issuer: 'American Express' }),
       createCard({ slug: 'chase-1', issuer: 'Chase' })
@@ -57,7 +57,6 @@ describe('cards-directory-explorer', () => {
 
     const filters = parseCardsDirectoryFilters(
       new URLSearchParams({
-        q: ' travel ',
         issuer: 'American Express',
         spend: 'travel',
         bonus: '750',
@@ -69,7 +68,6 @@ describe('cards-directory-explorer', () => {
     );
 
     expect(filters).toEqual({
-      query: ' travel ',
       issuer: 'american-express',
       spendCategory: 'travel',
       bonusFilter: '750',
@@ -132,7 +130,6 @@ describe('cards-directory-explorer', () => {
     ];
 
     const filtered = filterAndSortCards(cards, {
-      query: 'travel',
       issuer: 'all',
       spendCategory: 'travel',
       bonusFilter: '500',
@@ -186,7 +183,6 @@ describe('cards-directory-explorer', () => {
 
   it('builds query params from non-default filters and counts active filters', () => {
     const filters = {
-      query: '  chase sapphire  ',
       issuer: 'chase',
       spendCategory: 'travel' as const,
       bonusFilter: '750' as const,
@@ -196,9 +192,9 @@ describe('cards-directory-explorer', () => {
     };
 
     expect(buildCardsDirectorySearchParams(new URLSearchParams(), filters).toString()).toBe(
-      'q=chase+sapphire&issuer=chase&spend=travel&bonus=750&fee=95&type=personal&sort=lowest_fee'
+      'issuer=chase&spend=travel&bonus=750&fee=95&type=personal&sort=lowest_fee'
     );
-    expect(countActiveCardsDirectoryFilters(filters)).toBe(6);
+    expect(countActiveCardsDirectoryFilters(filters)).toBe(5);
   });
 
   it('builds compare links only when exactly two cards are selected', () => {

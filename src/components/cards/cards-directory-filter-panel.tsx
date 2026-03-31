@@ -15,7 +15,6 @@ type CardsDirectoryFilterPanelProps = {
   filteredCardsCount: number;
   noAnnualFeeCount: number;
   activeBonusCount: number;
-  query: string;
   issuer: string;
   spendCategory: SpendCategoryFilterValue;
   sortBy: SortValue;
@@ -23,8 +22,6 @@ type CardsDirectoryFilterPanelProps = {
   eyebrowLabel?: string;
   title?: string;
   description?: string;
-  searchPlaceholder?: string;
-  onQueryChange: (value: string) => void;
   onIssuerChange: (value: string) => void;
   onSpendCategoryChange: (value: SpendCategoryFilterValue) => void;
   onSortByChange: (value: SortValue) => void;
@@ -37,7 +34,6 @@ export function CardsDirectoryFilterPanel({
   filteredCardsCount,
   noAnnualFeeCount,
   activeBonusCount,
-  query,
   issuer,
   spendCategory,
   sortBy,
@@ -45,8 +41,6 @@ export function CardsDirectoryFilterPanel({
   eyebrowLabel = 'Card Directory',
   title = 'Find the Best Credit Card Bonus for your plan.',
   description = 'When you find a card you like, The Stack builds your bonus plan around it.',
-  searchPlaceholder = 'Search card, issuer, perk, or reward style...',
-  onQueryChange,
   onIssuerChange,
   onSpendCategoryChange,
   onSortByChange,
@@ -81,26 +75,26 @@ export function CardsDirectoryFilterPanel({
       context: `of ${totalCards}`,
       description: 'Cards in the current view.',
       valueClassName: 'text-white',
-      barClassName: 'bg-white/80',
+      barClassName: 'bg-emerald-400/80',
       percent: totalCards > 0 ? (filteredCardsCount / totalCards) * 100 : 0
     },
     {
       label: 'No Annual Fee',
       value: noAnnualFeeCount.toLocaleString(),
-      context: totalCards > 0 ? `${Math.round((noAnnualFeeCount / totalCards) * 100)}%` : '0%',
-      description: 'Lower-commitment keepers.',
-      valueClassName: 'text-emerald-300',
+      context: `of ${filteredCardsCount}`,
+      description: 'Lower-commitment keepers in this view.',
+      valueClassName: 'text-white',
       barClassName: 'bg-emerald-400/80',
-      percent: totalCards > 0 ? (noAnnualFeeCount / totalCards) * 100 : 0
+      percent: filteredCardsCount > 0 ? (noAnnualFeeCount / filteredCardsCount) * 100 : 0
     },
     {
       label: 'Bonus-Ready',
       value: activeBonusCount.toLocaleString(),
-      context: totalCards > 0 ? `${Math.round((activeBonusCount / totalCards) * 100)}%` : '0%',
-      description: 'Cards with active welcome value.',
-      valueClassName: 'text-brand-gold',
-      barClassName: 'bg-brand-gold/85',
-      percent: totalCards > 0 ? (activeBonusCount / totalCards) * 100 : 0
+      context: `of ${filteredCardsCount}`,
+      description: 'Cards with active welcome value in this view.',
+      valueClassName: 'text-white',
+      barClassName: 'bg-emerald-400/80',
+      percent: filteredCardsCount > 0 ? (activeBonusCount / filteredCardsCount) * 100 : 0
     }
   ] as const;
 
@@ -169,7 +163,7 @@ export function CardsDirectoryFilterPanel({
                 <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/6">
                   <div
                     className={`h-full rounded-full ${card.barClassName}`}
-                    style={{ width: `${Math.max(card.percent, 8)}%` }}
+                    style={{ width: `${card.percent > 0 ? Math.max(card.percent, 8) : 0}%` }}
                   />
                 </div>
               </motion.div>
@@ -178,26 +172,7 @@ export function CardsDirectoryFilterPanel({
         </div>
       </motion.div>
 
-      <div className="relative mt-5">
-        <svg
-          viewBox="0 0 20 20"
-          fill="none"
-          className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-text-muted"
-          aria-hidden="true"
-        >
-          <circle cx="9" cy="9" r="5.75" stroke="currentColor" strokeWidth="1.5" />
-          <path d="m13.5 13.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-        <input
-          type="text"
-          value={query}
-          onChange={(event) => onQueryChange(event.target.value)}
-          placeholder={searchPlaceholder}
-          className="w-full rounded-2xl border border-white/10 bg-bg-elevated/90 py-3 pr-4 pl-11 text-sm text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
-        />
-      </div>
-
-      <div className="mt-3 grid gap-3 md:grid-cols-2">
+      <div className="mt-5 grid gap-3 md:grid-cols-2">
         <label className="block">
           <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Issuer</span>
           <select

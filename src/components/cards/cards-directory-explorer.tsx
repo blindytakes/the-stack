@@ -20,7 +20,6 @@ export function CardsDirectoryExplorer({
   initialSearchParams
 }: CardsDirectoryExplorerProps) {
   const {
-    query,
     issuer,
     spendCategory,
     sortBy,
@@ -31,33 +30,32 @@ export function CardsDirectoryExplorer({
     selectedCompareCards,
     compareHref,
     activeFilterCount,
-    setQuery,
     setIssuer,
     setSpendCategory,
     setSortBy,
     clearFilters,
     clearCompare
   } = useCardsDirectoryState(cards, initialSearchParams);
-  const noAnnualFeeCount = cards.filter((card) => card.annualFee === 0).length;
-  const activeBonusCount = cards.filter((card) => (card.bestSignUpBonusValue ?? 0) > 0).length;
+  const noAnnualFeeCount = filteredSortedCards.filter((card) => card.annualFee === 0).length;
+  const activeBonusCount = filteredSortedCards.filter(
+    (card) => (card.bestSignUpBonusValue ?? 0) > 0
+  ).length;
 
   return (
     <div>
       <CardsDirectoryFilterPanel
         activeFilterCount={activeFilterCount}
         totalCards={cards.length}
-        filteredCardsCount={filteredSortedCards.length}
-        noAnnualFeeCount={noAnnualFeeCount}
-        activeBonusCount={activeBonusCount}
-        query={query}
-        issuer={issuer}
-        spendCategory={spendCategory}
-        sortBy={sortBy}
-        issuerOptions={issuerOptions}
-        onQueryChange={setQuery}
-        onIssuerChange={setIssuer}
-        onSpendCategoryChange={setSpendCategory}
-        onSortByChange={setSortBy}
+    filteredCardsCount={filteredSortedCards.length}
+    noAnnualFeeCount={noAnnualFeeCount}
+    activeBonusCount={activeBonusCount}
+    issuer={issuer}
+    spendCategory={spendCategory}
+    sortBy={sortBy}
+    issuerOptions={issuerOptions}
+    onIssuerChange={setIssuer}
+    onSpendCategoryChange={setSpendCategory}
+    onSortByChange={setSortBy}
         onReset={clearFilters}
       />
 

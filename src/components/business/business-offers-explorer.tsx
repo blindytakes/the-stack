@@ -56,7 +56,6 @@ export function BusinessOffersExplorer({
   const issuerOptions = useMemo(() => buildIssuerOptions(businessCards), [businessCards]);
   const view = getBusinessBrowseView(searchParams.get('view'));
 
-  const [cardsQuery, setCardsQuery] = useState(defaultCardsDirectoryFilters.query);
   const [cardsIssuer, setCardsIssuer] = useState(defaultCardsDirectoryFilters.issuer);
   const [cardsSpendCategory, setCardsSpendCategory] = useState<SpendCategoryFilterValue>(
     defaultCardsDirectoryFilters.spendCategory
@@ -106,7 +105,6 @@ export function BusinessOffersExplorer({
 
   const cardFilters = useMemo(
     () => ({
-      query: cardsQuery,
       issuer: cardsIssuer,
       spendCategory: cardsSpendCategory,
       bonusFilter: defaultCardsDirectoryFilters.bonusFilter,
@@ -114,7 +112,7 @@ export function BusinessOffersExplorer({
       cardType: defaultCardsDirectoryFilters.cardType,
       sortBy: cardsSortBy
     }),
-    [cardsIssuer, cardsQuery, cardsSortBy, cardsSpendCategory]
+    [cardsIssuer, cardsSortBy, cardsSpendCategory]
   );
 
   const bankingFilters = useMemo(
@@ -166,8 +164,8 @@ export function BusinessOffersExplorer({
     [bankingFilters]
   );
 
-  const noAnnualFeeBusinessCards = businessCards.filter((card) => card.annualFee === 0).length;
-  const activeBonusBusinessCards = businessCards.filter(
+  const noAnnualFeeBusinessCards = filteredBusinessCards.filter((card) => card.annualFee === 0).length;
+  const activeBonusBusinessCards = filteredBusinessCards.filter(
     (card) => (card.bestSignUpBonusValue ?? 0) > 0
   ).length;
   const noDirectDepositBusinessOffers = businessOffers.filter(
@@ -176,7 +174,6 @@ export function BusinessOffersExplorer({
   const numericApyBusinessOffers = businessOffers.filter((offer) => offer.apyPercent != null).length;
 
   function clearCardFilters() {
-    setCardsQuery(defaultCardsDirectoryFilters.query);
     setCardsIssuer(defaultCardsDirectoryFilters.issuer);
     setCardsSpendCategory(defaultCardsDirectoryFilters.spendCategory);
     setCardsSortBy(defaultCardsDirectoryFilters.sortBy);
@@ -268,7 +265,6 @@ export function BusinessOffersExplorer({
               filteredCardsCount={filteredBusinessCards.length}
               noAnnualFeeCount={noAnnualFeeBusinessCards}
               activeBonusCount={activeBonusBusinessCards}
-              query={cardsQuery}
               issuer={cardsIssuer}
               spendCategory={cardsSpendCategory}
               sortBy={cardsSortBy}
@@ -276,8 +272,6 @@ export function BusinessOffersExplorer({
               eyebrowLabel="Business Cards"
               title="Find the right business card bonus for your plan."
               description="Browse the business-only card lineup with the same card view and ranking logic as the main consumer directory."
-              searchPlaceholder="Search business card, issuer, perk, or reward style..."
-              onQueryChange={setCardsQuery}
               onIssuerChange={setCardsIssuer}
               onSpendCategoryChange={setCardsSpendCategory}
               onSortByChange={setCardsSortBy}

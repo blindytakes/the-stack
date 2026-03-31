@@ -27,7 +27,6 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
     [initialSearchParams, issuerOptions]
   );
 
-  const [query, setQuery] = useState(initialFilters.query);
   const [issuer, setIssuer] = useState(initialFilters.issuer);
   const [spendCategory, setSpendCategory] = useState<SpendCategoryFilterValue>(
     initialFilters.spendCategory
@@ -38,7 +37,6 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
 
   const filters = useMemo(
     () => ({
-      query,
       issuer,
       spendCategory,
       bonusFilter: defaultCardsDirectoryFilters.bonusFilter,
@@ -46,13 +44,12 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
       cardType: defaultCardsDirectoryFilters.cardType,
       sortBy
     }),
-    [issuer, query, sortBy, spendCategory]
+    [issuer, sortBy, spendCategory]
   );
 
   useEffect(() => {
     const nextFilters = parseCardsDirectoryFilters(new URLSearchParams(searchParamsString), issuerOptions);
 
-    setQuery(nextFilters.query);
     setIssuer(nextFilters.issuer);
     setSpendCategory(nextFilters.spendCategory);
     setSortBy(nextFilters.sortBy);
@@ -93,7 +90,6 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
   );
 
   function clearFilters() {
-    setQuery(defaultCardsDirectoryFilters.query);
     setIssuer(defaultCardsDirectoryFilters.issuer);
     setSpendCategory(defaultCardsDirectoryFilters.spendCategory);
     setSortBy(defaultCardsDirectoryFilters.sortBy);
@@ -122,7 +118,6 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
   }
 
   return {
-    query,
     issuer,
     spendCategory,
     sortBy,
@@ -133,7 +128,6 @@ export function useCardsDirectoryState(cards: CardRecord[], initialSearchParams:
     selectedCompareCards,
     compareHref,
     activeFilterCount,
-    setQuery,
     setIssuer,
     setSpendCategory,
     setSortBy,

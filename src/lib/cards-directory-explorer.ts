@@ -13,7 +13,6 @@ export type SpendCategoryFilterValue = 'any' | SpendingCategoryValue;
 export type IssuerOption = { value: string; label: string; count: number };
 
 export type CardsDirectoryFilters = {
-  query: string;
   issuer: string;
   spendCategory: SpendCategoryFilterValue;
   bonusFilter: BonusFilterValue;
@@ -23,7 +22,6 @@ export type CardsDirectoryFilters = {
 };
 
 export const defaultCardsDirectoryFilters: CardsDirectoryFilters = {
-  query: '',
   issuer: 'all',
   spendCategory: 'any',
   bonusFilter: 'any',
@@ -98,10 +96,6 @@ export function formatSpendRequirement(card: CardRecord) {
   return `Spend $${Math.round(spend).toLocaleString()} in ${months} mo`;
 }
 
-function lower(value: string) {
-  return value.trim().toLowerCase();
-}
-
 export function isSortValue(value: string | null): value is SortValue {
   return (
     value === 'highest_bonus' ||
@@ -157,7 +151,6 @@ export function parseCardsDirectoryFilters(
   searchParams: URLSearchParams,
   issuerOptions: IssuerOption[]
 ): CardsDirectoryFilters {
-  const queryFromUrl = searchParams.get('q') ?? '';
   const issuerFromUrl = searchParams.get('issuer');
   const spendFromUrl = searchParams.get('spend');
   const bonusFromUrl = searchParams.get('bonus');
@@ -169,7 +162,6 @@ export function parseCardsDirectoryFilters(
   const validIssuerValues = new Set(issuerOptions.map((option) => option.value));
 
   return {
-    query: queryFromUrl,
     issuer:
       issuerValueFromUrl && validIssuerValues.has(issuerValueFromUrl)
         ? issuerValueFromUrl
@@ -191,10 +183,7 @@ export function buildCardsDirectorySearchParams(
   filters: CardsDirectoryFilters
 ) {
   const params = new URLSearchParams(currentSearchParams);
-  const normalizedQuery = filters.query.trim();
-
-  if (normalizedQuery) params.set('q', normalizedQuery);
-  else params.delete('q');
+  params.delete('q');
 
   if (filters.issuer !== defaultCardsDirectoryFilters.issuer) params.set('issuer', filters.issuer);
   else params.delete('issuer');
@@ -224,17 +213,7 @@ export function buildCardsDirectorySearchParams(
 }
 
 export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryFilters) {
-  const queryLower = lower(filters.query);
-  const hasQuery = queryLower.length > 0;
-
   const filtered = cards.filter((card) => {
-    if (hasQuery) {
-      const searchable = lower(
-        `${card.name} ${card.issuer} ${card.headline} ${card.cardType} ${card.creditTierMin}`
-      );
-      if (!searchable.includes(queryLower)) return false;
-    }
-
     if (filters.issuer !== 'all' && issuerKey(card.issuer) !== filters.issuer) return false;
     if (
       filters.spendCategory !== 'any' &&
@@ -279,7 +258,6 @@ export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryF
 
 export function countActiveCardsDirectoryFilters(filters: CardsDirectoryFilters) {
   return [
-    filters.query.trim().length > 0,
     filters.issuer !== defaultCardsDirectoryFilters.issuer,
     filters.spendCategory !== defaultCardsDirectoryFilters.spendCategory,
     filters.bonusFilter !== defaultCardsDirectoryFilters.bonusFilter,
