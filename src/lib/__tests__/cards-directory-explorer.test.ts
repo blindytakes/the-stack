@@ -65,7 +65,7 @@ describe('cards-directory-explorer', () => {
         reward: 'cashback',
         bonus: '750',
         fee: '95',
-        type: 'personal',
+        type: 'business',
         sort: 'highest_bonus_roi'
       }),
       issuerOptions
@@ -78,8 +78,7 @@ describe('cards-directory-explorer', () => {
       rewardType: 'cashback',
       bonusFilter: '750',
       maxFee: '95',
-
-      cardType: 'personal',
+      cardType: 'business',
       sortBy: 'highest_bonus_roi'
     });
 
@@ -110,6 +109,26 @@ describe('cards-directory-explorer', () => {
     );
 
     expect(filters.spendCategory).toBe('all');
+  });
+
+  it('hides business cards in the default consumer view', () => {
+    const cards = [
+      createCard({ slug: 'personal-card', name: 'Personal Card', cardType: 'personal', bestSignUpBonusValue: 900 }),
+      createCard({ slug: 'student-card', name: 'Student Card', cardType: 'student', bestSignUpBonusValue: 800 }),
+      createCard({ slug: 'secured-card', name: 'Secured Card', cardType: 'secured', bestSignUpBonusValue: 700 }),
+      createCard({ slug: 'business-card', name: 'Business Card', cardType: 'business', bestSignUpBonusValue: 1000 })
+    ];
+
+    const filtered = filterAndSortCards(cards, {
+      ...defaultCardsDirectoryFilters,
+      sortBy: 'highest_bonus'
+    });
+
+    expect(filtered.map((card) => card.slug)).toEqual([
+      'personal-card',
+      'student-card',
+      'secured-card'
+    ]);
   });
 
   it('filters cards and sorts by lowest annual fee', () => {
@@ -258,7 +277,7 @@ describe('cards-directory-explorer', () => {
     expect(filtered.map((card) => card.slug)).toEqual(['everyday-flat-rate']);
   });
 
-  it('excludes business cards from the consumer directory dataset', () => {
+  it('keeps business cards in the main directory dataset when the issuer is supported', () => {
     const cards = [
       createCard({
         slug: 'travel-max',
@@ -289,12 +308,26 @@ describe('cards-directory-explorer', () => {
         bestSignUpBonusValue: 800,
         creditTierMin: 'good',
         cardType: 'business'
+      }),
+      createCard({
+        slug: 'unsupported-business',
+        name: 'Unsupported Business',
+        issuer: 'Unknown Bank',
+        headline: 'Should stay excluded by issuer gate',
+        annualFee: 0,
+        bestSignUpBonusValue: 400,
+        creditTierMin: 'good',
+        cardType: 'business'
       })
     ];
 
     const filtered = filterCardsForDirectory(cards);
 
-    expect(filtered.map((card) => card.slug)).toEqual(['travel-max', 'student-start']);
+    expect(filtered.map((card) => card.slug)).toEqual([
+      'travel-max',
+      'student-start',
+      'business-cash'
+    ]);
   });
 
   it('builds query params from non-default filters and counts active filters', () => {
@@ -305,12 +338,12 @@ describe('cards-directory-explorer', () => {
       rewardType: 'cashback' as const,
       bonusFilter: '750' as const,
       maxFee: '95' as const,
-      cardType: 'personal' as const,
+      cardType: 'business' as const,
       sortBy: 'highest_bonus_roi' as const
     };
 
     expect(buildCardsDirectorySearchParams(new URLSearchParams(), filters).toString()).toBe(
-      'issuer=chase&spend=travel&intl=0&reward=cashback&bonus=750&fee=95&type=personal&sort=highest_bonus_roi'
+      'issuer=chase&spend=travel&intl=0&reward=cashback&bonus=750&fee=95&type=business&sort=highest_bonus_roi'
     );
     expect(countActiveCardsDirectoryFilters(filters)).toBe(7);
   });

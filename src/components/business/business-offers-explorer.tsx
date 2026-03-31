@@ -25,6 +25,7 @@ import {
   countActiveCardsDirectoryFilters,
   defaultCardsDirectoryFilters,
   filterAndSortCards,
+  type CardTypeFilterValue,
   type ForeignFeeFilterValue,
   type RewardTypeFilterValue,
   type SpendCategoryFilterValue,
@@ -47,6 +48,7 @@ function getBusinessBrowseView(value: string | null): BusinessBrowseView {
 }
 
 const businessExplorerCustomerType: CustomerTypeFilterValue = 'all';
+const businessCardsPageCardType: CardTypeFilterValue = 'business';
 
 export function BusinessOffersExplorer({
   businessCards,
@@ -109,7 +111,7 @@ export function BusinessOffersExplorer({
       rewardType: cardsRewardType,
       bonusFilter: defaultCardsDirectoryFilters.bonusFilter,
       maxFee: defaultCardsDirectoryFilters.maxFee,
-      cardType: defaultCardsDirectoryFilters.cardType,
+      cardType: businessCardsPageCardType,
       sortBy: cardsSortBy
     }),
     [cardsForeignFee, cardsIssuer, cardsRewardType, cardsSortBy, cardsSpendCategory]
@@ -147,7 +149,11 @@ export function BusinessOffersExplorer({
     [bankingFilters, businessOffers]
   );
   const cardFilterCount = useMemo(
-    () => countActiveCardsDirectoryFilters(cardFilters),
+    () =>
+      countActiveCardsDirectoryFilters({
+        ...cardFilters,
+        cardType: defaultCardsDirectoryFilters.cardType
+      }),
     [cardFilters]
   );
   const bankingFilterCount = useMemo(
@@ -197,7 +203,7 @@ export function BusinessOffersExplorer({
   }
 
   return (
-    <section className="mt-8">
+    <section>
       <div className="rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,32,0.88),rgba(12,13,22,0.96))] p-4 shadow-[0_16px_48px_rgba(0,0,0,0.24)] md:p-5">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
           <div className="inline-flex rounded-full border border-white/10 bg-black/20 p-1">
@@ -258,6 +264,7 @@ export function BusinessOffersExplorer({
               spendCategory={cardsSpendCategory}
               foreignFee={cardsForeignFee}
               rewardType={cardsRewardType}
+              showBusinessQuickFilter={false}
               sortBy={cardsSortBy}
               issuerOptions={issuerOptions}
               eyebrowLabel="Business Cards"

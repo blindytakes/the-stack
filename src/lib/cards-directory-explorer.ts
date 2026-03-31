@@ -11,7 +11,7 @@ export type BonusFilterValue = 'any' | 'has_bonus' | '500' | '750' | '1000';
 export type FeeFilterValue = 'any' | '0' | '95' | '250' | '10000';
 export type ForeignFeeFilterValue = 'any' | '0';
 export type RewardTypeFilterValue = 'any' | 'cashback';
-export type CardTypeFilterValue = 'all' | Exclude<CardRecord['cardType'], 'business'>;
+export type CardTypeFilterValue = 'all' | 'consumer' | CardRecord['cardType'];
 export type SpendCategoryFilterValue = 'any' | Exclude<SpendingCategoryValue, 'other'>;
 export type IssuerOption = { value: string; label: string; count: number };
 
@@ -33,7 +33,7 @@ export const defaultCardsDirectoryFilters: CardsDirectoryFilters = {
   rewardType: 'any',
   bonusFilter: 'any',
   maxFee: 'any',
-  cardType: 'all',
+  cardType: 'consumer',
   sortBy: 'highest_bonus'
 };
 
@@ -69,8 +69,10 @@ export const feeOptions: Array<{ value: FeeFilterValue; label: string }> = [
 ];
 
 export const cardTypeOptions: Array<{ value: CardTypeFilterValue; label: string }> = [
+  { value: 'consumer', label: 'Consumer' },
   { value: 'all', label: 'All card types' },
   { value: 'personal', label: 'Personal' },
+  { value: 'business', label: 'Business' },
   { value: 'student', label: 'Student' },
   { value: 'secured', label: 'Secured' }
 ];
@@ -144,7 +146,9 @@ export function isRewardTypeFilterValue(value: string | null): value is RewardTy
 export function isCardTypeFilterValue(value: string | null): value is CardTypeFilterValue {
   return (
     value === 'all' ||
+    value === 'consumer' ||
     value === 'personal' ||
+    value === 'business' ||
     value === 'student' ||
     value === 'secured'
   );
@@ -276,7 +280,15 @@ export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryF
       return false;
     }
 
-    if (filters.cardType !== 'all' && card.cardType !== filters.cardType) {
+    if (filters.cardType === 'consumer' && card.cardType === 'business') {
+      return false;
+    }
+
+    if (
+      filters.cardType !== 'all' &&
+      filters.cardType !== 'consumer' &&
+      card.cardType !== filters.cardType
+    ) {
       return false;
     }
 

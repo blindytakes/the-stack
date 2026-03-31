@@ -40,7 +40,5 @@ export function isSupportedDirectoryIssuer(issuer: string): boolean {
 }
 
 export function filterCardsForDirectory(cards: CardRecord[]): CardRecord[] {
-  return cards.filter(
-    (card) => isSupportedDirectoryIssuer(card.issuer) && card.cardType !== 'business'
-  );
+  return cards.filter((card) => isSupportedDirectoryIssuer(card.issuer));
 }

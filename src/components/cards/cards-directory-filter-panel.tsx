@@ -2,6 +2,8 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import {
+  defaultCardsDirectoryFilters,
+  type CardTypeFilterValue,
   rewardTypeOptions,
   spendCategoryOptions,
   sortOptions,
@@ -22,18 +24,40 @@ type CardsDirectoryFilterPanelProps = {
   spendCategory: SpendCategoryFilterValue;
   foreignFee: ForeignFeeFilterValue;
   rewardType: RewardTypeFilterValue;
+  cardType?: CardTypeFilterValue;
   sortBy: SortValue;
   issuerOptions: IssuerOption[];
   eyebrowLabel?: string;
   title?: string;
   description?: string;
+  showBusinessQuickFilter?: boolean;
   onIssuerChange: (value: string) => void;
   onSpendCategoryChange: (value: SpendCategoryFilterValue) => void;
   onForeignFeeChange: (value: ForeignFeeFilterValue) => void;
   onRewardTypeChange: (value: RewardTypeFilterValue) => void;
+  onCardTypeChange?: (value: CardTypeFilterValue) => void;
   onSortByChange: (value: SortValue) => void;
   onClearFilters: () => void;
 };
+
+function BusinessFilterIcon({ active }: { active: boolean }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 20 20"
+      className={`h-3.5 w-3.5 ${active ? 'text-black' : 'text-current opacity-80'}`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M6.25 6.25V5a1.25 1.25 0 0 1 1.25-1.25h5A1.25 1.25 0 0 1 13.75 5v1.25" />
+      <path d="M3.75 7.5h12.5v7.5a1.25 1.25 0 0 1-1.25 1.25H5A1.25 1.25 0 0 1 3.75 15V7.5Z" />
+      <path d="M3.75 10.625h12.5" />
+    </svg>
+  );
+}
 
 export function CardsDirectoryFilterPanel({
   totalCards,
@@ -45,15 +69,18 @@ export function CardsDirectoryFilterPanel({
   spendCategory,
   foreignFee,
   rewardType,
+  cardType,
   sortBy,
   issuerOptions,
   eyebrowLabel = 'Card Directory',
   title = 'Find the Best Credit Card Bonus for your plan.',
   description = 'When you find a card you like, The Stack builds your bonus plan around it.',
+  showBusinessQuickFilter = true,
   onIssuerChange,
   onSpendCategoryChange,
   onForeignFeeChange,
   onRewardTypeChange,
+  onCardTypeChange,
   onSortByChange,
   onClearFilters
 }: CardsDirectoryFilterPanelProps) {
@@ -234,7 +261,11 @@ export function CardsDirectoryFilterPanel({
       </div>
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-bg-elevated/65 p-3">
-        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
+        <div
+          className={`grid gap-2 sm:grid-cols-2 md:grid-cols-4 ${
+            showBusinessQuickFilter ? 'lg:grid-cols-8' : 'lg:grid-cols-7'
+          }`}
+        >
           <button
             type="button"
             onClick={onClearFilters}
@@ -268,6 +299,24 @@ export function CardsDirectoryFilterPanel({
               </button>
             );
           })}
+          {showBusinessQuickFilter && (
+            <button
+              type="button"
+              onClick={() =>
+                onCardTypeChange?.(
+                  cardType === 'business' ? defaultCardsDirectoryFilters.cardType : 'business'
+                )
+              }
+              className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${
+                cardType === 'business'
+                  ? 'border border-brand-teal/30 bg-brand-teal text-black'
+                  : 'border border-white/10 bg-bg text-text-secondary hover:border-brand-teal/35 hover:text-brand-teal'
+              }`}
+            >
+              <BusinessFilterIcon active={cardType === 'business'} />
+              <span>Business Cards</span>
+            </button>
+          )}
           {spendCategoryOptions.slice(1).map((option) => {
             const isActive = rewardType === 'any' && spendCategory === option.value;
 

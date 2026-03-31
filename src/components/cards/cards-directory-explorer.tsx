@@ -24,6 +24,7 @@ export function CardsDirectoryExplorer({
     spendCategory,
     foreignFee,
     rewardType,
+    cardType,
     sortBy,
     activeFilterCount,
     selectedCompare,
@@ -36,6 +37,7 @@ export function CardsDirectoryExplorer({
     setSpendCategory,
     setForeignFee,
     setRewardType,
+    setCardType,
     setSortBy,
     clearFilters,
     clearCompare
@@ -57,12 +59,14 @@ export function CardsDirectoryExplorer({
         spendCategory={spendCategory}
         foreignFee={foreignFee}
         rewardType={rewardType}
+        cardType={cardType}
         sortBy={sortBy}
         issuerOptions={issuerOptions}
         onIssuerChange={setIssuer}
         onSpendCategoryChange={setSpendCategory}
         onForeignFeeChange={setForeignFee}
         onRewardTypeChange={setRewardType}
+        onCardTypeChange={setCardType}
         onSortByChange={setSortBy}
         onClearFilters={clearFilters}
       />
