@@ -25,6 +25,7 @@ export function CardsDirectoryExplorer({
     foreignFee,
     rewardType,
     sortBy,
+    activeFilterCount,
     selectedCompare,
     compareError,
     issuerOptions,
@@ -36,6 +37,7 @@ export function CardsDirectoryExplorer({
     setForeignFee,
     setRewardType,
     setSortBy,
+    clearFilters,
     clearCompare
   } = useCardsDirectoryState(cards, initialSearchParams);
   const noAnnualFeeCount = filteredSortedCards.filter((card) => card.annualFee === 0).length;
@@ -50,6 +52,7 @@ export function CardsDirectoryExplorer({
         filteredCardsCount={filteredSortedCards.length}
         noAnnualFeeCount={noAnnualFeeCount}
         activeBonusCount={activeBonusCount}
+        activeFilterCount={activeFilterCount}
         issuer={issuer}
         spendCategory={spendCategory}
         foreignFee={foreignFee}
@@ -61,6 +64,7 @@ export function CardsDirectoryExplorer({
         onForeignFeeChange={setForeignFee}
         onRewardTypeChange={setRewardType}
         onSortByChange={setSortBy}
+        onClearFilters={clearFilters}
       />
 
       {compareError && <p className="mt-3 text-sm text-brand-coral">{compareError}</p>}

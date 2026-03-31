@@ -12,7 +12,7 @@ export type FeeFilterValue = 'any' | '0' | '95' | '250' | '10000';
 export type ForeignFeeFilterValue = 'any' | '0';
 export type RewardTypeFilterValue = 'any' | 'cashback';
 export type CardTypeFilterValue = 'all' | Exclude<CardRecord['cardType'], 'business'>;
-export type SpendCategoryFilterValue = 'any' | Exclude<SpendingCategoryValue, 'all'>;
+export type SpendCategoryFilterValue = 'any' | Exclude<SpendingCategoryValue, 'other'>;
 export type IssuerOption = { value: string; label: string; count: number };
 
 export type CardsDirectoryFilters = {
@@ -80,6 +80,7 @@ export const spendCategoryOptions: Array<{
   label: string;
 }> = [
   { value: 'any', label: 'Any spend' },
+  { value: 'all', label: 'Everyday Spend' },
   { value: 'dining', label: 'Dining' },
   { value: 'groceries', label: 'Groceries' },
   { value: 'travel', label: 'Travel' },
@@ -152,7 +153,7 @@ export function isCardTypeFilterValue(value: string | null): value is CardTypeFi
 export function isSpendCategoryFilterValue(value: string | null): value is SpendCategoryFilterValue {
   return (
     value === 'any' ||
-    (value !== 'all' && spendingCategoryValues.includes(value as SpendingCategoryValue))
+    (value !== 'other' && spendingCategoryValues.includes(value as SpendingCategoryValue))
   );
 }
 

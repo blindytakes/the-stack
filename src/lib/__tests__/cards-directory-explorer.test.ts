@@ -87,7 +87,7 @@ describe('cards-directory-explorer', () => {
       parseCardsDirectoryFilters(
         new URLSearchParams({
           issuer: 'Unknown Bank',
-          spend: 'all',
+          spend: 'bogus',
           reward: 'bogus',
           bonus: 'bogus',
           sort: 'bogus'
@@ -95,6 +95,21 @@ describe('cards-directory-explorer', () => {
         issuerOptions
       )
     ).toEqual(defaultCardsDirectoryFilters);
+  });
+
+  it('accepts everyday spend as a valid spend filter', () => {
+    const issuerOptions = buildIssuerOptions([
+      createCard({ slug: 'capital-one', issuer: 'Capital One' })
+    ]);
+
+    const filters = parseCardsDirectoryFilters(
+      new URLSearchParams({
+        spend: 'all'
+      }),
+      issuerOptions
+    );
+
+    expect(filters.spendCategory).toBe('all');
   });
 
   it('filters cards and sorts by lowest annual fee', () => {
@@ -220,6 +235,27 @@ describe('cards-directory-explorer', () => {
     });
 
     expect(filtered.map((card) => card.slug)).toEqual(['cashback-card']);
+  });
+
+  it('filters for everyday spend cards only', () => {
+    const cards = [
+      createCard({ slug: 'everyday-flat-rate', topCategories: ['all'] }),
+      createCard({ slug: 'travel-card', topCategories: ['travel'] }),
+      createCard({ slug: 'dining-card', topCategories: ['dining'] })
+    ];
+
+    const filtered = filterAndSortCards(cards, {
+      issuer: 'all',
+      spendCategory: 'all',
+      foreignFee: 'any',
+      rewardType: 'any',
+      bonusFilter: 'any',
+      maxFee: 'any',
+      cardType: 'all',
+      sortBy: 'highest_bonus'
+    });
+
+    expect(filtered.map((card) => card.slug)).toEqual(['everyday-flat-rate']);
   });
 
   it('excludes business cards from the consumer directory dataset', () => {

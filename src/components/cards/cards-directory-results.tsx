@@ -117,7 +117,7 @@ export function CardsDirectoryResults({
             <article
               key={card.slug}
               data-reveal-index={index}
-              className={`group relative flex flex-col overflow-hidden rounded-2xl border bg-bg-surface p-5 transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out will-change-transform ${
+              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-bg-surface p-5 transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out will-change-transform ${
                 shouldReveal && !isVisible
                   ? 'translate-y-6 scale-[0.985] opacity-0'
                   : 'translate-y-0 scale-100 opacity-100'
@@ -179,67 +179,69 @@ export function CardsDirectoryResults({
                 </p>
               </div>
 
-              <div className="relative z-10 mt-4 grid grid-cols-2 gap-2">
-                {decisionMetrics.map((metric, metricIndex) => (
-                  <div
-                    key={metric.label}
-                    className={`flex min-h-[88px] flex-col items-center justify-center rounded-xl border border-white/5 bg-bg/40 px-3 py-3 text-center ${
-                      metric.fullWidth || metricIndex === decisionMetrics.length - 1 ? 'col-span-2' : ''
-                    }`}
-                  >
-                    <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
-                      {metric.label}
-                    </p>
-                    <p
-                      className={`mt-2 text-[1.05rem] font-semibold leading-tight ${
-                        metric.tone === 'positive'
-                          ? 'text-brand-teal'
-                          : metric.tone === 'warning'
-                            ? 'text-brand-gold'
-                            : metric.tone === 'negative'
-                              ? 'text-brand-coral'
-                              : 'text-text-primary'
+              <div className="relative z-10 mt-auto pt-4">
+                <div className="grid grid-cols-2 gap-2">
+                  {decisionMetrics.map((metric, metricIndex) => (
+                    <div
+                      key={metric.label}
+                      className={`flex min-h-[88px] flex-col items-center justify-center rounded-xl border border-white/5 bg-bg/40 px-3 py-3 text-center ${
+                        metric.fullWidth || metricIndex === decisionMetrics.length - 1 ? 'col-span-2' : ''
                       }`}
                     >
-                      {metric.value}
-                    </p>
-                    {metric.supportingText ? (
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+                        {metric.label}
+                      </p>
                       <p
-                        className={`mt-1 leading-4 ${
-                          metric.supportingTone === 'emphasized'
-                            ? 'text-[13px] font-medium text-text-secondary'
-                            : 'text-[11px] text-text-muted'
+                        className={`mt-2 text-[1.05rem] font-semibold leading-tight ${
+                          metric.tone === 'positive'
+                            ? 'text-brand-teal'
+                            : metric.tone === 'warning'
+                              ? 'text-brand-gold'
+                              : metric.tone === 'negative'
+                                ? 'text-brand-coral'
+                                : 'text-text-primary'
                         }`}
                       >
-                        {metric.supportingText}
+                        {metric.value}
                       </p>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
+                      {metric.supportingText ? (
+                        <p
+                          className={`mt-1 leading-4 ${
+                            metric.supportingTone === 'emphasized'
+                              ? 'text-[13px] font-medium text-text-secondary'
+                              : 'text-[11px] text-text-muted'
+                          }`}
+                        >
+                          {metric.supportingText}
+                        </p>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
 
-              <div className="relative z-10 mt-auto mt-4 flex gap-2 border-t border-white/5 pt-4">
-                <button
-                  type="button"
-                  onClick={() => openModal(card.slug)}
-                  className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
-                >
-                  Details
-                </button>
-                <Link
-                  href={buildSelectedOfferIntentHref({
-                    lane: 'cards',
-                    slug: card.slug,
-                    audience: card.cardType === 'business' ? 'business' : undefined
-                  })}
-                  className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs font-semibold text-black transition hover:opacity-90"
-                >
-                  <span className="block leading-[1.15]">
-                    Add to
-                    <br />
-                    my plan
-                  </span>
-                </Link>
+                <div className="mt-4 flex gap-2 border-t border-white/5 pt-4">
+                  <button
+                    type="button"
+                    onClick={() => openModal(card.slug)}
+                    className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
+                  >
+                    Details
+                  </button>
+                  <Link
+                    href={buildSelectedOfferIntentHref({
+                      lane: 'cards',
+                      slug: card.slug,
+                      audience: card.cardType === 'business' ? 'business' : undefined
+                    })}
+                    className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs font-semibold text-black transition hover:opacity-90"
+                  >
+                    <span className="block leading-[1.15]">
+                      Add to
+                      <br />
+                      my plan
+                    </span>
+                  </Link>
+                </div>
               </div>
             </article>
           );

@@ -17,6 +17,7 @@ type CardsDirectoryFilterPanelProps = {
   filteredCardsCount: number;
   noAnnualFeeCount: number;
   activeBonusCount: number;
+  activeFilterCount: number;
   issuer: string;
   spendCategory: SpendCategoryFilterValue;
   foreignFee: ForeignFeeFilterValue;
@@ -31,6 +32,7 @@ type CardsDirectoryFilterPanelProps = {
   onForeignFeeChange: (value: ForeignFeeFilterValue) => void;
   onRewardTypeChange: (value: RewardTypeFilterValue) => void;
   onSortByChange: (value: SortValue) => void;
+  onClearFilters: () => void;
 };
 
 export function CardsDirectoryFilterPanel({
@@ -38,6 +40,7 @@ export function CardsDirectoryFilterPanel({
   filteredCardsCount,
   noAnnualFeeCount,
   activeBonusCount,
+  activeFilterCount,
   issuer,
   spendCategory,
   foreignFee,
@@ -51,7 +54,8 @@ export function CardsDirectoryFilterPanel({
   onSpendCategoryChange,
   onForeignFeeChange,
   onRewardTypeChange,
-  onSortByChange
+  onSortByChange,
+  onClearFilters
 }: CardsDirectoryFilterPanelProps) {
   type SortControlValue = SortValue | 'no_international_fee';
   const prefersReducedMotion = useReducedMotion();
@@ -230,28 +234,19 @@ export function CardsDirectoryFilterPanel({
       </div>
 
       <div className="mt-4 rounded-2xl border border-white/10 bg-bg-elevated/65 p-3">
-        <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-6">
-          {spendCategoryOptions.slice(0, 1).map((option) => {
-            const isActive = rewardType === 'any' && spendCategory === option.value;
-
-            return (
-              <button
-                key={option.value}
-                type="button"
-                onClick={() => {
-                  onRewardTypeChange('any');
-                  onSpendCategoryChange(option.value);
-                }}
-                className={`inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-medium transition ${
-                  isActive
-                    ? 'border border-brand-teal/30 bg-brand-teal text-black'
-                    : 'border border-white/10 bg-bg text-text-secondary hover:border-brand-teal/35 hover:text-brand-teal'
-                }`}
-              >
-                {option.label}
-              </button>
-            );
-          })}
+        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
+          <button
+            type="button"
+            onClick={onClearFilters}
+            disabled={activeFilterCount === 0}
+            className={`inline-flex w-full items-center justify-center rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${
+              activeFilterCount > 0
+                ? 'border border-brand-coral/25 bg-brand-coral/10 text-brand-coral hover:border-brand-coral/45 hover:bg-brand-coral/15'
+                : 'cursor-not-allowed border border-white/5 bg-bg/40 text-text-muted'
+            }`}
+          >
+            Clear Filters
+          </button>
           {rewardTypeOptions.map((option) => {
             const isActive = rewardType === option.value;
 
@@ -263,7 +258,7 @@ export function CardsDirectoryFilterPanel({
                   onSpendCategoryChange('any');
                   onRewardTypeChange(option.value);
                 }}
-                className={`inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                className={`inline-flex w-full items-center justify-center rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${
                   isActive
                     ? 'border border-brand-teal/30 bg-brand-teal text-black'
                     : 'border border-white/10 bg-bg text-text-secondary hover:border-brand-teal/35 hover:text-brand-teal'
@@ -284,7 +279,7 @@ export function CardsDirectoryFilterPanel({
                   onRewardTypeChange('any');
                   onSpendCategoryChange(option.value);
                 }}
-                className={`inline-flex w-full items-center justify-center rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                className={`inline-flex w-full items-center justify-center rounded-xl px-3 py-2.5 text-[13px] font-medium transition ${
                   isActive
                     ? 'border border-brand-teal/30 bg-brand-teal text-black'
                     : 'border border-white/10 bg-bg text-text-secondary hover:border-brand-teal/35 hover:text-brand-teal'

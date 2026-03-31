@@ -196,6 +196,14 @@ export function BusinessOffersExplorer({
     setBankingSortBy(defaultBankingDirectoryFilters.sortBy);
   }
 
+  function clearCardFilters() {
+    setCardsIssuer(defaultCardsDirectoryFilters.issuer);
+    setCardsSpendCategory(defaultCardsDirectoryFilters.spendCategory);
+    setCardsForeignFee(defaultCardsDirectoryFilters.foreignFee);
+    setCardsRewardType(defaultCardsDirectoryFilters.rewardType);
+    setCardsSortBy(defaultCardsDirectoryFilters.sortBy);
+  }
+
   function removeBankingFilter(key: BankingDirectoryFilterKey) {
     if (key === 'query') setBankingQuery(defaultBankingDirectoryFilters.query);
     if (key === 'accountType') setBankingAccountType(defaultBankingDirectoryFilters.accountType);
@@ -268,6 +276,7 @@ export function BusinessOffersExplorer({
               filteredCardsCount={filteredBusinessCards.length}
               noAnnualFeeCount={noAnnualFeeBusinessCards}
               activeBonusCount={activeBonusBusinessCards}
+              activeFilterCount={cardFilterCount}
               issuer={cardsIssuer}
               spendCategory={cardsSpendCategory}
               foreignFee={cardsForeignFee}
@@ -282,6 +291,7 @@ export function BusinessOffersExplorer({
               onForeignFeeChange={setCardsForeignFee}
               onRewardTypeChange={setCardsRewardType}
               onSortByChange={setCardsSortBy}
+              onClearFilters={clearCardFilters}
             />
 
             <CardsDirectoryResults
