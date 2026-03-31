@@ -231,6 +231,76 @@ export function buildTimelineEntriesFallback(
   );
 }
 
+export function getFeaturedPlanRecommendations(
+  recommendations: PlannerRecommendation[],
+  options: {
+    maxRecommendations?: number;
+    selectedRecommendationId?: string | null;
+  } = {}
+): PlannerRecommendation[] {
+  const maxRecommendations = options.maxRecommendations ?? 4;
+  const selectedRecommendationId = options.selectedRecommendationId ?? null;
+
+  if (recommendations.length <= maxRecommendations && !selectedRecommendationId) {
+    return recommendations;
+  }
+
+  const cards = recommendations.filter((item) => item.lane === 'cards');
+  const banking = recommendations.filter((item) => item.lane === 'banking');
+  const selectedIds = new Set<string>();
+  const cardTarget =
+    cards.length > 0 && banking.length > 0 ? Math.min(2, cards.length, maxRecommendations) : 0;
+  const bankingTarget =
+    cards.length > 0 && banking.length > 0
+      ? Math.min(2, banking.length, maxRecommendations - cardTarget)
+      : 0;
+
+  cards.slice(0, cardTarget).forEach((item) => selectedIds.add(item.id));
+  banking.slice(0, bankingTarget).forEach((item) => selectedIds.add(item.id));
+
+  for (const item of recommendations) {
+    if (selectedIds.size >= maxRecommendations) break;
+    selectedIds.add(item.id);
+  }
+
+  if (selectedRecommendationId && !selectedIds.has(selectedRecommendationId)) {
+    const selectedRecommendation = recommendations.find((item) => item.id === selectedRecommendationId);
+
+    if (selectedRecommendation) {
+      if (selectedIds.size < maxRecommendations) {
+        selectedIds.add(selectedRecommendation.id);
+      } else {
+        const replacement = recommendations
+          .slice()
+          .reverse()
+          .find(
+            (item) =>
+              selectedIds.has(item.id) &&
+              item.lane === selectedRecommendation.lane &&
+              item.id !== selectedRecommendation.id
+          );
+
+        const fallbackReplacement = replacement
+          ? null
+          : recommendations
+              .slice()
+              .reverse()
+              .find((item) => selectedIds.has(item.id) && item.id !== selectedRecommendation.id);
+
+        const replacementId = replacement?.id ?? fallbackReplacement?.id;
+        if (replacementId) {
+          selectedIds.delete(replacementId);
+        }
+        selectedIds.add(selectedRecommendation.id);
+      }
+    }
+  }
+
+  return recommendations
+    .filter((item) => selectedIds.has(item.id))
+    .slice(0, maxRecommendations);
+}
+
 const milestoneOrder: Record<TimelineMilestoneKind, number> = {
   open: 0,
   complete: 1,

@@ -7,6 +7,7 @@ import { EntityImage } from '@/components/ui/entity-image';
 import { getCardFallbackLabel } from '@/lib/card-image-fallback';
 import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import {
+  getFeaturedPlanRecommendations,
   buildScheduledTimelineEntries,
   buildTimelineEntriesFallback,
   buildTimelineMilestones,
@@ -766,23 +767,11 @@ function PlanSummary({
   }, [scopedRecommendations, timelineEntries]);
   const selectedOfferStatus = useMemo(() => getSelectedOfferIntentStatus(payload), [payload]);
   const featuredRecommendations = useMemo(() => {
-    const maxRecommendations = 4;
-    const initial = orderedRecommendations.slice(0, maxRecommendations);
-
-    if (
-      selectedOfferStatus?.status === 'included' &&
-      !initial.some((item) => item.id === selectedOfferStatus.recommendationId)
-    ) {
-      const selectedRecommendation = orderedRecommendations.find(
-        (item) => item.id === selectedOfferStatus.recommendationId
-      );
-
-      if (selectedRecommendation) {
-        return [...initial.slice(0, Math.max(0, maxRecommendations - 1)), selectedRecommendation];
-      }
-    }
-
-    return initial;
+    return getFeaturedPlanRecommendations(orderedRecommendations, {
+      maxRecommendations: 4,
+      selectedRecommendationId:
+        selectedOfferStatus?.status === 'included' ? selectedOfferStatus.recommendationId : null
+    });
   }, [orderedRecommendations, selectedOfferStatus]);
   const featuredRecommendationIds = useMemo(
     () => new Set(featuredRecommendations.map((item) => item.id)),
