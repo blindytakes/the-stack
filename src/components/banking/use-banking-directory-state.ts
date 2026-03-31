@@ -35,7 +35,6 @@ export function useBankingDirectoryState(
     [initialSearchParams]
   );
 
-  const [query, setQuery] = useState(initialFilters.query);
   const [accountType, setAccountType] = useState<AccountTypeFilterValue>(initialFilters.accountType);
   const [customerType, setCustomerType] = useState<CustomerTypeFilterValue>(
     initialFilters.customerType
@@ -57,7 +56,6 @@ export function useBankingDirectoryState(
 
   const filters = useMemo(
     () => ({
-      query,
       accountType,
       customerType,
       directDeposit,
@@ -76,7 +74,6 @@ export function useBankingDirectoryState(
       customerType,
       difficulty,
       directDeposit,
-      query,
       sortBy,
       state,
       stateLimited,
@@ -87,7 +84,6 @@ export function useBankingDirectoryState(
   useEffect(() => {
     const nextFilters = parseBankingDirectoryFilters(new URLSearchParams(searchParamsString));
 
-    setQuery(nextFilters.query);
     setAccountType(nextFilters.accountType);
     setCustomerType(nextFilters.customerType);
     setDirectDeposit(nextFilters.directDeposit);
@@ -130,7 +126,6 @@ export function useBankingDirectoryState(
   );
 
   function clearFilters() {
-    setQuery(defaultBankingDirectoryFilters.query);
     setAccountType(defaultBankingDirectoryFilters.accountType);
     setCustomerType(defaultBankingDirectoryFilters.customerType);
     setDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
@@ -144,7 +139,6 @@ export function useBankingDirectoryState(
   }
 
   function removeFilter(key: BankingDirectoryFilterKey) {
-    if (key === 'query') setQuery(defaultBankingDirectoryFilters.query);
     if (key === 'accountType') setAccountType(defaultBankingDirectoryFilters.accountType);
     if (key === 'customerType') setCustomerType(defaultBankingDirectoryFilters.customerType);
     if (key === 'directDeposit') setDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
@@ -157,7 +151,6 @@ export function useBankingDirectoryState(
   }
 
   return {
-    query,
     accountType,
     customerType,
     directDeposit,
@@ -171,7 +164,6 @@ export function useBankingDirectoryState(
     filteredSortedOffers,
     activeFilterCount,
     activeFilterChips,
-    setQuery,
     setAccountType,
     setCustomerType,
     setDirectDeposit,

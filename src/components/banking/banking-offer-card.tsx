@@ -24,15 +24,32 @@ export function BankingOfferCard({
 }: BankingOfferCardProps) {
   const isCompact = variant === 'compact';
   const imagePresentation = getBankingImagePresentation(offer.bankName);
+  const showApy = Boolean(offer.apyDisplay) && offer.bankName.trim().toLowerCase() !== 'chase';
+  const directDepositMetric = {
+    label: 'Direct deposit min',
+    value: !offer.directDeposit.required
+      ? 'none'
+      : typeof offer.directDeposit.minimumAmount === 'number'
+        ? `${formatBankingCurrency(offer.directDeposit.minimumAmount)}+`
+        : 'Required',
+    tone: (!offer.directDeposit.required ? 'positive' : 'default') as
+      | 'default'
+      | 'positive'
+      | 'warning'
+      | 'negative'
+  };
   const noDirectDeposit = !offer.directDeposit.required;
   const stateLimited = offer.stateRestrictions && offer.stateRestrictions.length > 0;
-  const decisionMetrics = getBankingDecisionMetrics(offer).filter(
-    (metric) =>
-      metric.label !== 'Activity req.' &&
-      metric.label !== 'Direct deposit' &&
-      metric.label !== 'Opening deposit' &&
-      metric.label !== 'Hold period'
-  );
+  const decisionMetrics = [
+    directDepositMetric,
+    ...getBankingDecisionMetrics(offer).filter(
+      (metric) =>
+        metric.label !== 'Activity req.' &&
+        metric.label !== 'Direct deposit' &&
+        metric.label !== 'Hold period' &&
+        metric.label !== 'Fee'
+    )
+  ];
 
   return (
     <article
@@ -74,53 +91,49 @@ export function BankingOfferCard({
         />
       </div>
 
-      {/* Bonus — the hero */}
-      <div className="relative z-10 mt-1 text-center">
-        <p className={`font-bold text-brand-teal ${isCompact ? 'text-xl' : 'text-2xl'}`}>
-          +{formatBankingCurrency(offer.estimatedNetValue)} bonus
-        </p>
-        {offer.apyDisplay ? (
-          <p className="mt-1 text-xs font-medium text-brand-gold">{offer.apyDisplay}</p>
-        ) : null}
+      <div className={`relative z-10 mt-1 ${isCompact ? 'min-h-[7.6rem]' : 'min-h-[8.35rem]'}`}>
+        {/* Bonus — the hero */}
+        <div className="flex flex-col items-center text-center">
+          <p className={`font-bold text-brand-teal ${isCompact ? 'text-xl' : 'text-2xl'}`}>
+            +{formatBankingCurrency(offer.bonusAmount)} bonus
+          </p>
+          {showApy ? (
+            <p className="mt-1 text-xs font-medium text-brand-gold">{offer.apyDisplay}</p>
+          ) : null}
+        </div>
+
+        {/* Offer name */}
+        <div className="mt-2 px-2">
+          <button
+            type="button"
+            onClick={() => onOpenDetail?.(offer.slug)}
+            className="line-clamp-3 block w-full text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
+          >
+            {offer.offerName}
+          </button>
+          <p className="mt-1 text-center text-[11px] uppercase tracking-[0.16em] text-text-muted">
+            {formatBankingCustomerType(offer.customerType)}{' '}
+            {offer.accountType === 'bundle' ? 'bundle' : offer.accountType}
+          </p>
+        </div>
       </div>
 
-      {/* Offer name */}
-      <div className="relative z-10 mt-3 min-h-[2.5rem] px-2">
-        <button
-          type="button"
-          onClick={() => onOpenDetail?.(offer.slug)}
-          className="block w-full text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
-        >
-          {offer.offerName}
-        </button>
-        <p className="mt-1 text-center text-[11px] uppercase tracking-[0.16em] text-text-muted">
-          {formatBankingCustomerType(offer.customerType)}{' '}
-          {offer.accountType === 'bundle' ? 'bundle' : offer.accountType}
-        </p>
-      </div>
-
-      <div className="relative z-10 mt-4 grid grid-cols-2 gap-2">
+      <div className="relative z-10 mt-4 overflow-hidden rounded-xl border border-white/5 bg-bg/40">
         {decisionMetrics.map((metric, metricIndex) => {
-          const isCenteredMetric = metric.label === 'Fee' || metric.label === 'ROI';
+          const metricLabel = metric.label === 'Opening deposit' ? 'Min deposit' : metric.label;
 
           return (
             <div
               key={metric.label}
-              className={`rounded-xl border border-white/5 bg-bg/40 px-3 py-2 ${
-                decisionMetrics.length % 2 === 1 && metricIndex === decisionMetrics.length - 1
-                  ? 'col-span-2'
-                  : ''
+              className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2.5 ${
+                metricIndex > 0 ? 'border-t border-white/5' : ''
               }`}
             >
-              <p
-                className={`text-[10px] uppercase tracking-[0.16em] text-text-muted ${
-                  isCenteredMetric ? 'text-center' : ''
-                }`}
-              >
-                {metric.label}
+              <p className="text-[10px] uppercase tracking-[0.16em] text-text-muted">
+                {metricLabel}
               </p>
               <p
-                className={`mt-1 text-sm font-semibold ${
+                className={`text-right text-sm font-semibold ${
                   metric.tone === 'positive'
                     ? 'text-brand-teal'
                     : metric.tone === 'warning'
@@ -128,7 +141,7 @@ export function BankingOfferCard({
                       : metric.tone === 'negative'
                         ? 'text-brand-coral'
                         : 'text-text-primary'
-                } ${isCenteredMetric ? 'text-center' : ''}`}
+                }`}
               >
                 {metric.value}
               </p>

@@ -15,7 +15,6 @@ export type CashRequirementFilterValue = 'any' | 'none' | 'light' | 'medium' | '
 export type TimelineFilterValue = 'any' | 'fast' | 'standard' | 'long';
 export type StateLimitedFilterValue = 'any' | 'yes' | 'no';
 export type BankingDirectoryFilterKey =
-  | 'query'
   | 'accountType'
   | 'customerType'
   | 'directDeposit'
@@ -27,7 +26,6 @@ export type BankingDirectoryFilterKey =
   | 'state';
 
 export type BankingDirectoryFilters = {
-  query: string;
   accountType: AccountTypeFilterValue;
   customerType: CustomerTypeFilterValue;
   directDeposit: DirectDepositFilterValue;
@@ -46,7 +44,6 @@ export type BankingActiveFilterChip = {
 };
 
 export const defaultBankingDirectoryFilters: BankingDirectoryFilters = {
-  query: '',
   accountType: 'all',
   customerType: 'all',
   directDeposit: 'any',
@@ -56,11 +53,11 @@ export const defaultBankingDirectoryFilters: BankingDirectoryFilters = {
   timeline: 'any',
   stateLimited: 'any',
   state: '',
-  sortBy: 'net'
+  sortBy: 'bonus'
 };
 
 export const bankingSortOptions: Array<{ value: BankingBonusesSort; label: string }> = [
-  { value: 'net', label: 'Highest Bonus Value' },
+  { value: 'bonus', label: 'Highest Bonus Value' },
   { value: 'fast', label: 'Fastest Timeline' },
   { value: 'low_cash', label: 'Lowest Cash Needed' }
 ];
@@ -122,10 +119,6 @@ export const stateLimitedOptions: Array<{ value: StateLimitedFilterValue; label:
   { value: 'yes', label: 'State-limited only' }
 ];
 
-function lower(value: string) {
-  return value.trim().toLowerCase();
-}
-
 function isAccountTypeFilterValue(value: string | null): value is AccountTypeFilterValue {
   return value === 'all' || value === 'checking' || value === 'savings' || value === 'bundle';
 }
@@ -165,7 +158,13 @@ function isStateLimitedFilterValue(value: string | null): value is StateLimitedF
 }
 
 function isBankingSortValue(value: string | null): value is BankingBonusesSort {
-  return value === 'net' || value === 'easy' || value === 'fast' || value === 'low_cash';
+  return (
+    value === 'bonus' ||
+    value === 'net' ||
+    value === 'easy' ||
+    value === 'fast' ||
+    value === 'low_cash'
+  );
 }
 
 function toBankingQuery(filters: BankingDirectoryFilters) {
@@ -203,7 +202,6 @@ export function parseBankingDirectoryFilters(searchParams: URLSearchParams): Ban
   const validStates = new Set<string>(usStateOptions.map((option) => option.value));
 
   return {
-    query: searchParams.get('q') ?? defaultBankingDirectoryFilters.query,
     accountType: isAccountTypeFilterValue(accountTypeFromUrl)
       ? accountTypeFromUrl
       : defaultBankingDirectoryFilters.accountType,
@@ -228,7 +226,7 @@ export function parseBankingDirectoryFilters(searchParams: URLSearchParams): Ban
       : defaultBankingDirectoryFilters.stateLimited,
     state: validStates.has(stateFromUrl) ? stateFromUrl : defaultBankingDirectoryFilters.state,
     sortBy:
-      sortFromUrl === 'easy'
+      sortFromUrl === 'easy' || sortFromUrl === 'net'
         ? defaultBankingDirectoryFilters.sortBy
         : isBankingSortValue(sortFromUrl)
           ? sortFromUrl
@@ -241,10 +239,7 @@ export function buildBankingDirectorySearchParams(
   filters: BankingDirectoryFilters
 ) {
   const params = new URLSearchParams(currentSearchParams);
-  const normalizedQuery = filters.query.trim();
-
-  if (normalizedQuery) params.set('q', normalizedQuery);
-  else params.delete('q');
+  params.delete('q');
 
   if (filters.accountType !== defaultBankingDirectoryFilters.accountType) {
     params.set('accountType', filters.accountType);
@@ -307,24 +302,13 @@ export function filterAndSortBankingOffers(
   offers: BankingBonusListItem[],
   filters: BankingDirectoryFilters
 ) {
-  const queryLower = lower(filters.query);
-  const hasQuery = queryLower.length > 0;
-
-  const filtered = filterBankingBonuses(offers, toBankingQuery(filters)).filter((offer) => {
-    if (!hasQuery) return true;
-
-    const searchable = lower(
-      `${offer.bankName} ${offer.offerName} ${offer.headline} ${offer.accountType} ${offer.customerType}`
-    );
-    return searchable.includes(queryLower);
-  });
+  const filtered = filterBankingBonuses(offers, toBankingQuery(filters));
 
   return sortBankingBonuses(filtered, filters.sortBy);
 }
 
 export function countActiveBankingDirectoryFilters(filters: BankingDirectoryFilters) {
   return [
-    filters.query.trim().length > 0,
     filters.accountType !== defaultBankingDirectoryFilters.accountType,
     filters.customerType !== defaultBankingDirectoryFilters.customerType,
     filters.directDeposit !== defaultBankingDirectoryFilters.directDeposit,
@@ -341,9 +325,6 @@ export function buildActiveBankingFilterChips(
   filters: BankingDirectoryFilters
 ): BankingActiveFilterChip[] {
   const chips: BankingActiveFilterChip[] = [];
-  const normalizedQuery = filters.query.trim();
-
-  if (normalizedQuery) chips.push({ key: 'query', label: `Search: ${normalizedQuery}` });
   if (filters.accountType !== defaultBankingDirectoryFilters.accountType) {
     chips.push({
       key: 'accountType',

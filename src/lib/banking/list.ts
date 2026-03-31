@@ -83,9 +83,26 @@ export function filterBankingBonuses(
 
 export function sortBankingBonuses(
   bonuses: BankingBonusListItem[],
-  sort: BankingBonusesSort = 'net'
+  sort: BankingBonusesSort = 'bonus'
 ): BankingBonusListItem[] {
   return [...bonuses].sort((left, right) => {
+    if (sort === 'bonus' || sort === 'net') {
+      const bonusDelta = right.bonusAmount - left.bonusAmount;
+      if (bonusDelta !== 0) return bonusDelta;
+
+      const netDelta = right.estimatedNetValue - left.estimatedNetValue;
+      if (netDelta !== 0) return netDelta;
+
+      const difficultyDelta =
+        getBankingOfferDifficultyScore(left) - getBankingOfferDifficultyScore(right);
+      if (difficultyDelta !== 0) return difficultyDelta;
+
+      const timelineDelta = getHoldingPeriodForSort(left) - getHoldingPeriodForSort(right);
+      if (timelineDelta !== 0) return timelineDelta;
+
+      return getOpeningDepositAmount(left) - getOpeningDepositAmount(right);
+    }
+
     if (sort === 'easy') {
       const difficultyDelta = getBankingOfferDifficultyScore(left) - getBankingOfferDifficultyScore(right);
       if (difficultyDelta !== 0) return difficultyDelta;
@@ -125,16 +142,7 @@ export function sortBankingBonuses(
       return right.estimatedNetValue - left.estimatedNetValue;
     }
 
-    const netDelta = right.estimatedNetValue - left.estimatedNetValue;
-    if (netDelta !== 0) return netDelta;
-
-    const difficultyDelta = getBankingOfferDifficultyScore(left) - getBankingOfferDifficultyScore(right);
-    if (difficultyDelta !== 0) return difficultyDelta;
-
-    const timelineDelta = getHoldingPeriodForSort(left) - getHoldingPeriodForSort(right);
-    if (timelineDelta !== 0) return timelineDelta;
-
-    return getOpeningDepositAmount(left) - getOpeningDepositAmount(right);
+    return 0;
   });
 }
 

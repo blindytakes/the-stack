@@ -70,7 +70,6 @@ export function BusinessOffersExplorer({
   );
   const [cardsSortBy, setCardsSortBy] = useState<SortValue>(defaultCardsDirectoryFilters.sortBy);
 
-  const [bankingQuery, setBankingQuery] = useState(defaultBankingDirectoryFilters.query);
   const [bankingAccountType, setBankingAccountType] = useState<AccountTypeFilterValue>(
     defaultBankingDirectoryFilters.accountType
   );
@@ -127,7 +126,6 @@ export function BusinessOffersExplorer({
 
   const bankingFilters = useMemo(
     () => ({
-      query: bankingQuery,
       accountType: bankingAccountType,
       customerType: defaultBankingDirectoryFilters.customerType,
       directDeposit: bankingDirectDeposit,
@@ -145,7 +143,6 @@ export function BusinessOffersExplorer({
       bankingCashRequirement,
       bankingDifficulty,
       bankingDirectDeposit,
-      bankingQuery,
       bankingSortBy,
       bankingState,
       bankingStateLimited,
@@ -184,7 +181,6 @@ export function BusinessOffersExplorer({
   const numericApyBusinessOffers = businessOffers.filter((offer) => offer.apyPercent != null).length;
 
   function clearBankingFilters() {
-    setBankingQuery(defaultBankingDirectoryFilters.query);
     setBankingAccountType(defaultBankingDirectoryFilters.accountType);
     setBankingDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
     setBankingApy(defaultBankingDirectoryFilters.apy);
@@ -205,7 +201,6 @@ export function BusinessOffersExplorer({
   }
 
   function removeBankingFilter(key: BankingDirectoryFilterKey) {
-    if (key === 'query') setBankingQuery(defaultBankingDirectoryFilters.query);
     if (key === 'accountType') setBankingAccountType(defaultBankingDirectoryFilters.accountType);
     if (key === 'customerType') return;
     if (key === 'directDeposit') setBankingDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
@@ -308,7 +303,6 @@ export function BusinessOffersExplorer({
               filteredOffersCount={filteredBusinessOffers.length}
               noDirectDepositCount={noDirectDepositBusinessOffers}
               numericApyCount={numericApyBusinessOffers}
-              query={bankingQuery}
               accountType={bankingAccountType}
               customerType={defaultBankingDirectoryFilters.customerType}
               directDeposit={bankingDirectDeposit}
@@ -322,9 +316,7 @@ export function BusinessOffersExplorer({
               eyebrowLabel="Business Banking"
               title="Find the right business bank bonus for your plan."
               description="Browse business checking and savings bonuses with the same filter treatment and offer cards used in the main banking directory."
-              searchPlaceholder="Search business bank, offer, or requirement..."
               showCustomerTypeFilter={false}
-              onQueryChange={setBankingQuery}
               onAccountTypeChange={setBankingAccountType}
               onCustomerTypeChange={() => {}}
               onDirectDepositChange={setBankingDirectDeposit}

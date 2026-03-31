@@ -63,6 +63,7 @@ export function BankingDetailModal({
   source = 'banking_directory'
 }: BankingDetailModalProps) {
   const imagePresentation = getBankingImagePresentation(offer.bankName);
+  const showApy = Boolean(offer.apyDisplay) && offer.bankName.trim().toLowerCase() !== 'chase';
   const primaryRequirement = getBankingOfferPrimaryRequirement(offer);
   const primaryConstraint = getBankingOfferPrimaryConstraint(offer);
   const executionSummary = getBankingOfferExecutionSummary(offer);
@@ -181,11 +182,11 @@ export function BankingDetailModal({
                 </p>
               </div>
 
-              {(verifiedLabel || expiryLabel || (offer.apyDisplay && offer.apySourceUrl)) && (
+              {(verifiedLabel || expiryLabel || (showApy && offer.apySourceUrl)) && (
                 <div className="mt-3 space-y-2 text-xs leading-5 text-text-muted">
                   {verifiedLabel && <p>Last verified {verifiedLabel}. Confirm live terms before opening.</p>}
                   {expiryLabel && <p>{isExpired ? `Offer expired ${expiryLabel}.` : `Offer ends ${expiryLabel}.`}</p>}
-                  {offer.apyDisplay && offer.apySourceUrl && (
+                  {showApy && offer.apySourceUrl && (
                     <p>
                       <a
                         href={offer.apySourceUrl}

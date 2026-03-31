@@ -18,7 +18,6 @@ describe('banking directory explorer helpers', () => {
     );
 
     expect(filters).toEqual({
-      query: 'empire',
       accountType: 'checking',
       customerType: 'business',
       directDeposit: 'no',
@@ -32,12 +31,12 @@ describe('banking directory explorer helpers', () => {
     });
 
     expect(buildBankingDirectorySearchParams(new URLSearchParams(), filters).toString()).toBe(
-      'q=empire&accountType=checking&customerType=business&directDeposit=no&apy=3_plus&difficulty=low&cash=light&timeline=fast&stateLimited=yes&state=NY&sort=low_cash'
+      'accountType=checking&customerType=business&directDeposit=no&apy=3_plus&difficulty=low&cash=light&timeline=fast&stateLimited=yes&state=NY&sort=low_cash'
     );
-    expect(countActiveBankingDirectoryFilters(filters)).toBe(10);
+    expect(countActiveBankingDirectoryFilters(filters)).toBe(9);
   });
 
-  it('filters and sorts offers with search layered on top of banking filters', () => {
+  it('filters and sorts offers using banking filters only', () => {
     const offers = [
       createBankingListItem({
         slug: 'summit-no-payroll',
@@ -83,7 +82,6 @@ describe('banking directory explorer helpers', () => {
 
     const result = filterAndSortBankingOffers(offers, {
       ...defaultBankingDirectoryFilters,
-      query: 'checking',
       accountType: 'checking',
       customerType: 'business',
       directDeposit: 'no',
@@ -97,7 +95,6 @@ describe('banking directory explorer helpers', () => {
   it('builds removable chip labels for active filters', () => {
     const chips = buildActiveBankingFilterChips({
       ...defaultBankingDirectoryFilters,
-      query: 'empire',
       customerType: 'business',
       apy: '3_plus',
       cashRequirement: 'light',
@@ -105,7 +102,6 @@ describe('banking directory explorer helpers', () => {
     });
 
     expect(chips).toEqual([
-      { key: 'query', label: 'Search: empire' },
       { key: 'customerType', label: 'Business only' },
       { key: 'apy', label: '3.00%+ APY' },
       { key: 'cashRequirement', label: 'Up to $2.5k' },
@@ -113,9 +109,11 @@ describe('banking directory explorer helpers', () => {
     ]);
   });
 
-  it('normalizes the legacy easiest sort to the default visible sort', () => {
+  it('normalizes legacy banking sort values to the default visible sort', () => {
     const filters = parseBankingDirectoryFilters(new URLSearchParams('sort=easy'));
+    const legacyNetFilters = parseBankingDirectoryFilters(new URLSearchParams('sort=net'));
 
     expect(filters.sortBy).toBe(defaultBankingDirectoryFilters.sortBy);
+    expect(legacyNetFilters.sortBy).toBe(defaultBankingDirectoryFilters.sortBy);
   });
 });

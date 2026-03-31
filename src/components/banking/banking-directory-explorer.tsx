@@ -15,7 +15,6 @@ export function BankingDirectoryExplorer({
   initialSearchParams
 }: BankingDirectoryExplorerProps) {
   const {
-    query,
     accountType,
     customerType,
     directDeposit,
@@ -29,7 +28,6 @@ export function BankingDirectoryExplorer({
     filteredSortedOffers,
     activeFilterCount,
     activeFilterChips,
-    setQuery,
     setAccountType,
     setCustomerType,
     setDirectDeposit,
@@ -55,7 +53,6 @@ export function BankingDirectoryExplorer({
         filteredOffersCount={filteredSortedOffers.length}
         noDirectDepositCount={noDirectDepositCount}
         numericApyCount={numericApyCount}
-        query={query}
         accountType={accountType}
         customerType={customerType}
         directDeposit={directDeposit}
@@ -66,7 +63,6 @@ export function BankingDirectoryExplorer({
         stateLimited={stateLimited}
         state={state}
         sortBy={sortBy}
-        onQueryChange={setQuery}
         onAccountTypeChange={setAccountType}
         onCustomerTypeChange={setCustomerType}
         onDirectDepositChange={setDirectDeposit}

@@ -35,10 +35,10 @@ describe('getBankingBonusesData', () => {
     expect(bonuses.some((bonus) => bonus.slug === 'oak-legacy-checking-300-legacy')).toBe(false);
   });
 
-  it('sorts by estimated net value descending', async () => {
+  it('sorts by bonus amount descending', async () => {
     const { bonuses } = await getBankingBonusesData();
     for (let i = 1; i < bonuses.length; i += 1) {
-      expect(bonuses[i - 1].estimatedNetValue).toBeGreaterThanOrEqual(bonuses[i].estimatedNetValue);
+      expect(bonuses[i - 1].bonusAmount).toBeGreaterThanOrEqual(bonuses[i].bonusAmount);
     }
   });
 });
@@ -69,7 +69,7 @@ describe('bankingBonusesQuerySchema', () => {
     if (parsed.success) {
       expect(parsed.data.state).toBe('WA');
       expect(parsed.data.apy).toBe('3_plus');
-      expect(parsed.data.sort).toBe('net');
+      expect(parsed.data.sort).toBe('bonus');
       expect(parsed.data.limit).toBe(20);
       expect(parsed.data.offset).toBe(0);
     }
@@ -207,6 +207,53 @@ describe('paginateBankingBonuses', () => {
 });
 
 describe('sortBankingBonuses', () => {
+  it('orders offers by raw bonus amount when using the visible bonus sort', () => {
+    const sorted = sortBankingBonuses([
+      createBankingListItem({
+        slug: 'higher-bonus-higher-fee',
+        bonusAmount: 300,
+        estimatedFees: 35,
+        estimatedNetValue: 265
+      }),
+      createBankingListItem({
+        slug: 'lower-bonus-lower-fee',
+        bonusAmount: 290,
+        estimatedFees: 0,
+        estimatedNetValue: 290
+      })
+    ]);
+
+    expect(sorted.map((bonus) => bonus.slug)).toEqual([
+      'higher-bonus-higher-fee',
+      'lower-bonus-lower-fee'
+    ]);
+  });
+
+  it('keeps the legacy net sort alias aligned to raw bonus amount ordering', () => {
+    const sorted = sortBankingBonuses(
+      [
+        createBankingListItem({
+          slug: 'higher-bonus-higher-fee',
+          bonusAmount: 300,
+          estimatedFees: 35,
+          estimatedNetValue: 265
+        }),
+        createBankingListItem({
+          slug: 'lower-bonus-lower-fee',
+          bonusAmount: 290,
+          estimatedFees: 0,
+          estimatedNetValue: 290
+        })
+      ],
+      'net'
+    );
+
+    expect(sorted.map((bonus) => bonus.slug)).toEqual([
+      'higher-bonus-higher-fee',
+      'lower-bonus-lower-fee'
+    ]);
+  });
+
   it('orders offers by easiest execution when requested', async () => {
     const bonuses = await getBonuses();
     const sorted = sortBankingBonuses(bonuses, 'easy');

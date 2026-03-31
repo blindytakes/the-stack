@@ -14,14 +14,14 @@ export type BankingBonusListItem = BankingBonusRecord & {
 export type BankingBonusesDataSource = 'db' | 'seed';
 export type BankingOfferCashRequirementLevel = 'none' | 'light' | 'medium' | 'high';
 export type BankingOfferTimelineBucket = 'fast' | 'standard' | 'long' | 'unknown';
-export type BankingBonusesSort = 'net' | 'easy' | 'fast' | 'low_cash';
+export type BankingBonusesSort = 'bonus' | 'net' | 'easy' | 'fast' | 'low_cash';
 export type BankingApyFilter = '1_plus' | '3_plus' | '4_plus';
 export type BankingCustomerType = BankingBonusRecord['customerType'];
 
 const bankingDifficultySchema = z.enum(['low', 'medium', 'high']);
 const bankingCashRequirementSchema = z.enum(['none', 'light', 'medium', 'high']);
 const bankingTimelineSchema = z.enum(['fast', 'standard', 'long']);
-const bankingSortSchema = z.enum(['net', 'easy', 'fast', 'low_cash']);
+const bankingSortSchema = z.enum(['bonus', 'net', 'easy', 'fast', 'low_cash']);
 const bankingApyFilterSchema = z.enum(['1_plus', '3_plus', '4_plus']);
 
 export const bankingBonusesQuerySchema = z.object({
@@ -34,7 +34,7 @@ export const bankingBonusesQuerySchema = z.object({
   timeline: bankingTimelineSchema.optional(),
   stateLimited: z.enum(['yes', 'no']).optional(),
   state: z.string().trim().length(2).transform((value) => value.toUpperCase()).optional(),
-  sort: bankingSortSchema.default('net'),
+  sort: bankingSortSchema.default('bonus'),
   limit: z.coerce.number().int().min(1).max(100).default(20),
   offset: z.coerce.number().int().min(0).default(0)
 });

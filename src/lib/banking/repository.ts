@@ -155,9 +155,11 @@ const customerTypeFromDb: Record<BankingCustomerType, BankingBonusRecord['custom
 
 type DbBankingBonusRow = Prisma.BankingBonusGetPayload<Record<string, never>>;
 
-function sortByNetValueDesc<T extends BankingBonusListItem>(bonuses: T[]): T[] {
+function sortByBonusAmountDesc<T extends BankingBonusListItem>(bonuses: T[]): T[] {
   // Keep the repository default ordering local so loading stays independent from list/query helpers.
-  return [...bonuses].sort((a, b) => b.estimatedNetValue - a.estimatedNetValue);
+  return [...bonuses].sort(
+    (a, b) => b.bonusAmount - a.bonusAmount || b.estimatedNetValue - a.estimatedNetValue
+  );
 }
 
 function isOfferExpired(expiresAt?: string, now = new Date()): boolean {
@@ -211,7 +213,7 @@ function toRecordFromDb(row: DbBankingBonusRow): BankingBonusRecord {
 }
 
 function getActiveSeedBankingBonuses(): BankingBonusListItem[] {
-  return sortByNetValueDesc(
+  return sortByBonusAmountDesc(
     bankingBonusSeedData
       .filter((record) => record.isActive && !isOfferExpired(record.expiresAt))
       .map(toListItem)
@@ -234,7 +236,7 @@ async function getActiveDbBankingBonuses(): Promise<BankingBonusListItem[]> {
     orderBy: [{ bankName: 'asc' }, { offerName: 'asc' }]
   });
 
-  return sortByNetValueDesc(rows.map(toRecordFromDb).map(toListItem));
+  return sortByBonusAmountDesc(rows.map(toRecordFromDb).map(toListItem));
 }
 
 function readBankingBonusesCache(now = Date.now()): BankingBonusesDataResponse | null {

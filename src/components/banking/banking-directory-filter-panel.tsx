@@ -32,7 +32,6 @@ type BankingDirectoryFilterPanelProps = {
   filteredOffersCount: number;
   noDirectDepositCount: number;
   numericApyCount: number;
-  query: string;
   accountType: AccountTypeFilterValue;
   customerType: CustomerTypeFilterValue;
   directDeposit: DirectDepositFilterValue;
@@ -46,9 +45,7 @@ type BankingDirectoryFilterPanelProps = {
   eyebrowLabel?: string;
   title?: string;
   description?: string;
-  searchPlaceholder?: string;
   showCustomerTypeFilter?: boolean;
-  onQueryChange: (value: string) => void;
   onAccountTypeChange: (value: AccountTypeFilterValue) => void;
   onCustomerTypeChange: (value: CustomerTypeFilterValue) => void;
   onDirectDepositChange: (value: DirectDepositFilterValue) => void;
@@ -70,7 +67,6 @@ export function BankingDirectoryFilterPanel({
   filteredOffersCount,
   noDirectDepositCount,
   numericApyCount,
-  query,
   accountType,
   customerType,
   directDeposit,
@@ -84,9 +80,7 @@ export function BankingDirectoryFilterPanel({
   eyebrowLabel = 'Banking Bonuses',
   title = 'Find the right bank bonus for you.',
   description = 'Compare personal and business bank bonuses in one place, then let The Stack build your bonus plan around the offer that fits.',
-  searchPlaceholder = 'Search bank, offer, or requirement...',
   showCustomerTypeFilter = true,
-  onQueryChange,
   onAccountTypeChange,
   onCustomerTypeChange,
   onDirectDepositChange,
@@ -139,7 +133,7 @@ export function BankingDirectoryFilterPanel({
       context: `of ${totalOffers}`,
       description: 'Offers in the current view.',
       valueClassName: 'text-white',
-      barClassName: 'bg-white/80',
+      barClassName: 'bg-emerald-400/80',
       percent: totalOffers > 0 ? (filteredOffersCount / totalOffers) * 100 : 0
     },
     {
@@ -147,7 +141,7 @@ export function BankingDirectoryFilterPanel({
       value: noDirectDepositCount.toLocaleString(),
       context: totalOffers > 0 ? `${Math.round((noDirectDepositCount / totalOffers) * 100)}%` : '0%',
       description: 'Lower-friction keepers.',
-      valueClassName: 'text-emerald-300',
+      valueClassName: 'text-white',
       barClassName: 'bg-emerald-400/80',
       percent: totalOffers > 0 ? (noDirectDepositCount / totalOffers) * 100 : 0
     },
@@ -156,8 +150,8 @@ export function BankingDirectoryFilterPanel({
       value: numericApyCount.toLocaleString(),
       context: totalOffers > 0 ? `${Math.round((numericApyCount / totalOffers) * 100)}%` : '0%',
       description: 'Offers with APY data attached.',
-      valueClassName: 'text-brand-gold',
-      barClassName: 'bg-brand-gold/85',
+      valueClassName: 'text-white',
+      barClassName: 'bg-emerald-400/80',
       percent: totalOffers > 0 ? (numericApyCount / totalOffers) * 100 : 0
     }
   ] as const;
@@ -191,10 +185,10 @@ export function BankingDirectoryFilterPanel({
                 {eyebrowLabel}
               </span>
             </div>
-            <h1 className="mt-4 w-full font-heading text-[clamp(2.15rem,2.9vw,3.35rem)] leading-[1] tracking-[-0.035em] text-white">
+            <h1 className="mt-4 w-full font-heading text-[clamp(2.15rem,2.9vw,3.35rem)] leading-[1] tracking-[-0.035em] text-white md:whitespace-nowrap">
               {title}
             </h1>
-            <p className="mt-4 w-full max-w-[62rem] text-base leading-7 text-text-secondary md:text-lg md:leading-8">
+            <p className="mt-4 w-full text-xl leading-8 text-text-secondary md:text-2xl md:leading-9">
               {description}
             </p>
           </div>
@@ -231,7 +225,7 @@ export function BankingDirectoryFilterPanel({
                 <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/6">
                   <div
                     className={`h-full rounded-full ${card.barClassName}`}
-                    style={{ width: `${Math.max(card.percent, 8)}%` }}
+                    style={{ width: `${card.percent > 0 ? Math.max(card.percent, 8) : 0}%` }}
                   />
                 </div>
               </motion.div>
@@ -240,26 +234,7 @@ export function BankingDirectoryFilterPanel({
         </div>
       </motion.div>
 
-      <div className="relative mt-5">
-        <svg
-          viewBox="0 0 20 20"
-          fill="none"
-          className="pointer-events-none absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-text-muted"
-          aria-hidden="true"
-        >
-          <circle cx="9" cy="9" r="5.75" stroke="currentColor" strokeWidth="1.5" />
-          <path d="m13.5 13.5 3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-        </svg>
-        <input
-          type="text"
-          value={query}
-          onChange={(event) => onQueryChange(event.target.value)}
-          placeholder={searchPlaceholder}
-          className="w-full rounded-2xl border border-white/10 bg-bg-elevated/90 py-3 pr-4 pl-11 text-sm text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-text-muted focus:border-brand-teal focus:outline-none"
-        />
-      </div>
-
-      <div className="mt-4 rounded-2xl border border-white/10 bg-bg-elevated/65 p-3">
+      <div className="mt-5 rounded-2xl border border-white/10 bg-bg-elevated/65 p-3">
         <div className="grid gap-3 md:grid-cols-3">
           <label className="block">
             <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
