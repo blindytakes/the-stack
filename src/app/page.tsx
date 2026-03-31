@@ -244,6 +244,49 @@ const MAX_HERO_OFFERS = 12;
 
 export const dynamic = 'force-dynamic';
 
+function isPreferredCapitalOneVentureOffer(offer: HeroOffer) {
+  const slug = offer.slug.toLowerCase();
+  const name = offer.name.toLowerCase();
+  const issuer = offer.issuer.toLowerCase();
+
+  return (
+    offer.type === 'card' &&
+    issuer === 'capital one' &&
+    (slug === 'capital-one-venture-rewards' ||
+      (name.includes('venture rewards') && !name.includes('business')))
+  );
+}
+
+function isNonBusinessCapitalOneVentureOffer(offer: HeroOffer) {
+  const slug = offer.slug.toLowerCase();
+  const name = offer.name.toLowerCase();
+  const issuer = offer.issuer.toLowerCase();
+
+  return (
+    offer.type === 'card' &&
+    issuer === 'capital one' &&
+    !slug.includes('business') &&
+    !name.includes('business') &&
+    (slug.includes('venture') || name.includes('venture'))
+  );
+}
+
+function moveMatchingOffer<T>(
+  offers: T[],
+  predicate: (offer: T) => boolean,
+  targetIndex: number
+) {
+  const currentIndex = offers.findIndex(predicate);
+  if (currentIndex < 0 || currentIndex === targetIndex) {
+    return offers;
+  }
+
+  const reordered = [...offers];
+  const [match] = reordered.splice(currentIndex, 1);
+  reordered.splice(Math.max(0, Math.min(targetIndex, reordered.length)), 0, match);
+  return reordered;
+}
+
 async function getHeroOffers(): Promise<HeroOffer[]> {
   const offers: HeroOffer[] = [];
 
@@ -302,12 +345,25 @@ async function getHeroOffers(): Promise<HeroOffer[]> {
     if (i < sortedCards.length) interleaved.push(sortedCards[i]);
     if (i < sortedBanks.length) interleaved.push(sortedBanks[i]);
   }
+  const hasPreferredCapitalOneVenture = interleaved.some(isPreferredCapitalOneVentureOffer);
 
-  return interleaved.slice(0, MAX_HERO_OFFERS);
+  const featuredOffers = moveMatchingOffer(
+    interleaved,
+    (offer) =>
+      isPreferredCapitalOneVentureOffer(offer) ||
+      (!hasPreferredCapitalOneVenture &&
+        isNonBusinessCapitalOneVentureOffer(offer)),
+    interleaved.length > 1 ? 1 : 0
+  );
+
+  return featuredOffers.slice(0, MAX_HERO_OFFERS);
 }
 
 export default async function HomePage() {
   const heroOffers = await getHeroOffers();
+  const preferredOpeningSlug =
+    heroOffers.find(isPreferredCapitalOneVentureOffer)?.slug ??
+    heroOffers.find(isNonBusinessCapitalOneVentureOffer)?.slug;
   const featuredReview = sampleReviews[0];
   const supportingReviews = sampleReviews.slice(1, 4);
 
@@ -330,9 +386,9 @@ export default async function HomePage() {
             Make Banks Work For You.
           </h1>
           <p className="max-w-[48ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl lg:max-w-[58ch]">
-            Stop wasting time on points. Start maximizing Bank and Credit Card bonuses. The Stack
-            builds you a plan to maximize credit card and bank sign-up bonuses by telling you
-            exactly what to open, when to open it, and how to hit every bonus.
+            Your personalized roadmap to maximum sign-up bonuses. Stop guessing which cards to
+            open. The Stack gives you a step-by-step plan — timed perfectly, optimized for your
+            spend, and built to capture every bonus.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
@@ -357,7 +413,10 @@ export default async function HomePage() {
             </Link>
           </div>
         </div>
-        <HeroOffersCarousel offers={heroOffers} />
+        <HeroOffersCarousel
+          offers={heroOffers}
+          preferredOpeningSlug={preferredOpeningSlug}
+        />
       </section>
 
       <ProofPoints className="mt-12" variant="trust-bar" />

@@ -1,7 +1,7 @@
 import { CountUp } from '@/components/ui/count-up';
 
 const proofPoints = [
-  { end: 4000, prefix: '$', suffix: '+', label: 'Bonuses earned per year', animate: true },
+  { end: 5000, prefix: '$', suffix: '+', label: 'Bonuses earned per year', animate: true },
   { end: 2, prefix: '', suffix: ' min', label: 'Quiz', animate: false },
   { end: 100, prefix: '', suffix: '% Free', label: 'Always', animate: false }
 ];

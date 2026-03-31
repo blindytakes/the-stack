@@ -23,6 +23,7 @@ export type HeroOffer = {
 
 type HeroOffersCarouselProps = {
   offers: HeroOffer[];
+  preferredOpeningSlug?: string;
 };
 
 function formatCurrency(value: number) {
@@ -63,6 +64,36 @@ function getSettledRenderedIndex(renderedIndex: number, offerCount: number) {
   }
 
   return renderedIndex;
+}
+
+function getOpeningOfferIndex(
+  offers: HeroOffer[],
+  preferredOpeningSlug?: string
+) {
+  if (offers.length === 0) {
+    return 0;
+  }
+
+  const preferredIndex = preferredOpeningSlug
+    ? offers.findIndex((offer) => offer.slug === preferredOpeningSlug)
+    : -1;
+  if (preferredIndex >= 0) {
+    return preferredIndex;
+  }
+
+  const imageBackedCardIndex = offers.findIndex((offer) => {
+    if (offer.type !== 'card' || !offer.imageUrl) {
+      return false;
+    }
+
+    return !isLowValueCardImageUrl(offer.imageUrl);
+  });
+  if (imageBackedCardIndex >= 0) {
+    return imageBackedCardIndex;
+  }
+
+  const firstCardIndex = offers.findIndex((offer) => offer.type === 'card');
+  return firstCardIndex >= 0 ? firstCardIndex : 0;
 }
 
 function OfferCard({
@@ -187,11 +218,15 @@ function EdgeArrow({
   );
 }
 
-export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
+export function HeroOffersCarousel({
+  offers,
+  preferredOpeningSlug,
+}: HeroOffersCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null);
   const scrollEndTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const openingOfferIndex = getOpeningOfferIndex(offers, preferredOpeningSlug);
   const [activeRenderedIndex, setActiveRenderedIndex] = useState(
-    getRenderedOfferIndex(0, offers.length)
+    getRenderedOfferIndex(openingOfferIndex, offers.length)
   );
   const activeRenderedIndexRef = useRef(activeRenderedIndex);
   const [hasInitialized, setHasInitialized] = useState(false);
@@ -305,11 +340,7 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
     if (!track || offers.length === 0) return;
 
     setHasInitialized(false);
-
-    const shouldCenterMiddleCard =
-      window.matchMedia('(min-width: 1024px)').matches && offers.length > 2;
-    const initialRealIndex = shouldCenterMiddleCard ? 1 : 0;
-    const initialIndex = getRenderedOfferIndex(initialRealIndex, offers.length);
+    const initialIndex = getRenderedOfferIndex(openingOfferIndex, offers.length);
     const target = track.querySelector<HTMLElement>(
       `[data-offer-index="${initialIndex}"]`
     );
@@ -319,7 +350,7 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
     syncActiveRenderedIndex(initialIndex);
     centerCardInTrack(track, target, 'auto');
     setHasInitialized(true);
-  }, [offers.length, syncActiveRenderedIndex]);
+  }, [offers.length, openingOfferIndex, syncActiveRenderedIndex]);
 
   const scroll = useCallback(
     (direction: 'left' | 'right') => {
@@ -354,10 +385,10 @@ export function HeroOffersCarousel({ offers }: HeroOffersCarouselProps) {
       <div className="relative">
         {/* Header */}
         <div className="border-b border-white/10 px-6 py-4 text-center md:px-8">
-          <p className="text-lg font-semibold leading-relaxed text-text-primary md:text-[1.45rem] md:whitespace-nowrap">
-            Which of these is best for you?
+          <p className="text-xl font-semibold leading-relaxed text-text-primary md:text-[1.55rem] md:whitespace-nowrap">
+            Which offer is best for you?
           </p>
-          <p className="mt-1 text-lg text-brand-teal md:text-[1.45rem]">
+          <p className="mt-1 text-xl text-brand-teal md:text-[1.55rem]">
             The Stack tells you.
           </p>
         </div>

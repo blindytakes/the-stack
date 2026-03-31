@@ -49,7 +49,7 @@ export function PlanComparison() {
       {/* Headline */}
       <div className="mb-10 text-center">
         <h2 className="font-heading text-3xl text-text-primary md:text-4xl">
-          The Stack tells you exactly which offers to grab — and when.
+          The Stack tells you exactly which offers to prioritize, and when.
         </h2>
       </div>
 
