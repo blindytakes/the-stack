@@ -24,7 +24,7 @@ const CHASE_SAPPHIRE_PREFERRED_ART_URL =
 const AMEX_GOLD_CARD_ART_URL =
   'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/gold-card.png';
 const GRID_COLUMNS_CLASS_NAME =
-  'grid-cols-[190px_repeat(6,minmax(0,1fr))] md:grid-cols-[230px_repeat(6,minmax(0,1fr))]';
+  'grid-cols-[210px_repeat(6,minmax(0,1fr))] md:grid-cols-[300px_repeat(6,minmax(0,1fr))]';
 
 const ganttRows: GanttRow[] = [
   {
@@ -86,6 +86,17 @@ function getUpcomingMonths(count: number): string[] {
   return Array.from({ length: count }, (_, i) => MONTH_LABELS[(now.getMonth() + i) % 12]);
 }
 
+function getDisplayName(name: string, provider: string) {
+  const normalizedName = name.toLowerCase();
+  const normalizedProvider = provider.toLowerCase();
+
+  if (normalizedName.startsWith(`${normalizedProvider} `)) {
+    return name.slice(provider.length + 1);
+  }
+
+  return name;
+}
+
 function GanttRowArtwork({ row }: { row: GanttRow }) {
   if (row.type === 'bank') {
     const presentation = getBankingImagePresentation(row.provider);
@@ -96,7 +107,7 @@ function GanttRowArtwork({ row }: { row: GanttRow }) {
         src={imageUrl}
         alt={`${row.provider} logo`}
         label={row.provider}
-        className="h-8 w-10 shrink-0 md:h-10 md:w-14"
+        className="h-[3rem] w-[3.85rem] shrink-0 md:h-[3.65rem] md:w-[4.75rem]"
         imgClassName={presentation?.miniImgClassName ?? 'bg-black/10 px-2 py-2'}
         fallbackClassName="bg-black/10"
         fit={presentation?.fit}
@@ -116,7 +127,7 @@ function GanttRowArtwork({ row }: { row: GanttRow }) {
       src={imageUrl}
       alt={`${row.name} ${isIssuerLogo ? 'logo' : 'card art'}`}
       label={isIssuerLogo ? getCardFallbackLabel(row.name, row.provider) : row.name}
-      className="h-8 w-10 shrink-0 md:h-10 md:w-14"
+      className="h-[3rem] w-[3.85rem] shrink-0 md:h-[3.65rem] md:w-[4.75rem]"
       imgClassName={
         presentation?.imgClassName ??
         issuerPresentation?.miniImgClassName ??
@@ -169,7 +180,7 @@ export function PlanComparison() {
         <div className={`relative grid ${GRID_COLUMNS_CLASS_NAME}`}>
           <div className="px-5 py-4">
             <span className="text-[10px] font-semibold uppercase tracking-[0.3em] text-text-muted/60">
-              Move
+              Offer
             </span>
           </div>
           {getUpcomingMonths(6).map((month, i) => (
@@ -202,14 +213,22 @@ export function PlanComparison() {
 
               {/* Label */}
               <div
-                className={`flex items-center gap-2.5 px-5 py-5 transition-all duration-700 md:gap-3 ${
+                className={`flex items-center gap-3 px-5 py-4 transition-all duration-700 md:gap-4 md:py-5 ${
                   isVisible ? 'translate-x-0 opacity-100' : '-translate-x-4 opacity-0'
                 }`}
                 style={{ transitionDelay: `${i * 150}ms` }}
               >
                 <GanttRowArtwork row={row} />
                 <div className="min-w-0">
-                  <p className="truncate text-xs font-semibold text-text-primary">{row.name}</p>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-gold/80 md:text-[11px]">
+                    {row.provider}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold leading-[1.15] text-text-primary md:text-base">
+                    {getDisplayName(row.name, row.provider)}
+                  </p>
+                  <p className="mt-1 text-[11px] leading-tight text-text-secondary md:text-xs">
+                    {row.action}
+                  </p>
                 </div>
               </div>
 
