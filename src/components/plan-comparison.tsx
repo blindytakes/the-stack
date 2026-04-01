@@ -12,7 +12,7 @@ interface GanttRow {
   type: 'card' | 'bank';
   provider: string;
   action: string;
-  value: string;
+  bonusValue: number;
   startCol: number;
   endCol: number;
   slug?: string;
@@ -32,7 +32,7 @@ const ganttRows: GanttRow[] = [
     type: 'card',
     provider: 'Chase',
     action: 'Spend $4k in 3 months',
-    value: '$1,250',
+    bonusValue: 1250,
     startCol: 1,
     endCol: 4,
     slug: 'chase-sapphire-preferred',
@@ -43,7 +43,7 @@ const ganttRows: GanttRow[] = [
     type: 'bank',
     provider: 'Chase',
     action: 'Direct deposit × 2 months',
-    value: '$400',
+    bonusValue: 400,
     startCol: 2,
     endCol: 4
   },
@@ -52,7 +52,7 @@ const ganttRows: GanttRow[] = [
     type: 'card',
     provider: 'American Express',
     action: 'Spend $6k in 6 months',
-    value: '$1,200',
+    bonusValue: 1200,
     startCol: 3,
     endCol: 6,
     slug: 'amex-gold-card',
@@ -63,7 +63,7 @@ const ganttRows: GanttRow[] = [
     type: 'bank',
     provider: 'SoFi',
     action: 'Direct deposit $1k',
-    value: '$650',
+    bonusValue: 650,
     startCol: 4,
     endCol: 6
   },
@@ -72,7 +72,7 @@ const ganttRows: GanttRow[] = [
     type: 'card',
     provider: 'Capital One',
     action: 'Spend $4k in 3 months',
-    value: '$1,500',
+    bonusValue: 1500,
     startCol: 5,
     endCol: 7,
     slug: 'capital-one-venture-x'
@@ -95,6 +95,16 @@ function getDisplayName(name: string, provider: string) {
   }
 
   return name;
+}
+
+const currencyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  maximumFractionDigits: 0
+});
+
+function formatCurrency(value: number) {
+  return currencyFormatter.format(value);
 }
 
 function GanttRowArtwork({ row }: { row: GanttRow }) {
@@ -147,6 +157,9 @@ function GanttRowArtwork({ row }: { row: GanttRow }) {
 export function PlanComparison() {
   const ref = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const totalValue = ganttRows.reduce((sum, row) => sum + row.bonusValue, 0);
+  const cardCount = ganttRows.filter((row) => row.type === 'card').length;
+  const bankCount = ganttRows.filter((row) => row.type === 'bank').length;
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -257,14 +270,52 @@ export function PlanComparison() {
                   {/* Shine effect */}
                   <div className="absolute inset-x-0 top-0 h-px rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                   <span className={`relative z-10 text-base font-bold ${valueColor}`}>
-                    {row.value}
+                    {formatCurrency(row.bonusValue)}
                   </span>
                 </div>
               </div>
             </div>
           );
         })}
-
+        <div className="relative border-t border-white/10 px-5 py-5 md:px-6">
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(45,212,191,0.05),rgba(255,255,255,0))]" />
+          <div className="relative flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.26em] text-brand-gold/80 md:text-[11px]">
+                Sample 6-month plan
+              </p>
+              <p className="mt-2 text-2xl font-semibold leading-none text-text-primary md:text-[2rem]">
+                {formatCurrency(totalValue)} total bonus value
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 md:mr-8 md:max-w-[30rem] md:justify-end lg:mr-10">
+              {[
+                {
+                  value: cardCount,
+                  label: `Credit Card${cardCount === 1 ? '' : 's'}`
+                },
+                {
+                  value: bankCount,
+                  label: `Bank Offer${bankCount === 1 ? '' : 's'}`
+                }
+              ].map((stat, index) => (
+                <div key={stat.label} className="flex items-center gap-x-5">
+                  {index > 0 ? (
+                    <div className="h-6 w-px bg-white/12 md:h-7" aria-hidden="true" />
+                  ) : null}
+                  <div className="flex items-baseline gap-2">
+                    <p className="text-[1.9rem] font-semibold leading-none text-text-primary md:text-[2.1rem]">
+                      {stat.value}
+                    </p>
+                    <p className="text-base font-medium leading-none text-text-secondary md:text-[1.05rem]">
+                      {stat.label}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>

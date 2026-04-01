@@ -391,9 +391,9 @@ export default async function HomePage() {
             Make Banks Work For You.
           </h1>
           <p className="max-w-[48ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl lg:max-w-[58ch]">
-            Your personalized roadmap to maximum sign-up bonuses. Stop guessing which cards to
-            open. The Stack gives you a step-by-step plan — timed perfectly, optimized for your
-            spend, and built to capture every bonus.
+            Stop guessing. Start Stacking. The Stack gives you an optimized plan for credit card
+            and bank bonuses, showing what to open first, when to apply, and what it takes to
+            earn each bonus.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
