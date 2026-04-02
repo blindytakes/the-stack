@@ -3,9 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState, useCallback } from 'react';
 import type { CardDetail } from '@/lib/cards';
-import { getCardImagePresentation } from '@/lib/card-image-presentation';
-import { getCardFallbackLabel } from '@/lib/card-image-fallback';
-import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
+import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import {
   formatCardCurrency,
   formatSignedCardCurrency,
@@ -86,12 +84,15 @@ export function CardDetailModal({
     [onClose]
   );
 
-  const imagePresentation = getCardImagePresentation(slug, card?.imageUrl);
-  const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-  const hasRenderableImage = Boolean(card?.imageUrl) && !isLowValueCardImageUrl(card?.imageUrl);
-  const cardImageSrc = hasRenderableImage ? card?.imageUrl : undefined;
-  const cardImageLabel =
-    card && hasRenderableImage ? card.name : card ? getCardFallbackLabel(card.name, card.issuer) : slug;
+  const cardImage = card
+    ? getCardImageDisplay({
+        slug,
+        name: card.name,
+        issuer: card.issuer,
+        imageUrl: card.imageUrl,
+        imageAssetType: card.imageAssetType
+      })
+    : null;
 
   const formatRewardRate = (rate: number, rateType: CardDetail['rewardType']) => {
     if (rateType === 'cashback') return `${rate}%`;
@@ -184,17 +185,24 @@ export function CardDetailModal({
 
             <div className="grid gap-6 md:grid-cols-[236px_minmax(0,1fr)] md:items-start md:gap-x-10">
               <div className="mx-auto w-full max-w-[236px]">
-                <div className="overflow-hidden rounded-[1.35rem] border border-white/10 bg-black/10 p-2.5 shadow-[0_16px_42px_rgba(0,0,0,0.22)]">
+                <div
+                  className={`overflow-hidden rounded-[1.35rem] border border-white/10 shadow-[0_16px_42px_rgba(0,0,0,0.22)] ${
+                    cardImage?.imageAssetType === 'card_art'
+                      ? 'bg-black/20 p-0'
+                      : 'bg-black/10 p-2.5'
+                  }`}
+                >
                   <EntityImage
-                    src={cardImageSrc}
-                    alt={`${card.name} card art`}
-                    label={cardImageLabel}
+                    src={cardImage?.src}
+                    alt={cardImage?.alt ?? `${card.name} card art`}
+                    label={cardImage?.label ?? card.name}
                     className="aspect-[1.586/1] rounded-[1.05rem]"
-                    imgClassName={imageClassName}
+                    imgClassName={cardImage?.presentation.imgClassName}
                     fallbackClassName="bg-black/10"
-                    fit={imagePresentation?.fit}
-                    position={imagePresentation?.position}
-                    scale={imagePresentation?.scale}
+                    fallbackVariant={cardImage?.fallbackVariant}
+                    fit={cardImage?.presentation.fit}
+                    position={cardImage?.presentation.position}
+                    scale={cardImage?.presentation.scale}
                   />
                 </div>
 

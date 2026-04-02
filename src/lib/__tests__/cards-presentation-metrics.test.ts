@@ -7,6 +7,7 @@ function createCard(overrides: Partial<CardRecord> = {}): CardRecord {
     slug: overrides.slug ?? 'sample-card',
     name: overrides.name ?? 'Sample Card',
     issuer: overrides.issuer ?? 'Chase',
+    imageAssetType: overrides.imageAssetType ?? 'text_fallback',
     cardType: overrides.cardType ?? 'personal',
     rewardType: overrides.rewardType ?? 'points',
     topCategories: overrides.topCategories ?? ['travel'],

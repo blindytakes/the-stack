@@ -1,4 +1,4 @@
-import type { CardRecord } from '@/lib/cards';
+import type { CardImageAssetType, CardRecord } from '@/lib/cards';
 import type { QuizRequest, QuizResult } from '@/lib/quiz-engine';
 import type { AvailableCash } from '@/lib/quiz-engine';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
@@ -64,6 +64,7 @@ export type PlannerRecommendation = {
   title: string;
   provider: string;
   imageUrl?: string;
+  imageAssetType?: CardImageAssetType;
   estimatedNetValue: number;
   valueBreakdown?: PlannerRecommendationValueBreakdown;
   priorityScore: number;
@@ -81,7 +82,10 @@ export type PlannerRecommendationBundle = {
   scheduleIssues: PlanScheduleIssue[];
 };
 
-export type CardPlannerInput = Pick<CardRecord, 'slug' | 'name' | 'issuer' | 'imageUrl' | 'annualFee' | 'creditTierMin'> & {
+export type CardPlannerInput = Pick<
+  CardRecord,
+  'slug' | 'name' | 'issuer' | 'imageUrl' | 'imageAssetType' | 'annualFee' | 'creditTierMin'
+> & {
   bonusValue: number;
   plannerBenefitsValue: number;
   spendRequired: number;
@@ -174,6 +178,7 @@ export function toPlannerRecommendationFromCard(input: CardPlannerInput): Planne
     title: input.name,
     provider: input.issuer,
     imageUrl: input.imageUrl ?? undefined,
+    imageAssetType: input.imageAssetType,
     estimatedNetValue,
     valueBreakdown: {
       headlineValue: input.bonusValue,
@@ -317,6 +322,7 @@ export function buildPlanRecommendationsFromQuiz(
       name: card.name,
       issuer: card.issuer,
       imageUrl: card.imageUrl,
+      imageAssetType: card.imageAssetType,
       annualFee: card.annualFee,
       creditTierMin: card.creditTierMin,
       bonusValue: card.bestSignUpBonusValue ?? 0,

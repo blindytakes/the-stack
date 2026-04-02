@@ -17,12 +17,15 @@ export type SpendingCategoryValue = (typeof spendingCategoryValues)[number];
 export type CardTypeValue = 'personal' | 'business' | 'student' | 'secured';
 export type RewardTypeValue = 'cashback' | 'points' | 'miles';
 export type CreditTierValue = 'excellent' | 'good' | 'fair' | 'building';
+export const cardImageAssetTypes = ['card_art', 'brand_logo', 'text_fallback'] as const;
+export type CardImageAssetType = (typeof cardImageAssetTypes)[number];
 
 export type CardRecord = {
   slug: string;
   name: string;
   issuer: string;
   imageUrl?: string;
+  imageAssetType: CardImageAssetType;
   cardType: CardTypeValue;
   rewardType: RewardTypeValue;
   topCategories: SpendingCategoryValue[];

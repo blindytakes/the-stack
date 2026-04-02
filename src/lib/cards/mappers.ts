@@ -5,7 +5,7 @@ import {
 } from '@/lib/cards/planner-benefits';
 import { deriveOffsettingCreditsValue } from '@/lib/cards/presentation-metrics';
 import {
-  resolveCardBrandImageUrl,
+  resolveCardImage,
   resolveCardFallbackBenefits
 } from '@/lib/cards/fallback-enrichment';
 import type {
@@ -133,6 +133,12 @@ function toResolvedBenefits(row: Pick<
 export function toCardRecordFromDb(row: DbCardRow): CardRecord {
   const bestSignUpBonus = deriveBestSignUpBonus(row.signUpBonuses);
   const resolvedBenefits = toResolvedBenefits(row);
+  const resolvedCardImage = resolveCardImage(
+    row.slug,
+    row.issuer,
+    row.imageUrl ?? undefined,
+    row.name
+  );
   const resolvedBenefitValues = resolvedBenefits.map((benefit) => ({
     ...benefit,
     estimatedValue: benefit.estimatedValue ?? null
@@ -148,7 +154,8 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
     slug: row.slug,
     name: row.name,
     issuer: row.issuer,
-    imageUrl: resolveCardBrandImageUrl(row.slug, row.issuer, row.imageUrl ?? undefined, row.name),
+    imageUrl: resolvedCardImage.imageUrl,
+    imageAssetType: resolvedCardImage.imageAssetType,
     cardType: cardTypeFromDb[row.cardType],
     rewardType: deriveRewardType(row.rewards),
     topCategories: deriveTopCategories(row.rewards),

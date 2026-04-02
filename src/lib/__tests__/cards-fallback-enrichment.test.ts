@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { resolveCardBrandImageUrl } from '../cards/fallback-enrichment';
+import { resolveCardBrandImageUrl, resolveCardImage } from '../cards/fallback-enrichment';
 import { isLowValueCardImageUrl } from '../entity-image-source';
 
 describe('resolveCardBrandImageUrl', () => {
@@ -32,6 +32,9 @@ describe('resolveCardBrandImageUrl', () => {
   });
 
   it('uses slug-specific art for curated co-brand cards', () => {
+    expect(resolveCardBrandImageUrl('alaska-airlines-visa-signature', 'Bank of America')).toBe(
+      '/card-logos/alaska-airlines.svg'
+    );
     expect(resolveCardBrandImageUrl('barclays-jetblue-card', 'Barclays')).toBe('/card-logos/jetblue.svg');
     expect(resolveCardBrandImageUrl('barclays-jetblue-plus', 'Barclays')).toBe('/card-logos/jetblue.svg');
     expect(resolveCardBrandImageUrl('barclays-aadvantage-aviator-red', 'Barclays')).toBe(
@@ -73,5 +76,60 @@ describe('resolveCardBrandImageUrl', () => {
     ).toBe(
       'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
     );
+  });
+});
+
+describe('resolveCardImage', () => {
+  it('classifies curated card-style fallback art as card art', () => {
+    expect(resolveCardImage('alaska-airlines-visa-signature', 'Bank of America')).toMatchObject({
+      imageUrl: '/card-logos/alaska-airlines.svg',
+      imageAssetType: 'card_art'
+    });
+    expect(resolveCardImage('discover-it-cash-back', 'Discover')).toMatchObject({
+      imageUrl: '/card-logos/discover.svg',
+      imageAssetType: 'card_art'
+    });
+  });
+
+  it('classifies issuer logo fallbacks as brand logos', () => {
+    expect(
+      resolveCardImage(
+        'chase-ihg-one-rewards-premier-business',
+        'Chase',
+        undefined,
+        'IHG One Rewards Premier Business Credit Card'
+      )
+    ).toMatchObject({
+      imageUrl:
+        'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg',
+      imageAssetType: 'brand_logo'
+    });
+  });
+
+  it('classifies explicit issuer logo URLs as brand logos', () => {
+    expect(
+      resolveCardImage(
+        'wells-fargo-autograph-journey',
+        'Wells Fargo',
+        'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png',
+        'Wells Fargo Autograph Journey Card'
+      )
+    ).toMatchObject({
+      imageUrl: 'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png',
+      imageAssetType: 'brand_logo'
+    });
+  });
+
+  it('drops unresolved low-value image URLs to text fallback', () => {
+    expect(
+      resolveCardImage(
+        'unknown-card',
+        'Unknown Bank',
+        'https://www.sofi.com/favicon.ico',
+        'Some Co-Branded Card'
+      )
+    ).toEqual({
+      imageAssetType: 'text_fallback'
+    });
   });
 });

@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { EntityImage } from '@/components/ui/entity-image';
-import { getCardFallbackLabel } from '@/lib/card-image-fallback';
-import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
+import { getCardImageDisplay } from '@/lib/card-image-presentation';
+import type { CardImageAssetType } from '@/lib/cards';
 
 export type HeroOffer = {
   name: string;
@@ -13,6 +13,7 @@ export type HeroOffer = {
   requirement: string;
   slug: string;
   imageUrl?: string;
+  imageAssetType?: CardImageAssetType;
   imagePresentation?: {
     fit?: 'contain' | 'cover';
     position?: string;
@@ -82,11 +83,11 @@ function getOpeningOfferIndex(
   }
 
   const imageBackedCardIndex = offers.findIndex((offer) => {
-    if (offer.type !== 'card' || !offer.imageUrl) {
+    if (offer.type !== 'card') {
       return false;
     }
 
-    return !isLowValueCardImageUrl(offer.imageUrl);
+    return Boolean(offer.imageUrl) && offer.imageAssetType !== 'text_fallback';
   });
   if (imageBackedCardIndex >= 0) {
     return imageBackedCardIndex;
@@ -109,33 +110,36 @@ function OfferCard({
     ? 'rgba(45, 212, 191, 0.15)'
     : 'rgba(234, 179, 8, 0.15)';
   const hrefBase = isCard ? '/cards' : '/banking';
-  const pres = offer.imagePresentation;
-  const hasRenderableCardImage =
-    !isCard || (Boolean(offer.imageUrl) && !isLowValueCardImageUrl(offer.imageUrl));
-  const displayImageUrl = hasRenderableCardImage ? offer.imageUrl : undefined;
-  const displayLabel = isCard
-    ? hasRenderableCardImage
-      ? offer.name
-      : getCardFallbackLabel(offer.name, offer.issuer)
-    : offer.issuer;
-  const fallbackVariant = isCard ? (hasRenderableCardImage ? 'initials' : 'wordmark') : 'wordmark';
+  const cardImage = isCard
+    ? getCardImageDisplay({
+        slug: offer.slug,
+        name: offer.name,
+        issuer: offer.issuer,
+        imageUrl: offer.imageUrl,
+        imageAssetType: offer.imageAssetType
+      })
+    : null;
+  const bankImagePresentation = offer.imagePresentation;
   const content = (
     <>
       <EntityImage
-        src={displayImageUrl}
-        alt={`${offer.name} ${isCard ? 'card art' : 'logo'}`}
-        label={displayLabel}
+        src={isCard ? cardImage?.src : offer.imageUrl}
+        alt={isCard ? cardImage?.alt ?? `${offer.name} card art` : `${offer.name} logo`}
+        label={isCard ? cardImage?.label ?? offer.name : offer.issuer}
         className="aspect-[1.586/1] w-full"
         imgClassName={
-          pres?.imgClassName ??
-          (isCard ? 'bg-black/10 p-1.5' : 'bg-black/10 px-5 py-3')
+          isCard
+            ? cardImage?.presentation.imgClassName
+            : bankImagePresentation?.imgClassName ?? 'bg-black/10 px-5 py-3'
         }
         fallbackClassName="bg-black/10"
-        fallbackVariant={fallbackVariant}
+        fallbackVariant={isCard ? cardImage?.fallbackVariant : 'wordmark'}
         fallbackTextClassName={isCard ? 'px-4 text-sm sm:text-base' : 'px-4 text-lg sm:text-xl'}
-        fit={pres?.fit}
-        position={pres?.position}
-        scale={pres?.scale}
+        fit={isCard ? cardImage?.presentation.fit : bankImagePresentation?.fit ?? 'contain'}
+        position={
+          isCard ? cardImage?.presentation.position : bankImagePresentation?.position ?? 'center center'
+        }
+        scale={isCard ? cardImage?.presentation.scale : bankImagePresentation?.scale ?? 1.04}
       />
       <p className="mt-3 line-clamp-2 text-sm font-semibold leading-snug text-text-primary">
         {offer.name}

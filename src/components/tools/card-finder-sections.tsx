@@ -4,11 +4,9 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { EntityImage } from '@/components/ui/entity-image';
-import { getCardFallbackLabel } from '@/lib/card-image-fallback';
-import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
-import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import { formatSpendCategoryLabel } from '@/lib/cards-directory-explorer';
 import type { CardRecord } from '@/lib/cards';
 import type { QuizRequest } from '@/lib/quiz-engine';
@@ -102,9 +100,13 @@ function CompactCardChoice({
   card: CardRecord;
   onSelect: (slug: string) => void;
 }) {
-  const imagePresentation = getCardImagePresentation(card.slug, card.imageUrl);
-  const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-  const hasRenderableImage = Boolean(card.imageUrl) && !isLowValueCardImageUrl(card.imageUrl);
+  const cardImage = getCardImageDisplay({
+    slug: card.slug,
+    name: card.name,
+    issuer: card.issuer,
+    imageUrl: card.imageUrl,
+    imageAssetType: card.imageAssetType
+  });
 
   return (
     <button
@@ -114,17 +116,17 @@ function CompactCardChoice({
     >
       <div className="w-16 shrink-0">
         <EntityImage
-          src={hasRenderableImage ? card.imageUrl : undefined}
-          alt={`${card.name} card art`}
-          label={hasRenderableImage ? card.name : getCardFallbackLabel(card.name, card.issuer)}
+          src={cardImage.src}
+          alt={cardImage.alt}
+          label={cardImage.label}
           className="aspect-[1.586/1] rounded-[0.95rem]"
-          imgClassName={imageClassName}
+          imgClassName={cardImage.presentation.imgClassName}
           fallbackClassName="bg-black/10"
-          fallbackVariant={hasRenderableImage ? 'initials' : 'wordmark'}
+          fallbackVariant={cardImage.fallbackVariant}
           fallbackTextClassName="text-[10px] sm:text-xs"
-          fit={imagePresentation?.fit}
-          position={imagePresentation?.position}
-          scale={imagePresentation?.scale}
+          fit={cardImage.presentation.fit}
+          position={cardImage.presentation.position}
+          scale={cardImage.presentation.scale}
         />
       </div>
 
@@ -149,9 +151,13 @@ function DrawerCardRow({
   card: CardRecord;
   onSelect: (slug: string) => void;
 }) {
-  const imagePresentation = getCardImagePresentation(card.slug, card.imageUrl);
-  const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-  const hasRenderableImage = Boolean(card.imageUrl) && !isLowValueCardImageUrl(card.imageUrl);
+  const cardImage = getCardImageDisplay({
+    slug: card.slug,
+    name: card.name,
+    issuer: card.issuer,
+    imageUrl: card.imageUrl,
+    imageAssetType: card.imageAssetType
+  });
 
   return (
     <button
@@ -161,17 +167,17 @@ function DrawerCardRow({
     >
       <div className="w-24 shrink-0">
         <EntityImage
-          src={hasRenderableImage ? card.imageUrl : undefined}
-          alt={`${card.name} card art`}
-          label={hasRenderableImage ? card.name : getCardFallbackLabel(card.name, card.issuer)}
+          src={cardImage.src}
+          alt={cardImage.alt}
+          label={cardImage.label}
           className="aspect-[1.586/1] rounded-[0.95rem]"
-          imgClassName={imageClassName}
+          imgClassName={cardImage.presentation.imgClassName}
           fallbackClassName="bg-black/10"
-          fallbackVariant={hasRenderableImage ? 'initials' : 'wordmark'}
+          fallbackVariant={cardImage.fallbackVariant}
           fallbackTextClassName="text-[11px] sm:text-xs"
-          fit={imagePresentation?.fit}
-          position={imagePresentation?.position}
-          scale={imagePresentation?.scale}
+          fit={cardImage.presentation.fit}
+          position={cardImage.presentation.position}
+          scale={cardImage.presentation.scale}
         />
       </div>
 

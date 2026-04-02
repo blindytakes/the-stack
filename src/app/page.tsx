@@ -8,7 +8,6 @@ import { HowItWorksSteps } from '@/components/how-it-works-steps';
 import { FaqAccordion } from '@/components/faq-accordion';
 import { getCardsData } from '@/lib/cards';
 import { getBankingBonusesData } from '@/lib/banking-bonuses';
-import { getCardImagePresentation } from '@/lib/card-image-presentation';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
 
 const SITE_URL = 'https://thestackhq.com';
@@ -299,7 +298,6 @@ async function getHeroOffers(): Promise<HeroOffer[]> {
     const { cards } = await getCardsData();
     for (const card of cards) {
       if (card.bestSignUpBonusValue && card.bestSignUpBonusValue > 0) {
-        const pres = getCardImagePresentation(card.slug, card.imageUrl);
         offers.push({
           name: card.name,
           issuer: card.issuer,
@@ -310,7 +308,7 @@ async function getHeroOffers(): Promise<HeroOffer[]> {
             : 'See requirements',
           slug: card.slug,
           imageUrl: card.imageUrl,
-          imagePresentation: pres ?? undefined,
+          imageAssetType: card.imageAssetType
         });
       }
     }

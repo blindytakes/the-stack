@@ -8,10 +8,8 @@ import {
   formatBonusValue,
   formatSpendCategoryLabel
 } from '@/lib/cards-directory-explorer';
-import { getCardFallbackLabel } from '@/lib/card-image-fallback';
 import { getCardDirectoryMetrics } from '@/lib/cards/presentation-metrics';
-import { getCardImagePresentation } from '@/lib/card-image-presentation';
-import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
+import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import { EntityImage } from '@/components/ui/entity-image';
 import { CardDetailModal } from '@/components/cards/card-detail-modal';
 import { useFirstGridRowReveal } from '@/components/ui/use-first-grid-row-reveal';
@@ -99,13 +97,13 @@ export function CardsDirectoryResults({
       <div ref={gridRef} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {cards.map((card, index) => {
           const selectedForCompare = selectedCompare.includes(card.slug);
-          const imagePresentation = getCardImagePresentation(card.slug, card.imageUrl);
-          const imageClassName = imagePresentation?.imgClassName ?? 'bg-black/10 p-2';
-          const hasRenderableImage = Boolean(card.imageUrl) && !isLowValueCardImageUrl(card.imageUrl);
-          const cardImageSrc = hasRenderableImage ? card.imageUrl : undefined;
-          const cardImageLabel = hasRenderableImage
-            ? card.name
-            : getCardFallbackLabel(card.name, card.issuer);
+          const cardImage = getCardImageDisplay({
+            slug: card.slug,
+            name: card.name,
+            issuer: card.issuer,
+            imageUrl: card.imageUrl,
+            imageAssetType: card.imageAssetType
+          });
           const topCategories = card.topCategories.filter((category) => category !== 'other');
           const bestCategory = (topCategories.length > 0 ? topCategories : (['all'] as const))[0];
           const decisionMetrics = getCardDirectoryMetrics(card);
@@ -146,17 +144,17 @@ export function CardsDirectoryResults({
 
               <div className="relative z-10 mb-4 overflow-hidden rounded-xl transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.035]">
                 <EntityImage
-                  src={cardImageSrc}
-                  alt={`${card.name} card art`}
-                  label={cardImageLabel}
+                  src={cardImage.src}
+                  alt={cardImage.alt}
+                  label={cardImage.label}
                   className="aspect-[1.586/1]"
-                  imgClassName={imageClassName}
+                  imgClassName={cardImage.presentation.imgClassName}
                   fallbackClassName="bg-black/10"
-                  fallbackVariant={hasRenderableImage ? 'initials' : 'wordmark'}
+                  fallbackVariant={cardImage.fallbackVariant}
                   fallbackTextClassName="px-4 text-sm sm:text-base"
-                  fit={imagePresentation?.fit}
-                  position={imagePresentation?.position}
-                  scale={imagePresentation?.scale}
+                  fit={cardImage.presentation.fit}
+                  position={cardImage.presentation.position}
+                  scale={cardImage.presentation.scale}
                 />
               </div>
 

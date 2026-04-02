@@ -6,9 +6,11 @@
  */
 export {
   cardsQuerySchema,
+  cardImageAssetTypes,
   spendingCategoryValues,
   type BenefitDetail,
   type CardDetail,
+  type CardImageAssetType,
   type CardRecord,
   type CardsQuery,
   type CardTypeValue,

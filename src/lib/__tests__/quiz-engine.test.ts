@@ -12,6 +12,7 @@ function makeCard(overrides: Partial<CardRecord> = {}): CardRecord {
     slug: 'test-card',
     name: 'Test Card',
     issuer: 'TestBank',
+    imageAssetType: 'text_fallback',
     cardType: 'personal',
     rewardType: 'cashback',
     topCategories: ['dining'],

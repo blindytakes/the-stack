@@ -2,6 +2,7 @@ import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
 import { cardNameReferencesIssuer } from '@/lib/card-image-fallback';
 import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import type {
+  CardImageAssetType,
   CardTypeValue,
   RewardTypeValue,
   SpendingCategoryValue
@@ -26,12 +27,19 @@ export type FallbackBenefit = {
   activationMethod?: string;
 };
 
+export type ResolvedCardImage = {
+  imageUrl?: string;
+  imageAssetType: CardImageAssetType;
+};
+
+export const CHASE_CARD_LOGO_URL =
+  'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg';
+
 const cardBrandImageUrlByIssuer: Record<string, string> = {
   'american express': '/card-logos/american-express.svg',
   apple: '/card-logos/apple.svg',
   barclays: '/card-logos/barclays.svg',
-  chase:
-    'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg',
+  chase: CHASE_CARD_LOGO_URL,
   citi: '/card-logos/citi.svg',
   discover: '/card-logos/discover.svg',
   fidelity: '/card-logos/fidelity.svg',
@@ -41,6 +49,7 @@ const cardBrandImageUrlByIssuer: Record<string, string> = {
 };
 
 const cardBrandImageUrlBySlug: Record<string, string> = {
+  'alaska-airlines-visa-signature': '/card-logos/alaska-airlines.svg',
   'apple-card': '/card-logos/apple.svg',
   'barclays-aadvantage-aviator-red': '/card-logos/aviator-red.svg',
   'barclays-jetblue-card': '/card-logos/jetblue.svg',
@@ -58,6 +67,26 @@ function normalizeKey(value: string) {
 function includesToken(source: CardFallbackSource, ...tokens: string[]) {
   const slug = source.slug.toLowerCase();
   return tokens.some((token) => slug.includes(token));
+}
+
+function getCardImageAssetTypeForUrl(
+  imageUrl: string,
+  issuer?: string
+): Exclude<CardImageAssetType, 'text_fallback'> {
+  const normalizedImageUrl = imageUrl.trim().toLowerCase();
+  const normalizedIssuerLogoUrl = issuer
+    ? resolveBankingBrandImageUrl(issuer)?.trim().toLowerCase()
+    : null;
+
+  if (
+    normalizedImageUrl === CHASE_CARD_LOGO_URL.toLowerCase() ||
+    normalizedImageUrl.includes('/bank-logos/') ||
+    (normalizedIssuerLogoUrl != null && normalizedImageUrl === normalizedIssuerLogoUrl)
+  ) {
+    return 'brand_logo';
+  }
+
+  return 'card_art';
 }
 
 function benefit(
@@ -684,39 +713,75 @@ function discoverBenefits(source: CardFallbackSource): FallbackBenefit[] {
   return [];
 }
 
+export function resolveCardImage(
+  slug: string,
+  issuer: string,
+  imageUrl?: string | null,
+  cardName?: string
+): ResolvedCardImage {
+  const curatedSlugImageUrl = cardBrandImageUrlBySlug[normalizeKey(slug)];
+  const curatedCardImageUrl = cardBrandImageUrlByIssuer[normalizeKey(issuer)];
+  const canUseIssuerFallback = cardNameReferencesIssuer(cardName, issuer);
+
+  if (curatedSlugImageUrl) {
+    if (!imageUrl) {
+        return {
+          imageUrl: curatedSlugImageUrl,
+          imageAssetType: getCardImageAssetTypeForUrl(curatedSlugImageUrl, issuer)
+        };
+      }
+
+    const normalizedImageUrl = imageUrl.trim();
+    if (isLowValueCardImageUrl(normalizedImageUrl)) {
+      return {
+        imageUrl: curatedSlugImageUrl,
+        imageAssetType: getCardImageAssetTypeForUrl(curatedSlugImageUrl, issuer)
+      };
+    }
+  }
+
+  if (imageUrl) {
+    const normalizedImageUrl = imageUrl.trim();
+
+    if (isLowValueCardImageUrl(normalizedImageUrl)) {
+      if (curatedCardImageUrl && canUseIssuerFallback) {
+        return {
+          imageUrl: curatedCardImageUrl,
+          imageAssetType: getCardImageAssetTypeForUrl(curatedCardImageUrl, issuer)
+        };
+      }
+
+      return { imageAssetType: 'text_fallback' };
+    }
+
+    return {
+      imageUrl: normalizedImageUrl,
+      imageAssetType: getCardImageAssetTypeForUrl(normalizedImageUrl, issuer)
+    };
+  }
+
+  if (!canUseIssuerFallback) {
+    return { imageAssetType: 'text_fallback' };
+  }
+
+  const fallbackImageUrl = curatedCardImageUrl ?? resolveBankingBrandImageUrl(issuer);
+  if (!fallbackImageUrl) {
+    return { imageAssetType: 'text_fallback' };
+  }
+
+  return {
+    imageUrl: fallbackImageUrl,
+    imageAssetType: getCardImageAssetTypeForUrl(fallbackImageUrl, issuer)
+  };
+}
+
 export function resolveCardBrandImageUrl(
   slug: string,
   issuer: string,
   imageUrl?: string | null,
   cardName?: string
 ) {
-  const curatedSlugImageUrl = cardBrandImageUrlBySlug[normalizeKey(slug)];
-  const curatedCardImageUrl = cardBrandImageUrlByIssuer[normalizeKey(issuer)];
-  const canUseIssuerFallback = cardNameReferencesIssuer(cardName, issuer);
-
-  if (curatedSlugImageUrl) {
-    if (!imageUrl) return curatedSlugImageUrl;
-
-    const normalizedImageUrl = imageUrl.trim();
-    if (isLowValueCardImageUrl(normalizedImageUrl)) {
-      return curatedSlugImageUrl;
-    }
-  }
-
-  if (imageUrl) {
-    const normalizedImageUrl = imageUrl.trim();
-    if (curatedCardImageUrl && isLowValueCardImageUrl(normalizedImageUrl)) {
-      return canUseIssuerFallback ? curatedCardImageUrl : undefined;
-    }
-
-    return normalizedImageUrl;
-  }
-
-  if (!canUseIssuerFallback) {
-    return undefined;
-  }
-
-  return curatedCardImageUrl ?? resolveBankingBrandImageUrl(issuer);
+  return resolveCardImage(slug, issuer, imageUrl, cardName).imageUrl;
 }
 
 export function resolveCardFallbackBenefits(source: CardFallbackSource): FallbackBenefit[] {

@@ -21,6 +21,7 @@ function makeCard(overrides: Partial<CardRecord> = {}): CardRecord {
     slug: 'test-card',
     name: 'Test Card',
     issuer: 'TestBank',
+    imageAssetType: 'text_fallback',
     cardType: 'personal',
     rewardType: 'cashback',
     topCategories: ['dining'],
@@ -356,6 +357,7 @@ describe('toCardRecordFromDb', () => {
     const row = makeDbCardRow({ imageUrl: 'https://assets.example.com/test-card.png' });
     const result = toCardRecordFromDb(row);
     expect(result.imageUrl).toBe('https://assets.example.com/test-card.png');
+    expect(result.imageAssetType).toBe('card_art');
   });
 
   it('falls back to an issuer image when issuer-branded card art is missing', () => {
@@ -368,6 +370,7 @@ describe('toCardRecordFromDb', () => {
     expect(result.imageUrl).toBe(
       'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
     );
+    expect(result.imageAssetType).toBe('brand_logo');
   });
 
   it('keeps Chase issuer logos for co-branded cards with missing art', () => {
@@ -380,6 +383,7 @@ describe('toCardRecordFromDb', () => {
     expect(result.imageUrl).toBe(
       'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
     );
+    expect(result.imageAssetType).toBe('brand_logo');
   });
 
   it('derives rewardType from first reward rateType', () => {

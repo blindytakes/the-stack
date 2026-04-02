@@ -4,8 +4,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { EntityImage } from '@/components/ui/entity-image';
-import { getCardFallbackLabel } from '@/lib/card-image-fallback';
-import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 import {
   getFeaturedPlanRecommendations,
   buildScheduledTimelineEntries,
@@ -36,7 +34,7 @@ import {
   getSelectedOfferIntentStatus,
   type SelectedOfferIntentStatus
 } from '@/lib/selected-offer-intent';
-import { getCardImagePresentation } from '@/lib/card-image-presentation';
+import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
 import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
 
@@ -59,22 +57,30 @@ function RecommendationArtwork({
   const slug = getRecommendationSlug(item);
 
   if (item.lane === 'cards') {
-    const presentation = slug ? getCardImagePresentation(slug, item.imageUrl) : null;
-    const hasRenderableImage = Boolean(item.imageUrl) && !isLowValueCardImageUrl(item.imageUrl);
+    const cardImage =
+      slug != null
+        ? getCardImageDisplay({
+            slug,
+            name: item.title,
+            issuer: item.provider,
+            imageUrl: item.imageUrl,
+            imageAssetType: item.imageAssetType
+          })
+        : null;
 
     return (
       <EntityImage
-        src={hasRenderableImage ? item.imageUrl : undefined}
-        alt={`${item.title} image`}
-        label={hasRenderableImage ? item.title : getCardFallbackLabel(item.title, item.provider)}
+        src={cardImage?.src}
+        alt={cardImage?.alt ?? `${item.title} card art`}
+        label={cardImage?.label ?? item.title}
         className={className}
-        imgClassName={presentation?.imgClassName ?? 'bg-black/10 p-2'}
+        imgClassName={cardImage?.presentation.imgClassName}
         fallbackClassName="bg-black/10"
-        fallbackVariant={hasRenderableImage ? 'initials' : 'wordmark'}
+        fallbackVariant={cardImage?.fallbackVariant}
         fallbackTextClassName="text-xs sm:text-sm"
-        fit={presentation?.fit}
-        position={presentation?.position}
-        scale={presentation?.scale}
+        fit={cardImage?.presentation.fit}
+        position={cardImage?.presentation.position}
+        scale={cardImage?.presentation.scale}
       />
     );
   }

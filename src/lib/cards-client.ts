@@ -19,11 +19,14 @@ const categorySchema = z.enum([
   'other'
 ]);
 const creditTierSchema = z.enum(['excellent', 'good', 'fair', 'building']);
+const cardImageAssetTypeSchema = z.enum(['card_art', 'brand_logo', 'text_fallback']);
 
 const cardRecordSchema = z.object({
   slug: z.string().min(1),
   name: z.string().min(1),
   issuer: z.string().min(1),
+  imageUrl: z.string().url().optional(),
+  imageAssetType: cardImageAssetTypeSchema,
   cardType: cardTypeSchema,
   rewardType: rewardTypeSchema,
   topCategories: z.array(categorySchema),

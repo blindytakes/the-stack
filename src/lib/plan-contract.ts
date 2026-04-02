@@ -4,6 +4,7 @@ import { quizRequestSchema } from '@/lib/quiz-engine';
 const plannerRecommendationLaneSchema = z.enum(['cards', 'banking']);
 const plannerRecommendationKindSchema = z.enum(['card_bonus', 'bank_bonus']);
 const plannerRecommendationEffortSchema = z.enum(['low', 'medium', 'high']);
+const cardImageAssetTypeSchema = z.enum(['card_art', 'brand_logo', 'text_fallback']);
 export const selectedOfferIntentSchema = z.object({
   lane: plannerRecommendationLaneSchema,
   slug: z.string().min(1),
@@ -20,6 +21,7 @@ export const plannerRecommendationSchema = z.object({
   title: z.string().min(1),
   provider: z.string().min(1),
   imageUrl: z.string().url().optional(),
+  imageAssetType: cardImageAssetTypeSchema.optional(),
   estimatedNetValue: z.number().finite(),
   valueBreakdown: z
     .object({
