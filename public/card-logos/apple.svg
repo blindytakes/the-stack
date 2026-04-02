@@ -1,7 +1,63 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
-  <title id="title">Apple fallback logo</title>
-  <desc id="desc">Curated fallback card-style logo for Apple.</desc>
-  <rect width="320" height="200" rx="28" fill="#111111"/>
-  <circle cx="82" cy="100" r="28" fill="#ffffff" opacity="0.12"/>
-  <text x="126" y="112" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="700" letter-spacing="1.6">Apple</text>
+  <title id="title">Apple Card fallback art</title>
+  <desc id="desc">Curated minimalist titanium-style card art for Apple Card.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fcfcfd"/>
+      <stop offset="44%" stop-color="#ececef"/>
+      <stop offset="100%" stop-color="#d8dade"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.92"/>
+      <stop offset="42%" stop-color="#ffffff" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="prism" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7dd3fc" stop-opacity="0"/>
+      <stop offset="18%" stop-color="#7dd3fc" stop-opacity="0.12"/>
+      <stop offset="38%" stop-color="#c4b5fd" stop-opacity="0.16"/>
+      <stop offset="62%" stop-color="#f9a8d4" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#f9a8d4" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="chip" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e2e4e7"/>
+      <stop offset="100%" stop-color="#bbbec3"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="78%" cy="24%" r="54%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5"/>
+      <stop offset="52%" stop-color="#ffffff" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="320" height="200" rx="28" fill="url(#bg)"/>
+  <rect x="6" y="6" width="308" height="188" rx="24" fill="none" stroke="#ffffff" stroke-opacity="0.72"/>
+  <rect x="14" y="14" width="292" height="172" rx="20" fill="url(#halo)"/>
+  <path
+    d="M-36 174c78-52 158-92 314-144l54 40C198 118 122 148 2 202Z"
+    fill="url(#prism)"
+    opacity="0.42"
+  />
+  <path
+    d="M0 34c54-22 116-34 186-34 42 0 88 4 134 12v74c-44 18-96 32-158 42-54 9-108 13-162 11V34Z"
+    fill="url(#sheen)"
+  />
+  <path
+    d="M0 164c54-18 110-28 172-28 64 0 114 10 148 20v44H0Z"
+    fill="#cfd2d8"
+    opacity="0.34"
+  />
+
+  <rect x="38" y="74" width="46" height="34" rx="8" fill="url(#chip)" stroke="#afb3b9"/>
+  <rect x="59.5" y="74" width="1" height="34" fill="#a7abb1"/>
+  <rect x="38" y="90.5" width="46" height="1" fill="#a7abb1"/>
+
+  <rect x="240" y="42" width="28" height="28" rx="10" fill="#ffffff" fill-opacity="0.18"/>
+  <rect x="241" y="43" width="26" height="26" rx="9" fill="none" stroke="#7e838a" stroke-opacity="0.14"/>
+
+  <path
+    d="M257 47c-2.8 0.2-5.6 2.1-6.9 4.5-1.1 2-1.5 4.4-1 6.5 2.8 0.2 5.5-1.3 7.2-3.8 1.4-2.1 1.9-4.7 1.6-7.2-0.3 0-0.6 0-0.9 0ZM262 60.3c-1.8 0-3 0.8-4 0.8s-2.6-0.7-4.3-0.6c-3.4 0.1-6.5 2.1-8.2 5.1-3.4 5.8-0.9 14.4 2.4 19.1 1.6 2.3 3.6 4.8 6.2 4.7 2.4-0.1 3.4-1.5 6.3-1.5 2.9 0 3.8 1.5 6.3 1.4 2.6 0 4.3-2.3 5.9-4.6 1.9-2.7 2.7-5.3 2.7-5.4-0.1 0-5.2-2-5.3-8 0-5 4-7.4 4.2-7.5-2.3-3.3-5.8-3.7-7.2-3.7Z"
+    fill="#1f2933"
+    fill-opacity="0.26"
+  />
 </svg>

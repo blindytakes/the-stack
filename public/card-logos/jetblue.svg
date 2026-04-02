@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">JetBlue fallback card art</title>
+  <desc id="desc">Curated fallback card-style art for JetBlue cards.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0e2f6e"/>
+      <stop offset="100%" stop-color="#081a43"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" rx="28" fill="url(#bg)"/>
+  <g transform="translate(52 58)">
+    <circle cx="0" cy="0" r="10" fill="#19b8ff"/>
+    <circle cx="26" cy="-8" r="8" fill="#6ce4ff"/>
+    <circle cx="20" cy="18" r="9" fill="#ffffff"/>
+    <circle cx="46" cy="10" r="7" fill="#7fd3ff"/>
+    <circle cx="50" cy="-18" r="6" fill="#19b8ff"/>
+    <circle cx="70" cy="-2" r="8" fill="#ffffff"/>
+  </g>
+  <text x="48" y="140" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700" letter-spacing="0.3">jetBlue</text>
+  <text x="50" y="162" fill="#88dfff" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" letter-spacing="2.2">CARD</text>
+</svg>

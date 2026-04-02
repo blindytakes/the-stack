@@ -25,6 +25,11 @@ describe('isLowValueCardImageUrl', () => {
       )
     ).toBe(true);
     expect(isLowValueCardImageUrl('https://www.sofi.com/favicon.ico')).toBe(true);
+    expect(
+      isLowValueCardImageUrl(
+        'https://www.bankofamerica.com/content/images/ContextualSiteGraphics/CreditCardArt/en_US/Approved_PCM/1bbt_sigcm_v_atmos_ascent_250.png'
+      )
+    ).toBe(true);
   });
 
   it('keeps real card art URLs eligible for the cards grid', () => {

@@ -40,6 +40,13 @@ const cardBrandImageUrlByIssuer: Record<string, string> = {
   venmo: '/card-logos/venmo.svg'
 };
 
+const cardBrandImageUrlBySlug: Record<string, string> = {
+  'apple-card': '/card-logos/apple.svg',
+  'barclays-aadvantage-aviator-red': '/card-logos/aviator-red.svg',
+  'barclays-jetblue-card': '/card-logos/jetblue.svg',
+  'barclays-jetblue-plus': '/card-logos/jetblue.svg'
+};
+
 function normalizeKey(value: string) {
   return value
     .toLowerCase()
@@ -678,12 +685,23 @@ function discoverBenefits(source: CardFallbackSource): FallbackBenefit[] {
 }
 
 export function resolveCardBrandImageUrl(
+  slug: string,
   issuer: string,
   imageUrl?: string | null,
   cardName?: string
 ) {
+  const curatedSlugImageUrl = cardBrandImageUrlBySlug[normalizeKey(slug)];
   const curatedCardImageUrl = cardBrandImageUrlByIssuer[normalizeKey(issuer)];
   const canUseIssuerFallback = cardNameReferencesIssuer(cardName, issuer);
+
+  if (curatedSlugImageUrl) {
+    if (!imageUrl) return curatedSlugImageUrl;
+
+    const normalizedImageUrl = imageUrl.trim();
+    if (isLowValueCardImageUrl(normalizedImageUrl)) {
+      return curatedSlugImageUrl;
+    }
+  }
 
   if (imageUrl) {
     const normalizedImageUrl = imageUrl.trim();

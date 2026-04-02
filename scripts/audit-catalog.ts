@@ -126,7 +126,7 @@ async function main() {
   );
   const cardsUsingWeakFallbackArtwork = contentCards.filter((record) => {
     if (record.imageUrl) return false;
-    return isLowValueCardImageUrl(resolveCardBrandImageUrl(record.issuer));
+    return isLowValueCardImageUrl(resolveCardBrandImageUrl(record.slug, record.issuer));
   });
   const staleContentCards = contentCards
     .map((record) => ({

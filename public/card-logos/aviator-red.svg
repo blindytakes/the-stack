@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200" role="img" aria-labelledby="title desc">
+  <title id="title">AAdvantage Aviator Red fallback card art</title>
+  <desc id="desc">Curated fallback card-style art for the AAdvantage Aviator Red card.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a51225"/>
+      <stop offset="100%" stop-color="#6f0916"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" rx="28" fill="url(#bg)"/>
+  <circle cx="76" cy="76" r="34" fill="#ffffff" opacity="0.1"/>
+  <path d="M64 70h24l-7 10h16l-26 34 8-20H65l9-24Z" fill="#ffffff" opacity="0.92"/>
+  <text x="122" y="76" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="0.8">AAdvantage</text>
+  <text x="122" y="102" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="32" font-weight="700" letter-spacing="1.1">AVIATOR</text>
+  <text x="122" y="126" fill="#ffd7dc" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" letter-spacing="3.2">RED</text>
+  <text x="220" y="165" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" letter-spacing="1.6" opacity="0.82">WORLD ELITE</text>
+</svg>

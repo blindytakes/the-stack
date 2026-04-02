@@ -9,6 +9,18 @@ describe('getCardImagePresentation', () => {
       scale: 1.08,
       imgClassName: 'p-0'
     });
+    expect(getCardImagePresentation('apple-card')).toMatchObject({
+      fit: 'cover',
+      position: 'center center',
+      scale: 1.02,
+      imgClassName: 'bg-transparent p-0'
+    });
+    expect(getCardImagePresentation('barclays-jetblue-card')).toMatchObject({
+      fit: 'cover',
+      position: 'center center',
+      scale: 1.02,
+      imgClassName: 'bg-transparent p-0'
+    });
   });
 
   it('uses a white plaque for the official Chase logo fallback asset', () => {

@@ -14,6 +14,30 @@ const presentationBySlug: Record<string, CardImagePresentation> = {
     position: 'center center',
     scale: 1.08,
     imgClassName: 'p-0'
+  },
+  'apple-card': {
+    fit: 'cover',
+    position: 'center center',
+    scale: 1.02,
+    imgClassName: 'bg-transparent p-0'
+  },
+  'barclays-aadvantage-aviator-red': {
+    fit: 'cover',
+    position: 'center center',
+    scale: 1.02,
+    imgClassName: 'bg-transparent p-0'
+  },
+  'barclays-jetblue-card': {
+    fit: 'cover',
+    position: 'center center',
+    scale: 1.02,
+    imgClassName: 'bg-transparent p-0'
+  },
+  'barclays-jetblue-plus': {
+    fit: 'cover',
+    position: 'center center',
+    scale: 1.02,
+    imgClassName: 'bg-transparent p-0'
   }
 };
 

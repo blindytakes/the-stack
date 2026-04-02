@@ -180,41 +180,43 @@ export function CardsDirectoryResults({
               </div>
 
               <div className="relative z-10 mt-auto pt-4">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="overflow-hidden rounded-xl border border-white/5 bg-bg/40">
                   {decisionMetrics.map((metric, metricIndex) => (
                     <div
                       key={metric.label}
-                      className={`flex min-h-[88px] flex-col items-center justify-center rounded-xl border border-white/5 bg-bg/40 px-3 py-3 text-center ${
-                        metric.fullWidth || metricIndex === decisionMetrics.length - 1 ? 'col-span-2' : ''
+                      className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-3 py-2.5 ${
+                        metricIndex > 0 ? 'border-t border-white/5' : ''
                       }`}
                     >
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+                      <p className="text-[10px] uppercase tracking-[0.16em] text-text-muted">
                         {metric.label}
                       </p>
-                      <p
-                        className={`mt-2 text-[1.05rem] font-semibold leading-tight ${
-                          metric.tone === 'positive'
-                            ? 'text-brand-teal'
-                            : metric.tone === 'warning'
-                              ? 'text-brand-gold'
-                              : metric.tone === 'negative'
-                                ? 'text-brand-coral'
-                                : 'text-text-primary'
-                        }`}
-                      >
-                        {metric.value}
-                      </p>
-                      {metric.supportingText ? (
+                      <div className="text-right">
                         <p
-                          className={`mt-1 leading-4 ${
-                            metric.supportingTone === 'emphasized'
-                              ? 'text-[13px] font-medium text-text-secondary'
-                              : 'text-[11px] text-text-muted'
+                          className={`text-[15px] font-semibold leading-tight sm:text-base ${
+                            metric.tone === 'positive'
+                              ? 'text-brand-teal'
+                              : metric.tone === 'warning'
+                                ? 'text-brand-gold'
+                                : metric.tone === 'negative'
+                                  ? 'text-brand-coral'
+                                  : 'text-text-primary'
                           }`}
                         >
-                          {metric.supportingText}
+                          {metric.value}
                         </p>
-                      ) : null}
+                        {metric.supportingText ? (
+                          <p
+                            className={`mt-0.5 leading-4 ${
+                              metric.supportingTone === 'emphasized'
+                                ? 'text-[12px] font-medium text-text-secondary'
+                                : 'text-[11px] text-text-muted'
+                            }`}
+                          >
+                            {metric.supportingText}
+                          </p>
+                        ) : null}
+                      </div>
                     </div>
                   ))}
                 </div>
