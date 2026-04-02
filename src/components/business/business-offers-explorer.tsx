@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { BankingDirectoryFilterPanel } from '@/components/banking/banking-directory-filter-panel';
 import { BankingDirectoryResults } from '@/components/banking/banking-directory-results';
@@ -9,9 +9,12 @@ import { CardsDirectoryResults } from '@/components/cards/cards-directory-result
 import type { BankingBonusListItem, BankingBonusesSort } from '@/lib/banking-bonuses';
 import {
   buildActiveBankingFilterChips,
+  buildBankingDirectorySearchParams,
   countActiveBankingDirectoryFilters,
   defaultBankingDirectoryFilters,
   filterAndSortBankingOffers,
+  parseBankingDirectoryFilters,
+  type BankingDirectoryFilters,
   type ApyFilterValue,
   type BankingDirectoryFilterKey,
   type CashRequirementFilterValue,
@@ -21,10 +24,13 @@ import {
 } from '@/lib/banking-directory-explorer';
 import type { CardRecord } from '@/lib/cards';
 import {
+  buildCardsDirectorySearchParams,
   buildIssuerOptions,
   countActiveCardsDirectoryFilters,
   defaultCardsDirectoryFilters,
   filterAndSortCards,
+  parseCardsDirectoryFilters,
+  type CardsDirectoryFilters,
   type CardTypeFilterValue,
   type ForeignFeeFilterValue,
   type RewardTypeFilterValue,
@@ -47,8 +53,59 @@ function getBusinessBrowseView(value: string | null): BusinessBrowseView {
   return isBusinessBrowseView(value) ? value : 'cards';
 }
 
-const businessExplorerCustomerType: CustomerTypeFilterValue = 'all';
 const businessCardsPageCardType: CardTypeFilterValue = 'business';
+const businessBankingPageCustomerType: CustomerTypeFilterValue = 'business';
+const cardsDirectoryQueryParamKeys = ['issuer', 'spend', 'intl', 'reward', 'bonus', 'fee', 'type', 'sort'];
+const bankingDirectoryQueryParamKeys = [
+  'accountType',
+  'customerType',
+  'directDeposit',
+  'apy',
+  'difficulty',
+  'cash',
+  'timeline',
+  'stateLimited',
+  'state',
+  'sort'
+] as const;
+
+function deleteQueryParams(params: URLSearchParams, keys: readonly string[]) {
+  for (const key of keys) {
+    params.delete(key);
+  }
+}
+
+function buildBusinessCardsSearchParams(
+  currentSearchParams: URLSearchParams,
+  filters: CardsDirectoryFilters
+) {
+  const params = new URLSearchParams(currentSearchParams);
+
+  deleteQueryParams(params, bankingDirectoryQueryParamKeys);
+  params.delete('view');
+  params.delete('bank');
+
+  const nextParams = buildCardsDirectorySearchParams(params, filters);
+  nextParams.delete('type');
+
+  return nextParams;
+}
+
+function buildBusinessBankingSearchParams(
+  currentSearchParams: URLSearchParams,
+  filters: BankingDirectoryFilters
+) {
+  const params = new URLSearchParams(currentSearchParams);
+
+  deleteQueryParams(params, cardsDirectoryQueryParamKeys);
+  params.set('view', 'banking');
+  params.delete('card');
+
+  const nextParams = buildBankingDirectorySearchParams(params, filters);
+  nextParams.delete('customerType');
+
+  return nextParams;
+}
 
 export function BusinessOffersExplorer({
   businessCards,
@@ -57,6 +114,8 @@ export function BusinessOffersExplorer({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const searchParamsString = searchParams.toString();
+  const hasHydratedFromUrl = useRef(false);
   const issuerOptions = useMemo(() => buildIssuerOptions(businessCards), [businessCards]);
   const view = getBusinessBrowseView(searchParams.get('view'));
 
@@ -90,15 +149,10 @@ export function BusinessOffersExplorer({
   function setBrowseView(nextView: BusinessBrowseView) {
     if (nextView === view) return;
 
-    const params = new URLSearchParams(searchParams.toString());
-    if (nextView === 'cards') {
-      params.delete('view');
-      params.delete('bank');
-    } else {
-      params.set('view', 'banking');
-      params.delete('card');
-    }
-
+    const params =
+      nextView === 'cards'
+        ? buildBusinessCardsSearchParams(new URLSearchParams(searchParamsString), cardFilters)
+        : buildBusinessBankingSearchParams(new URLSearchParams(searchParamsString), bankingFilters);
     const nextQueryString = params.toString();
     router.replace(nextQueryString ? `${pathname}?${nextQueryString}` : pathname, { scroll: false });
   }
@@ -120,7 +174,7 @@ export function BusinessOffersExplorer({
   const bankingFilters = useMemo(
     () => ({
       accountType: defaultBankingDirectoryFilters.accountType,
-      customerType: businessExplorerCustomerType,
+      customerType: businessBankingPageCustomerType,
       directDeposit: bankingDirectDeposit,
       apy: bankingApy,
       difficulty: defaultBankingDirectoryFilters.difficulty,
@@ -139,6 +193,55 @@ export function BusinessOffersExplorer({
       bankingTimeline
     ]
   );
+  const bankingFiltersForUi = useMemo(
+    () => ({
+      ...bankingFilters,
+      customerType: defaultBankingDirectoryFilters.customerType
+    }),
+    [bankingFilters]
+  );
+
+  useEffect(() => {
+    if (view === 'cards') {
+      const nextFilters = parseCardsDirectoryFilters(
+        new URLSearchParams(searchParamsString),
+        issuerOptions
+      );
+
+      setCardsIssuer(nextFilters.issuer);
+      setCardsSpendCategory(nextFilters.spendCategory);
+      setCardsForeignFee(nextFilters.foreignFee);
+      setCardsRewardType(nextFilters.rewardType);
+      setCardsSortBy(nextFilters.sortBy);
+    } else {
+      const nextFilters = parseBankingDirectoryFilters(new URLSearchParams(searchParamsString));
+
+      setBankingDirectDeposit(nextFilters.directDeposit);
+      setBankingApy(nextFilters.apy);
+      setBankingCashRequirement(nextFilters.cashRequirement);
+      setBankingTimeline(nextFilters.timeline);
+      setBankingState(nextFilters.state);
+      setBankingSortBy(nextFilters.sortBy);
+    }
+
+    hasHydratedFromUrl.current = true;
+  }, [issuerOptions, searchParamsString, view]);
+
+  useEffect(() => {
+    if (!hasHydratedFromUrl.current) return;
+
+    const nextParams =
+      view === 'cards'
+        ? buildBusinessCardsSearchParams(new URLSearchParams(searchParamsString), cardFilters)
+        : buildBusinessBankingSearchParams(new URLSearchParams(searchParamsString), bankingFilters);
+    const nextQueryString = nextParams.toString();
+
+    if (nextQueryString === searchParamsString) return;
+
+    router.replace(nextQueryString ? `${pathname}?${nextQueryString}` : pathname, {
+      scroll: false
+    });
+  }, [bankingFilters, cardFilters, pathname, router, searchParamsString, view]);
 
   const filteredBusinessCards = useMemo(
     () => filterAndSortCards(businessCards, cardFilters),
@@ -157,12 +260,12 @@ export function BusinessOffersExplorer({
     [cardFilters]
   );
   const bankingFilterCount = useMemo(
-    () => countActiveBankingDirectoryFilters(bankingFilters),
-    [bankingFilters]
+    () => countActiveBankingDirectoryFilters(bankingFiltersForUi),
+    [bankingFiltersForUi]
   );
   const bankingActiveFilterChips = useMemo(
-    () => buildActiveBankingFilterChips(bankingFilters),
-    [bankingFilters]
+    () => buildActiveBankingFilterChips(bankingFiltersForUi),
+    [bankingFiltersForUi]
   );
 
   const noAnnualFeeBusinessCards = filteredBusinessCards.filter((card) => card.annualFee === 0).length;
@@ -276,7 +379,7 @@ export function BusinessOffersExplorer({
             filteredOffersCount={filteredBusinessOffers.length}
             noDirectDepositCount={noDirectDepositBusinessOffers}
             numericApyCount={numericApyBusinessOffers}
-            customerType={businessExplorerCustomerType}
+            customerType={businessBankingPageCustomerType}
             directDeposit={bankingDirectDeposit}
             apy={bankingApy}
             cashRequirement={bankingCashRequirement}
