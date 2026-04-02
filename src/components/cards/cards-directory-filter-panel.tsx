@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
   defaultCardsDirectoryFilters,
@@ -30,6 +31,7 @@ type CardsDirectoryFilterPanelProps = {
   eyebrowLabel?: string;
   title?: string;
   description?: string;
+  preFilterContent?: ReactNode;
   showBusinessQuickFilter?: boolean;
   onIssuerChange: (value: string) => void;
   onSpendCategoryChange: (value: SpendCategoryFilterValue) => void;
@@ -75,6 +77,7 @@ export function CardsDirectoryFilterPanel({
   eyebrowLabel = 'Card Directory',
   title = 'Find the Best Credit Card Bonus for your plan.',
   description = 'When you find a card you like, The Stack builds your bonus plan around it.',
+  preFilterContent,
   showBusinessQuickFilter = true,
   onIssuerChange,
   onSpendCategoryChange,
@@ -167,9 +170,11 @@ export function CardsDirectoryFilterPanel({
             <h1 className="mt-4 w-full font-heading text-[clamp(2.15rem,2.9vw,3.35rem)] leading-[1] tracking-[-0.035em] text-white md:whitespace-nowrap">
               {title}
             </h1>
-            <p className="mt-4 w-full text-xl leading-8 text-text-secondary md:text-2xl md:leading-9">
-              {description}
-            </p>
+            {description ? (
+              <p className="mt-4 w-full text-xl leading-8 text-text-secondary md:text-2xl md:leading-9">
+                {description}
+              </p>
+            ) : null}
           </div>
 
           <motion.div
@@ -213,7 +218,9 @@ export function CardsDirectoryFilterPanel({
         </div>
       </motion.div>
 
-      <div className="mt-5 grid gap-3 md:grid-cols-2">
+      {preFilterContent ? <div className="mt-5">{preFilterContent}</div> : null}
+
+      <div className={`${preFilterContent ? 'mt-4' : 'mt-5'} grid gap-3 md:grid-cols-2`}>
         <label className="block">
           <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Issuer</span>
           <select

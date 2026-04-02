@@ -202,127 +202,111 @@ export function BusinessOffersExplorer({
     if (key === 'state') setBankingState(defaultBankingDirectoryFilters.state);
   }
 
+  const browseViewToggle = (
+    <div className="flex justify-center">
+      <div className="flex w-full max-w-[42rem] rounded-full border border-white/10 bg-black/20 p-1">
+        <button
+          type="button"
+          onClick={() => setBrowseView('cards')}
+          className={`flex-1 rounded-full px-6 py-3 text-center text-base font-semibold transition md:whitespace-nowrap ${
+            view === 'cards'
+              ? 'bg-brand-teal text-black'
+              : 'text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          Business Credit Cards
+          <span className="ml-2 text-sm opacity-70">{businessCards.length}</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setBrowseView('banking')}
+          className={`flex-1 rounded-full px-6 py-3 text-center text-base font-semibold transition md:whitespace-nowrap ${
+            view === 'banking'
+              ? 'bg-brand-teal text-black'
+              : 'text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          Business Banking Accounts
+          <span className="ml-2 text-sm opacity-70">{businessOffers.length}</span>
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <section>
-      <div className="rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,20,32,0.88),rgba(12,13,22,0.96))] p-4 shadow-[0_16px_48px_rgba(0,0,0,0.24)] md:p-5">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-          <div className="inline-flex rounded-full border border-white/10 bg-black/20 p-1">
-            <button
-              type="button"
-              onClick={() => setBrowseView('cards')}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                view === 'cards'
-                  ? 'bg-brand-teal text-black'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Business Cards
-              <span className="ml-2 text-xs opacity-70">{businessCards.length}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setBrowseView('banking')}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                view === 'banking'
-                  ? 'bg-brand-teal text-black'
-                  : 'text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Business Banking
-              <span className="ml-2 text-xs opacity-70">{businessOffers.length}</span>
-            </button>
-          </div>
+      {view === 'cards' ? (
+        <>
+          <CardsDirectoryFilterPanel
+            totalCards={businessCards.length}
+            filteredCardsCount={filteredBusinessCards.length}
+            noAnnualFeeCount={noAnnualFeeBusinessCards}
+            activeBonusCount={activeBonusBusinessCards}
+            activeFilterCount={cardFilterCount}
+            issuer={cardsIssuer}
+            spendCategory={cardsSpendCategory}
+            foreignFee={cardsForeignFee}
+            rewardType={cardsRewardType}
+            showBusinessQuickFilter={false}
+            sortBy={cardsSortBy}
+            issuerOptions={issuerOptions}
+            eyebrowLabel="Business Cards"
+            title="Find the right bonus for your business."
+            description=""
+            preFilterContent={browseViewToggle}
+            onIssuerChange={setCardsIssuer}
+            onSpendCategoryChange={setCardsSpendCategory}
+            onForeignFeeChange={setCardsForeignFee}
+            onRewardTypeChange={setCardsRewardType}
+            onSortByChange={setCardsSortBy}
+            onClearFilters={clearCardFilters}
+          />
 
-          <div className="flex flex-wrap gap-2 text-[11px] uppercase tracking-[0.18em] text-text-muted">
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-              {view === 'cards'
-                ? `${filteredBusinessCards.length} cards showing`
-                : `${filteredBusinessOffers.length} offers showing`}
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-              {view === 'cards'
-                ? `${activeBonusBusinessCards} bonus-ready`
-                : `${noDirectDepositBusinessOffers} no DD`}
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-              {view === 'cards' ? `${cardFilterCount} filters active` : `${bankingFilterCount} filters active`}
-            </span>
-          </div>
-        </div>
-      </div>
+          <CardsDirectoryResults
+            cards={filteredBusinessCards}
+            selectedCompare={[]}
+          />
+        </>
+      ) : (
+        <>
+          <BankingDirectoryFilterPanel
+            activeFilterCount={bankingFilterCount}
+            activeFilterChips={bankingActiveFilterChips}
+            totalOffers={businessOffers.length}
+            filteredOffersCount={filteredBusinessOffers.length}
+            noDirectDepositCount={noDirectDepositBusinessOffers}
+            numericApyCount={numericApyBusinessOffers}
+            customerType={businessExplorerCustomerType}
+            directDeposit={bankingDirectDeposit}
+            apy={bankingApy}
+            cashRequirement={bankingCashRequirement}
+            timeline={bankingTimeline}
+            state={bankingState}
+            sortBy={bankingSortBy}
+            eyebrowLabel="Business Banking"
+            title="Find the right business bank bonus for your plan."
+            description="Browse business checking and savings bonuses with the same filter treatment and offer cards used in the main banking directory."
+            preFilterContent={browseViewToggle}
+            showCustomerTypeFilter={false}
+            onCustomerTypeChange={() => {}}
+            onDirectDepositChange={setBankingDirectDeposit}
+            onApyChange={setBankingApy}
+            onCashRequirementChange={setBankingCashRequirement}
+            onTimelineChange={setBankingTimeline}
+            onStateChange={setBankingState}
+            onSortByChange={setBankingSortBy}
+            onRemoveFilter={removeBankingFilter}
+            onReset={clearBankingFilters}
+          />
 
-      <div className="mt-6">
-        {view === 'cards' ? (
-          <>
-            <CardsDirectoryFilterPanel
-              totalCards={businessCards.length}
-              filteredCardsCount={filteredBusinessCards.length}
-              noAnnualFeeCount={noAnnualFeeBusinessCards}
-              activeBonusCount={activeBonusBusinessCards}
-              activeFilterCount={cardFilterCount}
-              issuer={cardsIssuer}
-              spendCategory={cardsSpendCategory}
-              foreignFee={cardsForeignFee}
-              rewardType={cardsRewardType}
-              showBusinessQuickFilter={false}
-              sortBy={cardsSortBy}
-              issuerOptions={issuerOptions}
-              eyebrowLabel="Business Cards"
-              title="Find the right business card bonus for your plan."
-              description="Browse the business-only card lineup with the same card view and ranking logic as the main consumer directory."
-              onIssuerChange={setCardsIssuer}
-              onSpendCategoryChange={setCardsSpendCategory}
-              onForeignFeeChange={setCardsForeignFee}
-              onRewardTypeChange={setCardsRewardType}
-              onSortByChange={setCardsSortBy}
-              onClearFilters={clearCardFilters}
-            />
-
-            <CardsDirectoryResults
-              cards={filteredBusinessCards}
-              selectedCompare={[]}
-            />
-          </>
-        ) : (
-          <>
-            <BankingDirectoryFilterPanel
-              activeFilterCount={bankingFilterCount}
-              activeFilterChips={bankingActiveFilterChips}
-              totalOffers={businessOffers.length}
-              filteredOffersCount={filteredBusinessOffers.length}
-              noDirectDepositCount={noDirectDepositBusinessOffers}
-              numericApyCount={numericApyBusinessOffers}
-              customerType={businessExplorerCustomerType}
-              directDeposit={bankingDirectDeposit}
-              apy={bankingApy}
-              cashRequirement={bankingCashRequirement}
-              timeline={bankingTimeline}
-              state={bankingState}
-              sortBy={bankingSortBy}
-              eyebrowLabel="Business Banking"
-              title="Find the right business bank bonus for your plan."
-              description="Browse business checking and savings bonuses with the same filter treatment and offer cards used in the main banking directory."
-              showCustomerTypeFilter={false}
-              onCustomerTypeChange={() => {}}
-              onDirectDepositChange={setBankingDirectDeposit}
-              onApyChange={setBankingApy}
-              onCashRequirementChange={setBankingCashRequirement}
-              onTimelineChange={setBankingTimeline}
-              onStateChange={setBankingState}
-              onSortByChange={setBankingSortBy}
-              onRemoveFilter={removeBankingFilter}
-              onReset={clearBankingFilters}
-            />
-
-            <BankingDirectoryResults
-              allOffers={businessOffers}
-              offers={filteredBusinessOffers}
-              activeFilterCount={bankingFilterCount}
-              onClearFilters={clearBankingFilters}
-            />
-          </>
-        )}
-      </div>
+          <BankingDirectoryResults
+            allOffers={businessOffers}
+            offers={filteredBusinessOffers}
+            activeFilterCount={bankingFilterCount}
+            onClearFilters={clearBankingFilters}
+          />
+        </>
+      )}
     </section>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { usStateOptions } from '@/lib/us-state-options';
 import {
@@ -36,6 +36,7 @@ type BankingDirectoryFilterPanelProps = {
   eyebrowLabel?: string;
   title?: string;
   description?: string;
+  preFilterContent?: ReactNode;
   showCustomerTypeFilter?: boolean;
   onCustomerTypeChange: (value: CustomerTypeFilterValue) => void;
   onDirectDepositChange: (value: DirectDepositFilterValue) => void;
@@ -65,6 +66,7 @@ export function BankingDirectoryFilterPanel({
   eyebrowLabel = 'Banking Bonuses',
   title = 'Find the right bank bonus for you.',
   description = 'Compare personal and business bank bonuses in one place, then let The Stack build your bonus plan around the offer that fits.',
+  preFilterContent,
   showCustomerTypeFilter = true,
   onCustomerTypeChange,
   onDirectDepositChange,
@@ -213,7 +215,11 @@ export function BankingDirectoryFilterPanel({
         </div>
       </motion.div>
 
-      <div className="mt-5 rounded-2xl border border-white/10 bg-bg-elevated/65 p-3">
+      {preFilterContent ? <div className="mt-5">{preFilterContent}</div> : null}
+
+      <div
+        className={`${preFilterContent ? 'mt-4' : 'mt-5'} rounded-2xl border border-white/10 bg-bg-elevated/65 p-3`}
+      >
         <div className="grid gap-3 md:grid-cols-3">
           <label className="block">
             <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
