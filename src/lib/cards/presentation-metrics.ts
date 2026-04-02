@@ -122,11 +122,8 @@ export function getCardModeledFirstYearNet(
   return (card.bestSignUpBonusValue ?? 0) + (card.offsettingCreditsValue ?? 0) - card.annualFee;
 }
 
-export function getCardSpendRoi(
-  card: Pick<
-    CardRecord,
-    'annualFee' | 'bestSignUpBonusValue' | 'bestSignUpBonusSpendRequired' | 'offsettingCreditsValue'
-  >
+export function getCardBonusRoi(
+  card: Pick<CardRecord, 'bestSignUpBonusValue' | 'bestSignUpBonusSpendRequired'>
 ) {
   if (
     typeof card.bestSignUpBonusSpendRequired !== 'number' ||
@@ -135,7 +132,7 @@ export function getCardSpendRoi(
     return null;
   }
 
-  return (getCardModeledFirstYearNet(card) / card.bestSignUpBonusSpendRequired) * 100;
+  return ((card.bestSignUpBonusValue ?? 0) / card.bestSignUpBonusSpendRequired) * 100;
 }
 
 export function getCardDecisionMetrics(
@@ -149,7 +146,7 @@ export function getCardDecisionMetrics(
     | 'offsettingCreditsValue'
   >
 ): CardMetric[] {
-  const spendRoi = getCardSpendRoi(card);
+  const bonusRoi = getCardBonusRoi(card);
   const offsettingCreditsValue = card.offsettingCreditsValue ?? 0;
 
   return [
@@ -185,13 +182,13 @@ export function getCardDecisionMetrics(
       tone: offsettingCreditsValue > 0 ? ('warning' as DecisionMetricTone) : ('default' as DecisionMetricTone)
     },
     {
-      label: 'ROI on spend',
-      value: spendRoi != null ? `${spendRoi.toFixed(1)}%` : 'N/A',
-      detail: spendRoi != null ? 'Net value on required spend' : 'Needs a listed spend threshold',
+      label: 'Bonus ROI',
+      value: bonusRoi != null ? `${bonusRoi.toFixed(1)}%` : 'N/A',
+      detail: bonusRoi != null ? 'Welcome bonus on required spend' : 'Needs a listed spend threshold',
       tone:
-        spendRoi == null
+        bonusRoi == null
           ? ('default' as DecisionMetricTone)
-          : spendRoi >= 0
+          : bonusRoi >= 0
             ? ('positive' as DecisionMetricTone)
             : ('negative' as DecisionMetricTone)
     }
@@ -208,7 +205,7 @@ export function getCardDirectoryMetrics(
     | 'bestSignUpBonusValue'
   >
 ): CardDirectoryMetric[] {
-  const spendRoi = getCardSpendRoi(card);
+  const bonusRoi = getCardBonusRoi(card);
   const spendRequired =
     typeof card.bestSignUpBonusSpendRequired === 'number' && card.bestSignUpBonusSpendRequired > 0;
   const spendWindow = spendRequired
@@ -222,13 +219,13 @@ export function getCardDirectoryMetrics(
       tone: 'default'
     },
     {
-      label: 'ROI',
-      value: spendRoi != null ? `${spendRoi.toFixed(1)}%` : 'N/A',
-      supportingText: spendRoi != null ? undefined : 'Needs listed threshold',
+      label: 'Bonus ROI',
+      value: bonusRoi != null ? `${bonusRoi.toFixed(1)}%` : 'N/A',
+      supportingText: bonusRoi != null ? undefined : 'Needs listed threshold',
       tone:
-        spendRoi == null
+        bonusRoi == null
           ? 'default'
-          : spendRoi >= 0
+          : bonusRoi >= 0
             ? 'positive'
             : 'negative'
     },

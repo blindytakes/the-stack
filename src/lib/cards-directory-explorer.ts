@@ -4,7 +4,7 @@ import {
   type SpendingCategoryValue
 } from '@/lib/cards';
 import { issuerKey, normalizeIssuerLabel } from '@/lib/cards-directory';
-import { getCardSpendRoi } from '@/lib/cards/presentation-metrics';
+import { getCardBonusRoi } from '@/lib/cards/presentation-metrics';
 
 export type SortValue = 'highest_bonus' | 'lowest_fee' | 'highest_bonus_roi';
 export type BonusFilterValue = 'any' | 'has_bonus' | '500' | '750' | '1000';
@@ -307,8 +307,8 @@ export function filterAndSortCards(cards: CardRecord[], filters: CardsDirectoryF
   });
 
   return [...filtered].sort((a, b) => {
-    const roiA = getCardSpendRoi(a) ?? Number.NEGATIVE_INFINITY;
-    const roiB = getCardSpendRoi(b) ?? Number.NEGATIVE_INFINITY;
+    const roiA = getCardBonusRoi(a) ?? Number.NEGATIVE_INFINITY;
+    const roiB = getCardBonusRoi(b) ?? Number.NEGATIVE_INFINITY;
     const roiDiff = roiB - roiA;
     const bonusDiff = (b.bestSignUpBonusValue ?? 0) - (a.bestSignUpBonusValue ?? 0);
     if (filters.sortBy === 'highest_bonus' && bonusDiff !== 0) return bonusDiff;

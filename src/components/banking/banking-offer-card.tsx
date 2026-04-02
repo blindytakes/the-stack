@@ -8,7 +8,10 @@ import {
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
-import { getBankingDecisionMetrics } from '@/lib/banking/presentation-metrics';
+import {
+  getBankingDecisionMetrics,
+  getBankingRequiredDirectDepositAmount
+} from '@/lib/banking/presentation-metrics';
 import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type BankingOfferCardProps = {
@@ -24,13 +27,13 @@ export function BankingOfferCard({
 }: BankingOfferCardProps) {
   const isCompact = variant === 'compact';
   const imagePresentation = getBankingImagePresentation(offer.bankName);
-  const showApy = Boolean(offer.apyDisplay) && offer.bankName.trim().toLowerCase() !== 'chase';
+  const requiredDirectDepositAmount = getBankingRequiredDirectDepositAmount(offer);
   const directDepositMetric = {
     label: 'Direct deposit min',
     value: !offer.directDeposit.required
       ? 'none'
-      : typeof offer.directDeposit.minimumAmount === 'number'
-        ? `${formatBankingCurrency(offer.directDeposit.minimumAmount)}+`
+      : typeof requiredDirectDepositAmount === 'number'
+        ? `${formatBankingCurrency(requiredDirectDepositAmount)}+`
         : 'Required',
     tone: (!offer.directDeposit.required ? 'positive' : 'default') as
       | 'default'
@@ -97,9 +100,6 @@ export function BankingOfferCard({
           <p className={`font-bold text-brand-teal ${isCompact ? 'text-xl' : 'text-2xl'}`}>
             +{formatBankingCurrency(offer.bonusAmount)} bonus
           </p>
-          {showApy ? (
-            <p className="mt-1 text-xs font-medium text-brand-gold">{offer.apyDisplay}</p>
-          ) : null}
         </div>
 
         {/* Offer name */}

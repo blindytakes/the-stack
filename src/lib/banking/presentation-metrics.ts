@@ -26,33 +26,93 @@ export function formatBankingHoldPeriod(days?: number) {
   return `${days} day${days === 1 ? '' : 's'}`;
 }
 
-export function getAnnualizedBankingRoi(
-  offer: Pick<
-    BankingBonusListItem,
-    'estimatedNetValue' | 'minimumOpeningDeposit' | 'holdingPeriodDays'
-  >
+function parseUniqueDollarAmounts(text: string) {
+  return Array.from(
+    new Set(
+      (text.match(/\$[\d,]+/g) ?? []).map((value) => Number.parseInt(value.replace(/[$,]/g, ''), 10))
+    )
+  ).filter((value) => Number.isFinite(value));
+}
+
+export function hasAmbiguousTieredFundingRequirement(
+  offer: Pick<BankingBonusListItem, 'headline' | 'requiredActions'>
 ) {
-  if (
-    typeof offer.minimumOpeningDeposit !== 'number' ||
-    offer.minimumOpeningDeposit <= 0 ||
-    typeof offer.holdingPeriodDays !== 'number' ||
-    offer.holdingPeriodDays <= 0
-  ) {
-    return null;
+  const combinedText = `${offer.headline} ${offer.requiredActions.join(' ')}`;
+  const dollarAmounts = parseUniqueDollarAmounts(combinedText);
+
+  if (dollarAmounts.length < 2) return false;
+
+  return /up to|tier|tiers|larger payout|larger payouts|top tier|bonus tier/i.test(combinedText);
+}
+
+export function getBankingRequiredDirectDepositAmount(
+  offer: Pick<BankingBonusListItem, 'bonusAmount' | 'directDeposit' | 'headline' | 'requiredActions'>
+) {
+  if (!offer.directDeposit.required) return null;
+
+  if (!hasAmbiguousTieredFundingRequirement(offer)) {
+    return typeof offer.directDeposit.minimumAmount === 'number'
+      ? offer.directDeposit.minimumAmount
+      : null;
   }
 
-  return (
-    (offer.estimatedNetValue / offer.minimumOpeningDeposit) * (365 / offer.holdingPeriodDays) * 100
+  const combinedText = `${offer.headline} ${offer.requiredActions.join(' ')}`;
+  const tierThresholds = parseUniqueDollarAmounts(combinedText).filter(
+    (value) => value !== offer.bonusAmount
   );
+  const directDepositFloor =
+    typeof offer.directDeposit.minimumAmount === 'number' ? offer.directDeposit.minimumAmount : 0;
+  const plausibleThresholds = tierThresholds.filter((value) => value >= directDepositFloor);
+
+  if (plausibleThresholds.length > 0) {
+    return Math.max(...plausibleThresholds);
+  }
+
+  if (typeof offer.directDeposit.minimumAmount === 'number') {
+    return offer.directDeposit.minimumAmount;
+  }
+
+  return tierThresholds.length > 0 ? Math.max(...tierThresholds) : null;
+}
+
+export function getBankingRequiredFundingAmount(
+  offer: Pick<
+    BankingBonusListItem,
+    'bonusAmount' | 'directDeposit' | 'headline' | 'minimumOpeningDeposit' | 'requiredActions'
+  >
+) {
+  const directDepositAmount = getBankingRequiredDirectDepositAmount(offer);
+  if (directDepositAmount != null) {
+    return directDepositAmount;
+  }
+
+  if (typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0) {
+    return offer.minimumOpeningDeposit;
+  }
+
+  return null;
+}
+
+export function getBankingBonusRoi(
+  offer: Pick<
+    BankingBonusListItem,
+    'bonusAmount' | 'directDeposit' | 'headline' | 'minimumOpeningDeposit' | 'requiredActions'
+  >
+) {
+  const requiredFunding = getBankingRequiredFundingAmount(offer);
+  if (requiredFunding == null) return null;
+
+  return (offer.bonusAmount / requiredFunding) * 100;
 }
 
 export function getBankingDecisionMetrics(
   offer: Pick<
     BankingBonusListItem,
+    | 'bonusAmount'
     | 'customerType'
     | 'directDeposit'
     | 'estimatedFees'
-    | 'estimatedNetValue'
+    | 'headline'
     | 'holdingPeriodDays'
     | 'minimumOpeningDeposit'
     | 'requiredActions'
@@ -63,12 +123,13 @@ export function getBankingDecisionMetrics(
     typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0
       ? formatBankingCurrency(offer.minimumOpeningDeposit)
       : 'No min';
+  const directDepositMinimum = getBankingRequiredDirectDepositAmount(offer);
   const directDepositLabel = offer.directDeposit.required
-    ? typeof offer.directDeposit.minimumAmount === 'number'
-      ? `${formatBankingCurrency(offer.directDeposit.minimumAmount)}+ DD`
+    ? typeof directDepositMinimum === 'number'
+      ? `${formatBankingCurrency(directDepositMinimum)}+ DD`
       : 'Direct deposit'
     : 'No DD';
-  const annualizedRoi = getAnnualizedBankingRoi(offer);
+  const bonusRoi = getBankingBonusRoi(offer);
 
   return [
     offer.customerType === 'business' && activityRequirement
@@ -112,23 +173,15 @@ export function getBankingDecisionMetrics(
       tone: offer.estimatedFees > 0 ? ('warning' as DecisionMetricTone) : ('default' as DecisionMetricTone)
     },
     {
-      label: 'ROI',
+      label: 'Bonus ROI',
       value:
-        annualizedRoi != null
-          ? `${annualizedRoi.toFixed(1)}%`
-          : typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0
-            ? 'Check terms'
-            : 'No cash hurdle',
+        bonusRoi != null ? `${bonusRoi.toFixed(1)}%` : 'N/A',
       detail:
-        annualizedRoi != null
-          ? 'Annualized on required cash'
-          : typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0
-            ? 'Needs full cash-lock timing'
-            : 'Behavior-based bonus path',
+        bonusRoi != null ? 'Bonus vs required funding' : 'Needs one clear funding threshold',
       tone:
-        annualizedRoi == null
+        bonusRoi == null
           ? ('default' as DecisionMetricTone)
-          : annualizedRoi >= 0
+          : bonusRoi >= 0
             ? ('positive' as DecisionMetricTone)
             : ('negative' as DecisionMetricTone)
     }
