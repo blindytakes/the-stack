@@ -4,6 +4,9 @@ import { CHASE_CARD_LOGO_URL } from '@/lib/cards/fallback-enrichment';
 import type { CardImageAssetType } from '@/lib/cards/schema';
 import { isLowValueCardImageUrl } from '@/lib/entity-image-source';
 
+const LEGACY_WELLS_FARGO_LOGO_URL =
+  'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png';
+
 export type CardImagePresentation = {
   fit?: 'contain' | 'cover';
   position?: string;
@@ -91,12 +94,15 @@ function normalizeCardImageAssetType(
   if (!imageUrl || isLowValueCardImageUrl(imageUrl)) return 'text_fallback';
 
   const normalizedImageUrl = imageUrl.trim().toLowerCase();
+  const normalizedIssuer = issuer?.trim().toLowerCase();
   const normalizedIssuerLogoUrl = issuer
     ? resolveBankingBrandImageUrl(issuer)?.trim().toLowerCase()
     : null;
   if (
     normalizedImageUrl === CHASE_CARD_LOGO_URL.toLowerCase() ||
     normalizedImageUrl.includes('/bank-logos/') ||
+    (normalizedIssuer === 'wells fargo' &&
+      normalizedImageUrl === LEGACY_WELLS_FARGO_LOGO_URL.toLowerCase()) ||
     (normalizedIssuerLogoUrl != null && normalizedImageUrl === normalizedIssuerLogoUrl)
   ) {
     return 'brand_logo';

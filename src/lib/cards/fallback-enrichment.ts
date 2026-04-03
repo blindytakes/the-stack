@@ -34,6 +34,8 @@ export type ResolvedCardImage = {
 
 export const CHASE_CARD_LOGO_URL =
   'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg';
+const LEGACY_WELLS_FARGO_LOGO_URL =
+  'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png';
 
 const cardBrandImageUrlByIssuer: Record<string, string> = {
   'american express': '/card-logos/american-express.svg',
@@ -74,6 +76,7 @@ function getCardImageAssetTypeForUrl(
   issuer?: string
 ): Exclude<CardImageAssetType, 'text_fallback'> {
   const normalizedImageUrl = imageUrl.trim().toLowerCase();
+  const normalizedIssuer = issuer ? normalizeKey(issuer) : null;
   const normalizedIssuerLogoUrl = issuer
     ? resolveBankingBrandImageUrl(issuer)?.trim().toLowerCase()
     : null;
@@ -81,6 +84,8 @@ function getCardImageAssetTypeForUrl(
   if (
     normalizedImageUrl === CHASE_CARD_LOGO_URL.toLowerCase() ||
     normalizedImageUrl.includes('/bank-logos/') ||
+    (normalizedIssuer === 'wells fargo' &&
+      normalizedImageUrl === LEGACY_WELLS_FARGO_LOGO_URL.toLowerCase()) ||
     (normalizedIssuerLogoUrl != null && normalizedImageUrl === normalizedIssuerLogoUrl)
   ) {
     return 'brand_logo';
