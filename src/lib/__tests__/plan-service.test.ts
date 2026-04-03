@@ -187,6 +187,68 @@ describe('plan-service', () => {
     });
   });
 
+  it('accepts relative asset paths in generated recommendation images', async () => {
+    getCardsDataMock.mockResolvedValue({
+      cards: [],
+      source: 'db'
+    });
+    getBankingBonusesDataMock.mockResolvedValue({
+      bonuses: [],
+      source: 'seed'
+    });
+    buildPlanRecommendationsFromQuizMock.mockReturnValue({
+      recommendations: [
+        {
+          id: 'card:alaska-airlines-visa-signature',
+          lane: 'cards',
+          kind: 'card_bonus',
+          title: 'Alaska Airlines Visa Signature',
+          provider: 'Bank of America',
+          imageUrl: '/card-logos/alaska-airlines.svg',
+          imageAssetType: 'card_art',
+          estimatedNetValue: 500,
+          priorityScore: 100,
+          effort: 'low',
+          detailPath: '/cards/alaska-airlines-visa-signature',
+          timelineDays: 90,
+          keyRequirements: ['Spend $3,000 within 3 months'],
+          scheduleConstraints: {
+            activeDays: 90,
+            payoutLagDays: 30,
+            requiredSpend: 3000
+          }
+        }
+      ],
+      exclusions: [],
+      schedule: [],
+      scheduleIssues: []
+    });
+
+    const result = await buildPlan({
+      answers: {
+        goal: 'cashback',
+        spend: 'dining',
+        fee: 'no_fee',
+        credit: 'good',
+        directDeposit: 'yes',
+        state: 'NY',
+        monthlySpend: 'from_2500_to_5000',
+        pace: 'balanced'
+      }
+    });
+
+    expect(result).toMatchObject({
+      ok: true,
+      data: {
+        recommendations: [
+          expect.objectContaining({
+            imageUrl: '/card-logos/alaska-airlines.svg'
+          })
+        ]
+      }
+    });
+  });
+
   it('maps internal failures to a 500 result', async () => {
     getCardsDataMock.mockRejectedValue(new Error('db down'));
 
