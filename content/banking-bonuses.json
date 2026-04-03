@@ -359,10 +359,10 @@
       "Receive at least one eligible direct deposit.",
       "Accumulate at least $1,000 in eligible direct deposits during the first 25-day direct deposit bonus period for a payout (or $5,000+ for the top tier)."
     ],
-    "offerUrl": "https://support.sofi.com/hc/en-us/articles/6502391083789--300-Direct-Deposit-Welcome-Offer",
+    "offerUrl": "https://www.sofi.com/banking/checking-offer/",
     "isActive": true,
     "expiresAt": "2026-12-31T23:59:59.999-05:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-04-03T00:00:00.000Z"
   },
   {
     "slug": "citi-regular-checking-325",
@@ -386,10 +386,10 @@
       "Keep the account open and in good standing through the 90-to-120-day payout window."
     ],
     "notes": "Offer deadline widely published as April 13, 2026 for the $325 enhanced-direct-deposit tier.",
-    "offerUrl": "https://banking.citi.com/cbol/checking-accounts/checking-offer/default.htm",
+    "offerUrl": "https://banking.citi.com/cbol/OM/checking/enhanced-direct-deposit-offer/default.htm",
     "isActive": true,
     "expiresAt": "2026-04-13T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-04-03T00:00:00.000Z"
   },
   {
     "slug": "alliant-ultimate-opportunity-savings-100",
@@ -414,10 +414,10 @@
       "Deposit or transfer at least $100 monthly for the next 11 consecutive months.",
       "Maintain an average daily balance of at least $100 and end the 12-month period with at least $1,200 in the account."
     ],
-    "offerUrl": "https://promo.alliantcreditunion.org",
+    "offerUrl": "https://promo.alliantcreditunion.org/ultimate-opportunity-savings",
     "isActive": true,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-04-03T00:00:00.000Z"
   },
   {
     "slug": "td-complete-checking-200",
