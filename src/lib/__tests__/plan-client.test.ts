@@ -138,4 +138,48 @@ describe('plan-client', () => {
       })
     ).rejects.toThrow('Invalid plan response');
   });
+
+  it('accepts relative asset paths in plan responses', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          generatedAt: 123,
+          recommendations: [
+            {
+              id: 'card:alaska-airlines-visa-signature',
+              lane: 'cards',
+              kind: 'card_bonus',
+              title: 'Alaska Airlines Visa Signature',
+              provider: 'Bank of America',
+              imageUrl: '/card-logos/alaska-airlines.svg',
+              imageAssetType: 'card_art',
+              estimatedNetValue: 500,
+              priorityScore: 100,
+              effort: 'low',
+              detailPath: '/cards/alaska-airlines-visa-signature',
+              timelineDays: 90,
+              keyRequirements: ['Spend $3,000 within 3 months'],
+              scheduleConstraints: {
+                activeDays: 90,
+                payoutLagDays: 30,
+                requiredSpend: 3000
+              }
+            }
+          ],
+          exclusions: [],
+          schedule: [],
+          scheduleIssues: []
+        })
+      })
+    );
+    installWindow();
+
+    const payload = await submitPlanQuiz({
+      answers: baseAnswers
+    });
+
+    expect(payload.recommendations[0]?.imageUrl).toBe('/card-logos/alaska-airlines.svg');
+  });
 });

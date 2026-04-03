@@ -20,12 +20,24 @@ const categorySchema = z.enum([
 ]);
 const creditTierSchema = z.enum(['excellent', 'good', 'fair', 'building']);
 const cardImageAssetTypeSchema = z.enum(['card_art', 'brand_logo', 'text_fallback']);
+const cardImageUrlSchema = z.string().trim().min(1).refine((value) => {
+  if (value.startsWith('/')) {
+    return true;
+  }
+
+  try {
+    const parsed = new URL(value);
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}, 'Image URL must be an absolute http(s) URL or a root-relative asset path');
 
 const cardRecordSchema = z.object({
   slug: z.string().min(1),
   name: z.string().min(1),
   issuer: z.string().min(1),
-  imageUrl: z.string().url().optional(),
+  imageUrl: cardImageUrlSchema.optional(),
   imageAssetType: cardImageAssetTypeSchema,
   cardType: cardTypeSchema,
   rewardType: rewardTypeSchema,
