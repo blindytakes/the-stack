@@ -36,12 +36,41 @@ export type PlanScheduleIssueReason =
   | 'spend_capacity'
   | 'direct_deposit_slot'
   | 'pace_limit'
-  | 'timeline_overflow';
+  | 'timeline_overflow'
+  | 'candidate_pool_limit'
+  | 'dominated_offer';
+
+type WindowIssueReason = Exclude<
+  PlanScheduleIssueReason,
+  'candidate_pool_limit' | 'dominated_offer'
+>;
 
 export type PlanScheduleIssue = {
   recommendationId: string;
   lane: PlanScheduleLane;
   reason: PlanScheduleIssueReason;
+};
+
+export type PlanScheduleDiagnostics = {
+  requestLimits: {
+    maxCards: number;
+    maxBanking: number;
+    horizonDays: number;
+  };
+  initialPoolLimits: CandidatePoolLimits;
+  finalPoolLimits: CandidatePoolLimits;
+  lanePoolSizes: CandidatePoolLimits;
+  poolExpansionRounds: number;
+  scheduledRecommendationIds: string[];
+  topRejected: Array<{
+    recommendationId: string;
+    lane: PlanScheduleLane;
+    reason: PlanScheduleIssueReason;
+    inFinalPool: boolean;
+    dominated: boolean;
+    priorityScore: number;
+    estimatedNetValue: number;
+  }>;
 };
 
 type PlanPaceConfig = {
@@ -54,6 +83,11 @@ type PlanPaceConfig = {
 
 type SearchCandidate = SchedulablePlanRecommendation & {
   contribution: number;
+};
+
+type CandidatePoolLimits = {
+  cards: number;
+  banking: number;
 };
 
 type ScheduledWindow = {
@@ -83,7 +117,7 @@ type SearchResult =
     }
   | {
       ok: false;
-      reason: PlanScheduleIssueReason;
+      reason: WindowIssueReason;
     };
 
 type OptimizerBestResult = {
@@ -104,7 +138,7 @@ const defaultPaceConfig: PlanPaceConfig = {
   maxDirectDepositBanking: 1
 };
 
-const reasonPriority: PlanScheduleIssueReason[] = [
+const reasonPriority: WindowIssueReason[] = [
   'spend_capacity',
   'direct_deposit_slot',
   'pace_limit',
@@ -149,7 +183,7 @@ export function getPlanPaceConfig(): PlanPaceConfig {
   return defaultPaceConfig;
 }
 
-function dominantReason(reasonCounts: Record<PlanScheduleIssueReason, number>): PlanScheduleIssueReason {
+function dominantReason(reasonCounts: Record<WindowIssueReason, number>): WindowIssueReason {
   return (
     reasonPriority
       .slice()
@@ -225,28 +259,103 @@ function candidatePoolLimit(maxLane: number): number {
   return maxLane + 1;
 }
 
-function buildCandidatePool(
-  recommendations: SchedulablePlanRecommendation[],
-  maxCards: number,
-  maxBanking: number
-): { reduced: SearchCandidate[]; reducedIds: Set<string> } {
+function sortByContribution(a: SearchCandidate, b: SearchCandidate) {
+  return b.contribution - a.contribution || b.priorityScore - a.priorityScore;
+}
+
+function buildLaneCandidatePools(
+  recommendations: SchedulablePlanRecommendation[]
+): {
+  cards: SearchCandidate[];
+  banking: SearchCandidate[];
+  lanePoolIds: Set<string>;
+  dominatedIds: Set<string>;
+} {
   const normalized = recommendations.map(normalizeCandidate);
-  const sortByContribution = (a: SearchCandidate, b: SearchCandidate) =>
-    b.contribution - a.contribution || b.priorityScore - a.priorityScore;
+  const cardsAll = normalized.filter((item) => item.lane === 'cards').sort(sortByContribution);
+  const bankingAll = normalized.filter((item) => item.lane === 'banking').sort(sortByContribution);
+  const cards = pruneDominatedCandidates(cardsAll);
+  const banking = pruneDominatedCandidates(bankingAll);
+  const lanePoolIds = new Set([...cards, ...banking].map((item) => item.id));
+  const dominatedIds = new Set(
+    [...cardsAll, ...bankingAll]
+      .filter((item) => !lanePoolIds.has(item.id))
+      .map((item) => item.id)
+  );
 
-  const cards = pruneDominatedCandidates(
-    normalized.filter((item) => item.lane === 'cards').sort(sortByContribution)
-  ).slice(0, candidatePoolLimit(maxCards));
+  return {
+    cards,
+    banking,
+    lanePoolIds,
+    dominatedIds
+  };
+}
 
-  const banking = pruneDominatedCandidates(
-    normalized.filter((item) => item.lane === 'banking').sort(sortByContribution)
-  ).slice(0, candidatePoolLimit(maxBanking));
-
+function buildCandidatePoolFromLanePools(
+  lanePools: {
+    cards: SearchCandidate[];
+    banking: SearchCandidate[];
+  },
+  limits: CandidatePoolLimits
+): { reduced: SearchCandidate[]; reducedIds: Set<string> } {
+  const cards = lanePools.cards.slice(0, limits.cards);
+  const banking = lanePools.banking.slice(0, limits.banking);
   const reduced = [...cards, ...banking].sort(sortByContribution);
+
   return {
     reduced,
     reducedIds: new Set(reduced.map((item) => item.id))
   };
+}
+
+function candidatePoolExpansionStep(maxLane: number): number {
+  if (maxLane <= 1) return 1;
+  return Math.max(1, Math.ceil(maxLane / 2));
+}
+
+function candidatePoolLimitCap(maxLane: number, available: number): number {
+  if (maxLane <= 0) return 0;
+  return Math.min(available, Math.max(candidatePoolLimit(maxLane), maxLane * 2));
+}
+
+function expandCandidatePoolLimits(
+  current: CandidatePoolLimits,
+  lanePools: {
+    cards: SearchCandidate[];
+    banking: SearchCandidate[];
+  },
+  maxCards: number,
+  maxBanking: number,
+  best: OptimizerBestResult
+): CandidatePoolLimits | null {
+  const next: CandidatePoolLimits = { ...current };
+  const selectedCardCount = best.scheduled.filter((item) => item.lane === 'cards').length;
+  const selectedBankingCount = best.scheduled.filter((item) => item.lane === 'banking').length;
+  const unselectedReducedCards = current.cards - selectedCardCount;
+  const unselectedReducedBanking = current.banking - selectedBankingCount;
+
+  const maxCardLimit = candidatePoolLimitCap(maxCards, lanePools.cards.length);
+  const maxBankingLimit = candidatePoolLimitCap(maxBanking, lanePools.banking.length);
+
+  const shouldExpandCards =
+    current.cards < maxCardLimit &&
+    (selectedCardCount < maxCards || unselectedReducedCards > 0);
+  const shouldExpandBanking =
+    current.banking < maxBankingLimit &&
+    (selectedBankingCount < maxBanking || unselectedReducedBanking > 0);
+
+  if (shouldExpandCards) {
+    next.cards = Math.min(maxCardLimit, current.cards + candidatePoolExpansionStep(maxCards));
+  }
+
+  if (shouldExpandBanking) {
+    next.banking = Math.min(
+      maxBankingLimit,
+      current.banking + candidatePoolExpansionStep(maxBanking)
+    );
+  }
+
+  return next.cards !== current.cards || next.banking !== current.banking ? next : null;
 }
 
 function getWindowReasons(
@@ -256,8 +365,8 @@ function getWindowReasons(
   input: QuizRequest,
   config: PlanPaceConfig,
   horizonDays: number
-): PlanScheduleIssueReason[] {
-  const reasons = new Set<PlanScheduleIssueReason>();
+): WindowIssueReason[] {
+  const reasons = new Set<WindowIssueReason>();
   const activeDays = recommendation.scheduleConstraints.activeDays;
   const completeDay = startDay + activeDays;
   const payoutDay = completeDay + recommendation.scheduleConstraints.payoutLagDays;
@@ -337,6 +446,8 @@ function searchScheduleWindow(
   }
 
   const reasonCounts: Record<PlanScheduleIssueReason, number> = {
+    candidate_pool_limit: 0,
+    dominated_offer: 0,
     lane_limit: 0,
     spend_capacity: 0,
     direct_deposit_slot: 0,
@@ -516,15 +627,37 @@ export function buildPlanSchedule(
   recommendations: SchedulablePlanRecommendation[],
   input: QuizRequest,
   options: BuildPlanScheduleOptions = {}
-): { scheduled: PlanScheduleItem[]; issues: PlanScheduleIssue[] } {
+): {
+  scheduled: PlanScheduleItem[];
+  issues: PlanScheduleIssue[];
+  diagnostics: PlanScheduleDiagnostics;
+} {
   const config = getPlanPaceConfig();
   const startAt = options.startAt ?? Date.now();
   const horizonDays = options.horizonDays ?? DEFAULT_HORIZON_DAYS;
   const maxCards = options.maxCards ?? config.maxCards;
   const maxBanking = options.maxBanking ?? config.maxBanking;
+  const lanePools = buildLaneCandidatePools(recommendations);
+  const initialPoolLimits: CandidatePoolLimits = {
+    cards: Math.min(lanePools.cards.length, candidatePoolLimit(maxCards)),
+    banking: Math.min(lanePools.banking.length, candidatePoolLimit(maxBanking))
+  };
+  let limits: CandidatePoolLimits = initialPoolLimits;
+  let { reduced, reducedIds } = buildCandidatePoolFromLanePools(lanePools, limits);
+  let best = optimizeSchedule(reduced, input, config, horizonDays, maxCards, maxBanking);
+  let poolExpansionRounds = 0;
 
-  const { reduced, reducedIds } = buildCandidatePool(recommendations, maxCards, maxBanking);
-  const best = optimizeSchedule(reduced, input, config, horizonDays, maxCards, maxBanking);
+  while (true) {
+    const nextLimits = expandCandidatePoolLimits(limits, lanePools, maxCards, maxBanking, best);
+    if (!nextLimits) break;
+
+    poolExpansionRounds += 1;
+    limits = nextLimits;
+    const expandedPool = buildCandidatePoolFromLanePools(lanePools, limits);
+    reduced = expandedPool.reduced;
+    reducedIds = expandedPool.reducedIds;
+    best = optimizeSchedule(reduced, input, config, horizonDays, maxCards, maxBanking);
+  }
 
   const recommendationRank = new Map(
     recommendations.map((item, index) => [item.id, index])
@@ -565,19 +698,49 @@ export function buildPlanSchedule(
               maxBanking,
               selectedIds
             )
-          : 'lane_limit'
+          : lanePools.dominatedIds.has(item.id)
+            ? 'dominated_offer'
+            : 'candidate_pool_limit'
       };
     });
+  const issuesById = new Map(issues.map((item) => [item.recommendationId, item]));
+  const topRejected = recommendations
+    .filter((item) => !selectedIds.has(item.id))
+    .sort(
+      (a, b) =>
+        b.priorityScore - a.priorityScore ||
+        b.estimatedNetValue - a.estimatedNetValue ||
+        a.id.localeCompare(b.id)
+    )
+    .slice(0, 5)
+    .map((item) => ({
+      recommendationId: item.id,
+      lane: item.lane,
+      reason: issuesById.get(item.id)?.reason ?? 'candidate_pool_limit',
+      inFinalPool: reducedIds.has(item.id),
+      dominated: lanePools.dominatedIds.has(item.id),
+      priorityScore: item.priorityScore,
+      estimatedNetValue: item.estimatedNetValue
+    }));
 
-  // Mark reduced-pool exclusions explicitly so callers can tell these were cut
-  // during optimization setup rather than by the final schedule.
-  for (const item of recommendations) {
-    if (selectedIds.has(item.id) || reducedIds.has(item.id)) continue;
-    const existingIssue = issues.find((issue) => issue.recommendationId === item.id);
-    if (existingIssue) {
-      existingIssue.reason = 'lane_limit';
+  return {
+    scheduled,
+    issues,
+    diagnostics: {
+      requestLimits: {
+        maxCards,
+        maxBanking,
+        horizonDays
+      },
+      initialPoolLimits,
+      finalPoolLimits: limits,
+      lanePoolSizes: {
+        cards: lanePools.cards.length,
+        banking: lanePools.banking.length
+      },
+      poolExpansionRounds,
+      scheduledRecommendationIds: scheduled.map((item) => item.recommendationId),
+      topRejected
     }
-  }
-
-  return { scheduled, issues };
+  };
 }

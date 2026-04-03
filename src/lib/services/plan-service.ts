@@ -47,6 +47,14 @@ export async function buildPlan(rawBody: unknown | null): Promise<BuildPlanResul
         selectedOfferIntent: parsed.data.selectedOfferIntent
       }
     );
+    if (
+      planBundle.diagnostics.poolExpansionRounds > 0 ||
+      planBundle.diagnostics.topRejected.some(
+        (item) => item.reason === 'candidate_pool_limit' || item.reason === 'dominated_offer'
+      )
+    ) {
+      console.info('[plan-service] scheduler diagnostics', planBundle.diagnostics);
+    }
     const responsePayload = planResponseSchema.safeParse({
       generatedAt,
       recommendations: planBundle.recommendations,

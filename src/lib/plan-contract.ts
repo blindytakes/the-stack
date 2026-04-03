@@ -90,7 +90,9 @@ export const planScheduleIssueReasonSchema = z.enum([
   'spend_capacity',
   'direct_deposit_slot',
   'pace_limit',
-  'timeline_overflow'
+  'timeline_overflow',
+  'candidate_pool_limit',
+  'dominated_offer'
 ]);
 
 export const planScheduleIssueSchema = z.object({

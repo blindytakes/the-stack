@@ -4,6 +4,31 @@ const getCardsDataMock = vi.fn();
 const getBankingBonusesDataMock = vi.fn();
 const buildPlanRecommendationsFromQuizMock = vi.fn();
 
+function makeDiagnostics() {
+  return {
+    requestLimits: {
+      maxCards: 5,
+      maxBanking: 4,
+      horizonDays: 180
+    },
+    initialPoolLimits: {
+      cards: 0,
+      banking: 0
+    },
+    finalPoolLimits: {
+      cards: 0,
+      banking: 0
+    },
+    lanePoolSizes: {
+      cards: 0,
+      banking: 0
+    },
+    poolExpansionRounds: 0,
+    scheduledRecommendationIds: [],
+    topRejected: []
+  };
+}
+
 vi.mock('@/lib/cards', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/lib/cards')>();
   return {
@@ -92,7 +117,8 @@ describe('plan-service', () => {
       recommendations: [],
       exclusions: [],
       schedule: [],
-      scheduleIssues: []
+      scheduleIssues: [],
+      diagnostics: makeDiagnostics()
     });
 
     const result = await buildPlan({
@@ -164,7 +190,8 @@ describe('plan-service', () => {
       ],
       exclusions: [],
       schedule: [],
-      scheduleIssues: []
+      scheduleIssues: [],
+      diagnostics: makeDiagnostics()
     });
 
     const result = await buildPlan({
@@ -221,7 +248,8 @@ describe('plan-service', () => {
       ],
       exclusions: [],
       schedule: [],
-      scheduleIssues: []
+      scheduleIssues: [],
+      diagnostics: makeDiagnostics()
     });
 
     const result = await buildPlan({

@@ -21,6 +21,7 @@ import {
 import {
   buildPlanSchedule,
   getPlanPaceConfig,
+  type PlanScheduleDiagnostics,
   type PlanScheduleIssue,
   type PlanScheduleItem,
   type PlannerRecommendationScheduleConstraints
@@ -81,6 +82,7 @@ export type PlannerRecommendationBundle = {
   exclusions: PlannerExcludedOffer[];
   schedule: PlanScheduleItem[];
   scheduleIssues: PlanScheduleIssue[];
+  diagnostics: PlanScheduleDiagnostics;
 };
 
 export type CardPlannerInput = Pick<
@@ -402,6 +404,7 @@ export function buildPlanRecommendationsFromQuiz(
     recommendations: scheduledRecommendations,
     exclusions,
     schedule: scheduleResult.scheduled,
-    scheduleIssues: scheduleResult.issues
+    scheduleIssues: scheduleResult.issues,
+    diagnostics: scheduleResult.diagnostics
   };
 }

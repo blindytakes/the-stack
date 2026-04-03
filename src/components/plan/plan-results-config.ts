@@ -61,5 +61,9 @@ export const scheduleIssueActions: Record<PlanScheduleIssueReason, string> = {
   spend_capacity: 'Your current spend capacity fit better elsewhere in the sequence.',
   direct_deposit_slot: 'Your direct-deposit bandwidth was already committed to higher-priority banking moves.',
   pace_limit: 'Adding it would have pushed the plan past your selected pace.',
-  timeline_overflow: 'It did not fit cleanly inside the current planning window.'
+  timeline_overflow: 'It did not fit cleanly inside the current planning window.',
+  candidate_pool_limit:
+    'It stayed eligible, but it never reached the final scheduler pool after stronger lane candidates were prioritized first.',
+  dominated_offer:
+    'A stronger offer with equal-or-easier constraints covered the same role in the plan, so this one was dropped before final scheduling.'
 };
