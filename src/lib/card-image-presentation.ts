@@ -27,7 +27,7 @@ const defaultPresentationByAssetType: Record<CardImageAssetType, Required<CardIm
   card_art: {
     fit: 'cover',
     position: 'center center',
-    scale: 1.04,
+    scale: 1,
     imgClassName: 'bg-transparent p-0'
   },
   brand_logo: {

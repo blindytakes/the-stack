@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isDevelopmentEnv } from '@/lib/config/runtime';
 import { recordAffiliateClick } from '@/lib/metrics';
 import { getAffiliateEnv } from '@/lib/env';
 import { trackedSourceSchema } from '@/lib/tracking';
@@ -31,14 +32,6 @@ function normalizeTarget(rawTarget: string, allowedHosts: string[]) {
 }
 
 export function resolveAffiliateClickRedirect(reqUrl: string): AffiliateClickResolution {
-  const affiliateEnv = getAffiliateEnv();
-  if (!affiliateEnv.ok) {
-    console.error('[affiliate] allowlist config invalid', {
-      errors: affiliateEnv.errors
-    });
-    return { ok: false, error: 'Affiliate tracking is unavailable' };
-  }
-
   const url = new URL(reqUrl);
   const parsed = clickQuerySchema.safeParse({
     card_slug: url.searchParams.get('card_slug'),
@@ -49,9 +42,30 @@ export function resolveAffiliateClickRedirect(reqUrl: string): AffiliateClickRes
     return { ok: false, error: 'Invalid affiliate link payload' };
   }
 
+  const affiliateEnv = getAffiliateEnv();
+  const affiliateErrors = affiliateEnv.ok ? null : affiliateEnv.errors;
+  const allowedHosts = affiliateEnv.ok
+    ? affiliateEnv.config.AFFILIATE_ALLOWED_HOSTS
+    : isDevelopmentEnv()
+      ? [new URL(parsed.data.target).hostname.toLowerCase()]
+      : null;
+
+  if (!allowedHosts) {
+    console.error('[affiliate] allowlist config invalid', {
+      errors: affiliateErrors
+    });
+    return { ok: false, error: 'Affiliate tracking is unavailable' };
+  }
+
+  if (!affiliateEnv.ok) {
+    console.warn('[affiliate] allowlist config missing in development, using target host fallback', {
+      fallbackHost: allowedHosts[0]
+    });
+  }
+
   const normalizedTarget = normalizeTarget(
     parsed.data.target,
-    affiliateEnv.config.AFFILIATE_ALLOWED_HOSTS
+    allowedHosts
   );
   if (!normalizedTarget) {
     return { ok: false, error: 'Invalid or unapproved target URL' };

@@ -6,9 +6,7 @@ import type { CardDetail } from '@/lib/cards';
 import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import {
   formatCardCurrency,
-  formatSignedCardCurrency,
   getCardDecisionMetrics,
-  getCardModeledFirstYearNet,
   isOffsettingCreditBenefit
 } from '@/lib/cards/presentation-metrics';
 import { formatSpendCategoryLabel } from '@/lib/cards-directory-explorer';
@@ -127,7 +125,6 @@ export function CardDetailModal({
         ? 'Miles'
         : 'Points'
     : '';
-  const estimatedFirstYearValue = card ? getCardModeledFirstYearNet(card) : 0;
   const cardStats = card ? getCardDecisionMetrics(card) : [];
   const outboundApplyUrl = card ? card.affiliateUrl ?? card.applyUrl : null;
   const applyHref =
@@ -258,26 +255,13 @@ export function CardDetailModal({
                   </span>
                 </div>
 
-                <div className="mt-4 grid gap-3 md:max-w-[620px] md:grid-cols-[minmax(0,290px)_minmax(0,290px)] md:justify-start">
+                <div className="mt-4 md:max-w-[290px]">
                   <div className="rounded-[1.15rem] border border-brand-gold/20 bg-white/[0.03] p-3">
                     <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">
                       Best listed offer
                     </p>
                     <p className="mt-2 text-[2.05rem] font-semibold leading-none text-brand-gold">
                       {bestListedOfferValue > 0 ? formatCardCurrency(bestListedOfferValue) : 'N/A'}
-                    </p>
-                  </div>
-
-                  <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] p-3">
-                    <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">
-                      Modeled first-year net
-                    </p>
-                    <p
-                      className={`mt-2 text-[2.05rem] font-semibold leading-none ${
-                        estimatedFirstYearValue >= 0 ? 'text-brand-teal' : 'text-brand-coral'
-                      }`}
-                    >
-                      {formatSignedCardCurrency(estimatedFirstYearValue)}
                     </p>
                   </div>
                 </div>

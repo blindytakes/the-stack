@@ -5,7 +5,7 @@ import {
 } from '../card-image-presentation';
 
 describe('getCardImagePresentation', () => {
-  it('defaults remote card art to a moderate full-bleed treatment', () => {
+  it('defaults remote card art to full-bleed without extra zoom', () => {
     expect(
       getCardImagePresentation(
         'capital-one-venture-rewards',
@@ -15,7 +15,7 @@ describe('getCardImagePresentation', () => {
     ).toMatchObject({
       fit: 'cover',
       position: 'center center',
-      scale: 1.04,
+      scale: 1,
       imgClassName: 'bg-transparent p-0'
     });
   });

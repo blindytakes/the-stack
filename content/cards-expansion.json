@@ -599,9 +599,8 @@
       "description": "Appealing if you want a fast American Airlines miles haul without a heavy minimum-spend requirement.",
       "network": "mastercard",
       "foreignTxFee": 0,
-      "applyUrl": "https://cards.barclaycardus.com/banking/cards/aadvantage-aviator-red-world-elite-mastercard/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-03T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -641,9 +640,9 @@
       "description": "A niche but powerful option if you actually redeem Wyndham points and spend heavily in the everyday 4x and 6x categories.",
       "network": "mastercard",
       "foreignTxFee": 0,
-      "applyUrl": "https://cards.barclaycardus.com/banking/cards/wyndham-rewards-earner-plus-card/",
+      "applyUrl": "https://www.wyndhamrewardscreditcard.com/earner-plus-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-03T00:00:00.000Z",
       "rewards": [
         {
           "category": "gas",

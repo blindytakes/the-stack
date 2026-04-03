@@ -46,9 +46,9 @@
       "headline": "Mid-tier United card with stronger airline perks and bonus mile earning.",
       "description": "A better fit than Gateway if you fly United regularly and can use the card's travel credits, bags, and award-flight perks.",
       "foreignTxFee": 0,
-      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/quest",
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/united-quest",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-03T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 3, "rateType": "miles", "notes": "3X miles on eligible United purchases." },
         { "category": "dining", "rate": 2, "rateType": "miles" },
@@ -131,9 +131,9 @@
       "headline": "Core United small-business card with checked bags, travel perks, and partner credits.",
       "description": "A practical option for business owners who fly United often enough to use its bag benefits and recurring travel perks.",
       "foreignTxFee": 0,
-      "applyUrl": "https://creditcards.chase.com/business-credit-cards/united/business-card",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/united/united-business-card2",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-03T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible United purchases." },
         { "category": "all", "rate": 1, "rateType": "miles" }
@@ -151,9 +151,9 @@
       "headline": "Premium United business card centered on lounge access and airport perks.",
       "description": "Designed for business owners who want United Club membership, checked bags, and premium airport treatment on United flights.",
       "foreignTxFee": 0,
-      "applyUrl": "https://creditcards.chase.com/business-credit-cards/united/club-business-card",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/united/united-club-business",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-03T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "miles", "notes": "Base card earnings plus enhanced airline benefits on United purchases." },
         { "category": "all", "rate": 1, "rateType": "miles" }
@@ -171,9 +171,9 @@
       "headline": "No-annual-fee IHG card with solid hotel earning and a few everyday bonus categories.",
       "description": "A lighter-weight IHG card for travelers who want hotel points and occasional IHG stays without paying an annual fee.",
       "foreignTxFee": 0,
-      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/ihg/traveler",
+      "applyUrl": "https://creditcards.chase.com/travel-credit-cards/ihg-rewards-club/traveler",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-03T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 5, "rateType": "points", "notes": "5X points on eligible IHG hotel purchases with the card." },
         { "category": "dining", "rate": 3, "rateType": "points" },
@@ -192,9 +192,9 @@
       "headline": "IHG business card with elevated hotel earning and an accessible annual fee.",
       "description": "A strong hotel-business card if your company spends on travel and you can use the card's anniversary-night style value.",
       "foreignTxFee": 0,
-      "applyUrl": "https://creditcards.chase.com/business-credit-cards/ihg/rewards-premier",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/ihg/business-premier",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-03T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 10, "rateType": "points", "notes": "10X points on eligible IHG hotel purchases with the card." },
         { "category": "gas", "rate": 5, "rateType": "points" },
@@ -224,9 +224,9 @@
       "headline": "Business Hyatt card with hotel rewards and flexible category acceleration.",
       "description": "Best for businesses that can direct meaningful spend toward Hyatt stays and rotating top-spend categories.",
       "foreignTxFee": 0,
-      "applyUrl": "https://creditcards.chase.com/business-credit-cards/world-of-hyatt/business",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/world-of-hyatt/hyatt-business-card",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-03T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 4, "rateType": "points", "notes": "4X points on Hyatt purchases with the card." },
         { "category": "other", "rate": 2, "rateType": "points", "notes": "2X points in your top three eligible spend categories each quarter." },
