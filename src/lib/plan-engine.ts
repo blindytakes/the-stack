@@ -98,9 +98,9 @@ const DAYS_IN_MONTH = 30;
 
 const defaultPaceConfig: PlanPaceConfig = {
   maxCards: 5,
-  maxBanking: 3,
+  maxBanking: 4,
   maxActiveCards: 1,
-  maxActiveBanking: 1,
+  maxActiveBanking: 2,
   maxDirectDepositBanking: 1
 };
 

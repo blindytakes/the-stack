@@ -149,6 +149,41 @@ describe('buildPlanSchedule', () => {
     expect(result.scheduled[1]?.startAt).toBeGreaterThanOrEqual(result.scheduled[0]!.completeAt);
   });
 
+  it('allows two banking offers to overlap when only one uses the direct-deposit slot', () => {
+    const startAt = Date.UTC(2026, 0, 1);
+    const result = buildPlanSchedule(
+      [
+        makeRecommendation({
+          id: 'bank:dd',
+          lane: 'banking',
+          priorityScore: 500,
+          scheduleConstraints: {
+            activeDays: 90,
+            payoutLagDays: 21,
+            requiresDirectDeposit: true
+          }
+        }),
+        makeRecommendation({
+          id: 'bank:no-dd',
+          lane: 'banking',
+          priorityScore: 420,
+          scheduleConstraints: {
+            activeDays: 60,
+            payoutLagDays: 21,
+            requiredDeposit: 2500,
+            requiresDirectDeposit: false
+          }
+        })
+      ],
+      makeInput(),
+      { startAt, maxCards: 0, maxBanking: 2, horizonDays: 180 }
+    );
+
+    expect(result.scheduled).toHaveLength(2);
+    expect(result.scheduled[0]?.startAt).toBe(startAt);
+    expect(result.scheduled[1]?.startAt).toBe(startAt);
+  });
+
   it('returns a timeline overflow issue when an offer cannot fit inside the plan horizon', () => {
     const result = buildPlanSchedule(
       [

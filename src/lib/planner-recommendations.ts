@@ -20,6 +20,7 @@ import {
 } from '@/lib/scoring-policy';
 import {
   buildPlanSchedule,
+  getPlanPaceConfig,
   type PlanScheduleIssue,
   type PlanScheduleItem,
   type PlannerRecommendationScheduleConstraints
@@ -286,8 +287,9 @@ export function buildPlanRecommendationsFromQuiz(
     selectedOfferIntent?: SelectedOfferIntent;
   } = {}
 ): PlannerRecommendationBundle {
-  const maxCards = options.maxCards ?? 3;
-  const maxBanking = options.maxBanking ?? 3;
+  const paceConfig = getPlanPaceConfig();
+  const maxCards = options.maxCards ?? paceConfig.maxCards;
+  const maxBanking = options.maxBanking ?? paceConfig.maxBanking;
   const ownedCardSlugSet = new Set(input.ownedCardSlugs);
   const selectedRecommendationId = options.selectedOfferIntent
     ? getSelectedOfferIntentRecommendationId(options.selectedOfferIntent)
