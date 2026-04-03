@@ -188,8 +188,10 @@ export function useCardFinderState(
         tool: audience === 'business' ? 'business_plan' : 'card_finder'
       });
       router.push(audience === 'business' ? '/plan/results?audience=business' : '/plan/results');
-    } catch {
-      setError('Could not load recommendations.');
+    } catch (error) {
+      setError(
+        error instanceof Error && error.message ? error.message : 'Could not load recommendations.'
+      );
     } finally {
       setLoading(false);
     }

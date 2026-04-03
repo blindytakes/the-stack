@@ -20,6 +20,8 @@ const PLAN_RESULTS_VERSION = 1 as const;
 const SESSION_KEY = 'thestack.plan.results.v1';
 const LOCAL_KEY = 'thestack.plan.results.backup.v1';
 const PLAN_RESULTS_MAX_AGE_MS = 1000 * 60 * 60 * 24;
+const STORAGE_ERROR_MESSAGE =
+  'Could not save your plan in this browser. Please allow site storage and try again.';
 
 const planResultsStorageSchema = z.object({
   version: z.literal(PLAN_RESULTS_VERSION),
@@ -76,17 +78,70 @@ function isFresh(payload: PlanResultsStoragePayload): boolean {
   return Date.now() - payload.savedAt <= PLAN_RESULTS_MAX_AGE_MS;
 }
 
+type BrowserStorageName = 'sessionStorage' | 'localStorage';
+type BrowserStorageAction = 'getItem' | 'setItem' | 'removeItem';
+
+function logStorageFailure(
+  storage: BrowserStorageName,
+  action: BrowserStorageAction,
+  error: unknown
+) {
+  console.warn('[plan-results-storage] browser storage access failed', {
+    storage,
+    action,
+    error: error instanceof Error ? error.message : String(error)
+  });
+}
+
+function getBrowserStorage(storage: BrowserStorageName) {
+  return storage === 'sessionStorage' ? window.sessionStorage : window.localStorage;
+}
+
+function safeGetStoredPayload(
+  storage: BrowserStorageName,
+  key: string
+): PlanResultsStoragePayload | null {
+  try {
+    return parseStoredPayload(getBrowserStorage(storage).getItem(key));
+  } catch (error) {
+    logStorageFailure(storage, 'getItem', error);
+    return null;
+  }
+}
+
+function safeSetStoredPayload(storage: BrowserStorageName, key: string, value: string): boolean {
+  try {
+    getBrowserStorage(storage).setItem(key, value);
+    return true;
+  } catch (error) {
+    logStorageFailure(storage, 'setItem', error);
+    return false;
+  }
+}
+
+function safeRemoveStoredPayload(storage: BrowserStorageName, key: string) {
+  try {
+    getBrowserStorage(storage).removeItem(key);
+  } catch (error) {
+    logStorageFailure(storage, 'removeItem', error);
+  }
+}
+
 export function savePlanResults(payload: PlanResultsStoragePayload) {
   if (typeof window === 'undefined') return;
   const serialized = JSON.stringify(payload);
-  window.sessionStorage.setItem(SESSION_KEY, serialized);
-  window.localStorage.setItem(LOCAL_KEY, serialized);
+  const savedToSession = safeSetStoredPayload('sessionStorage', SESSION_KEY, serialized);
+  const savedToLocal = safeSetStoredPayload('localStorage', LOCAL_KEY, serialized);
+
+  if (!savedToSession && !savedToLocal) {
+    throw new Error(STORAGE_ERROR_MESSAGE);
+  }
 }
 
 export function clearPlanResults() {
   if (typeof window === 'undefined') return;
-  window.sessionStorage.removeItem(SESSION_KEY);
-  window.localStorage.removeItem(LOCAL_KEY);
+  safeRemoveStoredPayload('sessionStorage', SESSION_KEY);
+  safeRemoveStoredPayload('localStorage', LOCAL_KEY);
 }
 
 export function loadPlanResults(): PlanResultsLoadResult {
@@ -94,14 +149,14 @@ export function loadPlanResults(): PlanResultsLoadResult {
     return { status: 'missing' };
   }
 
-  const sessionPayload = parseStoredPayload(window.sessionStorage.getItem(SESSION_KEY));
+  const sessionPayload = safeGetStoredPayload('sessionStorage', SESSION_KEY);
   if (sessionPayload && isFresh(sessionPayload)) {
     return { status: 'fresh', payload: sessionPayload, source: 'session' };
   }
 
-  const localPayload = parseStoredPayload(window.localStorage.getItem(LOCAL_KEY));
+  const localPayload = safeGetStoredPayload('localStorage', LOCAL_KEY);
   if (localPayload && isFresh(localPayload)) {
-    window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(localPayload));
+    safeSetStoredPayload('sessionStorage', SESSION_KEY, JSON.stringify(localPayload));
     if (sessionPayload) {
       return { status: 'fresh', payload: localPayload, source: 'local' };
     }

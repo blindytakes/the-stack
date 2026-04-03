@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   buildPlanResultsPayload,
   clearPlanResults,
@@ -21,9 +21,26 @@ function createMemoryStorage() {
   };
 }
 
-function installWindow() {
-  const sessionStorage = createMemoryStorage();
-  const localStorage = createMemoryStorage();
+function createThrowingStorage() {
+  return {
+    getItem() {
+      throw new Error('Storage unavailable');
+    },
+    setItem() {
+      throw new Error('Storage unavailable');
+    },
+    removeItem() {
+      throw new Error('Storage unavailable');
+    }
+  };
+}
+
+function installWindow(overrides?: {
+  sessionStorage?: ReturnType<typeof createMemoryStorage> | ReturnType<typeof createThrowingStorage>;
+  localStorage?: ReturnType<typeof createMemoryStorage> | ReturnType<typeof createThrowingStorage>;
+}) {
+  const sessionStorage = overrides?.sessionStorage ?? createMemoryStorage();
+  const localStorage = overrides?.localStorage ?? createMemoryStorage();
   vi.stubGlobal('window', {
     sessionStorage,
     localStorage
@@ -103,7 +120,12 @@ const basePayload = buildPlanResultsPayload({
 });
 
 describe('plan-results-storage', () => {
+  beforeEach(() => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
   afterEach(() => {
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
 
@@ -128,6 +150,30 @@ describe('plan-results-storage', () => {
 
     const loaded = loadPlanResults();
     expect(loaded.status).toBe('recovered');
+  });
+
+  it('falls back to local storage when session storage is unavailable', () => {
+    const localStorage = createMemoryStorage();
+    installWindow({
+      sessionStorage: createThrowingStorage(),
+      localStorage
+    });
+
+    savePlanResults(basePayload);
+    const loaded = loadPlanResults();
+
+    expect(loaded.status).toBe('recovered');
+  });
+
+  it('throws when no browser storage is writable', () => {
+    installWindow({
+      sessionStorage: createThrowingStorage(),
+      localStorage: createThrowingStorage()
+    });
+
+    expect(() => savePlanResults(basePayload)).toThrow(
+      'Could not save your plan in this browser. Please allow site storage and try again.'
+    );
   });
 
   it('marks stale payloads as stale', () => {

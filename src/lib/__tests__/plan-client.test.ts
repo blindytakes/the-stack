@@ -104,7 +104,13 @@ describe('plan-client', () => {
     vi.stubGlobal(
       'fetch',
       vi.fn().mockResolvedValue({
-        ok: false
+        ok: false,
+        headers: {
+          get: () => 'application/json'
+        },
+        json: async () => ({
+          error: 'Too many plan requests. Please try again soon.'
+        })
       })
     );
     installWindow();
@@ -113,7 +119,7 @@ describe('plan-client', () => {
       submitPlanQuiz({
         answers: baseAnswers
       })
-    ).rejects.toThrow('Failed to build plan');
+    ).rejects.toThrow('Too many plan requests. Please try again soon.');
   });
 
   it('throws when the plan response shape is invalid', async () => {
@@ -136,6 +142,6 @@ describe('plan-client', () => {
       submitPlanQuiz({
         answers: baseAnswers
       })
-    ).rejects.toThrow('Invalid plan response');
+    ).rejects.toThrow('Plan generation returned an unexpected response.');
   });
 });

@@ -202,8 +202,12 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
         path: '/cards/plan'
       });
       router.push('/plan/results?mode=cards_only');
-    } catch {
-      setError('Could not build your card plan right now. Please try again.');
+    } catch (error) {
+      setError(
+        error instanceof Error && error.message
+          ? error.message
+          : 'Could not build your card plan right now. Please try again.'
+      );
     } finally {
       setLoading(false);
     }
