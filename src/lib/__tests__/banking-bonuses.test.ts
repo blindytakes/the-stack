@@ -479,7 +479,7 @@ describe('banking brand asset fallbacks', () => {
         'Wells Fargo',
         'https://www17.wellsfargomedia.com/assets/images/icons/apple-touch-icon_120x120.png'
       )
-    ).toBe('https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png');
+    ).toBe('https://www17.wellsfargomedia.com/assets/images/icons/apple-touch-icon_120x120.png');
   });
 
   it('replaces broken Chime favicon data and upgrades Alliant to a real logo', () => {

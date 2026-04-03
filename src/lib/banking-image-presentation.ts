@@ -78,6 +78,13 @@ const chaseWhiteBankImagePresentation = {
   microImgClassName: microChaseWhitePlaque
 } as const;
 
+const bareBankImagePresentation = {
+  imgClassName: 'bg-transparent p-0',
+  compactImgClassName: 'bg-transparent p-0',
+  miniImgClassName: 'bg-transparent p-0',
+  microImgClassName: 'bg-transparent p-0'
+} as const;
+
 const presentationByBankName: Record<string, BankingImagePresentation> = {
   'alliant credit union': {
     ...lightWideBankImagePresentation,
@@ -144,8 +151,8 @@ const presentationByBankName: Record<string, BankingImagePresentation> = {
     scale: 1.08
   },
   'wells fargo': {
-    ...darkWideBankImagePresentation,
-    scale: 1.18
+    ...bareBankImagePresentation,
+    scale: 1
   }
 };
 
