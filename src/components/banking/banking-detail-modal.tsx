@@ -10,11 +10,7 @@ import {
   formatBankingCustomerType,
   formatBankingCurrency,
   getBankingOfferAvailabilityLabel,
-  getBankingOfferBestFit,
-  getBankingOfferExecutionSummary,
-  getBankingOfferPrimaryConstraint,
-  getBankingOfferPrimaryRequirement,
-  getBankingOfferThinkTwiceIf,
+  getBankingOfferChecklist,
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
@@ -57,6 +53,17 @@ function formatExpiryDate(value?: string) {
   }).format(new Date(value));
 }
 
+function summarizeDetail(value: string) {
+  const trimmed = value.trim();
+  if (!trimmed) return trimmed;
+
+  const firstSentenceMatch = trimmed.match(/^.*?[.?!](?:\s|$)/);
+  const firstSentence = firstSentenceMatch?.[0]?.trim() ?? trimmed;
+
+  if (firstSentence.length <= 120) return firstSentence;
+  return `${firstSentence.slice(0, 117).trimEnd()}...`;
+}
+
 export function BankingDetailModal({
   offer,
   onClose,
@@ -64,25 +71,13 @@ export function BankingDetailModal({
 }: BankingDetailModalProps) {
   const imagePresentation = getBankingImagePresentation(offer.bankName);
   const showApy = Boolean(offer.apyDisplay) && offer.bankName.trim().toLowerCase() !== 'chase';
-  const primaryRequirement = getBankingOfferPrimaryRequirement(offer);
-  const primaryConstraint = getBankingOfferPrimaryConstraint(offer);
-  const executionSummary = getBankingOfferExecutionSummary(offer);
-  const bestFitBullets = getBankingOfferBestFit(offer).slice(0, 3);
-  const cautionBullets = getBankingOfferThinkTwiceIf(offer).slice(0, 3);
-  const checklistItems = offer.requiredActions.length > 0 ? offer.requiredActions : [primaryRequirement];
+  const checklistSteps = getBankingOfferChecklist(offer);
   const availabilityLabel = getBankingOfferAvailabilityLabel(offer);
   const apyAsOfLabel = formatApyDate(offer.apyAsOf);
   const verifiedLabel = formatVerifiedDate(offer.lastVerified);
   const expiryLabel = formatExpiryDate(offer.expiresAt);
   const isExpired = Boolean(offer.expiresAt && new Date(offer.expiresAt).getTime() < Date.now());
   const outboundOfferUrl = offer.affiliateUrl ?? offer.offerUrl;
-  const applyHref = outboundOfferUrl
-    ? `/api/affiliate/click?${new URLSearchParams({
-        card_slug: offer.slug,
-        source,
-        target: outboundOfferUrl
-      }).toString()}`
-    : null;
   const statCards = getBankingDecisionMetrics(offer);
 
   useEffect(() => {
@@ -158,16 +153,16 @@ export function BankingDetailModal({
                   })}
                   className="inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-5 py-3 text-base font-semibold text-black transition hover:opacity-90"
                 >
-                  Add to my plan
+                  Add to my bonus plan
                 </Link>
-                {applyHref && (
+                {outboundOfferUrl && !isExpired && (
                   <AffiliateLink
-                    href={applyHref}
+                    href={outboundOfferUrl}
                     cardSlug={offer.slug}
                     source={source}
-                    className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-5 py-3 text-base font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
+                    className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
                   >
-                    View current offer
+                    Go to bank offer
                   </AffiliateLink>
                 )}
               </div>
@@ -210,9 +205,6 @@ export function BankingDetailModal({
                   {offer.offerName}
                 </h2>
                 <p className="mt-2.5 text-base text-text-primary/90 md:text-lg">{offer.headline}</p>
-                <p className="mt-2.5 max-w-[58ch] text-sm leading-6 text-text-secondary">
-                  {executionSummary}
-                </p>
 
                 <div className="mt-3.5 flex flex-wrap gap-2">
                   <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-secondary">
@@ -255,71 +247,47 @@ export function BankingDetailModal({
                 </div>
               </section>
 
-              <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                <section className="rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-400">
-                    Good fit if
-                  </h3>
-                  <ul className="mt-3 space-y-2">
-                    {bestFitBullets.map((item, index) => (
-                      <li
-                        key={`${item}-${index}`}
-                        className="flex items-start gap-2 text-sm leading-6 text-text-secondary"
-                      >
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-
-                <section className="rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
-                  <h3 className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-coral">
-                    Think twice if
-                  </h3>
-                  <ul className="mt-3 space-y-2">
-                    {(cautionBullets.length > 0 ? cautionBullets : [primaryConstraint]).map((item, index) => (
-                      <li
-                        key={`${item}-${index}`}
-                        className="flex items-start gap-2 text-sm leading-6 text-text-secondary"
-                      >
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-coral" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              </div>
-
               <section className="mt-4 rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
-                <div className="grid gap-4 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1fr)]">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-xs uppercase tracking-[0.22em] text-text-muted">What it takes</h3>
-                      <p className="mt-2 text-sm leading-6 text-text-secondary">{primaryRequirement}</p>
+                <div>
+                    <div className="flex items-end justify-between gap-3">
+                      <div>
+                        <h3 className="text-xs uppercase tracking-[0.22em] text-text-muted">
+                          Execution checklist
+                        </h3>
+                        <p className="mt-1 text-sm text-text-secondary">
+                          Follow these in order so the bonus stays on track.
+                        </p>
+                      </div>
+                      <p className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-muted">
+                        {checklistSteps.length} steps
+                      </p>
                     </div>
-                    <div>
-                      <h3 className="text-xs uppercase tracking-[0.22em] text-text-muted">Main constraint</h3>
-                      <p className="mt-2 text-sm leading-6 text-text-secondary">{primaryConstraint}</p>
-                    </div>
-                  </div>
 
-                  <div>
-                    <h3 className="text-xs uppercase tracking-[0.22em] text-text-muted">Execution checklist</h3>
-                    <ul className="mt-3 space-y-2.5">
-                      {checklistItems.map((action, index) => (
+                    <ol className="mt-3 grid gap-3 sm:grid-cols-2">
+                      {checklistSteps.map((step, index) => (
                         <li
-                          key={`${action}-${index}`}
-                          className="flex items-start gap-3 rounded-xl border border-white/5 bg-bg/40 px-3.5 py-3 text-sm leading-6 text-text-secondary"
+                          key={`${step.timing}-${step.title}-${index}`}
+                          className="rounded-[1.05rem] border border-white/8 bg-bg/40 p-3.5"
                         >
-                          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-white/15 text-[10px] text-text-muted">
-                            {index + 1}
-                          </span>
-                          <span>{action}</span>
+                          <div className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/15 bg-black/20 text-[10px] font-semibold text-text-primary">
+                              {index + 1}
+                            </span>
+                            <div className="min-w-0">
+                              <p className="inline-flex rounded-full border border-brand-teal/15 bg-brand-teal/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] text-brand-teal">
+                                {step.timing}
+                              </p>
+                              <h4 className="mt-2 text-sm font-semibold leading-5 text-text-primary">
+                                {step.title}
+                              </h4>
+                              <p className="mt-1 text-xs leading-5 text-text-secondary">
+                                {summarizeDetail(step.detail)}
+                              </p>
+                            </div>
+                          </div>
                         </li>
                       ))}
-                    </ul>
-                  </div>
+                    </ol>
                 </div>
               </section>
             </div>

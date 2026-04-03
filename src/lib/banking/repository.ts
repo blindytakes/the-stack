@@ -26,6 +26,11 @@ declare global {
 const BANKING_BONUSES_CACHE_TTL_MS = 5 * 60 * 1000;
 let bankingBonusesInFlight: Promise<BankingBonusesDataResponse> | null = null;
 
+const curatedOfferUrlBySlug: Record<string, string> = {
+  'alliant-ultimate-opportunity-savings-100':
+    'https://promo.alliantcreditunion.org/ultimate-opportunity-savings'
+};
+
 const bankingBonusSeedData = bankingBonusesSeedDatasetSchema.parse([
   {
     slug: 'summit-national-checking-300',
@@ -167,10 +172,15 @@ function isOfferExpired(expiresAt?: string, now = new Date()): boolean {
   return new Date(expiresAt).getTime() < now.getTime();
 }
 
+export function resolveBankingOfferUrl(slug: string, offerUrl?: string) {
+  return curatedOfferUrlBySlug[slug] ?? offerUrl;
+}
+
 function toListItem(record: BankingBonusRecord): BankingBonusListItem {
   return {
     ...record,
     imageUrl: resolveBankingBrandImageUrl(record.bankName, record.imageUrl),
+    offerUrl: resolveBankingOfferUrl(record.slug, record.offerUrl),
     estimatedNetValue: Number((record.bonusAmount - record.estimatedFees).toFixed(2))
   };
 }

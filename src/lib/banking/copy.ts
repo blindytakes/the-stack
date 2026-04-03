@@ -16,6 +16,32 @@ function trimTrailingPunctuation(value: string): string {
   return value.trim().replace(/[.?!]+$/, '');
 }
 
+function includesChecklistKeyword(value: string, patterns: RegExp[]) {
+  const normalized = value.toLowerCase();
+  return patterns.some((pattern) => pattern.test(normalized));
+}
+
+const openingChecklistPatterns = [
+  /\bopen\b/,
+  /\bapply\b/,
+  /\bbonus page\b/,
+  /\boffer code\b/,
+  /\bpromo code\b/,
+  /\benroll\b/,
+  /\be-?statement\b/
+];
+
+const fundingChecklistPatterns = [/\bfund\b/, /\bopening deposit\b/, /\bminimum deposit\b/];
+
+const holdingChecklistPatterns = [
+  /\bkeep\b.*\bopen\b/,
+  /\bmaintain\b/,
+  /\bremain open\b/,
+  /\bdo not close\b/,
+  /\bbonus posts\b/,
+  /\bearly closure\b/
+];
+
 export function formatBankingCurrency(value: number) {
   return `$${Math.round(value).toLocaleString()}`;
 }
@@ -319,6 +345,48 @@ export function getBankingOfferGotchas(offer: BankingBonusListItem): string[] {
 export function getBankingOfferChecklist(offer: BankingBonusRecord): BankingOfferChecklistStep[] {
   const steps: BankingOfferChecklistStep[] = [];
   const timeline = getBankingOfferTimeline(offer);
+  const mergedOpeningDetails: string[] = [];
+  const mergedHoldingDetails: string[] = [];
+  const duringWindowActions: string[] = [];
+
+  for (const rawAction of offer.requiredActions) {
+    const action = trimTrailingPunctuation(rawAction);
+    const normalizedAction = action.toLowerCase();
+
+    if (offer.directDeposit.required && normalizedAction.includes('direct deposit')) {
+      continue;
+    }
+
+    if (includesChecklistKeyword(normalizedAction, holdingChecklistPatterns)) {
+      mergedHoldingDetails.push(action);
+      continue;
+    }
+
+    if (
+      includesChecklistKeyword(normalizedAction, openingChecklistPatterns) ||
+      (typeof offer.minimumOpeningDeposit === 'number' &&
+        offer.minimumOpeningDeposit > 0 &&
+        includesChecklistKeyword(normalizedAction, fundingChecklistPatterns))
+    ) {
+      mergedOpeningDetails.push(action);
+      continue;
+    }
+
+    duringWindowActions.push(action);
+  }
+
+  const openingDetailParts = [
+    typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0
+      ? `Fund it with at least ${formatBankingCurrency(offer.minimumOpeningDeposit)} and save a copy of the offer terms before you begin`
+      : 'Save the confirmation email and a copy of the live offer terms before you begin',
+    ...mergedOpeningDetails.filter((detail) => {
+      const normalizedDetail = detail.toLowerCase();
+      return (
+        !normalizedDetail.includes('save a copy of the offer terms') &&
+        !normalizedDetail.includes('confirmation email')
+      );
+    })
+  ];
 
   steps.push({
     timing: 'At opening',
@@ -326,10 +394,7 @@ export function getBankingOfferChecklist(offer: BankingBonusRecord): BankingOffe
       offer.accountType === 'bundle'
         ? 'Open both required accounts'
         : `Open the ${formatBankingAccountType(offer.accountType).toLowerCase()} account`,
-    detail:
-      typeof offer.minimumOpeningDeposit === 'number' && offer.minimumOpeningDeposit > 0
-        ? `Fund it with at least ${formatBankingCurrency(offer.minimumOpeningDeposit)} and save a copy of the offer terms before you begin.`
-        : 'Save the confirmation email and a copy of the live offer terms before you begin.'
+    detail: `${openingDetailParts.join('. ')}.`
   });
 
   if (offer.directDeposit.required) {
@@ -343,22 +408,28 @@ export function getBankingOfferChecklist(offer: BankingBonusRecord): BankingOffe
     });
   }
 
-  offer.requiredActions
-    .filter((action) => !(offer.directDeposit.required && action.toLowerCase().includes('direct deposit')))
-    .forEach((action, index, actions) => {
+  duringWindowActions.forEach((action, index, actions) => {
       steps.push({
         timing: 'During qualification window',
         title: actions.length === 1 ? 'Complete the activity requirement' : `Complete requirement ${index + 1}`,
-        detail: `${trimTrailingPunctuation(action)}.`
+        detail: `${action}.`
       });
     });
+
+  const holdingDetailParts = [
+    timeline.isKnown
+      ? `Plan on about ${timeline.label.toLowerCase()} before you consider the offer done`
+      : 'Do not close or drain the account until the bonus posts and the live terms say the account is safe to exit',
+    timeline.isKnown
+      ? 'Wait for the bonus to post before you move money or close the account'
+      : null,
+    ...mergedHoldingDetails
+  ].filter(Boolean);
 
   steps.push({
     timing: offer.holdingPeriodDays ? `Through day ${offer.holdingPeriodDays}` : 'Before closing',
     title: 'Keep the account open until the bonus is safe',
-    detail: timeline.isKnown
-      ? `Plan on about ${timeline.label.toLowerCase()} before you consider the offer done. Wait for the bonus to post before you move money or close the account.`
-      : 'Do not close or drain the account until the bonus posts and the live terms say the account is safe to exit.'
+    detail: `${holdingDetailParts.join('. ')}.`
   });
 
   return steps;

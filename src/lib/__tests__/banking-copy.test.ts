@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   formatBankingCurrency,
   getBankingOfferAvailabilityLabel,
+  getBankingOfferChecklist,
   getBankingOfferExecutionSummary,
   getBankingOfferPrimaryRequirement
 } from '@/lib/banking/copy';
@@ -43,5 +44,32 @@ describe('banking copy helpers', () => {
     expect(getBankingOfferPrimaryRequirement(savingsOffer)).toBe(
       'Fund with qualifying new money and maintain balance.'
     );
+  });
+
+  it('merges opener-style actions into the first checklist step so the order stays sane', () => {
+    const checkingOffer = createBankingOffer({
+      bonusAmount: 500,
+      directDeposit: { required: true, minimumAmount: 2000 },
+      holdingPeriodDays: 150,
+      requiredActions: [
+        'Open a new eligible Bank of America Advantage Banking checking account through the bonus page.',
+        'Receive at least $2,000 in qualifying direct deposits within 90 days of account opening.'
+      ]
+    });
+
+    const checklist = getBankingOfferChecklist(checkingOffer);
+
+    expect(checklist).toHaveLength(3);
+    expect(checklist[0]).toMatchObject({
+      timing: 'At opening',
+      title: 'Open the checking account'
+    });
+    expect(checklist[0]?.detail).toContain('bonus page');
+    expect(checklist[1]).toMatchObject({
+      title: 'Route qualifying direct deposit'
+    });
+    expect(checklist[2]).toMatchObject({
+      title: 'Keep the account open until the bonus is safe'
+    });
   });
 });

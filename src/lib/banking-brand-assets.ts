@@ -10,8 +10,7 @@ const BMO_LOGO_URL = 'https://www.bmo.com/dist/images/logos/bmo-blue-on-transpar
 const CAPITAL_ONE_LOGO_URL = '/bank-logos/capital-one.svg';
 const CHASE_LOGO_URL =
   'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg';
-const CITI_LOGO_URL =
-  'https://www.citi.com/content/dam/cfs/uspb/usmkt/cbol-homepage/en/static/images/citilogo-skelheader-compressed.png';
+const CITI_LOGO_URL = '/bank-logos/citi.svg';
 const ETRADE_LOGO_URL =
   'https://cdn2.etrade.net/1/26022716140.0/aempros/content/dam/etrade/retail/en_US/images/global/logos/etrade-from-morgan-stanley-logo-dark-theme.svg';
 const HUNTINGTON_LOGO_URL =

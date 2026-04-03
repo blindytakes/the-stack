@@ -111,8 +111,8 @@ const presentationByBankName: Record<string, BankingImagePresentation> = {
     scale: 1.14
   },
   citibank: {
-    ...lightBankImagePresentation,
-    scale: 1.08
+    ...bareBankImagePresentation,
+    scale: 1.02
   },
   'etrade from morgan stanley private bank': {
     ...darkWideBankImagePresentation,

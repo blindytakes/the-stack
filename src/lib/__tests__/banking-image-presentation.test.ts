@@ -15,6 +15,13 @@ describe('getBankingImagePresentation', () => {
       microImgClassName: 'bg-white px-1 py-0.5',
       scale: 1.08
     });
+    expect(getBankingImagePresentation('Citibank')).toMatchObject({
+      imgClassName: 'bg-transparent p-0',
+      compactImgClassName: 'bg-transparent p-0',
+      miniImgClassName: 'bg-transparent p-0',
+      microImgClassName: 'bg-transparent p-0',
+      scale: 1.02
+    });
     expect(getBankingImagePresentation('U.S. Bank')).toMatchObject({
       imgClassName:
         'bg-[linear-gradient(180deg,rgba(248,246,240,0.96),rgba(235,231,221,0.92))] px-5 py-4',

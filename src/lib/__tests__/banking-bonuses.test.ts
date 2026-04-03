@@ -18,6 +18,7 @@ import {
 } from '../banking-bonuses';
 import { createBankingListItem } from './banking-test-helpers';
 import { resolveBankingBrandImageUrl } from '../banking-brand-assets';
+import { resolveBankingOfferUrl } from '../banking/repository';
 
 async function getBonuses() {
   return (await getBankingBonusesData()).bonuses;
@@ -435,9 +436,7 @@ describe('banking brand asset fallbacks', () => {
         'Citibank',
         'https://www.citi.com/cbol-hp-static-assets/assets/favicon.ico'
       )
-    ).toBe(
-      'https://www.citi.com/content/dam/cfs/uspb/usmkt/cbol-homepage/en/static/images/citilogo-skelheader-compressed.png'
-    );
+    ).toBe('/bank-logos/citi.svg');
     expect(
       resolveBankingBrandImageUrl(
         'E*TRADE from Morgan Stanley Private Bank',
@@ -500,5 +499,16 @@ describe('banking brand asset fallbacks', () => {
     expect(resolveBankingBrandImageUrl('Alliant Credit Union')).toBe(
       'https://www.alliantcreditunion.org/assets/dist/images/logo.png'
     );
+  });
+});
+
+describe('banking offer URL curation', () => {
+  it('upgrades the known broken Alliant promo root URL to the live offer page', () => {
+    expect(
+      resolveBankingOfferUrl(
+        'alliant-ultimate-opportunity-savings-100',
+        'https://promo.alliantcreditunion.org'
+      )
+    ).toBe('https://promo.alliantcreditunion.org/ultimate-opportunity-savings');
   });
 });
