@@ -152,4 +152,35 @@ describe('/api/newsletter/subscribe route contract', () => {
       source: 'homepage'
     });
   });
+
+  it('passes through warning responses when provider sync is incomplete', async () => {
+    processNewsletterSubscribeMock.mockResolvedValue({
+      ok: true,
+      status: 202,
+      body: {
+        message: 'Successfully subscribed!',
+        warning:
+          'We saved your request, but could not finish syncing your subscription. Please try again shortly.'
+      }
+    });
+
+    const req = new Request('http://localhost/api/newsletter/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: 'user@example.com',
+        source: 'homepage',
+        turnstileToken: 'token'
+      })
+    });
+
+    const res = await POST(req);
+    const body = await res.json();
+
+    expect(res.status).toBe(202);
+    expect(body).toEqual({
+      message: 'Successfully subscribed!',
+      warning:
+        'We saved your request, but could not finish syncing your subscription. Please try again shortly.'
+    });
+  });
 });

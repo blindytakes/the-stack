@@ -92,7 +92,8 @@ export async function processNewsletterSubscribe(
       status: 202,
       body: {
         message: created ? 'Successfully subscribed!' : "You're already subscribed!",
-        warning: 'Saved locally, but provider sync failed. Our team has been alerted.'
+        warning:
+          'We saved your request, but could not finish syncing your subscription. Please try again shortly.'
       }
     };
   }

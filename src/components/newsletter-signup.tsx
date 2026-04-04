@@ -19,7 +19,7 @@ import type { TrackedSource } from '@/lib/tracking';
  */
 
 type NewsletterSignupProps = {
-  source?: string;
+  source?: TrackedSource;
   eyebrow?: string;
   heading?: string;
   description?: string;
@@ -51,11 +51,12 @@ export function NewsletterSignup({
 }: NewsletterSignupProps) {
   const turnstileEnabled = Boolean(getTurnstileSiteKey());
   const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'warning' | 'error'>(
+    'idle'
+  );
   const [message, setMessage] = useState('');
   const [consultationInterest, setConsultationInterest] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const [showTurnstile, setShowTurnstile] = useState(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
   const largeSize = size === 'large';
   const formClassName = compact
@@ -86,7 +87,6 @@ export function NewsletterSignup({
         : source;
 
     if (turnstileEnabled && !turnstileToken) {
-      setShowTurnstile(true);
       setStatus('error');
       setMessage(TURNSTILE_REQUIRED_MESSAGE);
       return;
@@ -106,7 +106,7 @@ export function NewsletterSignup({
         })
       });
 
-      let data: { error?: string; message?: string };
+      let data: { error?: string; message?: string; warning?: string };
       try {
         data = await res.json();
       } catch {
@@ -118,6 +118,12 @@ export function NewsletterSignup({
       if (!res.ok) {
         setStatus('error');
         setMessage(data.error ?? 'Something went wrong.');
+        return;
+      }
+
+      if (data.warning) {
+        setStatus('warning');
+        setMessage(data.warning);
         return;
       }
 
@@ -196,7 +202,7 @@ export function NewsletterSignup({
       {finePrint && !compact && (
         <p className="mt-3 text-xs text-text-muted">{finePrint}</p>
       )}
-      {showTurnstile && (
+      {turnstileEnabled && (
         <div className="mt-3">
           <Turnstile
             ref={turnstileRef}
@@ -207,6 +213,9 @@ export function NewsletterSignup({
       )}
       {status === 'error' && (
         <p className="mt-2 text-sm text-brand-coral">{message}</p>
+      )}
+      {status === 'warning' && (
+        <p className="mt-2 text-sm text-brand-gold">{message}</p>
       )}
     </div>
   );
