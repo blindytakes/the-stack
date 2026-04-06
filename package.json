@@ -11,6 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "catalog:audit": "node --import tsx ./scripts/audit-catalog.ts",
+    "catalog:audit:live": "node --import tsx ./scripts/audit-live-offers.ts",
+    "catalog:audit:weekly": "npm run catalog:audit && npm run catalog:audit:live",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
