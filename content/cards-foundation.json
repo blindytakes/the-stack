@@ -553,9 +553,9 @@
       "network": "visa",
       "foreignTxFee": 0,
       "imageUrl": "https://static.biltrewards.com/assets/seo/bilt_card2_coming_soon_seo.jpg",
-      "applyUrl": "https://www.biltrewards.com/card",
+      "applyUrl": "https://www.bilt.com/card",
       "isActive": true,
-      "lastVerified": "2026-03-29T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         {
           "category": "other",

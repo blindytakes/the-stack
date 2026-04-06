@@ -131,9 +131,9 @@
       "headline": "Core United small-business card with checked bags, travel perks, and partner credits.",
       "description": "A practical option for business owners who fly United often enough to use its bag benefits and recurring travel perks.",
       "foreignTxFee": 0,
-      "applyUrl": "https://creditcards.chase.com/business-credit-cards/united/united-business-card2",
+      "applyUrl": "https://creditcards.chase.com/business-credit-cards/united/united-business-card",
       "isActive": true,
-      "lastVerified": "2026-04-03T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible United purchases." },
         { "category": "all", "rate": 1, "rateType": "miles" }
@@ -532,9 +532,9 @@
       "network": "amex",
       "foreignTxFee": 0,
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/business-platinum.png",
-      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-platinum-credit-card-amex/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 5, "rateType": "points", "notes": "5X Membership Rewards points on flights and prepaid hotels booked through AmexTravel.com." },
         { "category": "all", "rate": 1, "rateType": "points" }
@@ -554,9 +554,9 @@
       "network": "amex",
       "foreignTxFee": 2.7,
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/blue-business-cash.png",
-      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/",
+      "applyUrl": "https://www.americanexpress.com/en-us/business/credit-cards/blue-business-cash/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "all", "rate": 2, "rateType": "cashback", "notes": "2% cash back on the first $50,000 in eligible purchases each calendar year, then 1%." }
       ]
@@ -575,9 +575,9 @@
       "network": "amex",
       "foreignTxFee": 0,
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/business-green-rewards.png",
-      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/",
+      "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-green-card-amex/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "points", "notes": "2X points on AmexTravel.com purchases." },
         { "category": "all", "rate": 1, "rateType": "points" }
@@ -641,9 +641,9 @@
       "description": "A good fit for businesses that want straightforward 2X points with some extra upside for travel-center and wallet spend.",
       "foreignTxFee": 0,
       "imageUrl": "https://www.usbank.com/content/dam/usbank/en/images/illustrations/card-art/credit-cards/business-altitude-power.png",
-      "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-altitude-power-world-elite-mastercard.html",
+      "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-altitude-power-credit-card.html",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "all", "rate": 2, "rateType": "points" },
         { "category": "other", "rate": 2.5, "rateType": "points", "notes": "2.5X points on up to $5,000 in combined mobile wallet and virtual card purchases each quarter." },
@@ -685,9 +685,9 @@
       "description": "More of an operating card than a pure rewards card, but still worth cataloging because it adds cash-flow utility and modest rewards.",
       "foreignTxFee": 3,
       "imageUrl": "https://www.usbank.com/content/dam/usbank/en/images/illustrations/card-art/credit-cards/photo-shield-card-126x200.webp",
-      "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-shield-credit-card",
+      "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-shield-credit-card.html",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 5, "rateType": "cashback", "notes": "5% cash back on prepaid air, hotel, and car rentals booked directly in the Travel Center." },
         { "category": "all", "rate": 1, "rateType": "cashback" }
@@ -705,9 +705,9 @@
       "headline": "Flexible Bank of America business cash-back card with a selectable bonus category.",
       "description": "Strong for owners who want category choice on top of a no-fee business card and already bank with Bank of America.",
       "foreignTxFee": 3,
-      "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/view-all-small-business-credit-cards/",
+      "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/products/cash-rewards-business-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "gas", "rate": 3, "rateType": "cashback", "notes": "3% cash back in the cardholder's selected category; gas and EV charging is the default category." },
         { "category": "dining", "rate": 2, "rateType": "cashback" },
@@ -726,9 +726,9 @@
       "headline": "Simple flat-rate Bank of America business cash-back card.",
       "description": "A clean fit for small businesses that want uncomplicated rewards and may qualify for Preferred Rewards for Business boosts.",
       "foreignTxFee": 3,
-      "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/view-all-small-business-credit-cards/",
+      "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/products/unlimited-cash-rewards-business-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "all", "rate": 1.5, "rateType": "cashback" }
       ]
@@ -745,9 +745,9 @@
       "headline": "No-fee Bank of America business travel card with flat-rate points and no foreign transaction fee.",
       "description": "A simple travel-rewards business card for Bank of America shops that want points without an annual fee.",
       "foreignTxFee": 0,
-      "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/view-all-small-business-credit-cards/",
+      "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/products/travel-rewards-business-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "all", "rate": 1.5, "rateType": "points" }
       ]
@@ -764,9 +764,9 @@
       "headline": "Core American Airlines card for flyers who want miles, bags, and priority perks.",
       "description": "A mainstream American Airlines co-brand card that rounds out a major gap in the current Citi lineup coverage.",
       "foreignTxFee": 0,
-      "applyUrl": "https://www.citi.com/credit-cards/view-all-credit-cards",
+      "applyUrl": "https://www.citi.com/credit-cards/citi-aadvantage-platinum-select-world-elite-mastercard",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible American Airlines purchases." },
         { "category": "gas", "rate": 2, "rateType": "miles" },
@@ -786,9 +786,9 @@
       "headline": "Premium American Airlines card centered on lounge access and richer airline earning.",
       "description": "Best for American Airlines loyalists who want Admirals Club-style access and are comfortable with a large annual fee.",
       "foreignTxFee": 0,
-      "applyUrl": "https://www.citi.com/credit-cards/view-all-credit-cards",
+      "applyUrl": "https://www.citi.com/credit-cards/citi-aadvantage-executive-world-elite-mastercard",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 4, "rateType": "miles", "notes": "4X miles on eligible American Airlines purchases." },
         { "category": "all", "rate": 1, "rateType": "miles" }
@@ -806,9 +806,9 @@
       "headline": "American Airlines business card that fills a major co-brand business gap.",
       "description": "A relevant addition for small-business travelers who want AAdvantage miles and business-focused airline perks.",
       "foreignTxFee": 0,
-      "applyUrl": "https://www.citi.com/credit-cards/view-all-credit-cards",
+      "applyUrl": "https://www.citi.com/credit-cards/citi-aadvantage-business-credit-card",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible American Airlines business purchases." },
         { "category": "gas", "rate": 2, "rateType": "miles" },
@@ -827,9 +827,9 @@
       "headline": "No-fee Citi ThankYou-style card with everyday bonus categories.",
       "description": "A relevant missing Citi everyday rewards card now that the Strata family has expanded beyond Premier.",
       "foreignTxFee": 3,
-      "applyUrl": "https://www.citi.com/credit-cards/view-all-credit-cards",
+      "applyUrl": "https://www.citi.com/credit-cards/citi-strata-all-cards",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-04-06T00:00:00.000Z",
       "rewards": [
         { "category": "groceries", "rate": 3, "rateType": "points" },
         { "category": "gas", "rate": 3, "rateType": "points" },
