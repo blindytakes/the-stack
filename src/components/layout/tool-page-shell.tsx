@@ -2,11 +2,22 @@ import type { ReactNode } from 'react';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 
 type ToolPageShellProps = {
-  tool: 'card_finder' | 'business_plan' | 'hidden_benefits' | 'card_vs_card';
-  path: '/tools/card-finder' | '/tools/hidden-benefits' | '/tools/card-vs-card';
+  tool:
+    | 'card_finder'
+    | 'business_plan'
+    | 'hidden_benefits'
+    | 'card_vs_card'
+    | 'premium_card_calculator';
+  path:
+    | '/tools/card-finder'
+    | '/tools/hidden-benefits'
+    | '/tools/card-vs-card'
+    | '/tools/premium-card-calculator';
   title: string;
   description: string;
   children: ReactNode;
+  hideHeader?: boolean;
+  containerClassName?: string;
 };
 
 export function ToolPageShell({
@@ -14,20 +25,24 @@ export function ToolPageShell({
   path,
   title,
   description,
-  children
+  children,
+  hideHeader = false,
+  containerClassName
 }: ToolPageShellProps) {
   return (
-    <div className="container-page min-h-[calc(100vh-4rem)] pt-12">
+    <div className={`container-page min-h-[calc(100vh-4rem)] pt-12 ${containerClassName ?? ''}`.trim()}>
       <TrackFunnelEventOnView
         event="tool_started"
         properties={{ source: 'page_view', tool, path }}
       />
-      <div className="mb-8 max-w-2xl">
-        <h1 className="font-heading text-4xl text-text-primary">{title}</h1>
-        {description && (
-          <p className="mt-3 text-base text-text-secondary">{description}</p>
-        )}
-      </div>
+      {!hideHeader ? (
+        <div className="mb-8 max-w-2xl">
+          <h1 className="font-heading text-4xl text-text-primary">{title}</h1>
+          {description && (
+            <p className="mt-3 text-base text-text-secondary">{description}</p>
+          )}
+        </div>
+      ) : null}
       {children}
     </div>
   );

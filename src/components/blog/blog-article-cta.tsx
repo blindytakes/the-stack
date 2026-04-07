@@ -27,6 +27,15 @@ export function BlogArticleCTA() {
             Compare Cards
           </Link>
         </div>
+        <div className="mt-4">
+          <Link
+            href="/tools/premium-card-calculator"
+            className="inline-flex items-center gap-2 text-sm font-medium text-text-secondary transition hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+          >
+            <span>Running the numbers on Platinum, Reserve, or Venture X?</span>
+            <span className="text-brand-teal">Open the Premium Card Calculator</span>
+          </Link>
+        </div>
       </div>
     </section>
   );

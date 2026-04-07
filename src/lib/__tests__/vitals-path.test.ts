@@ -4,6 +4,9 @@ import { normalizeVitalPathToRoute } from '../vitals-path';
 describe('normalizeVitalPathToRoute', () => {
   it('normalizes known static routes', () => {
     expect(normalizeVitalPathToRoute('/tools/card-finder')).toBe('/tools/card-finder');
+    expect(normalizeVitalPathToRoute('/tools/premium-card-calculator')).toBe(
+      '/tools/premium-card-calculator'
+    );
     expect(normalizeVitalPathToRoute('/plan/results')).toBe('/plan/results');
     expect(normalizeVitalPathToRoute('/blog/')).toBe('/blog');
     expect(normalizeVitalPathToRoute('/cards/')).toBe('/cards');
