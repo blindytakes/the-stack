@@ -28,9 +28,8 @@ export function CardsDirectoryResults({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const modalSlug = searchParams.get('card');
-  const { gridRef, isVisible, isMeasured, prefersReducedMotion } = useFirstGridRowReveal(
-    cards.length
-  );
+  const { gridRef, isVisible, isMeasured, canAnimateEntrance, firstRowIndexes, prefersReducedMotion } =
+    useFirstGridRowReveal(cards.length);
   const [isRevealDelayActive, setIsRevealDelayActive] = useState(true);
 
   useEffect(() => {
@@ -107,7 +106,8 @@ export function CardsDirectoryResults({
           const topCategories = card.topCategories.filter((category) => category !== 'other');
           const bestCategory = (topCategories.length > 0 ? topCategories : (['all'] as const))[0];
           const decisionMetrics = getCardDirectoryMetrics(card);
-          const shouldReveal = !prefersReducedMotion && isMeasured;
+          const shouldReveal =
+            !prefersReducedMotion && isMeasured && canAnimateEntrance && firstRowIndexes.has(index);
           const transitionDelay =
             shouldReveal && isRevealDelayActive ? 180 + Math.min(index, 15) * 50 : 0;
 

@@ -12,6 +12,7 @@ export function useFirstGridRowReveal(itemCount: number) {
   const prefersReducedMotion = useReducedMotion();
   const [isVisible, setIsVisible] = useState(Boolean(prefersReducedMotion));
   const [isMeasured, setIsMeasured] = useState(Boolean(prefersReducedMotion));
+  const [canAnimateEntrance, setCanAnimateEntrance] = useState(false);
   const [firstRowIndexes, setFirstRowIndexes] = useState<Set<number>>(() =>
     prefersReducedMotion ? buildAllIndexes(itemCount) : new Set()
   );
@@ -20,10 +21,15 @@ export function useFirstGridRowReveal(itemCount: number) {
     if (prefersReducedMotion) {
       setIsVisible(true);
       setIsMeasured(true);
+      setCanAnimateEntrance(false);
       setFirstRowIndexes(buildAllIndexes(itemCount));
       return;
     }
     if (!isMeasured) return;
+    if (!canAnimateEntrance || typeof IntersectionObserver === 'undefined') {
+      setIsVisible(true);
+      return;
+    }
 
     const grid = gridRef.current;
     if (!grid) return;
@@ -58,13 +64,20 @@ export function useFirstGridRowReveal(itemCount: number) {
       if (timeoutId !== null) window.clearTimeout(timeoutId);
       observer.disconnect();
     };
-  }, [itemCount, prefersReducedMotion, isMeasured]);
+  }, [canAnimateEntrance, itemCount, prefersReducedMotion, isMeasured]);
 
   useLayoutEffect(() => {
     if (prefersReducedMotion) return;
 
     const grid = gridRef.current;
     if (!grid) return;
+    if (typeof ResizeObserver === 'undefined') {
+      setFirstRowIndexes(new Set());
+      setCanAnimateEntrance(false);
+      setIsMeasured(true);
+      setIsVisible(true);
+      return;
+    }
 
     let frameId = 0;
 
@@ -72,6 +85,9 @@ export function useFirstGridRowReveal(itemCount: number) {
       const items = Array.from(grid.querySelectorAll<HTMLElement>('[data-reveal-index]'));
       if (items.length === 0) {
         setFirstRowIndexes(new Set());
+        setCanAnimateEntrance(false);
+        setIsVisible(true);
+        setIsMeasured(true);
         return;
       }
 
@@ -86,6 +102,7 @@ export function useFirstGridRowReveal(itemCount: number) {
       });
 
       setFirstRowIndexes(nextIndexes);
+      setCanAnimateEntrance(nextIndexes.size > 1);
       setIsMeasured(true);
     };
 
@@ -115,6 +132,7 @@ export function useFirstGridRowReveal(itemCount: number) {
     gridRef,
     isVisible,
     isMeasured,
+    canAnimateEntrance,
     firstRowIndexes,
     prefersReducedMotion
   };
