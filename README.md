@@ -72,6 +72,12 @@ Runtime source of truth:
 - `imageUrl` is stored on DB rows. Imports and the image backfill task normalize missing or low-fidelity URLs before they are written.
 - Supabase Storage is optional asset-hosting infrastructure for `entity-assets:import`; runtime reads the stored URL from the DB.
 
+Operational steady state:
+
+- `Card.imageUrl` should be populated in the database for every live card row.
+- `BankingBonus.imageUrl` should be populated in the database for every live banking row.
+- Runtime fallback resolvers still exist, but they are intended as safety nets rather than the primary source for production image URLs.
+
 ### Cards import
 
 Use the manual import script to load or refresh card records from JSON. The importer normalizes `imageUrl` using the same shared resolver the app uses at runtime, so missing or weak URLs are replaced before the row is written.
@@ -145,6 +151,43 @@ npm run entity-images:backfill -- --dry-run
 # Apply the normalized image URLs
 npm run entity-images:backfill
 ```
+
+Why this runs from Terminal instead of Supabase SQL Editor:
+
+- The backfill is a TypeScript/Prisma script, not a raw SQL migration.
+- It reuses the same resolver logic the app and import scripts use to decide which image URL is canonical.
+- Prisma needs `DATABASE_URL` in the shell environment before it can connect to the database.
+
+What the shell commands do:
+
+```bash
+cd /Users/alexsalesi/the-stack
+set -a
+source .env
+set +a
+```
+
+- `cd /Users/alexsalesi/the-stack` makes sure `npm run ...` uses this repo's code and scripts.
+- `set -a` tells the shell to automatically export variables loaded next.
+- `source .env` loads the local env file into the current shell session, including `DATABASE_URL`.
+- `set +a` turns automatic exporting back off.
+
+What the backfill commands do:
+
+- `npm run entity-images:backfill -- --dry-run` shows which rows would change without writing to the database.
+- `npm run entity-images:backfill` applies those changes to `Card.imageUrl` and `BankingBonus.imageUrl`.
+
+Recommended verification after a backfill:
+
+```sql
+select 'Card' as table_name, count(*) filter (where "imageUrl" is null) as null_images
+from "Card"
+union all
+select 'BankingBonus', count(*) filter (where "imageUrl" is null)
+from "BankingBonus";
+```
+
+Expected steady-state result: `0` null image rows for both tables.
 
 ## Deliverability
 
