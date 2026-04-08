@@ -160,7 +160,6 @@ export const premiumCardProfiles = [
       { id: 'gift-cards', label: 'Gift cards', centsPerPoint: 1, note: '1 CPP' },
       { id: 'uber', label: 'Uber', centsPerPoint: 1, note: '1 CPP' },
       { id: 'travel', label: 'Travel', centsPerPoint: 1, note: '1 CPP' },
-      { id: 'schwab', label: 'Schwab Platinum', centsPerPoint: 1.1, note: '1.1 CPP' },
       { id: 'transfer-partners', label: 'Transfer partners', centsPerPoint: 2, note: '2 CPP' }
     ],
     defaultRedemptionId: 'transfer-partners',
@@ -242,7 +241,7 @@ export const premiumCardProfiles = [
     eligibilityNote:
       'The card is unavailable if you currently hold it, and Chase says the bonus may not be available if you have held it or earned a bonus on it before.',
     welcomeOffer: {
-      offerPresets: [125000],
+      offerPresets: [75000, 100000, 125000],
       defaultPoints: 125000,
       spendRequired: 6000,
       spendWindowMonths: 3
@@ -391,7 +390,7 @@ export const premiumCardProfiles = [
     eligibilityNote:
       'Capital One says existing or previous cardmembers are not eligible if they earned a new-cardmember bonus on Venture X in the past 48 months.',
     welcomeOffer: {
-      offerPresets: [75000],
+      offerPresets: [75000, 100000, 125000, 150000],
       defaultPoints: 75000,
       spendRequired: 4000,
       spendWindowMonths: 3

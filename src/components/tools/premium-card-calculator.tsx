@@ -49,10 +49,10 @@ const cardVisuals: Record<
   }
 > = {
   'amex-platinum': {
-    accentRgb: '90 124 255',
-    accentClassName: 'text-[#5a7cff]',
-    accentBarClassName: 'bg-[#5a7cff]',
-    accentGlowClassName: 'bg-[#5a7cff]/24',
+    accentRgb: '214 229 255',
+    accentClassName: 'text-[#d6e5ff]',
+    accentBarClassName: 'bg-[#d6e5ff]',
+    accentGlowClassName: 'bg-[#d6e5ff]/42',
     selectorWidthClassName: 'max-w-[17.45rem]',
     laneLabel: 'High-touch',
     selectorSummary: 'Best when you will actually use the credits and lounge access.',
@@ -65,10 +65,10 @@ const cardVisuals: Record<
     selectorArtPosition: 'center'
   },
   'chase-sapphire-reserve': {
-    accentRgb: '143 221 255',
-    accentClassName: 'text-[#8fddff]',
-    accentBarClassName: 'bg-[#8fddff]',
-    accentGlowClassName: 'bg-[#8fddff]/12',
+    accentRgb: '90 224 255',
+    accentClassName: 'text-[#5ae0ff]',
+    accentBarClassName: 'bg-[#5ae0ff]',
+    accentGlowClassName: 'bg-[#5ae0ff]/30',
     selectorWidthClassName: 'max-w-[17rem]',
     laneLabel: 'Travel-first',
     selectorSummary: 'Best when your points mostly turn into premium trips.',
@@ -81,10 +81,10 @@ const cardVisuals: Record<
     selectorArtPosition: 'center 53%'
   },
   'capital-one-venture-x': {
-    accentRgb: '109 255 210',
-    accentClassName: 'text-[#6dffd2]',
-    accentBarClassName: 'bg-[#6dffd2]',
-    accentGlowClassName: 'bg-[#6dffd2]/12',
+    accentRgb: '255 75 58',
+    accentClassName: 'text-[#ff4b3a]',
+    accentBarClassName: 'bg-[#ff4b3a]',
+    accentGlowClassName: 'bg-[#ff4b3a]/32',
     selectorWidthClassName: 'max-w-[17.35rem]',
     laneLabel: 'Low-lift',
     selectorSummary: 'Best when you want premium perks without much upkeep.',
@@ -266,12 +266,6 @@ function sanitizeCurrencyInput(raw: string) {
   return Math.round(parsed);
 }
 
-function sanitizeCppInput(raw: string) {
-  const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed <= 0) return 0;
-  return Math.round(parsed * 10) / 10;
-}
-
 function handleCurrencyFieldChange(event: ChangeEvent<HTMLInputElement>, onChange: (next: number) => void) {
   const nextValue = sanitizeCurrencyInput(event.target.value);
   const normalizedValue = String(nextValue);
@@ -313,7 +307,7 @@ function SelectorCard({
       <div
         className={`relative h-full overflow-hidden rounded-[1.7rem] border p-4 transition duration-300 ${
           selected
-            ? 'border-[rgb(var(--card-accent-rgb)/0.3)] bg-[linear-gradient(180deg,rgba(18,24,38,0.98),rgba(10,14,22,0.92),rgb(var(--card-accent-rgb)/0.12))] shadow-[0_22px_70px_rgba(0,0,0,0.28)]'
+            ? 'border-[rgb(var(--card-accent-rgb)/0.46)] bg-[linear-gradient(180deg,rgba(22,28,43,0.98),rgba(12,16,26,0.88),rgb(var(--card-accent-rgb)/0.22))] shadow-[0_24px_80px_rgba(0,0,0,0.3)]'
             : 'border-white/10 bg-[linear-gradient(180deg,rgba(14,19,30,0.9),rgba(9,13,22,0.92))] hover:border-white/16 hover:bg-[linear-gradient(180deg,rgba(16,22,35,0.94),rgba(11,15,24,0.96))]'
         }`}
       >
@@ -327,7 +321,7 @@ function SelectorCard({
             <p className="mt-2 text-[1.08rem] font-semibold leading-tight text-text-primary">{profile.shortName}</p>
           </div>
           {selected ? (
-            <span className={`shrink-0 flex items-center gap-1.5 rounded-full border border-[rgb(var(--card-accent-rgb)/0.3)] bg-[rgb(var(--card-accent-rgb)/0.18)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${visual.accentClassName}`}>
+            <span className={`shrink-0 flex items-center gap-1.5 rounded-full border border-[rgb(var(--card-accent-rgb)/0.48)] bg-[rgb(var(--card-accent-rgb)/0.28)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${visual.accentClassName}`}>
               <span className={`h-1.5 w-1.5 rounded-full ${visual.accentBarClassName}`} />
               Active
             </span>
@@ -392,7 +386,7 @@ function MetricTile({
     <div
       className={`rounded-[1.35rem] border px-4 py-4 ${
         accent
-          ? 'border-[rgb(var(--card-accent-rgb)/0.36)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.24),rgb(var(--card-accent-rgb)/0.1))]'
+          ? 'border-[rgb(var(--card-accent-rgb)/0.58)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.38),rgb(var(--card-accent-rgb)/0.16))] shadow-[0_14px_36px_rgba(0,0,0,0.18)]'
           : 'border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))]'
       }`}
     >
@@ -421,7 +415,7 @@ function SectionFrame({
   return (
     <section className="relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(11,16,27,0.98),rgba(8,12,20,0.98))] px-5 py-6 shadow-[0_22px_80px_rgba(0,0,0,0.26)] md:px-6 md:py-7">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent)]" />
-      <div className="pointer-events-none absolute -right-10 top-0 h-36 w-44 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.16),transparent_72%)] blur-3xl" />
+      <div className="pointer-events-none absolute -right-10 top-0 h-36 w-44 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.24),transparent_72%)] blur-3xl" />
       <div className="mx-auto max-w-[56rem]">
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -429,7 +423,7 @@ function SectionFrame({
             <h2 className="mt-3 font-heading text-[1.9rem] leading-[1.02] tracking-[-0.02em] text-text-primary">{title}</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary">{description}</p>
           </div>
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.15rem] border border-[rgb(var(--card-accent-rgb)/0.34)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.24),rgb(var(--card-accent-rgb)/0.1))] text-[rgb(var(--card-accent-rgb))] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.15rem] border border-[rgb(var(--card-accent-rgb)/0.52)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.38),rgb(var(--card-accent-rgb)/0.16))] text-[rgb(var(--card-accent-rgb))] shadow-[0_10px_24px_rgba(0,0,0,0.16)]">
             <Glyph name={icon} className="h-4 w-4" />
           </div>
         </div>
@@ -467,7 +461,7 @@ function BinaryChoice({
             onClick={() => onChange(true)}
             className={`rounded-[0.95rem] px-4 py-3 text-sm font-semibold transition ${
               value
-                ? 'border border-[rgb(var(--card-accent-rgb)/0.55)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.28),rgb(var(--card-accent-rgb)/0.12))] text-text-primary shadow-[0_10px_28px_rgba(0,0,0,0.18)]'
+                ? 'border border-[rgb(var(--card-accent-rgb)/0.78)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.5),rgb(var(--card-accent-rgb)/0.2))] text-text-primary shadow-[0_12px_32px_rgba(0,0,0,0.2)]'
                 : 'border border-transparent bg-white/[0.04] text-text-secondary hover:bg-white/[0.07] hover:text-text-primary'
             }`}
           >
@@ -496,7 +490,8 @@ function CurrencyInput({
   singleLineDisplay,
   value,
   onChange,
-  step = 50
+  step = 50,
+  centerText = false
 }: {
   label: string;
   note?: string;
@@ -504,8 +499,10 @@ function CurrencyInput({
   value: number;
   onChange: (next: number) => void;
   step?: number;
+  centerText?: boolean;
 }) {
   const hasValue = value > 0;
+  const shouldCenterText = centerText || Boolean(singleLineDisplay);
 
   return (
     <label
@@ -516,10 +513,10 @@ function CurrencyInput({
       }`}
     >
       <div
-        className={`flex flex-col gap-3 sm:flex-row sm:justify-between ${singleLineDisplay ? 'sm:items-center' : 'sm:items-start'}`}
+        className={`flex flex-col gap-3 sm:flex-row sm:justify-between ${shouldCenterText ? 'sm:items-center' : 'sm:items-start'}`}
       >
-        <div className={`min-w-0 sm:flex-1 ${singleLineDisplay ? 'sm:flex sm:min-h-[2.5rem] sm:items-center' : ''}`}>
-          <div className="flex items-center gap-2">
+        <div className={`min-w-0 sm:flex-1 ${shouldCenterText ? 'sm:flex sm:min-h-[2.75rem] sm:items-center' : ''}`}>
+          <div className={`flex gap-2 ${shouldCenterText ? 'items-center' : 'items-start'}`}>
             <p
               className={`min-w-0 flex-1 text-[15px] font-semibold leading-5 text-text-primary ${
                 singleLineDisplay ? 'truncate whitespace-nowrap' : ''
@@ -672,6 +669,8 @@ export function PremiumCardCalculator() {
     'Custom';
   const welcomeOfferValue = toMoneyValue(selectedResult.welcomeOfferPoints, selectedResult.centsPerPoint);
   const spendValue = toMoneyValue(selectedResult.spendPoints, selectedResult.centsPerPoint);
+  const offerPresetGridClassName =
+    selectedProfile.welcomeOffer.offerPresets.length === 4 ? 'sm:grid-cols-2' : 'sm:grid-cols-3';
   const accentStyle = {
     '--card-accent-rgb': selectedVisual.accentRgb
   } as CSSProperties;
@@ -700,7 +699,7 @@ export function PremiumCardCalculator() {
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <span className={`rounded-full border border-[rgb(var(--card-accent-rgb)/0.3)] bg-[rgb(var(--card-accent-rgb)/0.18)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] ${selectedVisual.accentClassName}`}>
+              <span className={`rounded-full border border-[rgb(var(--card-accent-rgb)/0.48)] bg-[rgb(var(--card-accent-rgb)/0.28)] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] ${selectedVisual.accentClassName}`}>
                 {selectedProfile.shortName}
               </span>
               <span className="rounded-full border border-white/10 bg-white/[0.05] px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-text-muted">
@@ -802,11 +801,8 @@ export function PremiumCardCalculator() {
               <div className={`pointer-events-none absolute right-0 top-0 h-28 w-40 blur-3xl ${selectedVisual.accentGlowClassName}`} />
               <div className="relative">
                 <p className="text-sm font-semibold text-text-primary">Bonus on the table</p>
-                <p className="mt-1 max-w-[30rem] text-xs leading-5 text-text-muted">
-                  Set the actual offer you can qualify for, then price the first-year cost beside it.
-                </p>
 
-                <div className="mt-3 grid gap-2 sm:grid-cols-3">
+	                <div className={`mt-3 grid gap-2 ${offerPresetGridClassName}`}>
                   {selectedProfile.welcomeOffer.offerPresets.map((preset) => (
                     <button
                       key={preset}
@@ -816,7 +812,7 @@ export function PremiumCardCalculator() {
                       }}
                       className={`rounded-[1rem] border px-3.5 py-2.5 text-[13px] font-semibold transition ${
                         selectedScenario.offerPoints === preset
-                          ? 'border-[rgb(var(--card-accent-rgb)/0.52)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.24),rgb(var(--card-accent-rgb)/0.1))] text-text-primary'
+                          ? 'border-[rgb(var(--card-accent-rgb)/0.76)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.42),rgb(var(--card-accent-rgb)/0.18))] text-text-primary shadow-[0_10px_28px_rgba(0,0,0,0.16)]'
                           : 'border-white/16 bg-[linear-gradient(180deg,rgba(22,31,48,0.96),rgba(12,18,31,0.98))] text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/28 hover:bg-[linear-gradient(180deg,rgba(27,37,57,0.98),rgba(14,20,34,0.99))]'
                       }`}
                     >
@@ -829,14 +825,14 @@ export function PremiumCardCalculator() {
                   <label
                     className={`rounded-[1.1rem] border px-3.5 py-3 transition ${
                       selectedScenario.offerPoints > 0
-                        ? 'border-[rgb(var(--card-accent-rgb)/0.38)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.22),rgb(var(--card-accent-rgb)/0.09))]'
+                        ? 'border-[rgb(var(--card-accent-rgb)/0.6)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.34),rgb(var(--card-accent-rgb)/0.14))] shadow-[0_10px_28px_rgba(0,0,0,0.14)]'
                         : 'border-white/12 bg-[linear-gradient(180deg,rgba(18,25,40,0.96),rgba(10,15,25,0.99))] shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div>
                         <p className="text-xs uppercase tracking-[0.18em] text-text-muted">Offer size</p>
-                        <p className="mt-0.5 text-[11px] leading-4 text-text-muted">Live intro offer</p>
+                        <p className="mt-0.5 text-[11px] leading-4 text-text-muted">Bonus assumption</p>
                       </div>
                       <div className="flex min-w-0 items-end gap-2">
                         <span className="pb-1 text-xs uppercase tracking-[0.18em] text-text-muted">
@@ -865,25 +861,19 @@ export function PremiumCardCalculator() {
                   <label
                     className={`rounded-[1.1rem] border px-3.5 py-3 transition ${
                       selectedScenario.annualFee > 0
-                        ? 'border-[rgb(var(--card-accent-rgb)/0.38)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.22),rgb(var(--card-accent-rgb)/0.09))]'
+                        ? 'border-[rgb(var(--card-accent-rgb)/0.6)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.34),rgb(var(--card-accent-rgb)/0.14))] shadow-[0_10px_28px_rgba(0,0,0,0.14)]'
                         : 'border-white/12 bg-[linear-gradient(180deg,rgba(18,25,40,0.96),rgba(10,15,25,0.99))] shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold leading-5 text-text-primary">Fee drag</p>
+                        <p className="text-xs uppercase tracking-[0.18em] text-text-muted">Fee drag</p>
                         <p className="mt-0.5 text-[11px] leading-4 text-text-muted">
                           Published fee {formatCurrency(selectedProfile.annualFee)}
                         </p>
                       </div>
-                      <div
-                        className={`flex min-w-[7.4rem] items-center rounded-2xl border px-3 ${
-                          selectedScenario.annualFee > 0
-                            ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[rgb(var(--card-accent-rgb)/0.16)]'
-                            : 'border-white/14 bg-[#121a2a] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]'
-                        }`}
-                      >
-                        <span className="text-sm text-text-muted">$</span>
+                      <div className="flex min-w-0 items-end gap-2">
+                        <span className="pb-1 text-sm text-text-muted">$</span>
                         <input
                           type="number"
                           min={0}
@@ -898,7 +888,7 @@ export function PremiumCardCalculator() {
                               }));
                             })
                           }
-                          className={`w-full bg-transparent px-2 py-1.5 text-right text-base font-semibold text-text-primary outline-none ${numericPlaceholderClassName}`}
+                          className={`min-w-0 bg-transparent text-right text-[1.45rem] font-semibold leading-none text-text-primary outline-none ${numericPlaceholderClassName}`}
                         />
                       </div>
                     </div>
@@ -913,7 +903,7 @@ export function PremiumCardCalculator() {
               <div className="relative">
                 <p className="text-sm font-semibold text-text-primary">Exit route for points</p>
                 <p className="mt-1 max-w-[30rem] text-xs leading-5 text-text-muted">
-                  Choose the redemption path first, then fine-tune the cents-per-point assumption underneath.
+                  Choose the redemption path that best matches how you would actually cash these points out.
                 </p>
 
                 <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
@@ -930,7 +920,7 @@ export function PremiumCardCalculator() {
                       }}
                       className={`rounded-[1rem] border px-3.5 py-2.5 text-left text-[13px] transition ${
                         selectedScenario.selectedRedemptionId === option.id
-                          ? 'border-[rgb(var(--card-accent-rgb)/0.52)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.24),rgb(var(--card-accent-rgb)/0.1))] text-text-primary'
+                          ? 'border-[rgb(var(--card-accent-rgb)/0.76)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.42),rgb(var(--card-accent-rgb)/0.18))] text-text-primary shadow-[0_10px_28px_rgba(0,0,0,0.16)]'
                           : 'border-white/16 bg-[linear-gradient(180deg,rgba(22,31,48,0.96),rgba(12,18,31,0.98))] text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] hover:border-white/28 hover:bg-[linear-gradient(180deg,rgba(27,37,57,0.98),rgba(14,20,34,0.99))]'
                       }`}
                     >
@@ -938,54 +928,6 @@ export function PremiumCardCalculator() {
                       <p className="mt-0.5 text-[11px] uppercase tracking-[0.18em] text-text-muted">{option.note}</p>
                     </button>
                   ))}
-                </div>
-
-                <div className="mt-3 grid gap-2 md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-                  <label
-                    className={`rounded-[1.1rem] border px-3.5 py-3 transition ${
-                      selectedScenario.centsPerPoint > 0
-                        ? 'border-[rgb(var(--card-accent-rgb)/0.38)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.22),rgb(var(--card-accent-rgb)/0.09))]'
-                        : 'border-white/12 bg-[linear-gradient(180deg,rgba(18,25,40,0.96),rgba(10,15,25,0.99))] shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.18em] text-text-muted">Your CPP</p>
-                        <p className="mt-0.5 text-[11px] leading-4 text-text-muted">Adjust the value if needed.</p>
-                      </div>
-                      <div
-                        className={`flex min-w-[8.2rem] items-end justify-between gap-3 rounded-[1rem] border px-3.5 py-2 ${
-                          selectedScenario.centsPerPoint > 0
-                            ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[rgb(var(--card-accent-rgb)/0.16)]'
-                            : 'border-white/14 bg-[#121a2a] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]'
-                        }`}
-                      >
-                        <input
-                          type="number"
-                          min={0}
-                          step={0.1}
-                          value={displayNumericInputValue(selectedScenario.centsPerPoint)}
-                          placeholder="0"
-                          onChange={(event) => {
-                            updateSelectedScenario((current) => ({
-                              ...current,
-                              selectedRedemptionId: 'custom',
-                              centsPerPoint: sanitizeCppInput(event.target.value)
-                            }));
-                          }}
-                          className={`w-full bg-transparent text-[1.45rem] font-semibold leading-none text-text-primary outline-none ${numericPlaceholderClassName}`}
-                        />
-                        <span className="pb-0.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                          CPP
-                        </span>
-                      </div>
-                    </div>
-                  </label>
-
-                  <div className="rounded-[1.1rem] border border-white/12 bg-[linear-gradient(180deg,rgba(18,25,39,0.96),rgba(10,15,25,0.99))] px-3 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] md:min-w-[11rem]">
-                    <p className="text-[11px] uppercase tracking-[0.18em] text-text-muted">Current path</p>
-                    <p className="mt-1 truncate text-sm font-semibold text-text-primary">{selectedRedemptionLabel}</p>
-                  </div>
                 </div>
               </div>
             </div>
@@ -1060,6 +1002,7 @@ export function PremiumCardCalculator() {
                     label={benefit.label}
                     note={benefit.note}
                     singleLineDisplay={benefit.note ? `${benefit.label} · ${benefit.note}` : undefined}
+                    centerText
                     value={selectedScenario.benefits[benefit.id] ?? 0}
                     onChange={(next) => {
                       updateSelectedScenario((current) => ({
@@ -1084,7 +1027,7 @@ export function PremiumCardCalculator() {
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-[rgb(var(--card-accent-rgb)/0.36)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.24),rgb(var(--card-accent-rgb)/0.1))] text-[rgb(var(--card-accent-rgb))]">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-[rgb(var(--card-accent-rgb)/0.58)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.38),rgb(var(--card-accent-rgb)/0.16))] text-[rgb(var(--card-accent-rgb))] shadow-[0_10px_24px_rgba(0,0,0,0.16)]">
                       <Glyph name="score" className="h-4 w-4" />
                     </div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-text-muted">Scoreboard</p>
@@ -1138,11 +1081,6 @@ export function PremiumCardCalculator() {
               </div>
             </div>
           </section>
-
-          <div className="mx-auto max-w-3xl rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.025))] p-4 text-sm leading-7 text-text-secondary">
-            Treat this like live underwriting. If a card only looks good when every edge case breaks in its favor, it
-            probably does not actually belong in your wallet.
-          </div>
         </div>
         </div>
       </motion.section>

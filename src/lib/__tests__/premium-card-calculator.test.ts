@@ -6,6 +6,20 @@ import {
 } from '@/lib/premium-card-calculator';
 
 describe('premium card calculator', () => {
+  it('exposes multiple offer presets for cards with modeled bonus ranges', () => {
+    expect(premiumCardProfileById['chase-sapphire-reserve'].welcomeOffer.offerPresets).toStrictEqual([
+      75000,
+      100000,
+      125000
+    ]);
+    expect(premiumCardProfileById['capital-one-venture-x'].welcomeOffer.offerPresets).toStrictEqual([
+      75000,
+      100000,
+      125000,
+      150000
+    ]);
+  });
+
   it('starts from live annual fees while keeping user-entered values zeroed', () => {
     for (const profile of Object.values(premiumCardProfileById)) {
       const scenario = buildInitialPremiumCardScenario(profile);
