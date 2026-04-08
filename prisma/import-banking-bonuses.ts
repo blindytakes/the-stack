@@ -10,6 +10,7 @@ import {
   bankingBonusesSeedDatasetSchema,
   type BankingBonusSeedRecord
 } from '../src/lib/banking-bonus-seed-schema';
+import { resolvePersistedBankingImageUrl } from '../src/lib/entity-image-persistence';
 
 type CliOptions = {
   filePath: string;
@@ -76,7 +77,7 @@ function toUpsertData(record: BankingBonusSeedRecord) {
     accountType: accountTypeToDb[record.accountType],
     customerType: customerTypeToDb[record.customerType],
     headline: record.headline,
-    imageUrl: record.imageUrl ?? null,
+    imageUrl: resolvePersistedBankingImageUrl(record.bankName, record.imageUrl) ?? null,
     bonusAmount: record.bonusAmount,
     estimatedFees: record.estimatedFees,
     apyPercent: typeof record.apyPercent === 'number' ? record.apyPercent : null,

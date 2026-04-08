@@ -15,6 +15,7 @@ import {
   type CardSeedRecord,
   type SpendingCategoryValue
 } from '../src/lib/card-seed-schema';
+import { resolvePersistedCardImageUrl } from '../src/lib/entity-image-persistence';
 import { readAllCardSeedDatasets } from '../src/lib/card-seed-files';
 
 type CliOptions = {
@@ -158,7 +159,13 @@ function toCardData(record: CardSeedRecord) {
     editorRating: record.editorRating ?? null,
     pros: record.pros ?? [],
     cons: record.cons ?? [],
-    imageUrl: record.imageUrl ?? null,
+    imageUrl:
+      resolvePersistedCardImageUrl({
+        slug: record.slug,
+        issuer: record.issuer,
+        name: record.name,
+        imageUrl: record.imageUrl
+      }) ?? null,
     applyUrl: record.applyUrl ?? null,
     affiliateUrl: record.affiliateUrl ?? null,
     isActive: record.isActive ?? true,

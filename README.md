@@ -65,9 +65,16 @@ npx prisma db push            # apply schema to your database
 npx prisma studio              # browse data in GUI
 ```
 
+Runtime source of truth:
+
+- Structured card, bonus, benefit, and banking rows live in PostgreSQL and are accessed through Prisma.
+- Checked-in `content/*.json` files are import inputs, not runtime data sources.
+- `imageUrl` is stored on DB rows. Imports and the image backfill task normalize missing or low-fidelity URLs before they are written.
+- Supabase Storage is optional asset-hosting infrastructure for `entity-assets:import`; runtime reads the stored URL from the DB.
+
 ### Cards import
 
-Use the manual import script to load or refresh card records from JSON.
+Use the manual import script to load or refresh card records from JSON. The importer normalizes `imageUrl` using the same shared resolver the app uses at runtime, so missing or weak URLs are replaced before the row is written.
 
 ```bash
 # Import a curated expansion file
@@ -79,7 +86,7 @@ npm run cards:import -- ./content/cards-expansion.json --deactivate-missing
 
 ### Banking offers import
 
-Use the manual import script to load or refresh banking bonus offers from JSON.
+Use the manual import script to load or refresh banking bonus offers from JSON. Known bank logos are normalized into `BankingBonus.imageUrl` during import so the DB becomes the primary source for banking images too.
 
 ```bash
 # 1) Start from the template
@@ -110,7 +117,7 @@ Keep `estimatedValue` conservative. Use it for recurring value you can defend; l
 
 ### Entity assets import
 
-Use the entity asset import script to upload approved card art and bank logos into Supabase Storage, then write the resulting `imageUrl` back to the database. Card records can also update `applyUrl` / `affiliateUrl` in the same pass.
+Use the entity asset import script to upload approved card art and bank logos into Supabase Storage, then write the resulting `imageUrl` back to the database. Card records can also update `applyUrl` / `affiliateUrl` in the same pass. If you do not want Supabase Storage involved, pass `--use-source-url` and the script will write the approved source image URL directly into the DB instead.
 
 If your database does not already include the latest `BankingBonus.imageUrl` column, run `npx prisma db push` first.
 
@@ -125,6 +132,18 @@ npm run entity-assets:import -- ./content/entity-assets.json --dry-run
 
 # 4) Run the import for real
 npm run entity-assets:import -- ./content/entity-assets.json
+```
+
+### Image URL backfill
+
+Use the backfill script to normalize existing `Card.imageUrl` and `BankingBonus.imageUrl` rows in the database without re-importing all offer data.
+
+```bash
+# Preview DB changes
+npm run entity-images:backfill -- --dry-run
+
+# Apply the normalized image URLs
+npm run entity-images:backfill
 ```
 
 ## Deliverability
@@ -145,6 +164,7 @@ See [docs/deliverability.md](docs/deliverability.md) for SPF/DKIM/DMARC and moni
 | `npm run db:studio` | Open Prisma Studio |
 | `npm run cards:import -- <file>` | Upsert card records from JSON |
 | `npm run banking:import -- <file>` | Upsert banking offers from JSON |
+| `npm run entity-images:backfill` | Normalize persisted card/banking image URLs in DB |
 | `npm run entity-assets:import -- <file>` | Upload card/bank images to Supabase Storage and update DB URLs |
 
 ## Stack

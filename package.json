@@ -21,6 +21,7 @@
     "cards:import-all": "tsx prisma/import-cards.ts --all",
     "banking:import": "tsx prisma/import-banking-bonuses.ts",
     "card-benefits:import": "tsx prisma/import-card-benefits.ts",
+    "entity-images:backfill": "tsx prisma/backfill-entity-images.ts",
     "entity-assets:import": "tsx prisma/import-entity-assets.ts",
     "postinstall": "prisma generate"
   },

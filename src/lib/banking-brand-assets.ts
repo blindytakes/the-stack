@@ -24,7 +24,7 @@ const SOFI_LOGO_URL = 'https://d32ijn7u0aqfv4.cloudfront.net/git/svgs/sofi-logo.
 const TD_LOGO_URL = 'https://www.td.com/content/dam/tdb/images/navigation-header-and-footer/td-logo-desktop.png';
 const US_BANK_LOGO_URL = '/bank-logos/us-bank.svg';
 const WELLS_FARGO_LOGO_URL =
-  'https://www17.wellsfargomedia.com/assets/images/icons/apple-touch-icon_120x120.png';
+  'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png';
 
 const LOW_FIDELITY_BANK_IMAGE_TOKENS = [
   'favicon',

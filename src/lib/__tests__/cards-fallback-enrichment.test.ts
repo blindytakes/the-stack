@@ -35,8 +35,21 @@ describe('resolveCardBrandImageUrl', () => {
     expect(resolveCardBrandImageUrl('alaska-airlines-visa-signature', 'Bank of America')).toBe(
       '/card-logos/alaska-airlines.svg'
     );
+    expect(
+      resolveCardBrandImageUrl(
+        'bank-of-america-business-advantage-customized-cash-rewards',
+        'Bank of America',
+        undefined,
+        'Business Advantage Customized Cash Rewards Mastercard credit card'
+      )
+    ).toBe(
+      'https://www1.bac-assets.com/homepage/spa-assets/images/assets-images-global-logos-bac-logo-v2-CSX3648cbbb.svg'
+    );
     expect(resolveCardBrandImageUrl('barclays-jetblue-card', 'Barclays')).toBe('/card-logos/jetblue.svg');
     expect(resolveCardBrandImageUrl('barclays-jetblue-plus', 'Barclays')).toBe('/card-logos/jetblue.svg');
+    expect(resolveCardBrandImageUrl('barclays-wyndham-earner-plus', 'Barclays')).toBe(
+      '/bank-logos/barclays.svg'
+    );
     expect(resolveCardBrandImageUrl('barclays-aadvantage-aviator-red', 'Barclays')).toBe(
       '/card-logos/aviator-red.svg'
     );
@@ -116,6 +129,23 @@ describe('resolveCardImage', () => {
       )
     ).toMatchObject({
       imageUrl: 'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png',
+      imageAssetType: 'brand_logo'
+    });
+  });
+
+  it('classifies bank-logo slug overrides as brand logos', () => {
+    expect(
+      resolveCardImage(
+        'bank-of-america-business-advantage-unlimited-cash-rewards',
+        'Bank of America'
+      )
+    ).toMatchObject({
+      imageUrl:
+        'https://www1.bac-assets.com/homepage/spa-assets/images/assets-images-global-logos-bac-logo-v2-CSX3648cbbb.svg',
+      imageAssetType: 'brand_logo'
+    });
+    expect(resolveCardImage('barclays-wyndham-earner-plus', 'Barclays')).toMatchObject({
+      imageUrl: '/bank-logos/barclays.svg',
       imageAssetType: 'brand_logo'
     });
   });
