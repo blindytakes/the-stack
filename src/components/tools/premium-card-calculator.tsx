@@ -490,7 +490,7 @@ function CurrencyInput({
   singleLineDisplay,
   value,
   onChange,
-  step = 50,
+  step = 10,
   centerText = false
 }: {
   label: string;
@@ -506,40 +506,49 @@ function CurrencyInput({
 
   return (
     <label
-      className={`block rounded-[1.3rem] border px-4 py-3 transition ${
+      className={`relative block overflow-hidden rounded-[1.3rem] border px-4 py-3 transition ${
         hasValue
-          ? 'border-[rgb(var(--card-accent-rgb)/0.22)] bg-[linear-gradient(180deg,rgba(15,22,34,0.98),rgb(var(--card-accent-rgb)/0.08))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]'
+          ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[linear-gradient(90deg,rgb(var(--card-accent-rgb)/0.18),rgba(17,24,39,0.98)_24%,rgba(10,14,24,0.99))] shadow-[0_18px_42px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.05)]'
           : 'border-white/8 bg-[linear-gradient(180deg,rgba(13,19,31,0.96),rgba(9,13,22,0.98))]'
       }`}
     >
+      {hasValue ? (
+        <>
+          <div className="pointer-events-none absolute inset-y-3 left-0 w-[3px] rounded-r-full bg-[rgb(var(--card-accent-rgb))]" />
+          <div className="pointer-events-none absolute -left-6 top-1/2 h-24 w-24 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.28),transparent_72%)] blur-2xl" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgb(var(--card-accent-rgb)/0.7),transparent)]" />
+        </>
+      ) : null}
       <div
-        className={`flex flex-col gap-3 sm:flex-row sm:justify-between ${shouldCenterText ? 'sm:items-center' : 'sm:items-start'}`}
+        className={`relative flex flex-col gap-3 sm:flex-row sm:justify-between ${shouldCenterText ? 'sm:items-center' : 'sm:items-start'}`}
       >
         <div className={`min-w-0 sm:flex-1 ${shouldCenterText ? 'sm:flex sm:min-h-[2.75rem] sm:items-center' : ''}`}>
           <div className={`flex gap-2 ${shouldCenterText ? 'items-center' : 'items-start'}`}>
             <p
-              className={`min-w-0 flex-1 text-[15px] font-semibold leading-5 text-text-primary ${
+              className={`min-w-0 flex-1 text-[15px] font-semibold leading-5 ${hasValue ? 'text-white' : 'text-text-primary'} ${
                 singleLineDisplay ? 'truncate whitespace-nowrap' : ''
               }`}
             >
               {singleLineDisplay ?? label}
             </p>
             {hasValue ? (
-              <span className="rounded-full border border-[rgb(var(--card-accent-rgb)/0.22)] bg-[rgb(var(--card-accent-rgb)/0.12)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--card-accent-rgb))]">
+              <span className="rounded-full border border-[rgb(var(--card-accent-rgb)/0.44)] bg-[rgb(var(--card-accent-rgb)/0.24)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white shadow-[0_8px_20px_rgba(0,0,0,0.14)]">
                 Added
               </span>
             ) : null}
           </div>
-          {!singleLineDisplay && note ? <p className="mt-0.5 text-[13px] leading-5 text-text-muted">{note}</p> : null}
+          {!singleLineDisplay && note ? (
+            <p className={`mt-0.5 text-[13px] leading-5 ${hasValue ? 'text-text-secondary' : 'text-text-muted'}`}>{note}</p>
+          ) : null}
         </div>
         <div
           className={`flex w-full items-center rounded-[1rem] border px-3 sm:w-32 sm:shrink-0 ${
             hasValue
-              ? 'border-[rgb(var(--card-accent-rgb)/0.2)] bg-[rgb(var(--card-accent-rgb)/0.1)]'
+              ? 'border-[rgb(var(--card-accent-rgb)/0.44)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.24),rgb(var(--card-accent-rgb)/0.12))] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
               : 'border-white/8 bg-[#0f1726]'
           }`}
         >
-          <span className="text-sm text-text-muted">$</span>
+          <span className={`text-sm ${hasValue ? 'text-white/80' : 'text-text-muted'}`}>$</span>
           <input
             type="number"
             min={0}
@@ -577,19 +586,26 @@ function SpendCategoryCard({
 
   return (
     <label
-      className={`block rounded-[1.3rem] border px-4 py-3.5 transition ${
+      className={`relative block overflow-hidden rounded-[1.3rem] border px-4 py-3.5 transition ${
         hasValue
-          ? 'border-[rgb(var(--card-accent-rgb)/0.22)] bg-[linear-gradient(180deg,rgba(15,22,34,0.98),rgb(var(--card-accent-rgb)/0.08))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]'
+          ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[linear-gradient(90deg,rgb(var(--card-accent-rgb)/0.18),rgba(17,24,39,0.98)_24%,rgba(10,14,24,0.99))] shadow-[0_18px_42px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.05)]'
           : 'border-white/8 bg-[linear-gradient(180deg,rgba(13,19,31,0.96),rgba(9,13,22,0.98))]'
       }`}
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      {hasValue ? (
+        <>
+          <div className="pointer-events-none absolute inset-y-3 left-0 w-[3px] rounded-r-full bg-[rgb(var(--card-accent-rgb))]" />
+          <div className="pointer-events-none absolute -left-6 top-1/2 h-24 w-24 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.28),transparent_72%)] blur-2xl" />
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgb(var(--card-accent-rgb)/0.7),transparent)]" />
+        </>
+      ) : null}
+      <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <div className="flex items-center gap-3">
             <div
               className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] border text-[rgb(var(--card-accent-rgb))] ${
                 hasValue
-                  ? 'border-[rgb(var(--card-accent-rgb)/0.22)] bg-[rgb(var(--card-accent-rgb)/0.12)]'
+                  ? 'border-[rgb(var(--card-accent-rgb)/0.44)] bg-[rgb(var(--card-accent-rgb)/0.24)] shadow-[0_8px_20px_rgba(0,0,0,0.12)]'
                   : 'border-white/8 bg-[#0f1726]'
               }`}
             >
@@ -597,18 +613,24 @@ function SpendCategoryCard({
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <p className="truncate text-[15px] font-semibold leading-5 text-text-primary">{label}</p>
+                <p className={`truncate text-[15px] font-semibold leading-5 ${hasValue ? 'text-white' : 'text-text-primary'}`}>{label}</p>
                 {hasValue ? (
-                  <span className="rounded-full border border-[rgb(var(--card-accent-rgb)/0.22)] bg-[rgb(var(--card-accent-rgb)/0.12)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--card-accent-rgb))]">
+                  <span className="rounded-full border border-[rgb(var(--card-accent-rgb)/0.44)] bg-[rgb(var(--card-accent-rgb)/0.24)] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-white shadow-[0_8px_20px_rgba(0,0,0,0.14)]">
                     Added
                   </span>
                 ) : null}
               </div>
-              <p className="mt-0.5 text-[12px] leading-5 text-text-muted">{note ?? 'Spend lane'}</p>
+              <p className={`mt-0.5 text-[12px] leading-5 ${hasValue ? 'text-text-secondary' : 'text-text-muted'}`}>{note ?? 'Spend lane'}</p>
             </div>
           </div>
           <div className="mt-2 flex flex-wrap gap-2 pl-[3.25rem]">
-            <span className="rounded-full border border-[rgb(var(--card-accent-rgb)/0.18)] bg-[rgb(var(--card-accent-rgb)/0.1)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-[rgb(var(--card-accent-rgb))]">
+            <span
+              className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                hasValue
+                  ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[rgb(var(--card-accent-rgb)/0.22)] text-white'
+                  : 'border-[rgb(var(--card-accent-rgb)/0.18)] bg-[rgb(var(--card-accent-rgb)/0.1)] text-[rgb(var(--card-accent-rgb))]'
+              }`}
+            >
               {multiplier}x earn
             </span>
           </div>
@@ -618,22 +640,24 @@ function SpendCategoryCard({
           <div
             className={`flex items-center rounded-[1rem] border px-3 ${
               hasValue
-                ? 'border-[rgb(var(--card-accent-rgb)/0.2)] bg-[rgb(var(--card-accent-rgb)/0.1)]'
+                ? 'border-[rgb(var(--card-accent-rgb)/0.44)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.24),rgb(var(--card-accent-rgb)/0.12))] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]'
                 : 'border-white/8 bg-[#0f1726]'
             }`}
           >
-            <span className="text-sm text-text-muted">$</span>
+            <span className={`text-sm ${hasValue ? 'text-white/80' : 'text-text-muted'}`}>$</span>
             <input
               type="number"
               min={0}
-              step={100}
+              step={10}
               value={displayNumericInputValue(value)}
               placeholder="0"
               onChange={(event) => handleCurrencyFieldChange(event, onChange)}
               className={`w-full bg-transparent px-2 py-2 text-right text-[15px] font-semibold text-text-primary outline-none ${numericPlaceholderClassName}`}
             />
           </div>
-          <p className="mt-2 text-right text-[11px] uppercase tracking-[0.16em] text-text-muted">{formatPoints(pointsEarned)} pts</p>
+          <p className={`mt-2 text-right text-[11px] uppercase tracking-[0.16em] ${hasValue ? 'text-[rgb(var(--card-accent-rgb))]' : 'text-text-muted'}`}>
+            {formatPoints(pointsEarned)} pts
+          </p>
         </div>
       </div>
     </label>
@@ -877,7 +901,7 @@ export function PremiumCardCalculator() {
                         <input
                           type="number"
                           min={0}
-                          step={50}
+                          step={10}
                           value={displayNumericInputValue(selectedScenario.annualFee)}
                           placeholder="0"
                           onChange={(event) =>
@@ -1082,7 +1106,7 @@ export function PremiumCardCalculator() {
             </div>
           </section>
         </div>
-        </div>
+      </div>
       </motion.section>
     </section>
   );
