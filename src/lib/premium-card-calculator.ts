@@ -171,9 +171,24 @@ export const premiumCardProfiles = [
         singleLineDisplay: 'Airline fee credit · Up to $200 per year',
         defaultValue: 0
       },
-      { id: 'resy-credit', label: 'Resy credit', note: 'Up to $100 per quarter', defaultValue: 0 },
-      { id: 'lululemon-credit', label: 'lululemon credit', note: 'Up to $75 per quarter', defaultValue: 0 },
-      { id: 'uber-credit', label: 'Uber Cash', note: '$15 monthly plus $20 in December', defaultValue: 0 },
+      {
+        id: 'resy-credit',
+        label: 'Resy credit',
+        note: '$400 annual value, issued as up to $100 per quarter',
+        defaultValue: 0
+      },
+      {
+        id: 'lululemon-credit',
+        label: 'lululemon credit',
+        note: '$300 annual value, issued as up to $75 per quarter',
+        defaultValue: 0
+      },
+      {
+        id: 'uber-credit',
+        label: 'Uber Cash',
+        note: '$200 annual value, issued as $15 monthly plus $20 in December',
+        defaultValue: 0
+      },
       { id: 'uber-one-credit', label: 'Uber One credit', note: 'Up to $120 per year', defaultValue: 0 },
       {
         id: 'hotel-credit',

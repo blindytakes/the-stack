@@ -964,6 +964,12 @@ export function PremiumCardCalculator() {
             title="Keep the perks you will actually cash in"
             description="This is where inflated premium-card math usually falls apart. Keep the value you believe you can really unlock."
           >
+            <div className="mb-4 hidden sm:flex sm:justify-end">
+              <span className="w-32 text-center text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                Annual value
+              </span>
+            </div>
+
             <div>
               <h3 className="text-[1.05rem] font-semibold text-text-primary">Hard-value credits</h3>
               <div className="mt-3 space-y-2.5">
@@ -972,7 +978,7 @@ export function PremiumCardCalculator() {
                     key={credit.id}
                     label={credit.label}
                     note={credit.note}
-                    singleLineDisplay={credit.singleLineDisplay ?? (credit.note ? `${credit.label} · ${credit.note}` : undefined)}
+                    singleLineDisplay={credit.singleLineDisplay}
                     value={selectedScenario.credits[credit.id] ?? 0}
                     onChange={(next) => {
                       updateSelectedScenario((current) => ({
