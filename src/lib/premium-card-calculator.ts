@@ -378,7 +378,6 @@ export const premiumCardProfiles = [
       { id: 'ihg-status', label: 'IHG One Rewards Platinum Elite status', note: 'Through 12/31/27', defaultValue: 0 },
       { id: 'reserve-travel-designers', label: 'Reserve Travel Designers', note: 'Up to $300 per trip', defaultValue: 0 },
       { id: 'global-entry-credit', label: 'Global Entry / TSA PreCheck / NEXUS credit', note: 'Up to $120 every 4 years', defaultValue: 0 },
-      { id: 'transfer-optionality', label: 'Hyatt / airline transfer flexibility', defaultValue: 0 },
       { id: 'concierge', label: 'Visa Infinite concierge and protections', defaultValue: 0 }
     ],
     timingAdjustments: {
