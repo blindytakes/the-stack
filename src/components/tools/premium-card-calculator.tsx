@@ -283,10 +283,6 @@ function displayNumericInputValue(value: number) {
 
 const numericPlaceholderClassName = 'placeholder:text-text-primary/70 focus:placeholder:text-transparent';
 
-function toMoneyValue(points: number, centsPerPoint: number) {
-  return Math.round((points * centsPerPoint) / 100);
-}
-
 function SelectorCard({
   profile,
   selected,
@@ -368,34 +364,6 @@ function SelectorCard({
         </div>
       </div>
     </button>
-  );
-}
-
-function MetricTile({
-  label,
-  value,
-  hint,
-  accent = false
-}: {
-  label: string;
-  value: string;
-  hint?: string;
-  accent?: boolean;
-}) {
-  return (
-    <div
-      className={`rounded-[1.35rem] border px-4 py-4 ${
-        accent
-          ? 'border-[rgb(var(--card-accent-rgb)/0.58)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.38),rgb(var(--card-accent-rgb)/0.16))] shadow-[0_14px_36px_rgba(0,0,0,0.18)]'
-          : 'border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),rgba(255,255,255,0.03))]'
-      }`}
-    >
-      <p className={`text-[11px] font-semibold uppercase tracking-[0.2em] ${accent ? 'text-[rgb(var(--card-accent-rgb))]' : 'text-text-muted'}`}>
-        {label}
-      </p>
-      <p className="mt-3 text-[1.9rem] font-semibold leading-none text-text-primary">{value}</p>
-      {hint ? <p className="mt-2 text-xs leading-5 text-text-secondary">{hint}</p> : null}
-    </div>
   );
 }
 
@@ -691,10 +659,25 @@ export function PremiumCardCalculator() {
   const selectedRedemptionLabel =
     selectedProfile.redemptionOptions.find((option) => option.id === selectedScenario.selectedRedemptionId)?.label ??
     'Custom';
-  const welcomeOfferValue = toMoneyValue(selectedResult.welcomeOfferPoints, selectedResult.centsPerPoint);
-  const spendValue = toMoneyValue(selectedResult.spendPoints, selectedResult.centsPerPoint);
   const offerPresetGridClassName =
     selectedProfile.welcomeOffer.offerPresets.length === 4 ? 'sm:grid-cols-2' : 'sm:grid-cols-3';
+  const yearOneIsPositive = selectedResult.expectedValueYear1 >= 0;
+  const yearOneVerdictLabel =
+    selectedResult.expectedValueYear1 >= 250
+      ? 'Strong fit'
+      : selectedResult.expectedValueYear1 >= 0
+        ? 'Borderline fit'
+        : 'Does not clear the fee';
+  const yearOneVerdictDetail =
+    selectedResult.expectedValueYear1 >= 250
+      ? 'This setup clears the fee with enough margin to feel real.'
+      : selectedResult.expectedValueYear1 >= 0
+        ? 'This run works on paper, but the margin is still pretty thin.'
+        : 'This setup does not justify the first-year cost of carrying the card.';
+  const yearTwoIsPositive = selectedResult.expectedValueYear2 >= 0;
+  const yearTwoSummaryDetail = yearTwoIsPositive
+    ? 'Where the card settles in renewal years once the intro offer is gone.'
+    : 'If nothing changes, this is the annual drag after the welcome offer disappears.';
   const accentStyle = {
     '--card-accent-rgb': selectedVisual.accentRgb
   } as CSSProperties;
@@ -752,10 +735,6 @@ export function PremiumCardCalculator() {
               />
             </div>
             <p className="mt-3 text-sm leading-6 text-text-secondary">{selectedVisual.selectorSummary}</p>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <MetricTile label="Year One" value={formatCurrency(selectedResult.expectedValueYear1)} accent />
-              <MetricTile label="Year Two" value={formatCurrency(selectedResult.expectedValueYear2)} hint={selectedRedemptionLabel} />
-            </div>
           </div>
         </div>
 
@@ -783,15 +762,7 @@ export function PremiumCardCalculator() {
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
         <div className="pointer-events-none absolute left-[-3rem] top-16 h-44 w-44 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.12),transparent_70%)] blur-3xl" />
         <div className="pointer-events-none absolute right-[-4rem] top-[-3rem] h-56 w-56 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.16),transparent_72%)] blur-3xl" />
-        <div className="mx-auto max-w-[56rem]">
-          <div className="grid gap-3 border-b border-white/8 pb-6 md:grid-cols-4">
-            <MetricTile label="Bonus lift" value={formatCurrency(welcomeOfferValue)} />
-            <MetricTile label="Everyday haul" value={formatCurrency(spendValue)} />
-            <MetricTile label="Active path" value={selectedRedemptionLabel} hint={formatCpp(selectedScenario.centsPerPoint)} />
-            <MetricTile label="Lane" value={selectedVisual.laneLabel} hint={selectedProfile.shortName} accent />
-          </div>
-
-          <div className="mt-6 space-y-6">
+        <div className="mx-auto max-w-[56rem] space-y-6">
           <SectionFrame
             eyebrow="Gate Check"
             icon="gate"
@@ -1047,8 +1018,8 @@ export function PremiumCardCalculator() {
           <section className="relative overflow-hidden rounded-[1.95rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,16,25,0.98),rgba(18,24,36,0.96))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.24)] md:p-6">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent)]" />
             <div className="pointer-events-none absolute -right-6 top-0 h-40 w-44 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.2),transparent_74%)] blur-3xl" />
-            <div className="mx-auto max-w-3xl">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="mx-auto max-w-[56rem]">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                   <div className="flex items-center gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-[rgb(var(--card-accent-rgb)/0.58)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.38),rgb(var(--card-accent-rgb)/0.16))] text-[rgb(var(--card-accent-rgb))] shadow-[0_10px_24px_rgba(0,0,0,0.16)]">
@@ -1056,48 +1027,129 @@ export function PremiumCardCalculator() {
                     </div>
                     <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-text-muted">Scoreboard</p>
                   </div>
-                  <h3 className="mt-3 font-heading text-[2.4rem] leading-[0.98] tracking-[-0.03em] text-text-primary">
-                    {formatCurrency(selectedResult.expectedValueYear1)}
-                  </h3>
-                  <p className="mt-2 text-sm leading-6 text-text-secondary">
-                    Year-one expected value for {selectedProfile.shortName}, priced at {formatCpp(selectedScenario.centsPerPoint)} through {selectedRedemptionLabel}.
+                </div>
+                <div className="flex flex-wrap items-center gap-3">
+                  <span
+                    className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] ${
+                      yearOneIsPositive
+                        ? `border-[rgb(var(--card-accent-rgb)/0.4)] bg-[rgb(var(--card-accent-rgb)/0.16)] ${selectedVisual.accentClassName}`
+                        : 'border-brand-coral/30 bg-brand-coral/10 text-brand-coral'
+                    }`}
+                  >
+                    {yearOneVerdictLabel}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      updateSelectedScenario(() => buildInitialPremiumCardScenario(selectedProfile));
+                    }}
+                  >
+                    Reset {selectedProfile.shortName}
+                  </Button>
+                </div>
+              </div>
+
+              <div
+                className={`mt-6 rounded-[1.55rem] border p-5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] ${
+                  yearOneIsPositive
+                    ? 'border-[rgb(var(--card-accent-rgb)/0.44)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.28),rgba(18,25,40,0.96)_42%,rgba(10,14,24,0.99))]'
+                    : 'border-brand-coral/20 bg-[linear-gradient(180deg,rgba(255,122,89,0.14),rgba(18,25,40,0.96)_42%,rgba(10,14,24,0.99))]'
+                }`}
+              >
+                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_12.5rem] lg:items-center">
+                  <div className="max-w-[36rem]">
+                    <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${yearOneIsPositive ? selectedVisual.accentClassName : 'text-brand-coral'}`}>
+                      Year One Expected Value
+                    </p>
+                    <h3 className="mt-3 font-heading text-[clamp(2.8rem,5vw,4.4rem)] leading-[0.92] tracking-[-0.04em] text-white">
+                      {formatCurrency(selectedResult.expectedValueYear1)}
+                    </h3>
+                    <p className="mt-3 text-sm leading-6 text-text-secondary">{yearOneVerdictDetail}</p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <span className="rounded-full border border-[rgb(var(--card-accent-rgb)/0.42)] bg-[rgb(var(--card-accent-rgb)/0.18)] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white">
+                        {selectedRedemptionLabel}
+                      </span>
+                      <span className="rounded-full border border-white/12 bg-black/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+                        {formatCpp(selectedScenario.centsPerPoint)}
+                      </span>
+                      <span className="rounded-full border border-white/12 bg-black/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+                        {selectedVisual.laneLabel}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="relative mx-auto w-full max-w-[11.5rem]">
+                    <div className={`pointer-events-none absolute inset-x-3 bottom-3 h-16 rounded-full blur-[40px] ${selectedVisual.accentGlowClassName}`} />
+                    <EntityImage
+                      src={selectedVisual.artUrl}
+                      alt={selectedProfile.name}
+                      label={selectedProfile.shortName}
+                      className="relative aspect-[1.62/1] w-full overflow-visible rounded-none border-0 bg-transparent"
+                      imgClassName="bg-transparent p-0 drop-shadow-[0_24px_40px_rgba(0,0,0,0.42)]"
+                      fallbackClassName="bg-black/10"
+                      fit={selectedVisual.artFit ?? 'contain'}
+                      scale={selectedVisual.artScale ?? 1}
+                    />
+                    <div className="mt-3 text-center">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">Modeled card</p>
+                      <p className="mt-1 text-sm font-semibold text-text-primary">{selectedProfile.shortName}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <div
+                  className={`rounded-[1.25rem] border px-4 py-4 ${
+                    yearTwoIsPositive
+                      ? 'border-[rgb(var(--card-accent-rgb)/0.34)] bg-[linear-gradient(180deg,rgb(var(--card-accent-rgb)/0.16),rgba(255,255,255,0.04))]'
+                      : 'border-brand-coral/20 bg-[linear-gradient(180deg,rgba(255,122,89,0.12),rgba(255,255,255,0.03))]'
+                  }`}
+                >
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="max-w-[26rem]">
+                      <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${yearTwoIsPositive ? selectedVisual.accentClassName : 'text-brand-coral'}`}>
+                        Year 2 And Beyond
+                      </p>
+                      <p className="mt-2 text-xs leading-5 text-text-secondary">{yearTwoSummaryDetail}</p>
+                    </div>
+                    <span
+                      className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                        yearTwoIsPositive
+                          ? `border-[rgb(var(--card-accent-rgb)/0.3)] bg-[rgb(var(--card-accent-rgb)/0.14)] ${selectedVisual.accentClassName}`
+                          : 'border-brand-coral/25 bg-brand-coral/10 text-brand-coral'
+                      }`}
+                    >
+                      {yearTwoIsPositive ? 'Annual keep value' : 'Annual drag'}
+                    </span>
+                  </div>
+                  <p className="mt-4 text-[2.15rem] font-semibold leading-none text-text-primary">
+                    {formatCurrency(selectedResult.expectedValueYear2)}
                   </p>
                 </div>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    updateSelectedScenario(() => buildInitialPremiumCardScenario(selectedProfile));
-                  }}
-                >
-                  Reset {selectedProfile.shortName}
-                </Button>
               </div>
 
-              <div className="mt-6 grid gap-3 md:grid-cols-3">
-                <MetricTile label="Bonus lift" value={formatCurrency(welcomeOfferValue)} />
-                <MetricTile label="Everyday haul" value={formatCurrency(spendValue)} />
-                <MetricTile label="Year Two keep" value={formatCurrency(selectedResult.expectedValueYear2)} hint="Ongoing value after the bonus" />
-              </div>
-
-              <div className="mt-6 rounded-[1.35rem] border border-white/10 bg-white/[0.04] px-4 py-4">
-                <div className="flex items-center justify-between gap-4 border-b border-white/8 pb-3">
-                  <span className="text-sm font-semibold text-text-primary">Value ledger</span>
+              <div className="mt-5 rounded-[1.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.03))] px-4 py-4">
+                <div className="flex flex-col gap-2 border-b border-white/8 pb-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <span className="text-sm font-semibold text-text-primary">Value ledger</span>
+                    <p className="mt-1 text-xs leading-5 text-text-muted">The parts of the model actually carrying the card.</p>
+                  </div>
                   <span className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${selectedVisual.accentClassName}`}>The Stack read</span>
                 </div>
-                <div className="mt-3 space-y-3 text-sm">
-                  <div className="flex items-center justify-between gap-4">
-                  <span className="text-text-secondary">Usable credits</span>
-                  <span className="font-semibold text-text-primary">{formatCurrency(selectedResult.recurringCreditsValue)}</span>
+                <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+                  <div className="flex items-center justify-between gap-4 rounded-[1rem] border border-white/8 bg-black/10 px-3.5 py-3 text-sm">
+                    <span className="text-text-secondary">Usable credits</span>
+                    <span className="font-semibold text-text-primary">{formatCurrency(selectedResult.recurringCreditsValue)}</span>
                   </div>
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="text-text-secondary">Soft perks</span>
+                  <div className="flex items-center justify-between gap-4 rounded-[1rem] border border-white/8 bg-black/10 px-3.5 py-3 text-sm">
+                    <span className="text-text-secondary">Soft perks kept</span>
                     <span className="font-semibold text-text-primary">{formatCurrency(selectedResult.benefitsValue)}</span>
                   </div>
-                  <div className="flex items-center justify-between gap-4">
+                  <div className="flex items-center justify-between gap-4 rounded-[1rem] border border-white/8 bg-black/10 px-3.5 py-3 text-sm">
                     <span className="text-text-secondary">Points banked from spend</span>
                     <span className="font-semibold text-text-primary">{formatPoints(selectedResult.spendPoints)}</span>
                   </div>
-                  <div className="flex items-center justify-between gap-4 border-t border-white/8 pt-3">
+                  <div className="flex items-center justify-between gap-4 rounded-[1rem] border border-white/8 bg-black/10 px-3.5 py-3 text-sm">
                     <span className="text-text-secondary">Fee drag</span>
                     <span className="font-semibold text-brand-coral">-{formatCurrency(selectedScenario.annualFee)}</span>
                   </div>
@@ -1106,7 +1158,6 @@ export function PremiumCardCalculator() {
             </div>
           </section>
         </div>
-      </div>
       </motion.section>
     </section>
   );
