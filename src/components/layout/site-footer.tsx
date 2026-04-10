@@ -16,6 +16,7 @@ export function SiteFooter() {
     pathname !== '/about' &&
     pathname !== '/newsletter' &&
     !pathname.startsWith('/tools/card-finder') &&
+    !pathname.startsWith('/tools/premium-card-calculator') &&
     !pathname.startsWith('/plan/results');
   const year = new Date().getFullYear();
 

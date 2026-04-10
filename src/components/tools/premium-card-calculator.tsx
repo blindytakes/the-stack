@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { startTransition, useState, type ChangeEvent, type CSSProperties } from 'react';
+import { PremiumCardEmailPanel } from '@/components/tools/premium-card-email-panel';
 import { Button } from '@/components/ui/button';
 import { EntityImage } from '@/components/ui/entity-image';
 import {
@@ -22,11 +23,6 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
 
 const numberFormatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 0
-});
-
-const oneDecimalFormatter = new Intl.NumberFormat('en-US', {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 1
 });
 
 type PremiumCardFieldInteractions = Record<string, boolean>;
@@ -379,10 +375,6 @@ function formatCurrency(value: number) {
 
 function formatPoints(value: number) {
   return numberFormatter.format(value);
-}
-
-function formatCpp(value: number) {
-  return `${oneDecimalFormatter.format(value)} CPP`;
 }
 
 function sanitizeCurrencyInput(raw: string) {
@@ -778,6 +770,7 @@ function SpendCategoryCard({
 
 export function PremiumCardCalculator() {
   const [selectedCardId, setSelectedCardId] = useState<PremiumCardId>('amex-platinum');
+  const [showEmailPanel, setShowEmailPanel] = useState(false);
   const [scenarios, setScenarios] = useState<Record<PremiumCardId, PremiumCardScenario>>(() =>
     premiumCardProfiles.reduce(
       (accumulator, profile) => {
@@ -821,9 +814,6 @@ export function PremiumCardCalculator() {
     }));
   }
 
-  const selectedRedemptionLabel =
-    selectedProfile.redemptionOptions.find((option) => option.id === selectedScenario.selectedRedemptionId)?.label ??
-    'Custom';
   const offerPointsIsExplicitlySet = Boolean(selectedFieldInteractions['offer-points']);
   const annualFeeIsExplicitlySet = Boolean(selectedFieldInteractions['annual-fee']);
   const offerPointsIsActive = selectedScenario.offerPoints > 0 || offerPointsIsExplicitlySet;
@@ -1245,8 +1235,8 @@ export function PremiumCardCalculator() {
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent)]" />
             <div className="pointer-events-none absolute -right-4 top-2 h-28 w-32 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.12),transparent_72%)] blur-[48px]" />
             <div className="mx-auto max-w-[56rem]">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div>
+              <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center">
+                <div className="sm:justify-self-start">
                   <div className="flex items-center gap-3">
                     <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-[rgb(var(--card-accent-rgb)/0.58)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.14),rgb(var(--card-accent-rgb)_/_0.24)_40%,rgb(var(--card-accent-rgb)_/_0.1))] text-[rgb(var(--card-accent-rgb))] shadow-[0_10px_24px_rgba(0,0,0,0.16),inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.3)]">
                       <Glyph name="score" className="h-4 w-4" />
@@ -1254,18 +1244,21 @@ export function PremiumCardCalculator() {
                     <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-text-muted">Scoreboard</p>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <span
-                    className={`rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] ${
-                      yearOneIsPositive
-                        ? `border-[rgb(var(--card-accent-rgb)/0.4)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.14))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.22)] ${selectedVisual.accentClassName}`
-                        : 'border-brand-coral/30 bg-brand-coral/10 text-brand-coral'
-                    }`}
+                <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-self-center">
+                  <Button
+                    type="button"
+                    variant={showEmailPanel ? 'ghost' : 'primary'}
+                    className="min-w-[12.75rem] px-7 py-3 text-base"
+                    onClick={() => {
+                      setShowEmailPanel((current) => !current);
+                    }}
                   >
-                    {yearOneVerdictLabel}
-                  </span>
+                    {showEmailPanel ? 'Hide email form' : 'Email my results'}
+                  </Button>
                   <Button
                     variant="ghost"
+                    type="button"
+                    className="min-w-[13.75rem] px-7 py-3 text-base"
                     onClick={() => {
                       setScenarios((current) => ({
                         ...current,
@@ -1276,11 +1269,20 @@ export function PremiumCardCalculator() {
                         [selectedCardId]: {}
                       }));
                     }}
-                  >
+                    >
                     Reset {selectedProfile.shortName}
                   </Button>
                 </div>
+                <div className="hidden sm:block" />
               </div>
+
+              {showEmailPanel ? (
+                <PremiumCardEmailPanel
+                  profile={selectedProfile}
+                  scenario={selectedScenario}
+                  result={selectedResult}
+                />
+              ) : null}
 
               <div
                 className={`mt-6 rounded-[1.55rem] border p-5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] ${
@@ -1289,27 +1291,7 @@ export function PremiumCardCalculator() {
                     : 'border-brand-coral/20 bg-[linear-gradient(180deg,rgba(255,122,89,0.14),rgba(18,25,40,0.96)_42%,rgba(10,14,24,0.99))]'
                 }`}
               >
-                <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_12.5rem] lg:items-center">
-                  <div className="max-w-[36rem]">
-                    <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${yearOneIsPositive ? selectedVisual.accentClassName : 'text-brand-coral'}`}>
-                      Year One Expected Value
-                    </p>
-                    <h3 className="mt-3 font-heading text-[clamp(2.8rem,5vw,4.4rem)] leading-[0.92] tracking-[-0.04em] text-white">
-                      {formatCurrency(selectedResult.expectedValueYear1)}
-                    </h3>
-                    <p className="mt-3 text-sm leading-6 text-text-secondary">{yearOneVerdictDetail}</p>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <span className="rounded-full border border-[rgb(var(--card-accent-rgb)/0.42)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.16))] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-white shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.22)]">
-                        {selectedRedemptionLabel}
-                      </span>
-                      <span className="rounded-full border border-white/12 bg-black/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
-                        {formatCpp(selectedScenario.centsPerPoint)}
-                      </span>
-                      <span className="rounded-full border border-white/12 bg-black/15 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
-                        {selectedVisual.laneLabel}
-                      </span>
-                    </div>
-                  </div>
+                <div className="flex flex-col items-center text-center">
                   <div className="relative mx-auto w-full max-w-[11.5rem]">
                     <div className={`pointer-events-none absolute inset-x-4 bottom-4 h-12 rounded-full opacity-80 blur-[32px] ${selectedVisual.accentGlowClassName}`} />
                     <EntityImage
@@ -1328,36 +1310,75 @@ export function PremiumCardCalculator() {
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="mt-4">
-                <div
-                  className={`rounded-[1.25rem] border px-4 py-4 ${
-                    yearTwoIsPositive
-                      ? 'border-[rgb(var(--card-accent-rgb)/0.34)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.08),rgb(var(--card-accent-rgb)_/_0.12),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.18)]'
-                      : 'border-brand-coral/20 bg-[linear-gradient(180deg,rgba(255,122,89,0.12),rgba(255,255,255,0.03))]'
-                  }`}
-                >
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                    <div className="max-w-[26rem]">
-                      <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${yearTwoIsPositive ? selectedVisual.accentClassName : 'text-brand-coral'}`}>
-                        Year 2 And Beyond
-                      </p>
-                      <p className="mt-2 text-xs leading-5 text-text-secondary">{yearTwoSummaryDetail}</p>
+                <div className="mt-6 space-y-4">
+                  <div
+                    className={`rounded-[1.25rem] border px-4 py-4 ${
+                      yearOneIsPositive
+                        ? 'border-[rgb(var(--card-accent-rgb)/0.34)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.14),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.18)]'
+                        : 'border-brand-coral/20 bg-[linear-gradient(180deg,rgba(255,122,89,0.12),rgba(255,255,255,0.03))]'
+                    }`}
+                  >
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="max-w-[30rem]">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${yearOneIsPositive ? selectedVisual.accentClassName : 'text-brand-coral'}`}>
+                            Year One Expected Value
+                          </p>
+                          <span
+                            className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                              yearOneIsPositive
+                                ? `border-[rgb(var(--card-accent-rgb)/0.3)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.12))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.2)] ${selectedVisual.accentClassName}`
+                                : 'border-brand-coral/25 bg-brand-coral/10 text-brand-coral'
+                            }`}
+                          >
+                            {yearOneVerdictLabel}
+                          </span>
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-text-secondary">{yearOneVerdictDetail}</p>
+                      </div>
+                      <div className="sm:text-right">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">First Year</p>
+                        <p className="mt-2 text-[2.35rem] font-semibold leading-none text-text-primary">
+                          {formatCurrency(selectedResult.expectedValueYear1)}
+                        </p>
+                      </div>
                     </div>
-                    <span
-                      className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
-                        yearTwoIsPositive
-                          ? `border-[rgb(var(--card-accent-rgb)/0.3)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.12))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.2)] ${selectedVisual.accentClassName}`
-                          : 'border-brand-coral/25 bg-brand-coral/10 text-brand-coral'
-                      }`}
-                    >
-                      {yearTwoIsPositive ? 'Annual keep value' : 'Annual drag'}
-                    </span>
                   </div>
-                  <p className="mt-4 text-[2.15rem] font-semibold leading-none text-text-primary">
-                    {formatCurrency(selectedResult.expectedValueYear2)}
-                  </p>
+
+                  <div
+                    className={`rounded-[1.25rem] border px-4 py-4 ${
+                      yearTwoIsPositive
+                        ? 'border-[rgb(var(--card-accent-rgb)/0.34)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.08),rgb(var(--card-accent-rgb)_/_0.12),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.18)]'
+                        : 'border-brand-coral/20 bg-[linear-gradient(180deg,rgba(255,122,89,0.12),rgba(255,255,255,0.03))]'
+                    }`}
+                  >
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="max-w-[30rem]">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${yearTwoIsPositive ? selectedVisual.accentClassName : 'text-brand-coral'}`}>
+                            Year 2 And Beyond
+                          </p>
+                          <span
+                            className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                              yearTwoIsPositive
+                                ? `border-[rgb(var(--card-accent-rgb)/0.3)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.12))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.2)] ${selectedVisual.accentClassName}`
+                                : 'border-brand-coral/25 bg-brand-coral/10 text-brand-coral'
+                            }`}
+                          >
+                            {yearTwoIsPositive ? 'Annual keep value' : 'Annual drag'}
+                          </span>
+                        </div>
+                        <p className="mt-2 text-sm leading-6 text-text-secondary">{yearTwoSummaryDetail}</p>
+                      </div>
+                      <div className="sm:text-right">
+                        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">Ongoing</p>
+                        <p className="mt-2 text-[2.35rem] font-semibold leading-none text-text-primary">
+                          {formatCurrency(selectedResult.expectedValueYear2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 

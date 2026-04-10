@@ -77,5 +77,12 @@ export const apiRateLimits = {
     window: '10 m',
     algorithm: 'sliding',
     message: 'Too many plan email requests. Please try again soon.'
+  },
+  calculatorEmail: {
+    namespace: 'calculator_email',
+    limit: 3,
+    window: '10 m',
+    algorithm: 'sliding',
+    message: 'Too many calculator email requests. Please try again soon.'
   }
 } satisfies Record<string, RateLimitConfig>;
