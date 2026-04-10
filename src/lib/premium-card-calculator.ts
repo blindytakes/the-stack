@@ -1,4 +1,12 @@
-export type PremiumCardId = 'amex-platinum' | 'chase-sapphire-reserve' | 'capital-one-venture-x';
+export type PremiumCardId =
+  | 'amex-platinum'
+  | 'chase-sapphire-reserve'
+  | 'capital-one-venture-x'
+  | 'capital-one-venture'
+  | 'amex-gold'
+  | 'amex-green'
+  | 'chase-sapphire-preferred'
+  | 'citi-strata-elite';
 
 export type PremiumCardValueInput = {
   id: string;
@@ -18,6 +26,13 @@ export type PremiumCardRedemptionOption = {
   label: string;
   centsPerPoint: number;
   note?: string;
+};
+
+export type PremiumCardAnnualPointsBonus = {
+  label: string;
+  note?: string;
+  pointsPerDollar: number;
+  appliesInYear1?: boolean;
 };
 
 export type PremiumCardProfile = {
@@ -41,6 +56,7 @@ export type PremiumCardProfile = {
   spendCategories: PremiumCardSpendCategory[];
   redemptionOptions: PremiumCardRedemptionOption[];
   defaultRedemptionId: string;
+  annualPointsBonus?: PremiumCardAnnualPointsBonus;
   credits: PremiumCardValueInput[];
   benefits: PremiumCardValueInput[];
   timingAdjustments: {
@@ -80,6 +96,8 @@ export type PremiumCardSpendResult = {
 export type PremiumCardCalculation = {
   welcomeOfferPoints: number;
   spendPoints: number;
+  annualBonusPointsYear1: number;
+  annualBonusPointsYear2: number;
   totalPointsYear1: number;
   totalPointsYear2: number;
   centsPerPoint: number;
@@ -500,6 +518,532 @@ export const premiumCardProfiles = [
       renewalNote: 'Good place to add anniversary-miles value or other year-2 keepers.',
       renewalDefaultValue: 0
     }
+  },
+  {
+    id: 'capital-one-venture',
+    slug: 'capital-one-venture-rewards',
+    name: 'Capital One Venture Rewards Credit Card',
+    shortName: 'Capital One Venture',
+    issuer: 'Capital One',
+    headline: 'Straightforward travel-card math if you want simple miles without moving up to Venture X pricing.',
+    description:
+      'Best when you want a strong 2x floor, occasional portal bookings, and flexible travel redemptions without paying for the premium-lounge tier.',
+    offerCurrencyLabel: 'Capital One miles',
+    offerCurrencyShortLabel: 'Miles',
+    annualFee: 95,
+    eligibilityNote:
+      'You are not eligible if you received a new-cardmember bonus for Capital One Venture or Capital One Venture X in the past 48 months.',
+    // The current public offer also includes a one-time $250 Capital One Travel credit, so keep the points preset here and route that extra through year-1 inputs if you will use it.
+    welcomeOffer: {
+      offerPresets: [75000],
+      defaultPoints: 75000,
+      spendRequired: 4000,
+      spendWindowMonths: 3
+    },
+    spendCategories: [
+      {
+        id: 'capital-one-travel-hotels-vacation-rentals-rental-cars',
+        label: 'Hotels, vacation rentals, and rental cars through Capital One Travel',
+        note: '5x miles',
+        emoji: '🏨',
+        multiplier: 5,
+        defaultValue: 0
+      },
+      {
+        id: 'all-other-purchases',
+        label: 'All other purchases',
+        note: '2x miles',
+        emoji: '💳',
+        multiplier: 2,
+        defaultValue: 0
+      }
+    ],
+    redemptionOptions: [
+      { id: 'travel-erase', label: 'Travel statement erase', centsPerPoint: 1, note: '1 CPP' },
+      { id: 'capital-one-travel', label: 'Capital One Travel', centsPerPoint: 1, note: '1 CPP' },
+      { id: 'transfer-partners', label: 'Transfer partners', centsPerPoint: 1.8, note: '1.8 CPP' }
+    ],
+    defaultRedemptionId: 'travel-erase',
+    credits: [
+      {
+        id: 'lifestyle-collection-credit',
+        label: 'Lifestyle Collection experience credit',
+        note: '$50 experience credit on each eligible Lifestyle Collection stay',
+        defaultValue: 0
+      },
+      {
+        id: 'global-entry-credit',
+        label: 'Global Entry / TSA PreCheck credit',
+        note: 'Up to $120 every 4 years',
+        defaultValue: 0
+      }
+    ],
+    benefits: [
+      { id: 'hertz-five-star', label: 'Hertz Five Star status', defaultValue: 0 },
+      { id: 'no-foreign-transaction-fees', label: 'No foreign transaction fees', defaultValue: 0 },
+      { id: 'travel-accident-insurance', label: 'Travel accident insurance', defaultValue: 0 },
+      { id: 'rental-car-cdw', label: 'Auto Rental Collision Damage Waiver', defaultValue: 0 },
+      { id: 'travel-assistance', label: '24-hour travel assistance', defaultValue: 0 },
+      { id: 'capital-one-dining', label: 'Capital One Dining access', defaultValue: 0 },
+      { id: 'capital-one-entertainment', label: 'Capital One Entertainment access', defaultValue: 0 }
+    ],
+    timingAdjustments: {
+      firstYearLabel: 'Year 1-only extras',
+      firstYearNote:
+        'Good place to add the current one-time $250 Capital One Travel credit if you expect to use it before it expires.',
+      firstYearDefaultValue: 0,
+      renewalLabel: 'Renewal-only extras',
+      renewalNote: 'Use this for keep value that starts after year 1 or for benefits you value differently after the intro period.',
+      renewalDefaultValue: 0
+    }
+  },
+  {
+    id: 'amex-gold',
+    slug: 'amex-gold-card',
+    name: 'American Express Gold Card',
+    shortName: 'Amex Gold',
+    issuer: 'American Express',
+    headline: 'High everyday upside if dining and grocery spend are actually real for you.',
+    description:
+      'Works best when restaurants and U.S. supermarkets are heavy spend lanes and you can keep up with the monthly and semi-annual credits.',
+    offerCurrencyLabel: 'Membership Rewards points',
+    offerCurrencyShortLabel: 'MR',
+    annualFee: 325,
+    eligibilityNote:
+      'Amex offer eligibility can be personalized. If you have or have had the Gold Card, or Amex tells you the welcome offer is unavailable, run this as a no-bonus card.',
+    // Public Gold offers move around frequently, so keep a conservative baseline preset and spend gate.
+    welcomeOffer: {
+      offerPresets: [60000, 75000],
+      defaultPoints: 60000,
+      spendRequired: 6000,
+      spendWindowMonths: 6
+    },
+    spendCategories: [
+      {
+        id: 'restaurants-worldwide',
+        label: 'Restaurants worldwide, plus takeout and delivery in the U.S.',
+        note: '4x points',
+        emoji: '🍽️',
+        multiplier: 4,
+        defaultValue: 0
+      },
+      {
+        id: 'us-supermarkets',
+        label: 'U.S. supermarkets',
+        note: '4x points',
+        emoji: '🛒',
+        multiplier: 4,
+        defaultValue: 0
+      },
+      {
+        id: 'flights-direct-or-amex-travel',
+        label: 'Flights booked directly with airlines or Amex Travel',
+        note: '3x points',
+        emoji: '✈️',
+        multiplier: 3,
+        defaultValue: 0
+      },
+      {
+        id: 'amex-travel-prepaid-hotels-and-travel',
+        label: 'Prepaid hotels and eligible travel purchases through Amex Travel',
+        note: '2x points',
+        emoji: '🏨',
+        multiplier: 2,
+        defaultValue: 0
+      },
+      {
+        id: 'all-other-purchases',
+        label: 'All other purchases',
+        note: '1x point',
+        emoji: '💳',
+        multiplier: 1,
+        defaultValue: 0
+      }
+    ],
+    redemptionOptions: [
+      { id: 'statement-credit', label: 'Statement credit', centsPerPoint: 0.6, note: '0.6 CPP' },
+      { id: 'gift-cards', label: 'Gift cards', centsPerPoint: 1, note: '1 CPP' },
+      { id: 'amex-travel', label: 'Amex Travel', centsPerPoint: 1, note: '1 CPP' },
+      { id: 'transfer-partners', label: 'Transfer partners', centsPerPoint: 2, note: '2 CPP' }
+    ],
+    defaultRedemptionId: 'transfer-partners',
+    credits: [
+      {
+        id: 'resy-credit',
+        label: 'Resy credit',
+        note: 'Up to $50 Jan-Jun and up to $50 Jul-Dec after eligible U.S. Resy purchases',
+        defaultValue: 0
+      },
+      {
+        id: 'dunkin-credit',
+        label: "Dunkin' credit",
+        note: 'Up to $7 per month at eligible U.S. Dunkin’ locations',
+        defaultValue: 0
+      },
+      {
+        id: 'dining-credit',
+        label: 'Dining credit',
+        note: 'Up to $10 per month at eligible dining partners',
+        defaultValue: 0
+      },
+      {
+        id: 'uber-cash',
+        label: 'Uber Cash',
+        note: '$10 per month for eligible U.S. rides or orders; unused value does not roll over',
+        defaultValue: 0
+      }
+    ],
+    benefits: [
+      {
+        id: 'hotel-collection-benefit',
+        label: 'The Hotel Collection benefit',
+        note: '$100 experience credit',
+        defaultValue: 0
+      },
+      {
+        id: 'transfer-flexibility',
+        label: 'Membership Rewards transfer flexibility',
+        defaultValue: 0
+      },
+      { id: 'no-foreign-transaction-fees', label: 'No foreign transaction fees', defaultValue: 0 },
+      { id: 'trip-delay-insurance', label: 'Trip Delay Insurance', defaultValue: 0 },
+      { id: 'baggage-insurance', label: 'Baggage Insurance Plan', defaultValue: 0 },
+      {
+        id: 'rental-car-coverage',
+        label: 'Secondary rental-car coverage',
+        defaultValue: 0
+      }
+    ],
+    timingAdjustments: {
+      firstYearLabel: 'Year 1-only extras',
+      firstYearNote: 'Use this for one-time credits, targeted offer sweeteners, or launch-year timing wins.',
+      firstYearDefaultValue: 0,
+      renewalLabel: 'Renewal-only extras',
+      renewalNote: 'Useful if you value later-year keep benefits differently than the opening year.',
+      renewalDefaultValue: 0
+    }
+  },
+  {
+    id: 'amex-green',
+    slug: 'amex-green-card',
+    name: 'American Express Green Card',
+    shortName: 'Amex Green',
+    issuer: 'American Express',
+    headline: 'Broad travel-and-transit earning if you care more about movement than premium lounge optics.',
+    description:
+      'Best when dining, transit, and general travel spend are real for you and a simpler Amex with a CLEAR credit fits better than Gold or Platinum.',
+    offerCurrencyLabel: 'Membership Rewards points',
+    offerCurrencyShortLabel: 'MR',
+    annualFee: 150,
+    eligibilityNote:
+      'Amex offer eligibility can be personalized. If you have or have had the Green Card, or Amex tells you the welcome offer is unavailable, run this as a no-bonus card.',
+    // Green public acquisition offers are not consistently exposed, so keep a conservative baseline preset.
+    welcomeOffer: {
+      offerPresets: [40000],
+      defaultPoints: 40000,
+      spendRequired: 3000,
+      spendWindowMonths: 6
+    },
+    spendCategories: [
+      {
+        id: 'restaurants-worldwide',
+        label: 'Restaurants worldwide, including takeout and delivery in the U.S.',
+        note: '3x points',
+        emoji: '🍽️',
+        multiplier: 3,
+        defaultValue: 0
+      },
+      {
+        id: 'travel',
+        label: 'Travel purchases, including airfare, hotels, cruises, tours, car rentals, campgrounds, vacation rentals, third-party travel sites, and Amex Travel',
+        note: '3x points',
+        emoji: '✈️',
+        multiplier: 3,
+        defaultValue: 0
+      },
+      {
+        id: 'transit-worldwide',
+        label: 'Transit worldwide, including trains, taxis, rideshare, ferries, tolls, parking, buses, and subways',
+        note: '3x points',
+        emoji: '🚇',
+        multiplier: 3,
+        defaultValue: 0
+      },
+      {
+        id: 'all-other-purchases',
+        label: 'All other purchases',
+        note: '1x point',
+        emoji: '💳',
+        multiplier: 1,
+        defaultValue: 0
+      }
+    ],
+    redemptionOptions: [
+      { id: 'statement-credit', label: 'Statement credit', centsPerPoint: 0.6, note: '0.6 CPP' },
+      { id: 'gift-cards', label: 'Gift cards', centsPerPoint: 1, note: '1 CPP' },
+      { id: 'amex-travel', label: 'Amex Travel', centsPerPoint: 1, note: '1 CPP' },
+      { id: 'transfer-partners', label: 'Transfer partners', centsPerPoint: 2, note: '2 CPP' }
+    ],
+    defaultRedemptionId: 'transfer-partners',
+    credits: [
+      {
+        id: 'clear-credit',
+        label: 'CLEAR Plus credit',
+        note: 'Up to $209 per calendar year',
+        defaultValue: 0
+      }
+    ],
+    benefits: [
+      { id: 'transfer-flexibility', label: 'Membership Rewards transfer flexibility', defaultValue: 0 },
+      { id: 'no-foreign-transaction-fees', label: 'No foreign transaction fees', defaultValue: 0 },
+      { id: 'trip-delay-insurance', label: 'Trip Delay Insurance', defaultValue: 0 },
+      { id: 'baggage-insurance', label: 'Baggage Insurance Plan', defaultValue: 0 },
+      { id: 'rental-car-coverage', label: 'Secondary rental-car coverage', defaultValue: 0 },
+      { id: 'global-assist-hotline', label: 'Global Assist Hotline', defaultValue: 0 },
+      { id: 'amex-experiences', label: 'Events with Amex / presale ticket access', defaultValue: 0 }
+    ],
+    timingAdjustments: {
+      firstYearLabel: 'Year 1-only extras',
+      firstYearNote: 'Use this for targeted offer sweeteners or one-time opening-year value beyond the conservative public baseline.',
+      firstYearDefaultValue: 0,
+      renewalLabel: 'Renewal-only extras',
+      renewalNote: 'Use this if you value later-year keep benefits differently than the opening year.',
+      renewalDefaultValue: 0
+    }
+  },
+  {
+    id: 'chase-sapphire-preferred',
+    slug: 'chase-sapphire-preferred',
+    name: 'Chase Sapphire Preferred Card',
+    shortName: 'Sapphire Preferred',
+    issuer: 'Chase',
+    headline: 'Cleaner travel-card economics if you want transferable points without a flagship fee.',
+    description:
+      'Best when you want solid dining and travel earn, a lighter annual fee, and enough Chase Travel or transfer value to justify keeping the card.',
+    offerCurrencyLabel: 'Ultimate Rewards points',
+    offerCurrencyShortLabel: 'UR',
+    annualFee: 95,
+    eligibilityNote:
+      'The card is unavailable if you currently hold it, and Chase says the new-cardmember bonus may not be available if you have held it before or already received a Sapphire bonus.',
+    welcomeOffer: {
+      offerPresets: [75000],
+      defaultPoints: 75000,
+      spendRequired: 5000,
+      spendWindowMonths: 3
+    },
+    spendCategories: [
+      {
+        id: 'chase-travel',
+        label: 'Travel purchased through Chase Travel',
+        note: '5x points',
+        emoji: '✈️',
+        multiplier: 5,
+        defaultValue: 0
+      },
+      {
+        id: 'other-travel',
+        label: 'Other travel purchases',
+        note: '2x points',
+        emoji: '🌍',
+        multiplier: 2,
+        defaultValue: 0
+      },
+      {
+        id: 'dining',
+        label: 'Dining, takeout, and delivery',
+        note: '3x points',
+        emoji: '🍽️',
+        multiplier: 3,
+        defaultValue: 0
+      },
+      {
+        id: 'online-grocery',
+        label: 'Online grocery purchases',
+        note: '3x points',
+        emoji: '🛒',
+        multiplier: 3,
+        defaultValue: 0
+      },
+      {
+        id: 'streaming',
+        label: 'Select streaming services',
+        note: '3x points',
+        emoji: '📺',
+        multiplier: 3,
+        defaultValue: 0
+      },
+      {
+        id: 'all-other',
+        label: 'All other purchases',
+        note: '1x point',
+        emoji: '💳',
+        multiplier: 1,
+        defaultValue: 0
+      }
+    ],
+    redemptionOptions: [
+      { id: 'cash-back', label: 'Cash back', centsPerPoint: 1, note: '1 CPP' },
+      { id: 'chase-travel', label: 'Chase Travel', centsPerPoint: 1.25, note: '1.25 CPP' },
+      { id: 'transfer-partners', label: 'Transfer partners', centsPerPoint: 2, note: '2 CPP' }
+    ],
+    defaultRedemptionId: 'chase-travel',
+    annualPointsBonus: {
+      label: '10% anniversary points bonus',
+      note: 'Calculated as 10% of the annual spend you route to this card and applied in year 2 only.',
+      pointsPerDollar: 0.1
+    },
+    credits: [
+      {
+        id: 'annual-hotel-credit',
+        label: 'Annual Chase Travel hotel credit',
+        note: 'Up to $50 per account anniversary year',
+        defaultValue: 0
+      },
+      {
+        id: 'dashpass-membership',
+        label: 'DashPass membership',
+        note: '$120 value for 12 months when activated by 12/31/27',
+        defaultValue: 0
+      },
+      {
+        id: 'doordash-promo',
+        label: 'DoorDash monthly promo',
+        note: 'Up to $10 per month on non-restaurant orders through 12/31/27',
+        defaultValue: 0
+      }
+    ],
+    benefits: [
+      { id: 'transfer-partners', label: '1:1 transfer-partner flexibility', defaultValue: 0 },
+      { id: 'trip-cancellation', label: 'Trip cancellation / interruption coverage', defaultValue: 0 },
+      { id: 'trip-delay', label: 'Trip delay reimbursement', defaultValue: 0 },
+      { id: 'baggage-delay', label: 'Baggage delay insurance', defaultValue: 0 },
+      { id: 'primary-rental', label: 'Primary rental-car coverage', defaultValue: 0 },
+      { id: 'no-foreign-transaction-fees', label: 'No foreign transaction fees', defaultValue: 0 }
+    ],
+    timingAdjustments: {
+      firstYearLabel: 'Year 1-only extras',
+      firstYearNote:
+        'Use this for limited-time onboarding value. The built-in 10% anniversary points bonus is excluded from year 1.',
+      firstYearDefaultValue: 0,
+      renewalLabel: 'Renewal-only extras',
+      renewalNote:
+        'Year 2 already includes the built-in 10% anniversary points bonus on the spend above, so only add extras beyond that.',
+      renewalDefaultValue: 0
+    }
+  },
+  {
+    id: 'citi-strata-elite',
+    slug: 'citi-strata-elite-card',
+    name: 'Citi Strata Elite Card',
+    shortName: 'Strata Elite',
+    issuer: 'Citi',
+    headline: 'Premium upside if you can actually use Citi Travel, lounge access, and the card’s richer credits.',
+    description:
+      'Best when you want a Citi premium card with heavy travel-portal upside, richer lounge-style perks, and a higher annual fee that still needs to earn its keep.',
+    offerCurrencyLabel: 'ThankYou points',
+    offerCurrencyShortLabel: 'TYP',
+    annualFee: 595,
+    eligibilityNote:
+      'Bonus points are not available if you received a new account bonus for Citi Strata Elite in the past 48 months, or converted another Citi card with a recent new-account bonus into Strata Elite during that window.',
+    welcomeOffer: {
+      offerPresets: [80000],
+      defaultPoints: 80000,
+      spendRequired: 4000,
+      spendWindowMonths: 3
+    },
+    spendCategories: [
+      {
+        id: 'citi-travel-hotels-cars-attractions',
+        label: 'Hotels, car rentals, and attractions booked through Citi Travel',
+        note: '12x points',
+        emoji: '🏨',
+        multiplier: 12,
+        defaultValue: 0
+      },
+      {
+        id: 'citi-travel-air-travel',
+        label: 'Air travel booked through Citi Travel',
+        note: '6x points',
+        emoji: '✈️',
+        multiplier: 6,
+        defaultValue: 0
+      },
+      {
+        id: 'citi-nights-dining',
+        label: 'Citi Nights restaurant purchases, Fri-Sat 6 PM to 6 AM ET',
+        note: '6x points',
+        emoji: '🌙',
+        multiplier: 6,
+        defaultValue: 0
+      },
+      {
+        id: 'other-dining',
+        label: 'Restaurant purchases outside Citi Nights',
+        note: '3x points',
+        emoji: '🍽️',
+        multiplier: 3,
+        defaultValue: 0
+      },
+      {
+        id: 'all-other',
+        label: 'All other purchases',
+        note: '1.5x points',
+        emoji: '💳',
+        multiplier: 1.5,
+        defaultValue: 0
+      }
+    ],
+    redemptionOptions: [
+      { id: 'cash-back', label: 'Cash back', centsPerPoint: 1, note: '1 CPP' },
+      { id: 'citi-travel', label: 'Citi Travel', centsPerPoint: 1, note: '1 CPP' },
+      { id: 'transfer-partners', label: 'Transfer partners', centsPerPoint: 1.8, note: '1.8 CPP' }
+    ],
+    defaultRedemptionId: 'citi-travel',
+    credits: [
+      {
+        id: 'annual-hotel-benefit',
+        label: 'Annual hotel benefit',
+        note: 'Up to $300 off one Citi Travel hotel stay of 2 nights or more each calendar year',
+        defaultValue: 0
+      },
+      {
+        id: 'annual-splurge-credit',
+        label: 'Annual Splurge Credit',
+        note: 'Up to $200 per calendar year across up to 2 eligible brands',
+        defaultValue: 0
+      },
+      {
+        id: 'annual-blacklane-credit',
+        label: 'Annual Blacklane credit',
+        note: 'Up to $100 Jan-Jun and up to $100 Jul-Dec',
+        defaultValue: 0
+      },
+      {
+        id: 'global-entry-credit',
+        label: 'Global Entry / TSA PreCheck credit',
+        note: 'Up to $120 every 4 years',
+        defaultValue: 0
+      }
+    ],
+    benefits: [
+      { id: 'transfer-flexibility', label: 'ThankYou transfer flexibility', defaultValue: 0 },
+      { id: 'priority-pass', label: 'Priority Pass Select membership', defaultValue: 0 },
+      { id: 'admirals-club-passes', label: '4 Admirals Club lounge passes', defaultValue: 0 },
+      { id: 'no-foreign-transaction-fees', label: 'No foreign transaction fees', defaultValue: 0 },
+      { id: 'trip-cancellation', label: 'Enhanced trip cancellation / interruption protection', defaultValue: 0 },
+      { id: 'trip-delay', label: 'Trip delay protection', defaultValue: 0 },
+      { id: 'lost-or-damaged-luggage', label: 'Lost or damaged luggage protection', defaultValue: 0 },
+      { id: 'rental-car-protection', label: 'Rental-car protection', defaultValue: 0 },
+      { id: 'citi-entertainment', label: 'Citi Entertainment access', defaultValue: 0 }
+    ],
+    timingAdjustments: {
+      firstYearLabel: 'Year 1-only extras',
+      firstYearNote: 'Use this for one-time onboarding value or unusually favorable first-year timing.',
+      firstYearDefaultValue: 0,
+      renewalLabel: 'Renewal-only extras',
+      renewalNote: 'Use this only for keep value beyond the credits, lounge access, and points math already modeled above.',
+      renewalDefaultValue: 0
+    }
   }
 ] as const satisfies ReadonlyArray<PremiumCardProfile>;
 
@@ -548,7 +1092,13 @@ export function calculatePremiumCardScenario(
     };
   });
 
+  const totalSpend = spendBreakdown.reduce((sum, category) => sum + category.spend, 0);
   const spendPoints = spendBreakdown.reduce((sum, category) => sum + category.pointsEarned, 0);
+  const annualBonusPoints = profile.annualPointsBonus
+    ? Math.round(totalSpend * profile.annualPointsBonus.pointsPerDollar)
+    : 0;
+  const annualBonusPointsYear1 = profile.annualPointsBonus?.appliesInYear1 ? annualBonusPoints : 0;
+  const annualBonusPointsYear2 = annualBonusPoints;
   const recurringCreditsValue = profile.credits.reduce(
     (sum, credit) => sum + clampMoney(scenario.credits[credit.id] ?? 0),
     0
@@ -565,14 +1115,16 @@ export function calculatePremiumCardScenario(
     : 0;
   const welcomeOfferPoints =
     scenario.eligibleForBonus && scenario.canMeetSpend ? clampMoney(scenario.offerPoints) : 0;
-  const totalPointsYear1 = welcomeOfferPoints + spendPoints;
-  const totalPointsYear2 = spendPoints;
+  const totalPointsYear1 = welcomeOfferPoints + spendPoints + annualBonusPointsYear1;
+  const totalPointsYear2 = spendPoints + annualBonusPointsYear2;
   const pointsValueYear1 = pointsToDollars(totalPointsYear1, centsPerPoint);
   const pointsValueYear2 = pointsToDollars(totalPointsYear2, centsPerPoint);
 
   return {
     welcomeOfferPoints,
     spendPoints,
+    annualBonusPointsYear1,
+    annualBonusPointsYear2,
     totalPointsYear1,
     totalPointsYear2,
     centsPerPoint,
