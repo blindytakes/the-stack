@@ -28,7 +28,12 @@ describe('cards-client', () => {
               totalBenefitsValue: 0,
               plannerBenefitsValue: 0
             }
-          ]
+          ],
+          pagination: {
+            total: 1,
+            limit: 100,
+            offset: 0
+          }
         })
       })
     );

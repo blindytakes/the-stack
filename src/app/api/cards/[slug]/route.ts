@@ -1,7 +1,5 @@
-import { NextResponse } from 'next/server';
-import { instrumentedApi } from '@/lib/api-route';
+import { createApiRoute, jsonFromServiceResult } from '@/lib/api-route';
 import { apiRateLimits } from '@/lib/api-rate-limits';
-import { applyIpRateLimit } from '@/lib/rate-limit';
 import { getCardDetail } from '@/lib/services/cards-service';
 
 export async function GET(
@@ -10,15 +8,10 @@ export async function GET(
 ) {
   const { slug } = await params;
 
-  return instrumentedApi('/api/cards/[slug]', 'GET', async () => {
-    const rateLimited = await applyIpRateLimit(req, apiRateLimits.cardDetail);
-    if (rateLimited) return rateLimited;
-
-    const result = await getCardDetail(slug);
-    if (!result.ok) {
-      return NextResponse.json({ error: result.error }, { status: result.status });
-    }
-
-    return NextResponse.json(result.data);
-  });
+  return createApiRoute({
+    route: '/api/cards/[slug]',
+    method: 'GET',
+    rateLimit: apiRateLimits.cardDetail,
+    handler: async () => jsonFromServiceResult(await getCardDetail(slug))
+  })(req);
 }

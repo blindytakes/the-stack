@@ -1,8 +1,5 @@
-import { NextResponse } from 'next/server';
-import { instrumentedApi } from '@/lib/api-route';
+import { createApiRoute, jsonFromServiceResult } from '@/lib/api-route';
 import { apiRateLimits } from '@/lib/api-rate-limits';
-import { badRequest } from '@/lib/api-helpers';
-import { applyIpRateLimit } from '@/lib/rate-limit';
 import { getCardsList } from '@/lib/services/cards-service';
 
 /**
@@ -13,25 +10,20 @@ import { getCardsList } from '@/lib/services/cards-service';
  * - Load active card records from the canonical card data service.
  * - Apply filtering + pagination in-process and return metadata for clients.
  */
-export async function GET(req: Request) {
-  return instrumentedApi('/api/cards', 'GET', async () => {
-    const rateLimited = await applyIpRateLimit(req, apiRateLimits.cardsList);
-    if (rateLimited) return rateLimited;
-
+export const GET = createApiRoute({
+  route: '/api/cards',
+  method: 'GET',
+  rateLimit: apiRateLimits.cardsList,
+  handler: async (req: Request) => {
     const url = new URL(req.url);
-    const result = await getCardsList({
-      issuer: url.searchParams.get('issuer') ?? undefined,
-      category: url.searchParams.get('category') ?? undefined,
-      maxFee: url.searchParams.get('maxFee') ?? undefined,
-      limit: url.searchParams.get('limit') ?? undefined,
-      offset: url.searchParams.get('offset') ?? undefined
-    });
-    if (!result.ok) {
-      if (result.status === 400) {
-        return badRequest(result.error);
-      }
-      return NextResponse.json({ error: result.error }, { status: result.status });
-    }
-    return NextResponse.json(result.data);
-  });
-}
+    return jsonFromServiceResult(
+      await getCardsList({
+        issuer: url.searchParams.get('issuer') ?? undefined,
+        category: url.searchParams.get('category') ?? undefined,
+        maxFee: url.searchParams.get('maxFee') ?? undefined,
+        limit: url.searchParams.get('limit') ?? undefined,
+        offset: url.searchParams.get('offset') ?? undefined
+      })
+    );
+  }
+});

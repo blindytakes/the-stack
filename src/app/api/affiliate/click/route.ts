@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { instrumentedApi } from '@/lib/api-route';
+import { createApiRoute } from '@/lib/api-route';
 import { apiRateLimits } from '@/lib/api-rate-limits';
 import { badRequest } from '@/lib/api-helpers';
-import { applyIpRateLimit } from '@/lib/rate-limit';
 import { resolveAffiliateClickRedirect } from '@/lib/services/affiliate-service';
 
 /**
@@ -14,17 +13,16 @@ import { resolveAffiliateClickRedirect } from '@/lib/services/affiliate-service'
  * - Enforce host allowlist before redirecting to an external URL.
  * - Emit click tracking metrics before issuing a 307 redirect.
  */
-
-export async function GET(req: Request) {
-  return instrumentedApi('/api/affiliate/click', 'GET', async () => {
-    const rateLimited = await applyIpRateLimit(req, apiRateLimits.affiliateClick);
-    if (rateLimited) return rateLimited;
-
+export const GET = createApiRoute({
+  route: '/api/affiliate/click',
+  method: 'GET',
+  rateLimit: apiRateLimits.affiliateClick,
+  handler: async (req: Request) => {
     const resolution = resolveAffiliateClickRedirect(req.url);
     if (!resolution.ok) {
       return badRequest(resolution.error);
     }
 
     return NextResponse.redirect(resolution.redirectUrl, { status: 307 });
-  });
-}
+  }
+});

@@ -135,11 +135,11 @@ const cardVisuals: Record<
     selectorArtEffectClassName: 'brightness-[1.12] saturate-[1.36] contrast-[1.04]'
   },
   'amex-green': {
-    accentRgb: '133 170 146',
-    highlightRgb: '214 230 219',
-    accentClassName: 'text-[#85aa92]',
-    accentBarClassName: 'bg-[#85aa92]',
-    accentGlowClassName: 'bg-[#85aa92]/28',
+    accentRgb: '195 235 205',
+    highlightRgb: '237 250 241',
+    accentClassName: 'text-[#cdf1d5]',
+    accentBarClassName: 'bg-[#cdf1d5]',
+    accentGlowClassName: 'bg-[#d5f5dc]/38',
     selectorWidthClassName: 'max-w-[17.1rem]',
     laneLabel: 'Travel + transit',
     selectorSummary: 'Best when broad travel and transit spend matter more than lounges or monthly coupon-book credits.',
@@ -418,6 +418,14 @@ function buildFieldInteractionKey(section: string, id: string) {
 }
 
 const numericPlaceholderClassName = 'placeholder:text-text-primary/70 focus:placeholder:text-transparent';
+const activeRowSurfaceClassName =
+  'border-[rgb(var(--card-accent-rgb)/0.46)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.1)_44%,rgb(var(--card-accent-rgb)_/_0.08)),linear-gradient(90deg,rgb(var(--card-accent-rgb)_/_0.26),rgb(var(--card-accent-rgb)_/_0.19)_34%,rgb(var(--card-accent-rgb)_/_0.13)_72%,rgb(var(--card-accent-rgb)_/_0.09))] shadow-[0_18px_42px_rgba(0,0,0,0.2),inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.24)]';
+const activeInsetSurfaceClassName =
+  'border-[rgb(var(--card-accent-rgb)/0.46)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.16),rgb(var(--card-accent-rgb)_/_0.24)_44%,rgb(var(--card-accent-rgb)_/_0.15))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.28)]';
+const activeIconSurfaceClassName =
+  'border-[rgb(var(--card-accent-rgb)/0.48)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.18),rgb(var(--card-accent-rgb)_/_0.24)_42%,rgb(var(--card-accent-rgb)_/_0.14))] shadow-[0_8px_20px_rgba(0,0,0,0.12),inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.3)]';
+const activeBadgeSurfaceClassName =
+  'border-[rgb(var(--card-accent-rgb)/0.46)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.16),rgb(var(--card-accent-rgb)_/_0.22))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.22)]';
 
 function SelectorCard({
   profile,
@@ -617,7 +625,7 @@ function CurrencyInput({
     <label
       className={`relative block overflow-hidden rounded-[1.3rem] border px-4 py-3 transition ${
         hasValue
-          ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[linear-gradient(90deg,rgb(var(--card-highlight-rgb)_/_0.07),rgb(var(--card-accent-rgb)_/_0.13)_16%,rgba(17,24,39,0.98)_38%,rgba(10,14,24,0.99))] shadow-[0_18px_42px_rgba(0,0,0,0.2),inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.22)]'
+          ? activeRowSurfaceClassName
           : 'border-white/8 bg-[linear-gradient(180deg,rgba(13,19,31,0.96),rgba(9,13,22,0.98))]'
       }`}
     >
@@ -648,7 +656,7 @@ function CurrencyInput({
         <div
           className={`flex w-full items-center rounded-[1rem] border px-3 sm:w-32 sm:shrink-0 ${
             hasValue
-              ? 'border-[rgb(var(--card-accent-rgb)/0.44)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.18)_42%,rgb(var(--card-accent-rgb)_/_0.08))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.24)]'
+              ? activeInsetSurfaceClassName
               : 'border-white/8 bg-[#0f1726]'
           }`}
         >
@@ -697,7 +705,7 @@ function SpendCategoryCard({
     <label
       className={`relative block overflow-hidden rounded-[1.3rem] border px-4 py-3.5 transition ${
         hasValue
-          ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[linear-gradient(90deg,rgb(var(--card-highlight-rgb)_/_0.07),rgb(var(--card-accent-rgb)_/_0.13)_16%,rgba(17,24,39,0.98)_38%,rgba(10,14,24,0.99))] shadow-[0_18px_42px_rgba(0,0,0,0.2),inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.22)]'
+          ? activeRowSurfaceClassName
           : 'border-white/8 bg-[linear-gradient(180deg,rgba(13,19,31,0.96),rgba(9,13,22,0.98))]'
       }`}
     >
@@ -714,7 +722,7 @@ function SpendCategoryCard({
             <div
               className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] border text-[rgb(var(--card-accent-rgb))] ${
                 hasValue
-                  ? 'border-[rgb(var(--card-accent-rgb)/0.44)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.14),rgb(var(--card-accent-rgb)_/_0.2))] shadow-[0_8px_20px_rgba(0,0,0,0.12),inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.28)]'
+                  ? activeIconSurfaceClassName
                   : 'border-white/8 bg-[#0f1726]'
               }`}
             >
@@ -731,7 +739,7 @@ function SpendCategoryCard({
             <span
               className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
                 hasValue
-                  ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.18))] text-white'
+                  ? `${activeBadgeSurfaceClassName} text-white`
                   : 'border-[rgb(var(--card-accent-rgb)/0.18)] bg-[rgb(var(--card-accent-rgb)/0.1)] text-[rgb(var(--card-accent-rgb))]'
               }`}
             >
@@ -744,7 +752,7 @@ function SpendCategoryCard({
           <div
             className={`flex items-center rounded-[1rem] border px-3 ${
               hasValue
-                ? 'border-[rgb(var(--card-accent-rgb)/0.44)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.18)_42%,rgb(var(--card-accent-rgb)_/_0.08))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.24)]'
+                ? activeInsetSurfaceClassName
                 : 'border-white/8 bg-[#0f1726]'
             }`}
           >

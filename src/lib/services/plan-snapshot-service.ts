@@ -1,5 +1,6 @@
 import { Prisma } from '@prisma/client';
 import { db, isDatabaseConfigured } from '@/lib/db';
+import { loadStoredPlanSnapshot } from '@/lib/plan-snapshot-loader';
 import { planSnapshotDataSchema, type PlanSnapshotData } from '@/lib/plan-email';
 
 export type SavePlanSnapshotResult =
@@ -80,20 +81,9 @@ export async function getSavedPlanSnapshot(
     };
   }
 
-  try {
-    const snapshot = await db.planSnapshot.findUnique({
-      where: { id: planId },
-      select: {
-        id: true,
-        createdAt: true,
-        totalValue: true,
-        cardsOnlyMode: true,
-        recommendations: true,
-        milestones: true
-      }
-    });
-
-    if (!snapshot) {
+  const result = await loadStoredPlanSnapshot(planId);
+  if (!result.ok) {
+    if (result.reason === 'not_found') {
       return {
         ok: false,
         status: 404,
@@ -101,43 +91,16 @@ export async function getSavedPlanSnapshot(
       };
     }
 
-    const parsed = planSnapshotDataSchema.safeParse({
-      totalValue: snapshot.totalValue,
-      cardsOnlyMode: snapshot.cardsOnlyMode,
-      recommendations: snapshot.recommendations,
-      milestones: snapshot.milestones
-    });
-
-    if (!parsed.success) {
-      console.error('[plan-snapshot] stored snapshot payload invalid', {
-        planId,
-        issues: parsed.error.issues
-      });
-      return {
-        ok: false,
-        status: 503,
-        error: 'Saved plan is temporarily unavailable.'
-      };
-    }
-
-    return {
-      ok: true,
-      status: 200,
-      body: {
-        planId: snapshot.id,
-        createdAt: snapshot.createdAt,
-        snapshot: parsed.data
-      }
-    };
-  } catch (error) {
-    console.error('[plan-snapshot] failed to load saved plan snapshot', {
-      planId,
-      error: error instanceof Error ? error.message : String(error)
-    });
     return {
       ok: false,
       status: 503,
       error: 'Saved plan is temporarily unavailable.'
     };
   }
+
+  return {
+    ok: true,
+    status: 200,
+    body: result.body
+  };
 }

@@ -1,7 +1,9 @@
 import { z } from 'zod';
 import {
-  type CardDetail,
-  type CardRecord,
+  cardDetailResponseSchema,
+  type CardDetailResponse,
+  cardsListResponseSchema,
+  type CardsListResponse,
   cardsQuerySchema,
   filterCards,
   getCardBySlug,
@@ -12,14 +14,7 @@ import {
 export type CardsListResult =
   | {
       ok: true;
-      data: {
-        results: CardRecord[];
-        pagination: {
-          total: number;
-          limit: number;
-          offset: number;
-        };
-      };
+      data: CardsListResponse;
     }
   | { ok: false; status: 400 | 500; error: string };
 
@@ -43,17 +38,18 @@ export async function getCardsList(query: CardsListQueryInput): Promise<CardsLis
     const { cards: allCards } = await getCardsData();
     const filtered = filterCards(allCards, parsed.data);
     const results = paginateCards(filtered, parsed.data);
+    const data = cardsListResponseSchema.parse({
+      results,
+      pagination: {
+        total: filtered.length,
+        limit: parsed.data.limit,
+        offset: parsed.data.offset
+      }
+    });
 
     return {
       ok: true,
-      data: {
-        results,
-        pagination: {
-          total: filtered.length,
-          limit: parsed.data.limit,
-          offset: parsed.data.offset
-        }
-      }
+      data
     };
   } catch (error) {
     console.error('[cards-service] failed to load cards list', {
@@ -68,7 +64,7 @@ export async function getCardsList(query: CardsListQueryInput): Promise<CardsLis
 }
 
 export type CardDetailResult =
-  | { ok: true; data: { card: CardDetail } }
+  | { ok: true; data: CardDetailResponse }
   | { ok: false; status: 400 | 404 | 500; error: string };
 
 export async function getCardDetail(slugInput: string): Promise<CardDetailResult> {
@@ -83,7 +79,10 @@ export async function getCardDetail(slugInput: string): Promise<CardDetailResult
       return { ok: false, status: 404, error: 'Card not found' };
     }
 
-    return { ok: true, data: { card } };
+    return {
+      ok: true,
+      data: cardDetailResponseSchema.parse({ card })
+    };
   } catch (error) {
     console.error('[cards-service] failed to load card detail', {
       slug: parsed.data,

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { instrumentedApi } from '@/lib/api-route';
+import { createApiRoute } from '@/lib/api-route';
 import { authorizeHealthCheck } from '@/lib/health-auth';
 import { runHealthCheck } from '@/lib/services/health-service';
 
@@ -10,8 +10,10 @@ import { runHealthCheck } from '@/lib/services/health-service';
  * - `ok`: database reachable and newsletter provider config healthy
  * - `degraded`: missing DB config, failed DB ping, or newsletter provider misconfig
  */
-export async function GET(req: Request) {
-  return instrumentedApi('/api/health', 'GET', async () => {
+export const GET = createApiRoute({
+  route: '/api/health',
+  method: 'GET',
+  handler: async (req: Request) => {
     const auth = authorizeHealthCheck(req);
     if (!auth.ok) {
       return NextResponse.json(
@@ -26,5 +28,5 @@ export async function GET(req: Request) {
 
     const result = await runHealthCheck();
     return NextResponse.json(result.body, { status: result.status });
-  });
-}
+  }
+});

@@ -1,26 +1,21 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { BankingDirectoryFilterPanel } from '@/components/banking/banking-directory-filter-panel';
 import { BankingDirectoryResults } from '@/components/banking/banking-directory-results';
+import { useBankingDirectoryState } from '@/components/banking/use-banking-directory-state';
 import { CardsDirectoryFilterPanel } from '@/components/cards/cards-directory-filter-panel';
 import { CardsDirectoryResults } from '@/components/cards/cards-directory-results';
-import type { BankingBonusListItem, BankingBonusesSort } from '@/lib/banking-bonuses';
+import { useCardsDirectoryState } from '@/components/cards/use-cards-directory-state';
+import type { BankingBonusListItem } from '@/lib/banking-bonuses';
 import {
   buildActiveBankingFilterChips,
   buildBankingDirectorySearchParams,
   countActiveBankingDirectoryFilters,
   defaultBankingDirectoryFilters,
-  filterAndSortBankingOffers,
   parseBankingDirectoryFilters,
   type BankingDirectoryFilters,
-  type ApyFilterValue,
-  type BankingDirectoryFilterKey,
-  type CashRequirementFilterValue,
   type CustomerTypeFilterValue,
-  type DirectDepositFilterValue,
-  type TimelineFilterValue
 } from '@/lib/banking-directory-explorer';
 import type { CardRecord } from '@/lib/cards';
 import {
@@ -28,19 +23,15 @@ import {
   buildIssuerOptions,
   countActiveCardsDirectoryFilters,
   defaultCardsDirectoryFilters,
-  filterAndSortCards,
   parseCardsDirectoryFilters,
   type CardsDirectoryFilters,
   type CardTypeFilterValue,
-  type ForeignFeeFilterValue,
-  type RewardTypeFilterValue,
-  type SpendCategoryFilterValue,
-  type SortValue
 } from '@/lib/cards-directory-explorer';
 
 type BusinessOffersExplorerProps = {
   businessCards: CardRecord[];
   businessOffers: BankingBonusListItem[];
+  initialSearchParams: string;
 };
 
 type BusinessBrowseView = 'cards' | 'banking';
@@ -55,6 +46,14 @@ function getBusinessBrowseView(value: string | null): BusinessBrowseView {
 
 const businessCardsPageCardType: CardTypeFilterValue = 'business';
 const businessBankingPageCustomerType: CustomerTypeFilterValue = 'business';
+const defaultBusinessCardsDirectoryFilters: CardsDirectoryFilters = {
+  ...defaultCardsDirectoryFilters,
+  cardType: businessCardsPageCardType
+};
+const defaultBusinessBankingDirectoryFilters: BankingDirectoryFilters = {
+  ...defaultBankingDirectoryFilters,
+  customerType: businessBankingPageCustomerType
+};
 const cardsDirectoryQueryParamKeys = ['issuer', 'spend', 'intl', 'reward', 'bonus', 'fee', 'type', 'sort'];
 const bankingDirectoryQueryParamKeys = [
   'accountType',
@@ -107,203 +106,93 @@ function buildBusinessBankingSearchParams(
   return nextParams;
 }
 
+function parseBusinessCardsDirectoryFilters(
+  searchParams: URLSearchParams,
+  issuerOptions: ReturnType<typeof buildIssuerOptions>
+) {
+  return {
+    ...parseCardsDirectoryFilters(searchParams, issuerOptions),
+    cardType: businessCardsPageCardType
+  };
+}
+
+function countBusinessCardFilters(filters: CardsDirectoryFilters) {
+  return countActiveCardsDirectoryFilters({
+    ...filters,
+    cardType: defaultCardsDirectoryFilters.cardType
+  });
+}
+
+function parseBusinessBankingDirectoryFilters(searchParams: URLSearchParams) {
+  return {
+    ...parseBankingDirectoryFilters(searchParams),
+    customerType: businessBankingPageCustomerType
+  };
+}
+
+function countBusinessBankingFilters(filters: BankingDirectoryFilters) {
+  return countActiveBankingDirectoryFilters({
+    ...filters,
+    customerType: defaultBankingDirectoryFilters.customerType
+  });
+}
+
+function buildBusinessBankingFilterChips(filters: BankingDirectoryFilters) {
+  return buildActiveBankingFilterChips({
+    ...filters,
+    customerType: defaultBankingDirectoryFilters.customerType
+  });
+}
+
 export function BusinessOffersExplorer({
   businessCards,
-  businessOffers
+  businessOffers,
+  initialSearchParams
 }: BusinessOffersExplorerProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const searchParamsString = searchParams.toString();
-  const hasHydratedFromUrl = useRef(false);
-  const issuerOptions = useMemo(() => buildIssuerOptions(businessCards), [businessCards]);
   const view = getBusinessBrowseView(searchParams.get('view'));
-
-  const [cardsIssuer, setCardsIssuer] = useState(defaultCardsDirectoryFilters.issuer);
-  const [cardsSpendCategory, setCardsSpendCategory] = useState<SpendCategoryFilterValue>(
-    defaultCardsDirectoryFilters.spendCategory
-  );
-  const [cardsForeignFee, setCardsForeignFee] = useState<ForeignFeeFilterValue>(
-    defaultCardsDirectoryFilters.foreignFee
-  );
-  const [cardsRewardType, setCardsRewardType] = useState<RewardTypeFilterValue>(
-    defaultCardsDirectoryFilters.rewardType
-  );
-  const [cardsSortBy, setCardsSortBy] = useState<SortValue>(defaultCardsDirectoryFilters.sortBy);
-
-  const [bankingDirectDeposit, setBankingDirectDeposit] = useState<DirectDepositFilterValue>(
-    defaultBankingDirectoryFilters.directDeposit
-  );
-  const [bankingApy, setBankingApy] = useState<ApyFilterValue>(defaultBankingDirectoryFilters.apy);
-  const [bankingCashRequirement, setBankingCashRequirement] = useState<CashRequirementFilterValue>(
-    defaultBankingDirectoryFilters.cashRequirement
-  );
-  const [bankingTimeline, setBankingTimeline] = useState<TimelineFilterValue>(
-    defaultBankingDirectoryFilters.timeline
-  );
-  const [bankingState, setBankingState] = useState(defaultBankingDirectoryFilters.state);
-  const [bankingSortBy, setBankingSortBy] = useState<BankingBonusesSort>(
-    defaultBankingDirectoryFilters.sortBy
-  );
+  const cardsState = useCardsDirectoryState(businessCards, initialSearchParams, {
+    defaultFilters: defaultBusinessCardsDirectoryFilters,
+    parseFilters: parseBusinessCardsDirectoryFilters,
+    buildSearchParams: buildBusinessCardsSearchParams,
+    countActiveFilters: countBusinessCardFilters,
+    isActive: view === 'cards'
+  });
+  const bankingState = useBankingDirectoryState(businessOffers, initialSearchParams, {
+    defaultFilters: defaultBusinessBankingDirectoryFilters,
+    parseFilters: parseBusinessBankingDirectoryFilters,
+    buildSearchParams: buildBusinessBankingSearchParams,
+    countActiveFilters: countBusinessBankingFilters,
+    buildActiveFilterChips: buildBusinessBankingFilterChips,
+    isActive: view === 'banking'
+  });
 
   function setBrowseView(nextView: BusinessBrowseView) {
     if (nextView === view) return;
 
     const params =
       nextView === 'cards'
-        ? buildBusinessCardsSearchParams(new URLSearchParams(searchParamsString), cardFilters)
-        : buildBusinessBankingSearchParams(new URLSearchParams(searchParamsString), bankingFilters);
+        ? buildBusinessCardsSearchParams(new URLSearchParams(searchParamsString), cardsState.filters)
+        : buildBusinessBankingSearchParams(
+            new URLSearchParams(searchParamsString),
+            bankingState.filters
+          );
     const nextQueryString = params.toString();
     router.replace(nextQueryString ? `${pathname}?${nextQueryString}` : pathname, { scroll: false });
   }
-
-  const cardFilters = useMemo(
-    () => ({
-      issuer: cardsIssuer,
-      spendCategory: cardsSpendCategory,
-      foreignFee: cardsForeignFee,
-      rewardType: cardsRewardType,
-      bonusFilter: defaultCardsDirectoryFilters.bonusFilter,
-      maxFee: defaultCardsDirectoryFilters.maxFee,
-      cardType: businessCardsPageCardType,
-      sortBy: cardsSortBy
-    }),
-    [cardsForeignFee, cardsIssuer, cardsRewardType, cardsSortBy, cardsSpendCategory]
-  );
-
-  const bankingFilters = useMemo(
-    () => ({
-      accountType: defaultBankingDirectoryFilters.accountType,
-      customerType: businessBankingPageCustomerType,
-      directDeposit: bankingDirectDeposit,
-      apy: bankingApy,
-      difficulty: defaultBankingDirectoryFilters.difficulty,
-      cashRequirement: bankingCashRequirement,
-      timeline: bankingTimeline,
-      stateLimited: defaultBankingDirectoryFilters.stateLimited,
-      state: bankingState,
-      sortBy: bankingSortBy
-    }),
-    [
-      bankingApy,
-      bankingCashRequirement,
-      bankingDirectDeposit,
-      bankingSortBy,
-      bankingState,
-      bankingTimeline
-    ]
-  );
-  const bankingFiltersForUi = useMemo(
-    () => ({
-      ...bankingFilters,
-      customerType: defaultBankingDirectoryFilters.customerType
-    }),
-    [bankingFilters]
-  );
-
-  useEffect(() => {
-    if (view === 'cards') {
-      const nextFilters = parseCardsDirectoryFilters(
-        new URLSearchParams(searchParamsString),
-        issuerOptions
-      );
-
-      setCardsIssuer(nextFilters.issuer);
-      setCardsSpendCategory(nextFilters.spendCategory);
-      setCardsForeignFee(nextFilters.foreignFee);
-      setCardsRewardType(nextFilters.rewardType);
-      setCardsSortBy(nextFilters.sortBy);
-    } else {
-      const nextFilters = parseBankingDirectoryFilters(new URLSearchParams(searchParamsString));
-
-      setBankingDirectDeposit(nextFilters.directDeposit);
-      setBankingApy(nextFilters.apy);
-      setBankingCashRequirement(nextFilters.cashRequirement);
-      setBankingTimeline(nextFilters.timeline);
-      setBankingState(nextFilters.state);
-      setBankingSortBy(nextFilters.sortBy);
-    }
-
-    hasHydratedFromUrl.current = true;
-  }, [issuerOptions, searchParamsString, view]);
-
-  useEffect(() => {
-    if (!hasHydratedFromUrl.current) return;
-
-    const nextParams =
-      view === 'cards'
-        ? buildBusinessCardsSearchParams(new URLSearchParams(searchParamsString), cardFilters)
-        : buildBusinessBankingSearchParams(new URLSearchParams(searchParamsString), bankingFilters);
-    const nextQueryString = nextParams.toString();
-
-    if (nextQueryString === searchParamsString) return;
-
-    router.replace(nextQueryString ? `${pathname}?${nextQueryString}` : pathname, {
-      scroll: false
-    });
-  }, [bankingFilters, cardFilters, pathname, router, searchParamsString, view]);
-
-  const filteredBusinessCards = useMemo(
-    () => filterAndSortCards(businessCards, cardFilters),
-    [businessCards, cardFilters]
-  );
-  const filteredBusinessOffers = useMemo(
-    () => filterAndSortBankingOffers(businessOffers, bankingFilters),
-    [bankingFilters, businessOffers]
-  );
-  const cardFilterCount = useMemo(
-    () =>
-      countActiveCardsDirectoryFilters({
-        ...cardFilters,
-        cardType: defaultCardsDirectoryFilters.cardType
-      }),
-    [cardFilters]
-  );
-  const bankingFilterCount = useMemo(
-    () => countActiveBankingDirectoryFilters(bankingFiltersForUi),
-    [bankingFiltersForUi]
-  );
-  const bankingActiveFilterChips = useMemo(
-    () => buildActiveBankingFilterChips(bankingFiltersForUi),
-    [bankingFiltersForUi]
-  );
-
-  const noAnnualFeeBusinessCards = filteredBusinessCards.filter((card) => card.annualFee === 0).length;
-  const activeBonusBusinessCards = filteredBusinessCards.filter(
+  const noAnnualFeeBusinessCards = cardsState.filteredSortedCards.filter(
+    (card) => card.annualFee === 0
+  ).length;
+  const activeBonusBusinessCards = cardsState.filteredSortedCards.filter(
     (card) => (card.bestSignUpBonusValue ?? 0) > 0
   ).length;
   const noDirectDepositBusinessOffers = businessOffers.filter(
     (offer) => !offer.directDeposit.required
   ).length;
   const numericApyBusinessOffers = businessOffers.filter((offer) => offer.apyPercent != null).length;
-
-  function clearBankingFilters() {
-    setBankingDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
-    setBankingApy(defaultBankingDirectoryFilters.apy);
-    setBankingCashRequirement(defaultBankingDirectoryFilters.cashRequirement);
-    setBankingTimeline(defaultBankingDirectoryFilters.timeline);
-    setBankingState(defaultBankingDirectoryFilters.state);
-    setBankingSortBy(defaultBankingDirectoryFilters.sortBy);
-  }
-
-  function clearCardFilters() {
-    setCardsIssuer(defaultCardsDirectoryFilters.issuer);
-    setCardsSpendCategory(defaultCardsDirectoryFilters.spendCategory);
-    setCardsForeignFee(defaultCardsDirectoryFilters.foreignFee);
-    setCardsRewardType(defaultCardsDirectoryFilters.rewardType);
-    setCardsSortBy(defaultCardsDirectoryFilters.sortBy);
-  }
-
-  function removeBankingFilter(key: BankingDirectoryFilterKey) {
-    if (key === 'customerType') return;
-    if (key === 'directDeposit') setBankingDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
-    if (key === 'apy') setBankingApy(defaultBankingDirectoryFilters.apy);
-    if (key === 'cashRequirement') {
-      setBankingCashRequirement(defaultBankingDirectoryFilters.cashRequirement);
-    }
-    if (key === 'timeline') setBankingTimeline(defaultBankingDirectoryFilters.timeline);
-    if (key === 'state') setBankingState(defaultBankingDirectoryFilters.state);
-  }
 
   const browseViewToggle = (
     <div className="flex justify-center">
@@ -342,71 +231,71 @@ export function BusinessOffersExplorer({
         <>
           <CardsDirectoryFilterPanel
             totalCards={businessCards.length}
-            filteredCardsCount={filteredBusinessCards.length}
+            filteredCardsCount={cardsState.filteredSortedCards.length}
             noAnnualFeeCount={noAnnualFeeBusinessCards}
             activeBonusCount={activeBonusBusinessCards}
-            activeFilterCount={cardFilterCount}
-            issuer={cardsIssuer}
-            spendCategory={cardsSpendCategory}
-            foreignFee={cardsForeignFee}
-            rewardType={cardsRewardType}
+            activeFilterCount={cardsState.activeFilterCount}
+            issuer={cardsState.issuer}
+            spendCategory={cardsState.spendCategory}
+            foreignFee={cardsState.foreignFee}
+            rewardType={cardsState.rewardType}
             showBusinessQuickFilter={false}
-            sortBy={cardsSortBy}
-            issuerOptions={issuerOptions}
+            sortBy={cardsState.sortBy}
+            issuerOptions={cardsState.issuerOptions}
             eyebrowLabel="Business Cards"
             title="Find the right bonus for your business."
             description=""
             preFilterContent={browseViewToggle}
-            onIssuerChange={setCardsIssuer}
-            onSpendCategoryChange={setCardsSpendCategory}
-            onForeignFeeChange={setCardsForeignFee}
-            onRewardTypeChange={setCardsRewardType}
-            onSortByChange={setCardsSortBy}
-            onClearFilters={clearCardFilters}
+            onIssuerChange={cardsState.setIssuer}
+            onSpendCategoryChange={cardsState.setSpendCategory}
+            onForeignFeeChange={cardsState.setForeignFee}
+            onRewardTypeChange={cardsState.setRewardType}
+            onSortByChange={cardsState.setSortBy}
+            onClearFilters={cardsState.clearFilters}
           />
 
           <CardsDirectoryResults
-            cards={filteredBusinessCards}
-            selectedCompare={[]}
+            cards={cardsState.filteredSortedCards}
+            selectedCompare={cardsState.selectedCompare}
           />
         </>
       ) : (
         <>
           <BankingDirectoryFilterPanel
-            activeFilterCount={bankingFilterCount}
-            activeFilterChips={bankingActiveFilterChips}
+            activeFilterCount={bankingState.activeFilterCount}
+            activeFilterChips={bankingState.activeFilterChips}
             totalOffers={businessOffers.length}
-            filteredOffersCount={filteredBusinessOffers.length}
+            filteredOffersCount={bankingState.filteredSortedOffers.length}
             noDirectDepositCount={noDirectDepositBusinessOffers}
             numericApyCount={numericApyBusinessOffers}
             customerType={businessBankingPageCustomerType}
-            directDeposit={bankingDirectDeposit}
-            apy={bankingApy}
-            cashRequirement={bankingCashRequirement}
-            timeline={bankingTimeline}
-            state={bankingState}
-            sortBy={bankingSortBy}
+            directDeposit={bankingState.directDeposit}
+            apy={bankingState.apy}
+            cashRequirement={bankingState.cashRequirement}
+            timeline={bankingState.timeline}
+            state={bankingState.state}
+            sortBy={bankingState.sortBy}
             eyebrowLabel="Business Banking"
             title="Find the right business bank bonus for your plan."
             description="Browse business checking and savings bonuses with the same filter treatment and offer cards used in the main banking directory."
             preFilterContent={browseViewToggle}
             showCustomerTypeFilter={false}
             onCustomerTypeChange={() => {}}
-            onDirectDepositChange={setBankingDirectDeposit}
-            onApyChange={setBankingApy}
-            onCashRequirementChange={setBankingCashRequirement}
-            onTimelineChange={setBankingTimeline}
-            onStateChange={setBankingState}
-            onSortByChange={setBankingSortBy}
-            onRemoveFilter={removeBankingFilter}
-            onReset={clearBankingFilters}
+            onDirectDepositChange={bankingState.setDirectDeposit}
+            onApyChange={bankingState.setApy}
+            onCashRequirementChange={bankingState.setCashRequirement}
+            onTimelineChange={bankingState.setTimeline}
+            onStateChange={bankingState.setState}
+            onSortByChange={bankingState.setSortBy}
+            onRemoveFilter={bankingState.removeFilter}
+            onReset={bankingState.clearFilters}
           />
 
           <BankingDirectoryResults
             allOffers={businessOffers}
-            offers={filteredBusinessOffers}
-            activeFilterCount={bankingFilterCount}
-            onClearFilters={clearBankingFilters}
+            offers={bankingState.filteredSortedOffers}
+            activeFilterCount={bankingState.activeFilterCount}
+            onClearFilters={bankingState.clearFilters}
           />
         </>
       )}

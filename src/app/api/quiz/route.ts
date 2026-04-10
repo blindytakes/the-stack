@@ -1,8 +1,6 @@
-import { NextResponse } from 'next/server';
-import { instrumentedApi } from '@/lib/api-route';
+import { createApiRoute, jsonFromServiceResult } from '@/lib/api-route';
 import { apiRateLimits } from '@/lib/api-rate-limits';
-import { badRequest, parseJsonBody } from '@/lib/api-helpers';
-import { applyIpRateLimit } from '@/lib/rate-limit';
+import { parseJsonBody } from '@/lib/api-helpers';
 import { scoreQuiz } from '@/lib/services/quiz-service';
 
 /**
@@ -14,19 +12,12 @@ import { scoreQuiz } from '@/lib/services/quiz-service';
  * - Score and rank matches with quiz-engine heuristics.
  * - Return ranked recommendations for client rendering.
  */
-export async function POST(req: Request) {
-  return instrumentedApi('/api/quiz', 'POST', async () => {
-    const rateLimited = await applyIpRateLimit(req, apiRateLimits.quiz);
-    if (rateLimited) return rateLimited;
-
+export const POST = createApiRoute({
+  route: '/api/quiz',
+  method: 'POST',
+  rateLimit: apiRateLimits.quiz,
+  handler: async (req: Request) => {
     const body = await parseJsonBody(req);
-    const result = await scoreQuiz(body);
-    if (!result.ok) {
-      if (result.status === 400) {
-        return badRequest(result.error);
-      }
-      return NextResponse.json({ error: result.error }, { status: result.status });
-    }
-    return NextResponse.json(result.data);
-  });
-}
+    return jsonFromServiceResult(await scoreQuiz(body));
+  }
+});

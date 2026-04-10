@@ -1,13 +1,13 @@
-import { db, isDatabaseConfigured } from '@/lib/db';
+import { isDatabaseConfigured } from '@/lib/db';
 import {
   buildPlanEmailBody,
   buildPlanEmailHtml,
   buildSavedPlanUrl,
   buildPlanEmailSubject,
-  planSnapshotDataSchema,
   toPlanEmailContent
 } from '@/lib/plan-email';
 import { getEmailEnv } from '@/lib/env';
+import { loadStoredPlanSnapshot } from '@/lib/plan-snapshot-loader';
 
 export type SendSavedPlanEmailInput = {
   to: string;
@@ -46,22 +46,16 @@ export async function sendSavedPlanEmail(
     };
   }
 
-  let snapshot;
-  try {
-    snapshot = await db.planSnapshot.findUnique({
-      where: { id: input.planId },
-      select: {
-        totalValue: true,
-        cardsOnlyMode: true,
-        recommendations: true,
-        milestones: true
-      }
-    });
-  } catch (error) {
-    console.error('[email-plan] failed to load stored plan snapshot', {
-      planId: input.planId,
-      error: error instanceof Error ? error.message : String(error)
-    });
+  const loadedSnapshot = await loadStoredPlanSnapshot(input.planId);
+  if (!loadedSnapshot.ok) {
+    if (loadedSnapshot.reason === 'not_found') {
+      return {
+        ok: false,
+        status: 404,
+        error: 'Plan not found'
+      };
+    }
+
     return {
       ok: false,
       status: 503,
@@ -69,34 +63,7 @@ export async function sendSavedPlanEmail(
     };
   }
 
-  if (!snapshot) {
-    return {
-      ok: false,
-      status: 404,
-      error: 'Plan not found'
-    };
-  }
-
-  const parsedSnapshot = planSnapshotDataSchema.safeParse({
-    totalValue: snapshot.totalValue,
-    cardsOnlyMode: snapshot.cardsOnlyMode,
-    recommendations: snapshot.recommendations,
-    milestones: snapshot.milestones
-  });
-
-  if (!parsedSnapshot.success) {
-    console.error('[email-plan] stored snapshot payload invalid', {
-      planId: input.planId,
-      issues: parsedSnapshot.error.issues
-    });
-    return {
-      ok: false,
-      status: 503,
-      error: 'Plan email is temporarily unavailable.'
-    };
-  }
-
-  const emailContent = toPlanEmailContent(parsedSnapshot.data, new Date());
+  const emailContent = toPlanEmailContent(loadedSnapshot.body.snapshot, new Date());
   const subject = buildPlanEmailSubject(
     emailContent.totalValue,
     emailContent.cardsOnlyMode

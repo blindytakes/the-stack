@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useMemo } from 'react';
 import type { BankingBonusListItem, BankingBonusesSort } from '@/lib/banking-bonuses';
 import {
   type ApyFilterValue,
+  type BankingActiveFilterChip,
+  type BankingDirectoryFilters,
   buildActiveBankingFilterChips,
   buildBankingDirectorySearchParams,
   countActiveBankingDirectoryFilters,
@@ -17,84 +18,57 @@ import {
   type DirectDepositFilterValue,
   type TimelineFilterValue
 } from '@/lib/banking-directory-explorer';
+import { useUrlSyncedFilters } from '@/components/directory/use-url-synced-filters';
+
+type BankingDirectoryStateOptions = {
+  defaultFilters?: BankingDirectoryFilters;
+  parseFilters?: (searchParams: URLSearchParams) => BankingDirectoryFilters;
+  buildSearchParams?: (
+    currentSearchParams: URLSearchParams,
+    filters: BankingDirectoryFilters
+  ) => URLSearchParams;
+  countActiveFilters?: (filters: BankingDirectoryFilters) => number;
+  buildActiveFilterChips?: (
+    filters: BankingDirectoryFilters
+  ) => BankingActiveFilterChip[];
+  isActive?: boolean;
+};
 
 export function useBankingDirectoryState(
   offers: BankingBonusListItem[],
-  initialSearchParams: string
+  initialSearchParams: string,
+  options: BankingDirectoryStateOptions = {}
 ) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const searchParamsString = searchParams.toString();
-  const hasHydratedFromUrl = useRef(false);
-  const initialFilters = useMemo(
-    () => parseBankingDirectoryFilters(new URLSearchParams(initialSearchParams)),
-    [initialSearchParams]
+  const defaultFilters = options.defaultFilters ?? defaultBankingDirectoryFilters;
+  const parseFilters = useCallback(
+    (searchParams: URLSearchParams) =>
+      (options.parseFilters ?? parseBankingDirectoryFilters)(searchParams),
+    [options.parseFilters]
   );
-
-  const [customerType, setCustomerType] = useState<CustomerTypeFilterValue>(
-    initialFilters.customerType
+  const buildSearchParams = useCallback(
+    (currentSearchParams: URLSearchParams, filters: BankingDirectoryFilters) =>
+      (options.buildSearchParams ?? buildBankingDirectorySearchParams)(
+        currentSearchParams,
+        filters
+      ),
+    [options.buildSearchParams]
   );
-  const [directDeposit, setDirectDeposit] = useState<DirectDepositFilterValue>(
-    initialFilters.directDeposit
+  const { filters, setFilters } = useUrlSyncedFilters({
+    initialSearchParams,
+    parse: parseFilters,
+    build: buildSearchParams,
+    isActive: options.isActive
+  });
+
+  const updateFilter = useCallback(
+    <TKey extends keyof BankingDirectoryFilters>(
+      key: TKey,
+      value: BankingDirectoryFilters[TKey]
+    ) => {
+      setFilters((current) => ({ ...current, [key]: value }));
+    },
+    [setFilters]
   );
-  const [apy, setApy] = useState<ApyFilterValue>(initialFilters.apy);
-  const [cashRequirement, setCashRequirement] = useState<CashRequirementFilterValue>(
-    initialFilters.cashRequirement
-  );
-  const [timeline, setTimeline] = useState<TimelineFilterValue>(initialFilters.timeline);
-  const [state, setState] = useState(initialFilters.state);
-  const [sortBy, setSortBy] = useState<BankingBonusesSort>(initialFilters.sortBy);
-
-  const filters = useMemo(
-    () => ({
-      accountType: defaultBankingDirectoryFilters.accountType,
-      customerType,
-      directDeposit,
-      apy,
-      difficulty: defaultBankingDirectoryFilters.difficulty,
-      cashRequirement,
-      timeline,
-      stateLimited: defaultBankingDirectoryFilters.stateLimited,
-      state,
-      sortBy
-    }),
-    [
-      apy,
-      cashRequirement,
-      customerType,
-      directDeposit,
-      sortBy,
-      state,
-      timeline
-    ]
-  );
-
-  useEffect(() => {
-    const nextFilters = parseBankingDirectoryFilters(new URLSearchParams(searchParamsString));
-
-    setCustomerType(nextFilters.customerType);
-    setDirectDeposit(nextFilters.directDeposit);
-    setApy(nextFilters.apy);
-    setCashRequirement(nextFilters.cashRequirement);
-    setTimeline(nextFilters.timeline);
-    setState(nextFilters.state);
-    setSortBy(nextFilters.sortBy);
-
-    hasHydratedFromUrl.current = true;
-  }, [searchParamsString]);
-
-  useEffect(() => {
-    if (!hasHydratedFromUrl.current) return;
-
-    const params = buildBankingDirectorySearchParams(new URLSearchParams(searchParamsString), filters);
-    const nextQueryString = params.toString();
-    if (nextQueryString === searchParamsString) return;
-
-    router.replace(nextQueryString ? `${pathname}?${nextQueryString}` : pathname, {
-      scroll: false
-    });
-  }, [filters, pathname, router, searchParamsString]);
 
   const filteredSortedOffers = useMemo(
     () => filterAndSortBankingOffers(offers, filters),
@@ -102,52 +76,51 @@ export function useBankingDirectoryState(
   );
 
   const activeFilterCount = useMemo(
-    () => countActiveBankingDirectoryFilters(filters),
-    [filters]
+    () => (options.countActiveFilters ?? countActiveBankingDirectoryFilters)(filters),
+    [filters, options.countActiveFilters]
   );
 
   const activeFilterChips = useMemo(
-    () => buildActiveBankingFilterChips(filters),
-    [filters]
+    () => (options.buildActiveFilterChips ?? buildActiveBankingFilterChips)(filters),
+    [filters, options.buildActiveFilterChips]
   );
 
   function clearFilters() {
-    setCustomerType(defaultBankingDirectoryFilters.customerType);
-    setDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
-    setApy(defaultBankingDirectoryFilters.apy);
-    setCashRequirement(defaultBankingDirectoryFilters.cashRequirement);
-    setTimeline(defaultBankingDirectoryFilters.timeline);
-    setState(defaultBankingDirectoryFilters.state);
-    setSortBy(defaultBankingDirectoryFilters.sortBy);
+    setFilters(defaultFilters);
   }
 
   function removeFilter(key: BankingDirectoryFilterKey) {
-    if (key === 'customerType') setCustomerType(defaultBankingDirectoryFilters.customerType);
-    if (key === 'directDeposit') setDirectDeposit(defaultBankingDirectoryFilters.directDeposit);
-    if (key === 'apy') setApy(defaultBankingDirectoryFilters.apy);
-    if (key === 'cashRequirement') setCashRequirement(defaultBankingDirectoryFilters.cashRequirement);
-    if (key === 'timeline') setTimeline(defaultBankingDirectoryFilters.timeline);
-    if (key === 'state') setState(defaultBankingDirectoryFilters.state);
+    if (key === 'accountType') updateFilter('accountType', defaultFilters.accountType);
+    if (key === 'customerType') updateFilter('customerType', defaultFilters.customerType);
+    if (key === 'directDeposit') updateFilter('directDeposit', defaultFilters.directDeposit);
+    if (key === 'apy') updateFilter('apy', defaultFilters.apy);
+    if (key === 'difficulty') updateFilter('difficulty', defaultFilters.difficulty);
+    if (key === 'cashRequirement') updateFilter('cashRequirement', defaultFilters.cashRequirement);
+    if (key === 'timeline') updateFilter('timeline', defaultFilters.timeline);
+    if (key === 'stateLimited') updateFilter('stateLimited', defaultFilters.stateLimited);
+    if (key === 'state') updateFilter('state', defaultFilters.state);
   }
 
   return {
-    customerType,
-    directDeposit,
-    apy,
-    cashRequirement,
-    timeline,
-    state,
-    sortBy,
+    filters,
+    customerType: filters.customerType,
+    directDeposit: filters.directDeposit,
+    apy: filters.apy,
+    cashRequirement: filters.cashRequirement,
+    timeline: filters.timeline,
+    state: filters.state,
+    sortBy: filters.sortBy,
     filteredSortedOffers,
     activeFilterCount,
     activeFilterChips,
-    setCustomerType,
-    setDirectDeposit,
-    setApy,
-    setCashRequirement,
-    setTimeline,
-    setState,
-    setSortBy,
+    setCustomerType: (value: CustomerTypeFilterValue) => updateFilter('customerType', value),
+    setDirectDeposit: (value: DirectDepositFilterValue) => updateFilter('directDeposit', value),
+    setApy: (value: ApyFilterValue) => updateFilter('apy', value),
+    setCashRequirement: (value: CashRequirementFilterValue) =>
+      updateFilter('cashRequirement', value),
+    setTimeline: (value: TimelineFilterValue) => updateFilter('timeline', value),
+    setState: (value: string) => updateFilter('state', value),
+    setSortBy: (value: BankingBonusesSort) => updateFilter('sortBy', value),
     clearFilters,
     removeFilter
   };

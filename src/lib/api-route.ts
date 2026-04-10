@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
+import { badRequest, jsonError } from '@/lib/api-helpers';
 import { recordApiDuration, recordApiError } from '@/lib/metrics';
+import type { RateLimitConfig } from '@/lib/rate-limit';
+import { applyIpRateLimit } from '@/lib/rate-limit';
+import { isValidOrigin } from '@/lib/turnstile';
 import { logs, SeverityNumber } from '@opentelemetry/api-logs';
 
 const logger = logs.getLogger('the-stack');
@@ -59,4 +63,52 @@ export async function instrumentedApi(
     });
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
+}
+
+export type ApiServiceResult<Body> =
+  | { ok: true; data: Body }
+  | { ok: true; status: number; body: Body }
+  | { ok: false; status: number; error: string };
+
+type CreateApiRouteConfig = {
+  route: string;
+  method: string;
+  requireValidOrigin?: boolean;
+  rateLimit?: RateLimitConfig;
+  handler: (req: Request) => Promise<Response>;
+};
+
+export function jsonFromServiceResult<Body>(result: ApiServiceResult<Body>): Response {
+  if (!result.ok) {
+    if (result.status === 400) {
+      return badRequest(result.error);
+    }
+
+    return jsonError(result.error, result.status);
+  }
+
+  if ('data' in result) {
+    return NextResponse.json(result.data);
+  }
+
+  return NextResponse.json(result.body, { status: result.status });
+}
+
+export function createApiRoute(config: CreateApiRouteConfig) {
+  return async function apiRoute(req: Request): Promise<Response> {
+    return instrumentedApi(config.route, config.method, async () => {
+      if (config.requireValidOrigin && !isValidOrigin(req)) {
+        return badRequest('Invalid request origin');
+      }
+
+      if (config.rateLimit) {
+        const rateLimited = await applyIpRateLimit(req, config.rateLimit);
+        if (rateLimited) {
+          return rateLimited;
+        }
+      }
+
+      return config.handler(req);
+    });
+  };
 }

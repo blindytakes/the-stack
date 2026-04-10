@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
-import { instrumentedApi } from '@/lib/api-route';
+import { createApiRoute } from '@/lib/api-route';
 import { apiRateLimits } from '@/lib/api-rate-limits';
 import { badRequest, parseJsonBody } from '@/lib/api-helpers';
-import { applyIpRateLimit } from '@/lib/rate-limit';
 import { ingestWebVital } from '@/lib/services/vitals-service';
 
 /**
@@ -14,12 +13,11 @@ import { ingestWebVital } from '@/lib/services/vitals-service';
  * - Normalize path values before recording metrics.
  * - Return 204 on success for lightweight client beacons.
  */
-
-export async function POST(req: Request) {
-  return instrumentedApi('/api/vitals', 'POST', async () => {
-    const rateLimited = await applyIpRateLimit(req, apiRateLimits.vitalsIngestion);
-    if (rateLimited) return rateLimited;
-
+export const POST = createApiRoute({
+  route: '/api/vitals',
+  method: 'POST',
+  rateLimit: apiRateLimits.vitalsIngestion,
+  handler: async (req: Request) => {
     const body = await parseJsonBody(req);
     const result = ingestWebVital(body);
     if (!result.ok) {
@@ -27,5 +25,5 @@ export async function POST(req: Request) {
     }
 
     return new NextResponse(null, { status: 204 });
-  });
-}
+  }
+});

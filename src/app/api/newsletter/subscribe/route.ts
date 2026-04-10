@@ -1,10 +1,8 @@
-import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { instrumentedApi } from '@/lib/api-route';
+import { createApiRoute, jsonFromServiceResult } from '@/lib/api-route';
 import { apiRateLimits } from '@/lib/api-rate-limits';
 import { badRequest, parseJsonBody } from '@/lib/api-helpers';
-import { applyIpRateLimit } from '@/lib/rate-limit';
-import { isValidOrigin, verifyTurnstileToken } from '@/lib/turnstile';
+import { verifyTurnstileToken } from '@/lib/turnstile';
 import {
   newsletterSubscribeInputSchema,
   processNewsletterSubscribe
@@ -28,18 +26,12 @@ const subscribeRequestSchema = newsletterSubscribeInputSchema.extend({
  *
  * The order is intentional to reject bad requests before expensive operations.
  */
-
-export async function POST(req: Request) {
-  return instrumentedApi('/api/newsletter/subscribe', 'POST', async () => {
-    // 1. Origin check (cheap, no external calls)
-    if (!isValidOrigin(req)) {
-      return badRequest('Invalid request origin');
-    }
-
-    // 2. Rate limiting — 3 requests per 10 minutes, sliding window
-    const rateLimited = await applyIpRateLimit(req, apiRateLimits.newsletterSubscribe);
-    if (rateLimited) return rateLimited;
-
+export const POST = createApiRoute({
+  route: '/api/newsletter/subscribe',
+  method: 'POST',
+  requireValidOrigin: true,
+  rateLimit: apiRateLimits.newsletterSubscribe,
+  handler: async (req: Request) => {
     const body = await parseJsonBody(req);
     if (body === null) {
       return badRequest('Invalid JSON');
@@ -55,14 +47,11 @@ export async function POST(req: Request) {
       return badRequest('Challenge verification failed. Please try again.');
     }
 
-    const result = await processNewsletterSubscribe({
-      email: parsed.data.email,
-      source: parsed.data.source
-    });
-    if (!result.ok) {
-      return NextResponse.json({ error: result.error }, { status: result.status });
-    }
-
-    return NextResponse.json(result.body, { status: result.status });
-  });
-}
+    return jsonFromServiceResult(
+      await processNewsletterSubscribe({
+        email: parsed.data.email,
+        source: parsed.data.source
+      })
+    );
+  }
+});

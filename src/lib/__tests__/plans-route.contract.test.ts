@@ -4,13 +4,36 @@ const applyIpRateLimitMock = vi.fn();
 const isValidOriginMock = vi.fn();
 const savePlanSnapshotMock = vi.fn();
 
-vi.mock('@/lib/api-route', () => ({
-  instrumentedApi: (
-    _route: string,
-    _method: string,
-    handler: () => Promise<Response>
-  ) => handler()
-}));
+vi.mock('@/lib/api-route', async () => {
+  const actual = await vi.importActual<typeof import('@/lib/api-route')>('@/lib/api-route');
+  return {
+    ...actual,
+    createApiRoute: ({
+      requireValidOrigin,
+      rateLimit,
+      handler
+    }: {
+      requireValidOrigin?: boolean;
+      rateLimit?: unknown;
+      handler: (req: Request) => Promise<Response>;
+    }) => {
+      return async (req: Request) => {
+        if (requireValidOrigin && !isValidOriginMock(req)) {
+          return Response.json({ error: 'Invalid request origin' }, { status: 400 });
+        }
+
+        if (rateLimit) {
+          const rateLimited = await applyIpRateLimitMock(req, rateLimit);
+          if (rateLimited) {
+            return rateLimited;
+          }
+        }
+
+        return handler(req);
+      };
+    }
+  };
+});
 
 vi.mock('@/lib/rate-limit', () => ({
   applyIpRateLimit: (...args: unknown[]) => applyIpRateLimitMock(...args)
