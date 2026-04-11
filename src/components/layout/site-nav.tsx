@@ -14,7 +14,7 @@ const navItems: NavItem[] = [
   { href: '/cards', label: 'Credit Cards' },
   { href: '/banking', label: 'Bank Accounts' },
   { href: '/business', label: 'Business Accounts' },
-  { href: '/tools', label: 'Calculator', activePath: '/tools' },
+  { href: '/tools', label: 'Tools', activePath: '/tools' },
   { href: '/blog', label: 'Blog' },
   { href: '/newsletter', label: 'Newsletter' },
   { href: '/about', label: 'About' }

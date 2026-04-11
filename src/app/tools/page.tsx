@@ -17,9 +17,9 @@ const toolCards = [
   },
   {
     href: '/tools/card-vs-card',
-    eyebrow: 'Compare',
-    title: 'Offer vs Offer',
-    description: 'See two offers side by side on value, fees, perks, and welcome bonuses.',
+    eyebrow: 'Tracker',
+    title: 'Personal Finance Tracker',
+    description: 'Download a spreadsheet tracker to log spending, bills, savings goals, and monthly cash flow.',
     accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
   },
   {

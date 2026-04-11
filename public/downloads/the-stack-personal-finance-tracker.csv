@@ -1,0 +1,11 @@
+Date,Month,Category,Subcategory,Account,Merchant or Source,Type,Amount,Due Date,Status,Notes
+2026-01-01,January,Income,Paycheck,Checking,Employer,Income,0,,,Primary paycheck
+2026-01-02,January,Housing,Rent,Checking,Landlord,Expense,0,2026-01-05,Planned,Monthly rent
+2026-01-03,January,Utilities,Electric,Checking,Utility Company,Expense,0,2026-01-12,Planned,Electric bill
+2026-01-04,January,Utilities,Internet,Credit Card,Internet Provider,Expense,0,2026-01-14,Planned,Home internet
+2026-01-05,January,Food,Groceries,Credit Card,Grocery Store,Expense,0,,,Weekly grocery run
+2026-01-06,January,Transport,Gas,Credit Card,Gas Station,Expense,0,,,Fuel purchase
+2026-01-07,January,Debt,Credit Card Payment,Checking,Credit Card,Transfer,0,2026-01-20,Planned,Statement payment
+2026-01-08,January,Savings,Emergency Fund,Checking,High-Yield Savings,Transfer,0,2026-01-21,Planned,Monthly savings transfer
+2026-01-09,January,Subscriptions,Streaming,Credit Card,Streaming Service,Expense,0,2026-01-22,Planned,Recurring subscription
+2026-01-10,January,Health,Insurance,Checking,Insurance Provider,Expense,0,2026-01-25,Planned,Health insurance premium

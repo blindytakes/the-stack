@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
-import { CardVsCardTool } from '@/components/tools/card-vs-card';
 import { ToolPageShell } from '@/components/layout/tool-page-shell';
+import { PersonalFinanceTrackerDownload } from '@/components/tools/personal-finance-tracker-download';
 
 export const metadata: Metadata = {
-  title: 'Offer vs Offer',
-  description:
-    'Compare two offers side by side on net value, fees, rewards, benefits, and welcome bonuses.'
+  title: 'Personal Finance Tracker',
+  description: 'Download the personal finance tracker spreadsheet to log spending, bills, savings, and monthly cash flow.'
 };
 
 export default function CardVsCardPage() {
@@ -13,10 +12,12 @@ export default function CardVsCardPage() {
     <ToolPageShell
       tool="card_vs_card"
       path="/tools/card-vs-card"
-      title="Offer vs Offer"
+      title="Personal Finance Tracker"
       description=""
+      hideHeader
+      containerClassName="pt-6 md:pt-8"
     >
-      <CardVsCardTool />
+      <PersonalFinanceTrackerDownload />
     </ToolPageShell>
   );
 }
