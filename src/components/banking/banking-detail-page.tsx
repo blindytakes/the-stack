@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { AffiliateLink } from '@/components/analytics/affiliate-link';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { EntityImage } from '@/components/ui/entity-image';
+import { DetailPageDismissButton } from '@/components/ui/detail-page-dismiss-button';
 import {
   formatBankingAccountType,
   formatBankingCustomerType,
@@ -185,6 +186,12 @@ export function BankingDetailPage({ offer, offers }: BankingDetailPageProps) {
         <div className="pointer-events-none absolute right-[-3rem] top-8 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.08),transparent_72%)] blur-3xl" />
 
         <div className="relative">
+          <DetailPageDismissButton
+            fallbackHref="/banking"
+            ariaLabel="Close banking details"
+            className="absolute right-0 top-0 z-10"
+          />
+
           <Link
             href="/banking"
             className="inline-flex items-center text-sm font-medium text-text-muted transition hover:text-text-primary"

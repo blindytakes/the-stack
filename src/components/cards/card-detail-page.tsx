@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { AffiliateLink } from '@/components/analytics/affiliate-link';
 import { EntityImage } from '@/components/ui/entity-image';
+import { DetailPageDismissButton } from '@/components/ui/detail-page-dismiss-button';
 import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import {
   buildCardComparisonCardSummary,
@@ -163,6 +164,12 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
         <div className="pointer-events-none absolute right-[-3rem] top-8 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.08),transparent_72%)] blur-3xl" />
 
         <div className="relative">
+          <DetailPageDismissButton
+            fallbackHref="/cards"
+            ariaLabel="Close card details"
+            className="absolute right-0 top-0 z-10"
+          />
+
           <Link
             href="/cards"
             className="inline-flex items-center text-sm font-medium text-text-muted transition hover:text-text-primary"

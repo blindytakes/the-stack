@@ -1,8 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import type { CardRecord } from '@/lib/cards';
 import {
   formatBonusValue,
@@ -11,7 +10,6 @@ import {
 import { getCardDirectoryMetrics } from '@/lib/cards/presentation-metrics';
 import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import { EntityImage } from '@/components/ui/entity-image';
-import { CardDetailModal } from '@/components/cards/card-detail-modal';
 import { useFirstGridRowReveal } from '@/components/ui/use-first-grid-row-reveal';
 import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
@@ -26,10 +24,6 @@ export function CardsDirectoryResults({
 }: CardsDirectoryResultsProps) {
   const REVEAL_BASE_DELAY_MS = 80;
   const REVEAL_STAGGER_MS = 40;
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const modalSlug = searchParams.get('card');
   const { gridRef, isVisible, isMeasured, canAnimateEntrance, firstRowIndexes, prefersReducedMotion } =
     useFirstGridRowReveal(cards.length);
   const [isRevealDelayActive, setIsRevealDelayActive] = useState(true);
@@ -51,25 +45,6 @@ export function CardsDirectoryResults({
 
     return () => window.clearTimeout(timeoutId);
   }, [isMeasured, isVisible, maxRevealIndex, prefersReducedMotion]);
-
-  const openModal = useCallback(
-    (slug: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-      params.set('card', slug);
-      const nextUrl = `${pathname}?${params.toString()}`;
-      router.push(nextUrl, { scroll: false });
-    },
-    [pathname, router, searchParams]
-  );
-
-  const closeModal = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('card');
-    const nextQueryString = params.toString();
-    router.replace(nextQueryString ? `${pathname}?${nextQueryString}` : pathname, {
-      scroll: false
-    });
-  }, [pathname, router, searchParams]);
 
   function formatRewardTypeLabel(rewardType: CardRecord['rewardType']) {
     if (rewardType === 'cashback') return 'Cash back';
@@ -169,13 +144,12 @@ export function CardsDirectoryResults({
               </div>
 
               <div className="relative z-10 mt-3 min-h-[2.5rem] px-2">
-                <button
-                  type="button"
-                  onClick={() => openModal(card.slug)}
+                <Link
+                  href={`/cards/${card.slug}`}
                   className="block w-full text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
                 >
                   {card.name}
-                </button>
+                </Link>
                 <p className="mt-1 text-center text-[11px] uppercase tracking-[0.16em] text-text-muted">
                   {formatRewardTypeLabel(card.rewardType)} · {formatBestCategoryLabel(bestCategory)}
                 </p>
@@ -224,13 +198,12 @@ export function CardsDirectoryResults({
                 </div>
 
                 <div className="mt-4 flex gap-2 border-t border-white/5 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => openModal(card.slug)}
+                  <Link
+                    href={`/cards/${card.slug}`}
                     className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
                   >
                     Details
-                  </button>
+                  </Link>
                   <Link
                     href={buildSelectedOfferIntentHref({
                       lane: 'cards',
@@ -251,10 +224,6 @@ export function CardsDirectoryResults({
           );
         })}
       </div>
-
-      {modalSlug && (
-        <CardDetailModal slug={modalSlug} onClose={closeModal} />
-      )}
     </section>
   );
 }
