@@ -3,6 +3,9 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 
+const REVEAL_DELAY_MS = 80;
+const EARLY_REVEAL_OFFSET_PX = 240;
+
 function buildAllIndexes(count: number) {
   return new Set(Array.from({ length: count }, (_, index) => index));
 }
@@ -38,11 +41,11 @@ export function useFirstGridRowReveal(itemCount: number) {
     const reveal = () => {
       timeoutId = window.setTimeout(() => {
         setIsVisible(true);
-      }, 180);
+      }, REVEAL_DELAY_MS);
     };
 
     const bounds = grid.getBoundingClientRect();
-    if (bounds.top < window.innerHeight * 0.95) {
+    if (bounds.top <= window.innerHeight + EARLY_REVEAL_OFFSET_PX) {
       reveal();
       return () => {
         if (timeoutId !== null) window.clearTimeout(timeoutId);
@@ -56,7 +59,12 @@ export function useFirstGridRowReveal(itemCount: number) {
           observer.disconnect();
         }
       },
-      { threshold: 0.05 }
+      {
+        // Use a pixel margin instead of a percentage threshold so tall grids
+        // reveal predictably before the user scrolls deep into the results.
+        threshold: 0,
+        rootMargin: `0px 0px ${EARLY_REVEAL_OFFSET_PX}px 0px`
+      }
     );
 
     observer.observe(grid);

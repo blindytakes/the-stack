@@ -24,6 +24,8 @@ export function CardsDirectoryResults({
   cards,
   selectedCompare
 }: CardsDirectoryResultsProps) {
+  const REVEAL_BASE_DELAY_MS = 80;
+  const REVEAL_STAGGER_MS = 40;
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -31,6 +33,7 @@ export function CardsDirectoryResults({
   const { gridRef, isVisible, isMeasured, canAnimateEntrance, firstRowIndexes, prefersReducedMotion } =
     useFirstGridRowReveal(cards.length);
   const [isRevealDelayActive, setIsRevealDelayActive] = useState(true);
+  const maxRevealIndex = firstRowIndexes.size > 0 ? Math.max(...Array.from(firstRowIndexes)) : 0;
 
   useEffect(() => {
     if (prefersReducedMotion || !isMeasured) {
@@ -42,13 +45,12 @@ export function CardsDirectoryResults({
 
     if (!isVisible) return;
 
-    const maxIndex = Math.min(cards.length - 1, 15);
     const timeoutId = window.setTimeout(() => {
       setIsRevealDelayActive(false);
-    }, 180 + Math.max(maxIndex, 0) * 50 + 220);
+    }, REVEAL_BASE_DELAY_MS + Math.max(maxRevealIndex, 0) * REVEAL_STAGGER_MS + 220);
 
     return () => window.clearTimeout(timeoutId);
-  }, [cards.length, isMeasured, isVisible, prefersReducedMotion]);
+  }, [isMeasured, isVisible, maxRevealIndex, prefersReducedMotion]);
 
   const openModal = useCallback(
     (slug: string) => {
@@ -109,7 +111,9 @@ export function CardsDirectoryResults({
           const shouldReveal =
             !prefersReducedMotion && isMeasured && canAnimateEntrance && firstRowIndexes.has(index);
           const transitionDelay =
-            shouldReveal && isRevealDelayActive ? 180 + Math.min(index, 15) * 50 : 0;
+            shouldReveal && isRevealDelayActive
+              ? REVEAL_BASE_DELAY_MS + Math.min(index, 15) * REVEAL_STAGGER_MS
+              : 0;
 
           return (
             <article
