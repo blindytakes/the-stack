@@ -4,15 +4,24 @@ import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 
 type AffiliateLinkProps = {
   href: string;
-  cardSlug: string;
   source: string;
   className?: string;
   children: React.ReactNode;
-};
+} & (
+  | {
+      cardSlug: string;
+      bankSlug?: never;
+    }
+  | {
+      cardSlug?: never;
+      bankSlug: string;
+    }
+);
 
 export function AffiliateLink({
   href,
   cardSlug,
+  bankSlug,
   source,
   className,
   children
@@ -26,7 +35,8 @@ export function AffiliateLink({
       onClick={() => {
         trackFunnelEvent('affiliate_click', {
           source,
-          card_slug: cardSlug
+          ...(cardSlug ? { card_slug: cardSlug } : {}),
+          ...(bankSlug ? { bank_slug: bankSlug } : {})
         });
       }}
     >

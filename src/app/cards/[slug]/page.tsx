@@ -1,27 +1,41 @@
-import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { CardDetailPage } from '@/components/cards/card-detail-page';
+import { getCardBySlug, getCardsData } from '@/lib/cards';
+
+export const dynamic = 'force-dynamic';
 
 type Props = {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function CardDetailPage({ params, searchParams }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const search = await searchParams;
-  const nextParams = new URLSearchParams();
+  const card = await getCardBySlug(slug);
 
-  for (const [key, value] of Object.entries(search)) {
-    if (value == null) continue;
-
-    if (Array.isArray(value)) {
-      value.forEach((item) => nextParams.append(key, item));
-      continue;
-    }
-
-    nextParams.set(key, value);
+  if (!card) {
+    return {
+      title: 'Card Not Found',
+      description: 'This card is no longer available in The Stack directory.'
+    };
   }
 
-  nextParams.set('card', slug);
+  return {
+    title: `${card.name} Review`,
+    description: card.description ?? card.headline,
+    alternates: {
+      canonical: `/cards/${card.slug}`
+    }
+  };
+}
 
-  redirect(`/cards?${nextParams.toString()}`);
+export default async function CardDetailRoute({ params }: Props) {
+  const { slug } = await params;
+  const [card, cardsResult] = await Promise.all([getCardBySlug(slug), getCardsData()]);
+
+  if (!card) {
+    notFound();
+  }
+
+  return <CardDetailPage card={card} cards={cardsResult.cards} />;
 }

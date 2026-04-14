@@ -348,5 +348,5 @@ export function buildCardsDirectoryCompareHref(selectedCompare: string[]) {
     src: 'cards_directory'
   });
 
-  return `/tools/card-vs-card?${params.toString()}`;
+  return `/cards/compare?${params.toString()}`;
 }

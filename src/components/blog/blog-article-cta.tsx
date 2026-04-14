@@ -21,7 +21,7 @@ export function BlogArticleCTA() {
             Build Your Bonus Plan
           </Link>
           <Link
-            href="/tools/card-vs-card"
+            href="/cards/compare"
             className="inline-flex items-center justify-center rounded-full border border-white/10 px-7 py-3 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
           >
             Compare Cards

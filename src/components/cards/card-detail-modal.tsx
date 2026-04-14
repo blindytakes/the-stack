@@ -214,6 +214,12 @@ export function CardDetailModal({
                   >
                     Add to my plan
                   </Link>
+                  <Link
+                    href={`/cards/${card.slug}`}
+                    className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-5 py-3.5 text-base font-semibold text-text-primary transition hover:border-white/30 hover:text-brand-teal"
+                  >
+                    Open full page
+                  </Link>
                   {applyHref && (
                     <AffiliateLink
                       href={applyHref}

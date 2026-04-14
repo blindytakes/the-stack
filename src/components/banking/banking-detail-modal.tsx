@@ -149,16 +149,23 @@ export function BankingDetailModal({
                   href={buildSelectedOfferIntentHref({
                     lane: 'banking',
                     slug: offer.slug,
-                    audience: offer.customerType === 'business' ? 'business' : undefined
+                    audience: offer.customerType === 'business' ? 'business' : undefined,
+                    sourcePath: `/banking?bank=${offer.slug}`
                   })}
                   className="inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-5 py-3 text-base font-semibold text-black transition hover:opacity-90"
                 >
                   Add to my bonus plan
                 </Link>
+                <Link
+                  href={`/banking/${offer.slug}`}
+                  className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
+                >
+                  Open full page
+                </Link>
                 {outboundOfferUrl && !isExpired && (
                   <AffiliateLink
                     href={outboundOfferUrl}
-                    cardSlug={offer.slug}
+                    bankSlug={offer.slug}
                     source={source}
                     className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
                   >

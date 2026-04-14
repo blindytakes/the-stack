@@ -26,8 +26,17 @@ export type SelectedOfferIntentStatus =
       recommendationId: string;
     };
 
+export function normalizeSelectedOfferSourcePath(sourcePath?: string | null) {
+  if (!sourcePath) return null;
+  if (!sourcePath.startsWith('/') || sourcePath.startsWith('//')) return null;
+  return sourcePath;
+}
+
 export function buildSelectedOfferIntentHref(
-  input: Pick<SelectedOfferIntent, 'lane' | 'slug'> & { audience?: PlannerAudience }
+  input: Pick<SelectedOfferIntent, 'lane' | 'slug'> & {
+    audience?: PlannerAudience;
+    sourcePath?: string | null;
+  }
 ) {
   const params = new URLSearchParams({
     mode: 'full',
@@ -36,6 +45,10 @@ export function buildSelectedOfferIntentHref(
   });
   if (input.audience === 'business') {
     params.set('audience', 'business');
+  }
+  const sourcePath = normalizeSelectedOfferSourcePath(input.sourcePath);
+  if (sourcePath) {
+    params.set('sourcePath', sourcePath);
   }
 
   return `/tools/card-finder?${params.toString()}`;

@@ -5,6 +5,7 @@ import { getCardsData, type CardRecord } from '@/lib/cards';
 import { getBankingBonusesData, type BankingBonusListItem } from '@/lib/banking-bonuses';
 import type { PlannerAudience } from '@/lib/quiz-engine';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
+import { normalizeSelectedOfferSourcePath } from '@/lib/selected-offer-intent';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,6 +21,7 @@ type Props = {
     audience?: string | string[];
     selectedLane?: string | string[];
     selectedSlug?: string | string[];
+    sourcePath?: string | string[];
   }>;
 };
 
@@ -42,6 +44,7 @@ function getUniqueBankNames(bonuses: { bankName: string }[]): string[] {
 function resolveSelectedOfferIntent(input: {
   lane?: string;
   slug?: string;
+  sourcePath?: string | null;
   cards: CardRecord[];
   bonuses: BankingBonusListItem[];
 }): SelectedOfferIntent | null {
@@ -57,7 +60,7 @@ function resolveSelectedOfferIntent(input: {
       title: card.name,
       provider: card.issuer,
       detailPath: `/cards/${card.slug}`,
-      sourcePath: '/cards'
+      sourcePath: input.sourcePath ?? '/cards'
     };
   }
 
@@ -71,7 +74,7 @@ function resolveSelectedOfferIntent(input: {
       title: bonus.offerName,
       provider: bonus.bankName,
       detailPath: `/banking/${bonus.slug}`,
-      sourcePath: '/banking'
+      sourcePath: input.sourcePath ?? '/banking'
     };
   }
 
@@ -84,6 +87,7 @@ export default async function CardFinderPage({ searchParams }: Props) {
   const plannerAudience: PlannerAudience = firstParam(search.audience) === 'business' ? 'business' : 'consumer';
   const selectedLane = firstParam(search.selectedLane);
   const selectedSlug = firstParam(search.selectedSlug);
+  const sourcePath = normalizeSelectedOfferSourcePath(firstParam(search.sourcePath));
   const showingChooser = mode === 'choose';
   const showingFullPlanner = !showingChooser;
 
@@ -104,6 +108,7 @@ export default async function CardFinderPage({ searchParams }: Props) {
     ? resolveSelectedOfferIntent({
         lane: selectedLane,
         slug: selectedSlug,
+        sourcePath,
         cards,
         bonuses
       })

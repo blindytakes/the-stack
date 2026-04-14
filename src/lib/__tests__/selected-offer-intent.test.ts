@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { buildPlanResultsPayload } from '../plan-results-storage';
 import {
   buildSelectedOfferIntentHref,
+  normalizeSelectedOfferSourcePath,
   getSelectedOfferIntentStatus
 } from '../selected-offer-intent';
 
@@ -53,6 +54,26 @@ describe('selected-offer-intent', () => {
         audience: 'business'
       })
     ).toBe('/tools/card-finder?mode=full&selectedLane=cards&selectedSlug=ink-business-preferred&audience=business');
+  });
+
+  it('preserves compare source paths in planner hrefs', () => {
+    expect(
+      buildSelectedOfferIntentHref({
+        lane: 'cards',
+        slug: 'capital-one-venture-x-business',
+        sourcePath: '/cards/compare?a=capital-one-spark-cash-plus&b=capital-one-venture-x-business'
+      })
+    ).toBe(
+      '/tools/card-finder?mode=full&selectedLane=cards&selectedSlug=capital-one-venture-x-business&sourcePath=%2Fcards%2Fcompare%3Fa%3Dcapital-one-spark-cash-plus%26b%3Dcapital-one-venture-x-business'
+    );
+  });
+
+  it('rejects invalid selected-offer source paths', () => {
+    expect(normalizeSelectedOfferSourcePath('https://example.com')).toBeNull();
+    expect(normalizeSelectedOfferSourcePath('//example.com/path')).toBeNull();
+    expect(normalizeSelectedOfferSourcePath('/cards/compare?a=test&b=other')).toBe(
+      '/cards/compare?a=test&b=other'
+    );
   });
 
   it('returns included status when the selected offer is in recommendations', () => {

@@ -653,6 +653,13 @@ function SaveActBar({
 }
 
 function SelectedOfferSummary({ selectedOfferStatus }: { selectedOfferStatus: SelectedOfferIntentStatus }) {
+  const sourceLabel = selectedOfferStatus.intent.sourcePath?.startsWith('/cards/compare')
+    ? 'Back to compare'
+    : selectedOfferStatus.intent.sourcePath?.startsWith('/cards/')
+      ? 'Back to this card'
+      : selectedOfferStatus.intent.sourcePath?.startsWith('/banking/')
+        ? 'Back to this offer'
+        : `Back to ${selectedOfferStatus.intent.lane === 'cards' ? 'cards' : 'banking'}`;
 
   const bannerTone =
     selectedOfferStatus.status === 'included'
@@ -714,7 +721,7 @@ function SelectedOfferSummary({ selectedOfferStatus }: { selectedOfferStatus: Se
             href={selectedOfferStatus.intent.sourcePath}
             className="text-text-muted transition hover:text-text-primary"
           >
-            Back to {selectedOfferStatus.intent.lane === 'cards' ? 'cards' : 'banking'}
+            {sourceLabel}
           </Link>
         ) : null}
       </div>

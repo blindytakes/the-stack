@@ -352,7 +352,7 @@ describe('cards-directory-explorer', () => {
   it('builds compare links only when exactly two cards are selected', () => {
     expect(buildCardsDirectoryCompareHref(['a'])).toBeNull();
     expect(buildCardsDirectoryCompareHref(['a', 'b'])).toBe(
-      '/tools/card-vs-card?a=a&b=b&src=cards_directory'
+      '/cards/compare?a=a&b=b&src=cards_directory'
     );
   });
 });

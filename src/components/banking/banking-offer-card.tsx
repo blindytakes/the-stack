@@ -173,7 +173,8 @@ export function BankingOfferCard({
               href={buildSelectedOfferIntentHref({
                 lane: 'banking',
                 slug: offer.slug,
-                audience: offer.customerType === 'business' ? 'business' : undefined
+                audience: offer.customerType === 'business' ? 'business' : undefined,
+                sourcePath: '/banking'
               })}
               className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs font-semibold text-black transition hover:opacity-90"
             >
