@@ -16,6 +16,13 @@ const toolCards = [
     accentClassName: 'from-brand-teal/20 via-brand-teal/8 to-transparent'
   },
   {
+    href: '/cards/compare',
+    eyebrow: 'Compare',
+    title: 'Compare Cards',
+    description: 'Run year-one and ongoing value math for any two cards under your own spend assumptions.',
+    accentClassName: 'from-brand-gold/20 via-brand-gold/7 to-transparent'
+  },
+  {
     href: '/tools/card-vs-card',
     eyebrow: 'Tracker',
     title: 'Personal Finance Tracker',
@@ -27,14 +34,14 @@ const toolCards = [
     eyebrow: 'Benefits',
     title: 'Hidden Benefits',
     description: 'Find the less-obvious protections, credits, and perks attached to your card.',
-    accentClassName: 'from-brand-gold/20 via-brand-gold/7 to-transparent'
+    accentClassName: 'from-brand-coral/18 via-brand-coral/7 to-transparent'
   },
   {
     href: '/tools/premium-card-calculator',
     eyebrow: 'Premium',
     title: 'Premium Card Calculator',
     description: 'Run the real math on Amex Platinum, Sapphire Reserve, and Venture X.',
-    accentClassName: 'from-brand-coral/18 via-brand-coral/7 to-transparent'
+    accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
   }
 ] as const;
 

@@ -40,6 +40,12 @@ const toolNavItems: ToolNavItem[] = [
     activePath: '/tools/card-finder'
   },
   {
+    href: '/cards/compare',
+    label: 'Compare Cards',
+    description: 'See two cards side by side with real value math.',
+    activePath: '/cards/compare'
+  },
+  {
     href: '/tools/card-vs-card',
     label: 'Personal Finance Tracker',
     description: 'Download the spreadsheet tracker.',
@@ -71,7 +77,7 @@ export function SiteNav() {
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const pathname = usePathname();
   const headerRef = useRef<HTMLElement>(null);
-  const toolsActive = pathname.startsWith('/tools');
+  const toolsActive = pathname.startsWith('/tools') || pathname.startsWith('/cards/compare');
 
   const closeAll = useCallback(() => {
     setOpen(false);
