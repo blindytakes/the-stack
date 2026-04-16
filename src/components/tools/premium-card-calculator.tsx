@@ -590,8 +590,10 @@ function BinaryChoice({
 
 function CurrencyInput({
   label,
+  description,
   note,
   singleLineDisplay,
+  compactSupportingText = false,
   value,
   isExplicitlySet = false,
   onChange,
@@ -600,8 +602,10 @@ function CurrencyInput({
   centerText = false
 }: {
   label: string;
+  description?: string;
   note?: string;
   singleLineDisplay?: string;
+  compactSupportingText?: boolean;
   value: number;
   isExplicitlySet?: boolean;
   onChange: (next: number) => void;
@@ -612,6 +616,7 @@ function CurrencyInput({
   const hasValue = value > 0 || isExplicitlySet;
   const hasSingleLineDisplay = Boolean(singleLineDisplay);
   const shouldCenterText = centerText;
+  const supportingText = [description, note].filter(Boolean).join(' · ');
 
   return (
     <label
@@ -641,8 +646,27 @@ function CurrencyInput({
               {singleLineDisplay ?? label}
             </p>
           </div>
-          {!singleLineDisplay && note ? (
-            <p className={`mt-0.5 text-[13px] leading-5 ${hasValue ? 'text-text-secondary' : 'text-text-muted'}`}>{note}</p>
+          {!singleLineDisplay && supportingText ? (
+            compactSupportingText ? (
+              <p
+                className={`mt-1 text-[12px] leading-5 ${
+                  hasValue ? 'text-text-secondary' : 'text-text-muted'
+                }`}
+              >
+                {supportingText}
+              </p>
+            ) : (
+              <div className="mt-1 space-y-1">
+                {description ? (
+                  <p className={`text-[13px] leading-5 ${hasValue ? 'text-text-secondary' : 'text-text-muted'}`}>
+                    {description}
+                  </p>
+                ) : null}
+                {note ? (
+                  <p className={`text-[13px] leading-5 ${hasValue ? 'text-text-secondary' : 'text-text-muted'}`}>{note}</p>
+                ) : null}
+              </div>
+            )
           ) : null}
         </div>
         <div
@@ -1202,9 +1226,9 @@ export function PremiumCardCalculator() {
                   <CurrencyInput
                     key={benefit.id}
                     label={benefit.label}
+                    description={benefit.description}
                     note={benefit.note}
-                    singleLineDisplay={benefit.note ? `${benefit.label} · ${benefit.note}` : undefined}
-                    centerText
+                    compactSupportingText
                     value={selectedScenario.benefits[benefit.id] ?? 0}
                     isExplicitlySet={Boolean(
                       selectedFieldInteractions[buildFieldInteractionKey('benefit', benefit.id)]

@@ -11,6 +11,7 @@ export type PremiumCardId =
 export type PremiumCardValueInput = {
   id: string;
   label: string;
+  description?: string;
   note?: string;
   singleLineDisplay?: string;
   defaultValue: number;
@@ -337,25 +338,31 @@ export const premiumCardProfiles = [
       {
         id: 'the-edit-credit',
         label: 'The Edit credit',
-        note: 'Up to $250 Jan-Jun and $250 Jul-Dec',
+        note: 'Up to $500 per year ($250 Jan-Jun and $250 Jul-Dec)',
         defaultValue: 0
       },
       {
         id: 'select-hotel-credit',
         label: 'Select Chase Travel hotel credit',
-        note: 'Up to $250 through 12/31/26',
+        note: 'Up to $250 total through 12/31/26',
         defaultValue: 0
       },
       {
         id: 'dining-credit',
         label: 'OpenTable dining credit',
-        note: 'Up to $150 Jan-Jun and $150 Jul-Dec',
+        note: 'Up to $300 per year ($150 Jan-Jun and $150 Jul-Dec)',
         defaultValue: 0
       },
       {
-        id: 'apple-subscriptions',
-        label: 'Apple TV+ and Apple Music',
-        note: '$288 annual value through 6/22/27',
+        id: 'apple-tv-plus',
+        label: 'Apple TV+',
+        note: '$120 per year through 6/22/27',
+        defaultValue: 0
+      },
+      {
+        id: 'apple-music',
+        label: 'Apple Music',
+        note: '$168 per year through 6/22/27',
         defaultValue: 0
       },
       {
@@ -367,36 +374,92 @@ export const premiumCardProfiles = [
       {
         id: 'doordash-promos',
         label: 'DoorDash promos',
-        note: 'Up to $25 per month through 12/31/27',
+        note: 'Up to $300 per year ($25 per month) through 12/31/27',
         defaultValue: 0
       },
       {
         id: 'stubhub-credit',
         label: 'StubHub / viagogo credit',
-        note: 'Up to $150 Jan-Jun and $150 Jul-Dec through 12/31/27',
+        note: 'Up to $300 per year ($150 Jan-Jun and $150 Jul-Dec) through 12/31/27',
         defaultValue: 0
       },
       {
         id: 'lyft-credit',
         label: 'Lyft credit',
-        note: 'Up to $10 per month through 9/30/27',
+        note: 'Up to $120 per year ($10 per month) through 9/30/27',
         defaultValue: 0
       },
       {
         id: 'peloton-credit',
         label: 'Peloton membership credit',
-        note: 'Up to $10 per month through 12/31/27',
+        note: 'Up to $120 per year ($10 per month) through 12/31/27',
         defaultValue: 0
       }
     ],
     benefits: [
-      { id: 'lounge-access', label: 'Sapphire Lounge and Priority Pass access', defaultValue: 0 },
-      { id: 'travel-protections', label: 'Trip delay / cancellation protections', defaultValue: 0 },
-      { id: 'primary-rental', label: 'Primary rental-car coverage', defaultValue: 0 },
-      { id: 'ihg-status', label: 'IHG One Rewards Platinum Elite status', note: 'Through 12/31/27', defaultValue: 0 },
-      { id: 'reserve-travel-designers', label: 'Reserve Travel Designers', note: 'Up to $300 per trip', defaultValue: 0 },
-      { id: 'global-entry-credit', label: 'Global Entry / TSA PreCheck / NEXUS credit', note: 'Up to $120 every 4 years', defaultValue: 0 },
-      { id: 'concierge', label: 'Visa Infinite concierge and protections', defaultValue: 0 }
+      {
+        id: 'lounge-access',
+        label: 'Sapphire Lounge and Priority Pass access',
+        description: 'Airport lounge access for you and eligible guests across Sapphire Lounge by The Club and Priority Pass locations.',
+        defaultValue: 0
+      },
+      {
+        id: 'travel-protections',
+        label: 'Trip delay / cancellation protections',
+        description: 'Coverage that can help reimburse eligible trip costs when travel gets delayed, interrupted, or canceled.',
+        defaultValue: 0
+      },
+      {
+        id: 'primary-rental',
+        label: 'Primary rental-car coverage',
+        description: 'Primary collision damage coverage when you decline the rental company policy and pay with the card.',
+        defaultValue: 0
+      },
+      {
+        id: 'purchase-protection',
+        label: 'Purchase protection',
+        description: 'Protection against eligible theft or damage on new purchases during the covered window after you buy them.',
+        defaultValue: 0
+      },
+      {
+        id: 'return-protection',
+        label: 'Return protection',
+        description: 'Backstop value when a merchant will not take back an eligible item and the card benefit can step in instead.',
+        defaultValue: 0
+      },
+      {
+        id: 'no-foreign-transaction-fees',
+        label: 'No foreign transaction fees',
+        description: 'Avoids the typical extra fee on eligible international purchases, which matters more if you actually spend abroad.',
+        defaultValue: 0
+      },
+      {
+        id: 'ihg-status',
+        label: 'IHG One Rewards Platinum Elite status',
+        description: 'Can add bonus points, potential room upgrades, and late checkout value on eligible IHG stays.',
+        note: 'Through 12/31/27',
+        defaultValue: 0
+      },
+      {
+        id: 'reserve-travel-designers',
+        label: 'Reserve Travel Designers',
+        description: 'Advisor access for itinerary planning and select bookings.',
+        note: 'Up to $300 per trip',
+        defaultValue: 0
+      },
+      {
+        id: 'global-entry-credit',
+        label: 'Global Entry / TSA PreCheck / NEXUS credit',
+        description: "Application-fee credit if you'd otherwise pay out of pocket.",
+        note: 'Up to $120 every 4 years',
+        defaultValue: 0
+      },
+      {
+        id: 'concierge',
+        label: 'Visa Infinite concierge and protections',
+        description: 'High-touch service for dining, tickets, gifts, and travel requests, plus a wider set of Visa Infinite benefits.',
+        defaultValue: 0
+      }
     ],
     timingAdjustments: {
       firstYearLabel: 'Year 1-only extras',
