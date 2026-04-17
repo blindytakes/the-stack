@@ -55,6 +55,14 @@ type PremiumCardEmailValueRow = {
   value: number;
 };
 
+type PremiumCardEmailTableSection = {
+  title: string;
+  headers?: string[];
+  rows: string[][];
+  emptyMessage?: string;
+  rightAlignColumns?: number[];
+};
+
 export type PremiumCardEmailContent = {
   profile: PremiumCardProfile;
   scenario: PremiumCardScenario;
@@ -113,28 +121,73 @@ function renderValueLines(
   return rows.map((row) => `- ${row.label}: ${formatCurrency(row.value)}`);
 }
 
-function renderValueCards(
-  rows: PremiumCardEmailValueRow[],
-  emptyMessage: string
-) {
-  if (rows.length === 0) {
-    return `<div style="font-size:14px;line-height:1.6;color:#94a3b8;">${escapeHtml(
-      emptyMessage
-    )}</div>`;
-  }
+function renderDataTable({
+  title,
+  headers,
+  rows,
+  emptyMessage,
+  rightAlignColumns = []
+}: PremiumCardEmailTableSection) {
+  const columnCount = headers?.length ?? rows[0]?.length ?? 1;
+  const headerRow = headers
+    ? `
+      <tr>
+        ${headers
+          .map(
+            (header, index) => `
+              <th style="padding:10px 14px;border:1px solid #dbe3ea;background:#f8fafc;font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#475569;text-align:${
+                rightAlignColumns.includes(index) ? 'right' : 'left'
+              };">
+                ${escapeHtml(header)}
+              </th>
+            `
+          )
+          .join('')}
+      </tr>
+    `
+    : '';
 
-  return rows
-    .map(
-      (row) => `
-        <div style="display:flex;justify-content:space-between;gap:16px;padding:10px 0;border-top:1px solid rgba(148,163,184,0.14);">
-          <span style="font-size:14px;line-height:1.5;color:#e2e8f0;">${escapeHtml(row.label)}</span>
-          <span style="font-size:14px;font-weight:700;color:#f8fafc;white-space:nowrap;">${escapeHtml(
-            formatCurrency(row.value)
-          )}</span>
-        </div>
-      `
-    )
-    .join('');
+  const bodyRows =
+    rows.length > 0
+      ? rows
+          .map(
+            (row) => `
+              <tr>
+                ${row
+                  .map((cell, index) => {
+                    const rightAligned = rightAlignColumns.includes(index);
+                    return `
+                      <td style="padding:12px 14px;border:1px solid #dbe3ea;font-size:14px;line-height:1.5;color:#0f172a;text-align:${
+                        rightAligned ? 'right' : 'left'
+                      };${rightAligned ? 'white-space:nowrap;font-variant-numeric:tabular-nums;' : ''}">
+                        ${escapeHtml(cell)}
+                      </td>
+                    `;
+                  })
+                  .join('')}
+              </tr>
+            `
+          )
+          .join('')
+      : `
+          <tr>
+            <td colspan="${columnCount}" style="padding:12px 14px;border:1px solid #dbe3ea;font-size:14px;line-height:1.6;color:#64748b;">
+              ${escapeHtml(emptyMessage ?? 'No values entered yet.')}
+            </td>
+          </tr>
+        `;
+
+  return `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+      <tr>
+        <td colspan="${columnCount}" style="padding:12px 14px;border:1px solid #dbe3ea;background:#eff6ff;font-size:12px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#1e3a5f;">
+          ${escapeHtml(title)}
+        </td>
+      </tr>
+      ${headerRow}
+      ${bodyRows}
+    </table>
+  `;
 }
 
 export function buildPremiumCardEmailContent(
@@ -178,24 +231,25 @@ export function buildPremiumCardCalculatorEmailBody(
     content.scenario.eligibleForBonus && content.scenario.canMeetSpend ? 'Yes' : 'No';
 
   return [
-    `Here is my The Stack premium card calculator snapshot for ${content.profile.shortName}.`,
+    `Here is my The Stack premium card calculator report for ${content.profile.shortName}.`,
     '',
-    `Modeled card: ${content.profile.name}`,
-    `Year 1 expected value: ${formatCurrency(content.calculation.expectedValueYear1)}`,
-    `Year 2 expected value: ${formatCurrency(content.calculation.expectedValueYear2)}`,
-    `Annual fee modeled: ${formatCurrency(content.scenario.annualFee)}`,
-    `Redemption assumption: ${content.selectedRedemptionLabel} (${formatCpp(
+    'Report summary:',
+    `- Modeled card: ${content.profile.name}`,
+    `- Year 1 expected value: ${formatCurrency(content.calculation.expectedValueYear1)}`,
+    `- Year 2 expected value: ${formatCurrency(content.calculation.expectedValueYear2)}`,
+    `- Annual fee modeled: ${formatCurrency(content.scenario.annualFee)}`,
+    `- Redemption assumption: ${content.selectedRedemptionLabel} (${formatCpp(
       content.scenario.centsPerPoint
     )})`,
-    `Welcome-offer eligible: ${content.scenario.eligibleForBonus ? 'Yes' : 'No'}`,
-    `Can clear required spend: ${content.scenario.canMeetSpend ? 'Yes' : 'No'}`,
-    `Welcome bonus counted in year 1: ${bonusCounted}`,
+    `- Welcome-offer eligible: ${content.scenario.eligibleForBonus ? 'Yes' : 'No'}`,
+    `- Can clear required spend: ${content.scenario.canMeetSpend ? 'Yes' : 'No'}`,
+    `- Welcome bonus counted in year 1: ${bonusCounted}`,
     '',
     'Value summary:',
     `- Points value (year 1): ${formatCurrency(content.calculation.pointsValueYear1)}`,
     `- Points value (year 2): ${formatCurrency(content.calculation.pointsValueYear2)}`,
-    `- Usable credits kept: ${formatCurrency(content.calculation.recurringCreditsValue)}`,
-    `- Soft perks kept: ${formatCurrency(content.calculation.benefitsValue)}`,
+    `- Included credit values: ${formatCurrency(content.calculation.recurringCreditsValue)}`,
+    `- Included perk values: ${formatCurrency(content.calculation.benefitsValue)}`,
     ...(content.calculation.firstYearExtraValue > 0
       ? [`- Year 1-only extras: ${formatCurrency(content.calculation.firstYearExtraValue)}`]
       : []),
@@ -203,7 +257,7 @@ export function buildPremiumCardCalculatorEmailBody(
       ? [`- Renewal-only extras: ${formatCurrency(content.calculation.renewalOnlyValue)}`]
       : []),
     '',
-    'Spend inputs:',
+    'Spend assumptions:',
     ...(content.spendRows.length > 0
       ? content.spendRows.map(
           (row) =>
@@ -211,13 +265,13 @@ export function buildPremiumCardCalculatorEmailBody(
         )
       : ['- No spend inputs entered yet.']),
     '',
-    'Hard-value credits kept:',
+    'Included credit values:',
     ...renderValueLines(content.creditRows, '- No credit value entered yet.'),
     '',
-    'Soft-value perks kept:',
+    'Included perk values:',
     ...renderValueLines(content.benefitRows, '- No soft-perk value entered yet.'),
     '',
-    `Re-run the calculator: ${TOOL_URL}`
+    `Open the calculator: ${TOOL_URL}`
   ].join('\n');
 }
 
@@ -226,28 +280,38 @@ export function buildPremiumCardCalculatorEmailHtml(
 ) {
   const bonusCounted =
     content.scenario.eligibleForBonus && content.scenario.canMeetSpend ? 'Yes' : 'No';
-  const spendRows =
-    content.spendRows.length > 0
-      ? content.spendRows
-          .map(
-            (row) => `
-              <div style="display:flex;justify-content:space-between;gap:16px;padding:12px 0;border-top:1px solid rgba(148,163,184,0.14);">
-                <div style="min-width:0;">
-                  <div style="font-size:14px;line-height:1.5;color:#f8fafc;">${escapeHtml(
-                    row.label
-                  )}</div>
-                  <div style="font-size:13px;line-height:1.5;color:#94a3b8;">${escapeHtml(
-                    formatCurrency(row.spend)
-                  )} spend</div>
-                </div>
-                <div style="font-size:14px;font-weight:700;color:#d5f5dc;white-space:nowrap;">${escapeHtml(
-                  `${formatPoints(row.pointsEarned)} pts`
-                )}</div>
-              </div>
-            `
-          )
-          .join('')
-      : '<div style="font-size:14px;line-height:1.6;color:#94a3b8;">No spend inputs entered yet.</div>';
+  const reportSummaryRows = [
+    ['Modeled card', content.profile.name],
+    ['Year 1 expected value', formatCurrency(content.calculation.expectedValueYear1)],
+    ['Year 2 expected value', formatCurrency(content.calculation.expectedValueYear2)],
+    ['Annual fee modeled', formatCurrency(content.scenario.annualFee)],
+    [
+      'Redemption assumption',
+      `${content.selectedRedemptionLabel} (${formatCpp(content.scenario.centsPerPoint)})`
+    ],
+    ['Welcome-offer eligible', content.scenario.eligibleForBonus ? 'Yes' : 'No'],
+    ['Can clear required spend', content.scenario.canMeetSpend ? 'Yes' : 'No'],
+    ['Welcome bonus counted in year 1', bonusCounted]
+  ];
+  const valueSummaryRows = [
+    ['Points value (year 1)', formatCurrency(content.calculation.pointsValueYear1)],
+    ['Points value (year 2)', formatCurrency(content.calculation.pointsValueYear2)],
+    ['Included credit values', formatCurrency(content.calculation.recurringCreditsValue)],
+    ['Included perk values', formatCurrency(content.calculation.benefitsValue)],
+    ...(content.calculation.firstYearExtraValue > 0
+      ? [['Year 1-only extras', formatCurrency(content.calculation.firstYearExtraValue)]]
+      : []),
+    ...(content.calculation.renewalOnlyValue > 0
+      ? [['Renewal-only extras', formatCurrency(content.calculation.renewalOnlyValue)]]
+      : [])
+  ];
+  const spendRows = content.spendRows.map((row) => [
+    row.label,
+    formatCurrency(row.spend),
+    `${formatPoints(row.pointsEarned)} pts`
+  ]);
+  const creditRows = content.creditRows.map((row) => [row.label, formatCurrency(row.value)]);
+  const benefitRows = content.benefitRows.map((row) => [row.label, formatCurrency(row.value)]);
 
   return `
     <!doctype html>
@@ -257,125 +321,66 @@ export function buildPremiumCardCalculatorEmailHtml(
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>${escapeHtml(buildPremiumCardCalculatorEmailSubject(content))}</title>
       </head>
-      <body style="margin:0;background:#050816;padding:24px 12px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#f8fafc;">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:720px;margin:0 auto;border-collapse:separate;background:linear-gradient(180deg,#0b1220,#101827);border:1px solid rgba(148,163,184,0.16);border-radius:24px;overflow:hidden;">
+      <body style="margin:0;background:#f1f5f9;padding:24px 12px;font-family:Arial,'Helvetica Neue',Helvetica,sans-serif;color:#0f172a;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:720px;margin:0 auto;border-collapse:separate;background:#ffffff;border:1px solid #dbe3ea;border-radius:16px;overflow:hidden;">
           <tr>
-            <td style="padding:28px 28px 22px 28px;">
-              <div style="font-size:11px;font-weight:700;letter-spacing:0.24em;text-transform:uppercase;color:#94a3b8;">The Stack Lab</div>
-              <h1 style="margin:14px 0 0 0;font-size:34px;line-height:1.05;font-weight:700;color:#f8fafc;">${escapeHtml(
+            <td style="padding:24px 28px;border-bottom:1px solid #dbe3ea;background:#f8fbff;">
+              <div style="font-size:12px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#475569;">The Stack</div>
+              <h1 style="margin:12px 0 0 0;font-size:30px;line-height:1.15;font-weight:700;color:#0f172a;">Premium card calculator report</h1>
+              <p style="margin:12px 0 0 0;font-size:15px;line-height:1.6;color:#334155;">${escapeHtml(
                 content.profile.shortName
-              )} calculator snapshot</h1>
-              <p style="margin:14px 0 0 0;font-size:15px;line-height:1.7;color:#cbd5e1;">Your current calculator run, with the exact value assumptions carrying the card.</p>
+              )} modeled results, including the value assumptions driving the current outcome.</p>
+              <p style="margin:8px 0 0 0;font-size:14px;line-height:1.6;color:#64748b;">${escapeHtml(
+                content.profile.headline
+              )}</p>
             </td>
           </tr>
           <tr>
-            <td style="padding:0 28px 28px 28px;">
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;background:linear-gradient(180deg,rgba(213,245,220,0.14),rgba(12,18,32,0.94));border:1px solid rgba(205,241,213,0.34);border-radius:20px;">
-                <tr>
-                  <td style="padding:22px 22px 18px 22px;">
-                    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#cbd5e1;">Modeled card</div>
-                    <div style="margin-top:8px;font-size:24px;font-weight:700;color:#f8fafc;">${escapeHtml(
-                      content.profile.name
-                    )}</div>
-                    <div style="margin-top:6px;font-size:14px;line-height:1.6;color:#cbd5e1;">${escapeHtml(
-                      content.profile.headline
-                    )}</div>
-                    <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:10px;">
-                      <span style="display:inline-block;padding:8px 12px;border-radius:999px;border:1px solid rgba(205,241,213,0.4);background:rgba(205,241,213,0.12);font-size:12px;font-weight:700;color:#d5f5dc;">Year 1 ${escapeHtml(
-                        formatCurrency(content.calculation.expectedValueYear1)
-                      )}</span>
-                      <span style="display:inline-block;padding:8px 12px;border-radius:999px;border:1px solid rgba(205,241,213,0.28);background:rgba(205,241,213,0.08);font-size:12px;font-weight:700;color:#d5f5dc;">Year 2 ${escapeHtml(
-                        formatCurrency(content.calculation.expectedValueYear2)
-                      )}</span>
-                    </div>
-                  </td>
-                </tr>
-              </table>
-
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;border-collapse:separate;background:#101827;border:1px solid rgba(148,163,184,0.16);border-radius:18px;">
-                <tr>
-                  <td style="padding:18px 20px;">
-                    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;">Snapshot</div>
-                    <div style="margin-top:12px;display:grid;gap:10px;">
-                      <div style="display:flex;justify-content:space-between;gap:16px;"><span style="font-size:14px;color:#cbd5e1;">Annual fee modeled</span><span style="font-size:14px;font-weight:700;color:#f8fafc;">${escapeHtml(
-                        formatCurrency(content.scenario.annualFee)
-                      )}</span></div>
-                      <div style="display:flex;justify-content:space-between;gap:16px;"><span style="font-size:14px;color:#cbd5e1;">Redemption assumption</span><span style="font-size:14px;font-weight:700;color:#f8fafc;">${escapeHtml(
-                        `${content.selectedRedemptionLabel} (${formatCpp(content.scenario.centsPerPoint)})`
-                      )}</span></div>
-                      <div style="display:flex;justify-content:space-between;gap:16px;"><span style="font-size:14px;color:#cbd5e1;">Welcome-offer eligible</span><span style="font-size:14px;font-weight:700;color:#f8fafc;">${escapeHtml(
-                        content.scenario.eligibleForBonus ? 'Yes' : 'No'
-                      )}</span></div>
-                      <div style="display:flex;justify-content:space-between;gap:16px;"><span style="font-size:14px;color:#cbd5e1;">Can clear required spend</span><span style="font-size:14px;font-weight:700;color:#f8fafc;">${escapeHtml(
-                        content.scenario.canMeetSpend ? 'Yes' : 'No'
-                      )}</span></div>
-                      <div style="display:flex;justify-content:space-between;gap:16px;"><span style="font-size:14px;color:#cbd5e1;">Welcome bonus counted</span><span style="font-size:14px;font-weight:700;color:#f8fafc;">${escapeHtml(
-                        bonusCounted
-                      )}</span></div>
-                    </div>
-                  </td>
-                </tr>
-              </table>
-
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;border-collapse:separate;background:#101827;border:1px solid rgba(148,163,184,0.16);border-radius:18px;">
-                <tr>
-                  <td style="padding:18px 20px;">
-                    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;">Value summary</div>
-                    <div style="margin-top:12px;display:grid;gap:10px;">
-                      <div style="display:flex;justify-content:space-between;gap:16px;"><span style="font-size:14px;color:#cbd5e1;">Points value, year 1</span><span style="font-size:14px;font-weight:700;color:#f8fafc;">${escapeHtml(
-                        formatCurrency(content.calculation.pointsValueYear1)
-                      )}</span></div>
-                      <div style="display:flex;justify-content:space-between;gap:16px;"><span style="font-size:14px;color:#cbd5e1;">Points value, year 2</span><span style="font-size:14px;font-weight:700;color:#f8fafc;">${escapeHtml(
-                        formatCurrency(content.calculation.pointsValueYear2)
-                      )}</span></div>
-                      <div style="display:flex;justify-content:space-between;gap:16px;"><span style="font-size:14px;color:#cbd5e1;">Usable credits kept</span><span style="font-size:14px;font-weight:700;color:#f8fafc;">${escapeHtml(
-                        formatCurrency(content.calculation.recurringCreditsValue)
-                      )}</span></div>
-                      <div style="display:flex;justify-content:space-between;gap:16px;"><span style="font-size:14px;color:#cbd5e1;">Soft perks kept</span><span style="font-size:14px;font-weight:700;color:#f8fafc;">${escapeHtml(
-                        formatCurrency(content.calculation.benefitsValue)
-                      )}</span></div>
-                    </div>
-                  </td>
-                </tr>
-              </table>
-
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;border-collapse:separate;background:#101827;border:1px solid rgba(148,163,184,0.16);border-radius:18px;">
-                <tr>
-                  <td style="padding:18px 20px;">
-                    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;">Spend inputs</div>
-                    <div style="margin-top:12px;">${spendRows}</div>
-                  </td>
-                </tr>
-              </table>
-
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;border-collapse:separate;background:#101827;border:1px solid rgba(148,163,184,0.16);border-radius:18px;">
-                <tr>
-                  <td style="padding:18px 20px;">
-                    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;">Hard-value credits kept</div>
-                    <div style="margin-top:12px;">${renderValueCards(
-                      content.creditRows,
-                      'No credit value entered yet.'
-                    )}</div>
-                  </td>
-                </tr>
-              </table>
-
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:18px;border-collapse:separate;background:#101827;border:1px solid rgba(148,163,184,0.16);border-radius:18px;">
-                <tr>
-                  <td style="padding:18px 20px;">
-                    <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;color:#94a3b8;">Soft-value perks kept</div>
-                    <div style="margin-top:12px;">${renderValueCards(
-                      content.benefitRows,
-                      'No soft-perk value entered yet.'
-                    )}</div>
-                  </td>
-                </tr>
-              </table>
-
-              <div style="margin-top:20px;text-align:center;">
+            <td style="padding:24px 28px 28px 28px;">
+              ${renderDataTable({
+                title: 'Report summary',
+                rows: reportSummaryRows,
+                rightAlignColumns: [1]
+              })}
+              <div style="margin-top:16px;">
+                ${renderDataTable({
+                  title: 'Value summary',
+                  rows: valueSummaryRows,
+                  rightAlignColumns: [1]
+                })}
+              </div>
+              <div style="margin-top:16px;">
+                ${renderDataTable({
+                  title: 'Spend assumptions',
+                  headers: ['Category', 'Spend', 'Points earned'],
+                  rows: spendRows,
+                  emptyMessage: 'No spend inputs entered yet.',
+                  rightAlignColumns: [1, 2]
+                })}
+              </div>
+              <div style="margin-top:16px;">
+                ${renderDataTable({
+                  title: 'Included credit values',
+                  headers: ['Item', 'Value'],
+                  rows: creditRows,
+                  emptyMessage: 'No credit value entered yet.',
+                  rightAlignColumns: [1]
+                })}
+              </div>
+              <div style="margin-top:16px;">
+                ${renderDataTable({
+                  title: 'Included perk values',
+                  headers: ['Item', 'Value'],
+                  rows: benefitRows,
+                  emptyMessage: 'No soft-perk value entered yet.',
+                  rightAlignColumns: [1]
+                })}
+              </div>
+              <div style="margin-top:18px;font-size:13px;line-height:1.6;color:#475569;">
+                Re-run or adjust inputs here:
                 <a href="${escapeHtml(
                   TOOL_URL
-                )}" style="display:inline-block;padding:12px 18px;border-radius:999px;background:#d5f5dc;color:#08111f;font-size:14px;font-weight:700;text-decoration:none;">Open the calculator</a>
+                )}" style="color:#0f4c81;font-weight:700;text-decoration:underline;">Open the calculator</a>
               </div>
             </td>
           </tr>

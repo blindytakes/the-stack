@@ -36,13 +36,17 @@ describe('premium card calculator email renderers', () => {
     const html = buildPremiumCardCalculatorEmailHtml(content);
 
     expect(subject).toContain('Amex Green');
+    expect(body).toContain('Report summary');
     expect(body).toContain('Year 1 expected value');
+    expect(body).toContain('Spend assumptions');
     expect(body).toContain('Travel purchases');
     expect(body).toContain('CLEAR Plus credit');
     expect(body).toContain('Global Assist Hotline');
-    expect(html).toContain('Amex Green calculator snapshot');
-    expect(html).toContain('Hard-value credits kept');
-    expect(html).toContain('Soft-value perks kept');
+    expect(html).toContain('Premium card calculator report');
+    expect(html).toContain('Report summary');
+    expect(html).toContain('Spend assumptions');
+    expect(html).toContain('Included credit values');
+    expect(html).toContain('Included perk values');
     expect(html).toContain('Open the calculator');
   });
 });

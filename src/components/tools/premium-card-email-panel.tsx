@@ -39,11 +39,81 @@ export function PremiumCardEmailPanel({
   const [message, setMessage] = useState('');
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [showTurnstile, setShowTurnstile] = useState(false);
+  const [pendingSubmission, setPendingSubmission] = useState(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
 
   function validateEmail(input: string) {
     return EMAIL_PATTERN.test(input.trim());
   }
+
+  const startSendAttempt = useCallback(
+    async (verifiedToken?: string) => {
+      const normalizedEmail = email.trim();
+      if (!validateEmail(normalizedEmail)) {
+        setPendingSubmission(false);
+        setStatus('error');
+        setMessage('Enter a valid email address.');
+        return;
+      }
+
+      const activeTurnstileToken = verifiedToken ?? turnstileToken;
+      if (turnstileEnabled && !activeTurnstileToken) {
+        setShowTurnstile(true);
+        setPendingSubmission(true);
+        setStatus('idle');
+        setMessage(TURNSTILE_REQUIRED_MESSAGE);
+        return;
+      }
+
+      setPendingSubmission(false);
+      setStatus('sending');
+      setMessage('');
+
+      try {
+        const response = await fetch('/api/email-calculator', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: normalizedEmail,
+            profileId: profile.id,
+            scenario,
+            ...(activeTurnstileToken ? { turnstileToken: activeTurnstileToken } : {})
+          })
+        });
+
+        let data: { error?: string; message?: string } = {};
+        try {
+          data = await response.json();
+        } catch {
+          data = {};
+        }
+
+        if (response.ok) {
+          setStatus('sent');
+          setMessage(
+            data.message ?? 'Your calculator results have been emailed. Check your inbox.'
+          );
+          setEmail('');
+          return;
+        }
+
+        setStatus('error');
+        setMessage(data.error ?? 'Could not send the calculator email right now.');
+      } catch (error) {
+        setStatus('error');
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : 'Could not connect. Please try again.'
+        );
+      } finally {
+        setPendingSubmission(false);
+        setTurnstileToken(null);
+        turnstileRef.current?.reset();
+      }
+    },
+    [email, profile.id, scenario, turnstileEnabled, turnstileToken]
+  );
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token);
@@ -51,71 +121,21 @@ export function PremiumCardEmailPanel({
     setMessage((current) =>
       current === TURNSTILE_REQUIRED_MESSAGE ? '' : current
     );
-  }, []);
+
+    if (!pendingSubmission) {
+      return;
+    }
+
+    setPendingSubmission(false);
+    void startSendAttempt(token);
+  }, [pendingSubmission, startSendAttempt]);
 
   const handleTurnstileExpire = useCallback(() => {
     setTurnstileToken(null);
   }, []);
 
   async function handleSendEmail() {
-    const normalizedEmail = email.trim();
-    if (!validateEmail(normalizedEmail)) {
-      setStatus('error');
-      setMessage('Enter a valid email address.');
-      return;
-    }
-
-    if (turnstileEnabled && !turnstileToken) {
-      setShowTurnstile(true);
-      setStatus('error');
-      setMessage(TURNSTILE_REQUIRED_MESSAGE);
-      return;
-    }
-
-    setStatus('sending');
-    setMessage('');
-
-    try {
-      const response = await fetch('/api/email-calculator', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: normalizedEmail,
-          profileId: profile.id,
-          scenario,
-          ...(turnstileToken ? { turnstileToken } : {})
-        })
-      });
-
-      let data: { error?: string; message?: string } = {};
-      try {
-        data = await response.json();
-      } catch {
-        data = {};
-      }
-
-      if (response.ok) {
-        setStatus('sent');
-        setMessage(
-          data.message ?? 'Your calculator results have been emailed. Check your inbox.'
-        );
-        setEmail('');
-        return;
-      }
-
-      setStatus('error');
-      setMessage(data.error ?? 'Could not send the calculator email right now.');
-    } catch (error) {
-      setStatus('error');
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : 'Could not connect. Please try again.'
-      );
-    } finally {
-      setTurnstileToken(null);
-      turnstileRef.current?.reset();
-    }
+    await startSendAttempt();
   }
 
   return (
@@ -126,7 +146,7 @@ export function PremiumCardEmailPanel({
             Take it with you
           </p>
           <h3 className="mt-1.5 text-xl font-semibold text-text-primary">
-            Email This Calculator Snapshot
+            Email This Calculator Report
           </h3>
           <p className="mt-1.5 text-[15px] leading-6 text-text-secondary">
             Send your {profile.shortName} run to yourself, including the modeled

@@ -91,8 +91,8 @@ describe('sendPremiumCardCalculatorEmail', () => {
     expect(sendResendEmailMock).toHaveBeenCalledWith(
       expect.objectContaining({
         subject: expect.stringContaining('Amex Green'),
-        html: expect.stringContaining('Amex Green calculator snapshot'),
-        text: expect.stringContaining('The Stack premium card calculator snapshot')
+        html: expect.stringContaining('Premium card calculator report'),
+        text: expect.stringContaining('The Stack premium card calculator report')
       })
     );
   });
