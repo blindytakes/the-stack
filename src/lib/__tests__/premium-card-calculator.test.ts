@@ -39,6 +39,33 @@ describe('premium card calculator', () => {
     }
   });
 
+  it('uses the updated Amex Platinum credit and perk set from feedback', () => {
+    const profile = premiumCardProfileById['amex-platinum'];
+
+    expect(profile.credits.some((credit) => credit.id === 'saks-credit')).toBe(false);
+    expect(profile.credits.find((credit) => credit.id === 'hotel-credit')?.note).toBe(
+      '$600 annual value, issued as up to $300 semi-annually on prepaid FHR / Hotel Collection stays'
+    );
+    expect(
+      profile.credits.find((credit) => credit.id === 'digital-entertainment-credit')?.note
+    ).toBe('$300 annual value, issued as up to $25 per month');
+    expect(profile.benefits.find((benefit) => benefit.id === 'priority-pass')?.description).toBe(
+      'Membership for participating non-Amex lounges worldwide.'
+    );
+    expect(profile.benefits.find((benefit) => benefit.id === 'fine-hotels-resorts')?.note).toBe(
+      'Separate from the prepaid hotel credit in hard-value credits.'
+    );
+    expect(
+      profile.benefits.some((benefit) => benefit.id === 'purchase-and-return-protections')
+    ).toBe(true);
+    expect(profile.benefits.some((benefit) => benefit.id === 'no-foreign-transaction-fees')).toBe(
+      true
+    );
+    expect(profile.benefits.some((benefit) => benefit.id === 'global-entry-tsa-precheck')).toBe(
+      true
+    );
+  });
+
   it('removes the welcome offer when the user is not eligible', () => {
     const profile = premiumCardProfileById['capital-one-venture-x'];
     const scenario = buildInitialPremiumCardScenario(profile);

@@ -212,13 +212,13 @@ export const premiumCardProfiles = [
       {
         id: 'hotel-credit',
         label: 'Hotel credit',
-        note: 'Up to $300 semi-annually on prepaid FHR / Hotel Collection stays',
+        note: '$600 annual value, issued as up to $300 semi-annually on prepaid FHR / Hotel Collection stays',
         defaultValue: 0
       },
       {
         id: 'digital-entertainment-credit',
         label: 'Digital entertainment credit',
-        note: 'Up to $25 per month',
+        note: '$300 annual value, issued as up to $25 per month',
         defaultValue: 0
       },
       { id: 'clear-credit', label: 'CLEAR Plus credit', note: 'Up to $209 per year', defaultValue: 0 },
@@ -227,29 +227,93 @@ export const premiumCardProfiles = [
         label: 'Walmart+ membership credit',
         note: 'Up to $12.95 plus tax per month',
         defaultValue: 0
-      },
-      {
-        id: 'saks-credit',
-        label: 'Shop Saks with Platinum',
-        note: 'Up to $50 Jan-Jun and $50 Jul-Dec',
-        defaultValue: 0
       }
     ],
     benefits: [
-      { id: 'global-lounge-collection', label: 'Global Lounge Collection access', defaultValue: 0 },
-      { id: 'delta-sky-club', label: 'Delta Sky Club visits', note: '10 visits when flying Delta', defaultValue: 0 },
-      { id: 'priority-pass', label: 'Priority Pass Select access', defaultValue: 0 },
-      { id: 'fine-hotels-resorts', label: 'Fine Hotels + Resorts perks', defaultValue: 0 },
+      {
+        id: 'global-lounge-collection',
+        label: 'Global Lounge Collection access',
+        description:
+          'Broader airport lounge access across the Amex network, including Centurion Lounges and other eligible partner lounges.',
+        note: 'This is the full lounge bundle, not just Priority Pass.',
+        defaultValue: 0
+      },
+      {
+        id: 'delta-sky-club',
+        label: 'Delta Sky Club visits',
+        description: 'Sky Club access when flying Delta on an eligible same-day itinerary.',
+        note: 'Visit allotment is capped annually.',
+        defaultValue: 0
+      },
+      {
+        id: 'priority-pass',
+        label: 'Priority Pass Select access',
+        description: 'Membership for participating non-Amex lounges worldwide.',
+        note: 'This is one subset of the broader Global Lounge Collection.',
+        defaultValue: 0
+      },
+      {
+        id: 'fine-hotels-resorts',
+        label: 'Fine Hotels + Resorts on-property perks',
+        description:
+          'Hotel benefits like breakfast, late checkout, upgrades, and a property amenity on qualifying stays.',
+        note: 'Separate from the prepaid hotel credit in hard-value credits.',
+        defaultValue: 0
+      },
       {
         id: 'hotel-status',
         label: 'Hotel status value',
+        description:
+          'Automatic mid-tier hotel status that can translate into upgrades, late checkout, or bonus earnings.',
         note: 'Hilton Honors Gold and Marriott Bonvoy Gold Elite',
         defaultValue: 0
       },
-      { id: 'global-dining-access', label: 'Global Dining Access by Resy', defaultValue: 0 },
-      { id: 'platinum-nights', label: 'Platinum Nights by Resy', defaultValue: 0 },
-      { id: 'concierge', label: 'Concierge and service perks', defaultValue: 0 },
-      { id: 'travel-protections', label: 'Travel protections', defaultValue: 0 }
+      {
+        id: 'global-dining-access',
+        label: 'Global Dining Access by Resy',
+        description: 'Priority access to tougher restaurant reservations and select dining events.',
+        defaultValue: 0
+      },
+      {
+        id: 'platinum-nights',
+        label: 'Platinum Nights by Resy',
+        description: 'Cardmember-only dining experiences and premium event access through Resy.',
+        defaultValue: 0
+      },
+      {
+        id: 'concierge',
+        label: 'Concierge and service perks',
+        description: 'Hands-on help with travel, dining, and event planning when that support is worth something to you.',
+        defaultValue: 0
+      },
+      {
+        id: 'travel-protections',
+        label: 'Travel protections',
+        description: 'Trip delay, trip cancellation, baggage, and rental coverage on eligible travel purchases.',
+        note: 'Coverage terms and claim limits vary.',
+        defaultValue: 0
+      },
+      {
+        id: 'purchase-and-return-protections',
+        label: 'Purchase and return protections',
+        description:
+          'Coverage for eligible damaged, stolen, or unwanted items when merchant return windows or warranties fall short.',
+        defaultValue: 0
+      },
+      {
+        id: 'no-foreign-transaction-fees',
+        label: 'No foreign transaction fees',
+        description: 'Avoids extra issuer fees on international purchases.',
+        note: 'Mostly matters if this card will actually be used abroad.',
+        defaultValue: 0
+      },
+      {
+        id: 'global-entry-tsa-precheck',
+        label: 'Global Entry or TSA PreCheck credit',
+        description: 'Application-fee reimbursement for eligible trusted traveler programs.',
+        note: 'Useful, but only in the years you actually redeem it.',
+        defaultValue: 0
+      }
     ],
     timingAdjustments: {
       firstYearLabel: 'Year 1-only extras',

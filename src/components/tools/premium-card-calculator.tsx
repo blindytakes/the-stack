@@ -649,9 +649,10 @@ function CurrencyInput({
           {!singleLineDisplay && supportingText ? (
             compactSupportingText ? (
               <p
+                title={supportingText}
                 className={`mt-1 text-[12px] leading-5 ${
                   hasValue ? 'text-text-secondary' : 'text-text-muted'
-                }`}
+                } truncate whitespace-nowrap`}
               >
                 {supportingText}
               </p>
@@ -863,6 +864,19 @@ export function PremiumCardCalculator() {
       : selectedResult.expectedValueYear1 >= 0
         ? 'This run works on paper, but the margin is still pretty thin.'
         : 'This setup does not justify the first-year cost of carrying the card.';
+  const welcomeOfferIsIncluded = selectedResult.welcomeOfferPoints > 0;
+  const welcomeOfferValue = Math.round(
+    (selectedResult.welcomeOfferPoints * selectedResult.centsPerPoint) / 100
+  );
+  const yearOneBonusExplanation = welcomeOfferIsIncluded
+    ? `This first-year number includes the signup bonus: ${formatPoints(
+        selectedResult.welcomeOfferPoints
+      )} ${selectedProfile.offerCurrencyShortLabel} worth about ${formatCurrency(
+        welcomeOfferValue
+      )} at your chosen redemption value.`
+    : selectedScenario.eligibleForBonus
+      ? 'This first-year number does not include a signup bonus because this run assumes you will not hit the required spend.'
+      : 'This first-year number does not include a signup bonus because this run assumes you are not eligible for the offer.';
   const yearTwoIsPositive = selectedResult.expectedValueYear2 >= 0;
   const yearTwoSummaryDetail = yearTwoIsPositive
     ? selectedProfile.annualPointsBonus
@@ -1358,8 +1372,18 @@ export function PremiumCardCalculator() {
                           >
                             {yearOneVerdictLabel}
                           </span>
+                          <span
+                            className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                              welcomeOfferIsIncluded
+                                ? `border-[rgb(var(--card-accent-rgb)/0.3)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.12),rgb(var(--card-accent-rgb)_/_0.12))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.2)] ${selectedVisual.accentClassName}`
+                                : 'border-white/12 bg-white/[0.04] text-text-muted'
+                            }`}
+                          >
+                            {welcomeOfferIsIncluded ? 'Signup bonus included' : 'Signup bonus excluded'}
+                          </span>
                         </div>
                         <p className="mt-2 text-sm leading-6 text-text-secondary">{yearOneVerdictDetail}</p>
+                        <p className="mt-2 text-xs leading-5 text-text-muted">{yearOneBonusExplanation}</p>
                       </div>
                       <div className="sm:text-right">
                         <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">First Year</p>
@@ -1410,7 +1434,7 @@ export function PremiumCardCalculator() {
                 <div className="flex flex-col gap-2 border-b border-white/8 pb-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <span className="text-sm font-semibold text-text-primary">Value ledger</span>
-                    <p className="mt-1 text-xs leading-5 text-text-muted">The parts of the model actually carrying the card.</p>
+                    <p className="mt-1 text-xs leading-5 text-text-muted">The features of the credit card providing continuing benefit.</p>
                   </div>
                   <span className={`text-[11px] font-semibold uppercase tracking-[0.18em] ${selectedVisual.accentClassName}`}>The Stack read</span>
                 </div>
