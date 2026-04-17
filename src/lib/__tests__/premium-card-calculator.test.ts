@@ -66,6 +66,38 @@ describe('premium card calculator', () => {
     );
   });
 
+  it('updates Venture X with clarified credits, additional soft perks, and built-in anniversary miles', () => {
+    const profile = premiumCardProfileById['capital-one-venture-x'];
+
+    expect(profile.spendCategories.some((category) => category.id === 'travel-outside-portal')).toBe(
+      false
+    );
+    expect(profile.annualPointsBonus).toStrictEqual({
+      label: '10,000 anniversary miles',
+      note: 'Built into renewal math starting after the first account anniversary.',
+      fixedPoints: 10000
+    });
+    expect(profile.credits.find((credit) => credit.id === 'lifestyle-collection-credit')?.description).toContain(
+      'Capital One Travel'
+    );
+    expect(profile.credits.find((credit) => credit.id === 'premier-collection-credit')?.description).toContain(
+      'minimum stay'
+    );
+    expect(profile.benefits.some((benefit) => benefit.id === 'anniversary-miles')).toBe(false);
+    expect(profile.benefits.find((benefit) => benefit.id === 'cell-phone-protection')?.description).toContain(
+      'monthly wireless bill'
+    );
+    expect(
+      profile.benefits.find((benefit) => benefit.id === 'no-foreign-transaction-fees')?.description
+    ).toContain('No issuer foreign transaction fee');
+    expect(profile.benefits.find((benefit) => benefit.id === 'prior-subscription')?.label).toBe(
+      'Complimentary PRIOR subscription'
+    );
+    expect(profile.benefits.find((benefit) => benefit.id === 'cultivist-membership')?.label).toBe(
+      'Discounted The Cultivist membership'
+    );
+  });
+
   it('removes the welcome offer when the user is not eligible', () => {
     const profile = premiumCardProfileById['capital-one-venture-x'];
     const scenario = buildInitialPremiumCardScenario(profile);
@@ -77,7 +109,26 @@ describe('premium card calculator', () => {
 
     expect(result.welcomeOfferPoints).toBe(0);
     expect(result.totalPointsYear1).toBe(result.spendPoints);
-    expect(result.pointsValueYear1).toBe(result.pointsValueYear2);
+    expect(result.totalPointsYear2).toBe(result.spendPoints + 10000);
+    expect(result.pointsValueYear2 - result.pointsValueYear1).toBe(180);
+  });
+
+  it('adds Venture X anniversary miles in renewal math instead of keeping them as a manual soft perk', () => {
+    const profile = premiumCardProfileById['capital-one-venture-x'];
+    const scenario = buildInitialPremiumCardScenario(profile);
+    scenario.offerPoints = 75000;
+    scenario.annualFee = profile.annualFee;
+    scenario.spend['capital-one-hotels-rental-cars'] = 1000;
+    scenario.spend['capital-one-flights-vacation-rentals'] = 500;
+    scenario.spend['all-other-purchases'] = 2000;
+
+    const result = calculatePremiumCardScenario(profile, scenario);
+
+    expect(result.spendPoints).toBe(16500);
+    expect(result.annualBonusPointsYear1).toBe(0);
+    expect(result.annualBonusPointsYear2).toBe(10000);
+    expect(result.totalPointsYear1).toBe(91500);
+    expect(result.totalPointsYear2).toBe(26500);
   });
 
   it('keeps year-one and renewal adjustments separate', () => {

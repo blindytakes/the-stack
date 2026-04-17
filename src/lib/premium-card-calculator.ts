@@ -32,7 +32,8 @@ export type PremiumCardRedemptionOption = {
 export type PremiumCardAnnualPointsBonus = {
   label: string;
   note?: string;
-  pointsPerDollar: number;
+  pointsPerDollar?: number;
+  fixedPoints?: number;
   appliesInYear1?: boolean;
 };
 
@@ -572,14 +573,6 @@ export const premiumCardProfiles = [
         defaultValue: 0
       },
       {
-        id: 'travel-outside-portal',
-        label: 'Travel booked outside Capital One Travel',
-        note: '2x miles',
-        emoji: '🌍',
-        multiplier: 2,
-        defaultValue: 0
-      },
-      {
         id: 'capital-one-entertainment',
         label: 'Capital One Entertainment purchases',
         note: '5x miles',
@@ -602,47 +595,120 @@ export const premiumCardProfiles = [
       { id: 'transfer-partners', label: 'Transfer partners', centsPerPoint: 1.8, note: '1.8 CPP' }
     ],
     defaultRedemptionId: 'transfer-partners',
+    annualPointsBonus: {
+      label: '10,000 anniversary miles',
+      note: 'Built into renewal math starting after the first account anniversary.',
+      fixedPoints: 10000
+    },
     credits: [
       {
         id: 'annual-travel-credit',
         label: 'Capital One Travel credit',
+        description: 'Annual statement credit for eligible bookings made through Capital One Travel.',
         note: 'Up to $300 each account year',
         defaultValue: 0
       },
       {
         id: 'global-entry-credit',
         label: 'Global Entry / TSA PreCheck credit',
+        description: "Application-fee reimbursement if you'd otherwise pay out of pocket.",
         note: 'Up to $120',
         defaultValue: 0
       },
       {
         id: 'lifestyle-collection-credit',
         label: 'Lifestyle Collection experience credit',
-        note: '$50 per stay',
+        description:
+          'Up to $50 on eligible Lifestyle Collection stays booked through Capital One Travel. Qualifying charges vary by property and may require a minimum stay.',
+        note: 'Up to $50 per stay',
         defaultValue: 0
       },
       {
         id: 'premier-collection-credit',
         label: 'Premier Collection experience credit',
-        note: '$100 per stay',
+        description:
+          'Up to $100 on eligible Premier Collection stays booked through Capital One Travel. Qualifying charges vary by property and may require a minimum stay.',
+        note: 'Up to $100 per stay',
         defaultValue: 0
       }
     ],
     benefits: [
-      { id: 'lounge-access', label: 'Capital One Lounge / Landing + Priority Pass access', defaultValue: 0 },
-      { id: 'anniversary-miles', label: '10,000 anniversary miles', note: 'Starting on the first anniversary', defaultValue: 0 },
-      { id: 'hertz-status', label: 'Hertz President’s Circle status', defaultValue: 0 },
-      { id: 'travel-protections', label: 'Travel protections', defaultValue: 0 },
-      { id: 'capital-one-dining', label: 'Capital One Dining access', defaultValue: 0 },
-      { id: 'capital-one-entertainment', label: 'Capital One Entertainment access', defaultValue: 0 },
-      { id: 'authorized-users', label: 'Authorized-user value', defaultValue: 0 }
+      {
+        id: 'lounge-access',
+        label: 'Capital One Lounge / Landing + Priority Pass access',
+        description:
+          'Airport lounge access across Capital One Lounge and Landing locations plus participating Priority Pass lounges after enrollment.',
+        defaultValue: 0
+      },
+      {
+        id: 'hertz-status',
+        label: 'Hertz President’s Circle status',
+        description:
+          'Elite Hertz status that can help with upgrades, wider car selection, and faster pickup on eligible rentals.',
+        defaultValue: 0
+      },
+      {
+        id: 'travel-protections',
+        label: 'Travel protections',
+        description:
+          'Trip delay, baggage, rental-car, and other travel coverage on eligible purchases, subject to benefit terms.',
+        defaultValue: 0
+      },
+      {
+        id: 'cell-phone-protection',
+        label: 'Cell phone protection',
+        description:
+          'Pay your monthly wireless bill with the card to activate coverage for eligible phone theft or damage, subject to deductible and benefit terms.',
+        defaultValue: 0
+      },
+      {
+        id: 'no-foreign-transaction-fees',
+        label: 'No foreign transaction fees',
+        description: 'No issuer foreign transaction fee on purchases made abroad or with international merchants.',
+        defaultValue: 0
+      },
+      {
+        id: 'capital-one-dining',
+        label: 'Capital One Dining access',
+        description: 'Access to reservations and dining events through Capital One Dining.',
+        defaultValue: 0
+      },
+      {
+        id: 'capital-one-entertainment',
+        label: 'Capital One Entertainment access',
+        description:
+          'Access to presales, tickets, and cardholder event inventory through Capital One Entertainment.',
+        defaultValue: 0
+      },
+      {
+        id: 'prior-subscription',
+        label: 'Complimentary PRIOR subscription',
+        description:
+          'Complimentary PRIOR subscription for destination guides and travel experiences; enrollment required.',
+        note: 'Advertised value: $149',
+        defaultValue: 0
+      },
+      {
+        id: 'cultivist-membership',
+        label: 'Discounted The Cultivist membership',
+        description:
+          '50% off The Cultivist Enthusiast membership for up to 2 years; enrollment required and auto-renew terms apply.',
+        defaultValue: 0
+      },
+      {
+        id: 'authorized-users',
+        label: 'Authorized-user value',
+        description:
+          'Any extra lounge or travel value you expect additional cardholders to create for your household.',
+        defaultValue: 0
+      }
     ],
     timingAdjustments: {
       firstYearLabel: 'Year 1-only extras',
       firstYearNote: 'Use this for any onboarding value that will not repeat.',
       firstYearDefaultValue: 0,
       renewalLabel: 'Renewal-only extras',
-      renewalNote: 'Good place to add anniversary-miles value or other year-2 keepers.',
+      renewalNote: 'Use this for renewal-only keep value beyond the built-in anniversary miles.',
       renewalDefaultValue: 0
     }
   },
@@ -1222,7 +1288,8 @@ export function calculatePremiumCardScenario(
   const totalSpend = spendBreakdown.reduce((sum, category) => sum + category.spend, 0);
   const spendPoints = spendBreakdown.reduce((sum, category) => sum + category.pointsEarned, 0);
   const annualBonusPoints = profile.annualPointsBonus
-    ? Math.round(totalSpend * profile.annualPointsBonus.pointsPerDollar)
+    ? (profile.annualPointsBonus.fixedPoints ?? 0) +
+      Math.round(totalSpend * (profile.annualPointsBonus.pointsPerDollar ?? 0))
     : 0;
   const annualBonusPointsYear1 = profile.annualPointsBonus?.appliesInYear1 ? annualBonusPoints : 0;
   const annualBonusPointsYear2 = annualBonusPoints;

@@ -1207,6 +1207,7 @@ export function PremiumCardCalculator() {
                   <CurrencyInput
                     key={credit.id}
                     label={credit.label}
+                    description={credit.description}
                     note={credit.note}
                     singleLineDisplay={credit.singleLineDisplay}
                     value={selectedScenario.credits[credit.id] ?? 0}
