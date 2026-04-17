@@ -266,6 +266,111 @@ function TimelineTrack({
   );
 }
 
+type StartSequenceGroup = {
+  key: string;
+  label: string;
+  items: Array<{
+    id: string;
+    action: 'Apply for' | 'Open';
+    title: string;
+  }>;
+};
+
+function isSameCalendarDay(left: Date, right: Date) {
+  return (
+    left.getFullYear() === right.getFullYear() &&
+    left.getMonth() === right.getMonth() &&
+    left.getDate() === right.getDate()
+  );
+}
+
+function buildStartSequenceGroups(
+  recommendations: PlannerRecommendation[],
+  entriesById: Map<string, TimelineEntry>,
+  referenceDate: Date
+): StartSequenceGroup[] {
+  const groups = new Map<string, StartSequenceGroup>();
+
+  for (const recommendation of recommendations) {
+    const entry = entriesById.get(recommendation.id);
+    const startDate = entry?.startDate;
+    const key = startDate
+      ? `${startDate.getFullYear()}-${startDate.getMonth()}-${startDate.getDate()}`
+      : `manual-${recommendation.id}`;
+    const existing = groups.get(key);
+
+    if (existing) {
+      existing.items.push({
+        id: recommendation.id,
+        action: recommendation.kind === 'card_bonus' ? 'Apply for' : 'Open',
+        title: recommendation.title
+      });
+      continue;
+    }
+
+    groups.set(key, {
+      key,
+      label: startDate
+        ? isSameCalendarDay(startDate, referenceDate)
+          ? 'Start now'
+          : formatShortDate(startDate)
+        : 'Manual timing',
+      items: [
+        {
+          id: recommendation.id,
+          action: recommendation.kind === 'card_bonus' ? 'Apply for' : 'Open',
+          title: recommendation.title
+        }
+      ]
+    });
+  }
+
+  return [...groups.values()];
+}
+
+function PlanStartSequence({ groups }: { groups: StartSequenceGroup[] }) {
+  if (groups.length === 0) return null;
+
+  return (
+    <div className="mt-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.22em] text-brand-teal">Sequence of events</p>
+          <p className="mt-2 max-w-2xl text-sm text-text-secondary">
+            This is the execution order for the opening moves, not a one-size-fits-all ranking.
+          </p>
+        </div>
+        <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+          {groups.length} start window{groups.length === 1 ? '' : 's'}
+        </span>
+      </div>
+
+      <div className="mt-4 grid gap-3 xl:grid-cols-3">
+        {groups.map((group, index) => (
+          <div
+            key={group.key}
+            className={`rounded-[1.35rem] border px-4 py-4 ${
+              index === 0
+                ? 'border-brand-teal/20 bg-brand-teal/10'
+                : 'border-white/[0.08] bg-white/[0.03]'
+            }`}
+          >
+            <p className="text-[11px] uppercase tracking-[0.2em] text-text-muted">{group.label}</p>
+            <div className="mt-3 space-y-2.5">
+              {group.items.map((item) => (
+                <div key={item.id} className="rounded-xl border border-white/[0.06] bg-black/10 px-3 py-2.5">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-text-muted">{item.action}</p>
+                  <p className="mt-1 text-sm font-semibold text-text-primary">{item.title}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ─────────────────────────────────────────────────────────
  * Plan schedule board — timeline and details in one surface
  * ───────────────────────────────────────────────────────── */
@@ -538,11 +643,7 @@ function PlanScheduleBoard({
   entriesById: Map<string, TimelineEntry>;
   selectedRecommendationId?: string | null;
 }) {
-  const defaultVisibleCount = 4;
-  const visibleRecommendations = useMemo(
-    () => recommendations.slice(0, defaultVisibleCount),
-    [recommendations]
-  );
+  const visibleRecommendations = recommendations;
   const scheduledEntries = useMemo(
     () =>
       visibleRecommendations
@@ -554,7 +655,8 @@ function PlanScheduleBoard({
   const desktopGridClass =
     'lg:grid-cols-[40px_124px_minmax(225px,320px)_minmax(430px,1fr)_92px_132px]';
   const summaryEyebrow = `Featured ${visibleRecommendations.length} move${visibleRecommendations.length === 1 ? '' : 's'}`;
-  const summaryText = 'These are the moves we would prioritize first for this plan. Use the details control on the right to expand each one.';
+  const summaryText =
+    'These are the first moves to work through. Expand any row to see the exact requirement window and bonus-posting timing.';
 
   return (
     <div className="mt-5 overflow-hidden rounded-[1.8rem] border border-white/[0.09] bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
@@ -648,6 +750,102 @@ function SaveActBar({
           </Button>
         }
       />
+    </section>
+  );
+}
+
+function ConsideredMoveCard({
+  item,
+  includedInPlan
+}: {
+  item: PlannerRecommendation;
+  includedInPlan: boolean;
+}) {
+  const badgeClass = includedInPlan
+    ? 'border-brand-teal/20 bg-brand-teal/10 text-brand-teal'
+    : 'border-white/10 bg-white/[0.03] text-text-secondary';
+  const badgeLabel = includedInPlan ? 'Later in plan' : 'Alternative';
+  const artworkClass =
+    item.lane === 'cards'
+      ? 'h-[3.9rem] w-[5.9rem] shrink-0 rounded-[1rem] border border-brand-gold/16 bg-white/[0.025]'
+      : 'flex h-[3.9rem] w-[5.9rem] shrink-0 rounded-[1rem] border border-brand-teal/16 bg-white/[0.025]';
+
+  return (
+    <Link
+      href={`${item.detailPath}${item.detailPath.includes('?') ? '&' : '?'}src=plan_results`}
+      className="flex items-center gap-3 rounded-[1.25rem] border border-white/[0.07] bg-white/[0.03] px-3.5 py-3 transition hover:bg-white/[0.05]"
+    >
+      <RecommendationArtwork
+        item={item}
+        className={artworkClass}
+        compact
+      />
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-text-muted">{item.provider}</p>
+          <span className={`rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.18em] ${badgeClass}`}>
+            {badgeLabel}
+          </span>
+        </div>
+        <p className="mt-1 truncate text-sm font-semibold text-text-primary">{item.title}</p>
+      </div>
+      <span className="shrink-0 text-sm font-semibold text-text-primary">{formatValue(item.estimatedNetValue)}</span>
+    </Link>
+  );
+}
+
+function ConsideredMoves({
+  cardRecommendations,
+  bankingRecommendations,
+  plannedRecommendationIds
+}: {
+  cardRecommendations: PlannerRecommendation[];
+  bankingRecommendations: PlannerRecommendation[];
+  plannedRecommendationIds: Set<string>;
+}) {
+  if (cardRecommendations.length === 0 && bankingRecommendations.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="mt-8 rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-6 py-6 md:px-8">
+      <div className="max-w-3xl">
+        <p className="text-[11px] uppercase tracking-[0.22em] text-brand-teal">Also considered</p>
+        <h2 className="mt-2 text-2xl font-semibold text-text-primary">Strong alternatives worth comparing</h2>
+        <p className="mt-2 text-sm leading-7 text-text-secondary">
+          The sequence above is the opening plan. These offers also fit your profile and are useful comparison points when you want more than the first scheduled moves.
+        </p>
+      </div>
+
+      {cardRecommendations.length > 0 ? (
+        <div className="mt-5">
+          <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Top cards considered</p>
+          <div className="mt-3 grid gap-3 xl:grid-cols-2">
+            {cardRecommendations.map((item) => (
+              <ConsideredMoveCard
+                key={item.id}
+                item={item}
+                includedInPlan={plannedRecommendationIds.has(item.id)}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {bankingRecommendations.length > 0 ? (
+        <div className="mt-5">
+          <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Top bank offers considered</p>
+          <div className="mt-3 grid gap-3 xl:grid-cols-2">
+            {bankingRecommendations.map((item) => (
+              <ConsideredMoveCard
+                key={item.id}
+                item={item}
+                includedInPlan={plannedRecommendationIds.has(item.id)}
+              />
+            ))}
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -754,12 +952,28 @@ function PlanSummary({
     () => rankPlannerRecommendationsByPriority(payload.recommendations),
     [payload.recommendations]
   );
+  const prioritizedConsideredRecommendations = useMemo(
+    () =>
+      rankPlannerRecommendationsByPriority(
+        payload.consideredRecommendations.length > 0
+          ? payload.consideredRecommendations
+          : payload.recommendations
+      ),
+    [payload.consideredRecommendations, payload.recommendations]
+  );
   const scopedRecommendations = useMemo(
     () =>
       cardsOnlyMode
         ? prioritizedRecommendations.filter((item) => item.lane === 'cards')
         : prioritizedRecommendations,
     [cardsOnlyMode, prioritizedRecommendations]
+  );
+  const scopedConsideredRecommendations = useMemo(
+    () =>
+      cardsOnlyMode
+        ? prioritizedConsideredRecommendations.filter((item) => item.lane === 'cards')
+        : prioritizedConsideredRecommendations,
+    [cardsOnlyMode, prioritizedConsideredRecommendations]
   );
   const timelineEntries = useMemo(
     () =>
@@ -781,11 +995,15 @@ function PlanSummary({
   const selectedOfferStatus = useMemo(() => getSelectedOfferIntentStatus(payload), [payload]);
   const featuredRecommendations = useMemo(() => {
     return getFeaturedPlanRecommendations(orderedRecommendations, {
-      maxRecommendations: 4,
+      maxRecommendations: 5,
       selectedRecommendationId:
         selectedOfferStatus?.status === 'included' ? selectedOfferStatus.recommendationId : null
     });
   }, [orderedRecommendations, selectedOfferStatus]);
+  const plannedRecommendationIds = useMemo(
+    () => new Set(orderedRecommendations.map((item) => item.id)),
+    [orderedRecommendations]
+  );
   const featuredRecommendationIds = useMemo(
     () => new Set(featuredRecommendations.map((item) => item.id)),
     [featuredRecommendations]
@@ -794,14 +1012,34 @@ function PlanSummary({
     () => timelineEntries.filter((entry) => featuredRecommendationIds.has(entry.id)),
     [featuredRecommendationIds, timelineEntries]
   );
-  const totalValue = featuredRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
-  const milestones = useMemo(() => buildTimelineMilestones(featuredTimelineEntries), [featuredTimelineEntries]);
-  const entriesById = useMemo(
+  const fullPlanValue = orderedRecommendations.reduce((sum, item) => sum + item.estimatedNetValue, 0);
+  const milestones = useMemo(() => buildTimelineMilestones(timelineEntries), [timelineEntries]);
+  const featuredEntriesById = useMemo(
     () => new Map(featuredTimelineEntries.map((entry) => [entry.id, entry])),
     [featuredTimelineEntries]
   );
+  const featuredStartSequenceGroups = useMemo(
+    () => buildStartSequenceGroups(featuredRecommendations, featuredEntriesById, referenceDate),
+    [featuredEntriesById, featuredRecommendations, referenceDate]
+  );
+  const cardAlternatives = useMemo(
+    () =>
+      scopedConsideredRecommendations
+        .filter((item) => item.lane === 'cards' && !featuredRecommendationIds.has(item.id))
+        .slice(0, 4),
+    [featuredRecommendationIds, scopedConsideredRecommendations]
+  );
+  const bankingAlternatives = useMemo(
+    () =>
+      cardsOnlyMode
+        ? []
+        : scopedConsideredRecommendations
+            .filter((item) => item.lane === 'banking' && !featuredRecommendationIds.has(item.id))
+            .slice(0, 4),
+    [cardsOnlyMode, featuredRecommendationIds, scopedConsideredRecommendations]
+  );
 
-  const animatedTotal = useCountUp(totalValue);
+  const animatedTotal = useCountUp(fullPlanValue);
 
   return (
     <div>
@@ -835,14 +1073,18 @@ function PlanSummary({
             <p className="font-heading text-6xl text-text-primary md:text-7xl">
               {formatValue(animatedTotal)}
             </p>
+            <p className="mt-2 text-sm text-text-secondary">
+              Across {orderedRecommendations.length} planned move{orderedRecommendations.length === 1 ? '' : 's'}
+            </p>
           </div>
         </div>
 
         <div className="mt-6 border-t border-white/[0.06] pt-5">
+          <PlanStartSequence groups={featuredStartSequenceGroups} />
           <div>
             <PlanScheduleBoard
               recommendations={featuredRecommendations}
-              entriesById={entriesById}
+              entriesById={featuredEntriesById}
               selectedRecommendationId={
                 selectedOfferStatus?.status === 'included' ? selectedOfferStatus.recommendationId : null
               }
@@ -853,12 +1095,18 @@ function PlanSummary({
 
       {/* ── ② Save & Act ── */}
       <SaveActBar
-        recommendations={featuredRecommendations}
+        recommendations={orderedRecommendations}
         milestones={milestones}
-        totalValue={totalValue}
+        totalValue={fullPlanValue}
         cardsOnlyMode={cardsOnlyMode}
-        timelineEntries={featuredTimelineEntries}
+        timelineEntries={timelineEntries}
         referenceDate={referenceDate}
+      />
+
+      <ConsideredMoves
+        cardRecommendations={cardAlternatives}
+        bankingRecommendations={bankingAlternatives}
+        plannedRecommendationIds={plannedRecommendationIds}
       />
     </div>
   );

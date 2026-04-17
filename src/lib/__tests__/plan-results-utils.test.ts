@@ -37,7 +37,7 @@ describe('getFeaturedPlanRecommendations', () => {
 
     const featured = getFeaturedPlanRecommendations(recommendations);
 
-    expect(featured.map((item) => item.id)).toEqual(['bank-1', 'bank-2', 'card-1', 'card-2']);
+    expect(featured.map((item) => item.id)).toEqual(['bank-1', 'bank-2', 'bank-3', 'card-1', 'card-2']);
   });
 
   it('backfills from the stronger lane when the other lane has fewer than two moves', () => {
@@ -64,9 +64,9 @@ describe('getFeaturedPlanRecommendations', () => {
     ];
 
     const featured = getFeaturedPlanRecommendations(recommendations, {
-      selectedRecommendationId: 'bank-3'
+      selectedRecommendationId: 'card-3'
     });
 
-    expect(featured.map((item) => item.id)).toEqual(['bank-1', 'bank-3', 'card-1', 'card-2']);
+    expect(featured.map((item) => item.id)).toEqual(['bank-1', 'bank-2', 'bank-3', 'card-1', 'card-3']);
   });
 });

@@ -115,6 +115,7 @@ export const planRequestSchema = z.object({
 export const planResponseSchema = z.object({
   generatedAt: z.number().int().positive(),
   recommendations: z.array(plannerRecommendationSchema),
+  consideredRecommendations: z.array(plannerRecommendationSchema).default([]),
   exclusions: z.array(plannerExcludedOfferSchema).default([]),
   schedule: z.array(planScheduleItemSchema).default([]),
   scheduleIssues: z.array(planScheduleIssueSchema).default([])

@@ -113,6 +113,41 @@ describe('buildPlanSchedule', () => {
     expect(result.scheduled[1]?.startAt).toBeGreaterThanOrEqual(result.scheduled[0]!.completeAt);
   });
 
+  it('allows a second card to start once the first spend window ends even if payout posts later', () => {
+    const startAt = Date.UTC(2026, 0, 1);
+    const result = buildPlanSchedule(
+      [
+        makeRecommendation({
+          id: 'card:a',
+          priorityScore: 400,
+          estimatedNetValue: 650,
+          scheduleConstraints: {
+            activeDays: 90,
+            payoutLagDays: 30,
+            requiredSpend: 3000
+          }
+        }),
+        makeRecommendation({
+          id: 'card:b',
+          priorityScore: 390,
+          estimatedNetValue: 600,
+          scheduleConstraints: {
+            activeDays: 90,
+            payoutLagDays: 30,
+            requiredSpend: 3000
+          }
+        })
+      ],
+      makeInput({ pace: 'aggressive' }),
+      { startAt, maxCards: 2, maxBanking: 0, horizonDays: 180 }
+    );
+
+    expect(result.scheduled).toHaveLength(2);
+    expect(result.scheduled.map((item) => item.recommendationId)).toEqual(['card:a', 'card:b']);
+    expect(result.scheduled[1]?.startAt).toBe(result.scheduled[0]!.completeAt);
+    expect(result.scheduled[1]?.payoutAt).toBeGreaterThan(result.scheduled[1]!.completeAt);
+  });
+
   it('defers a second direct-deposit banking offer until the first one clears', () => {
     const startAt = Date.UTC(2026, 0, 1);
     const result = buildPlanSchedule(

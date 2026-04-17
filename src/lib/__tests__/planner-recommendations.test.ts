@@ -255,6 +255,26 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     expect(bundle.recommendations.map((item) => item.id)).toEqual(['bank:business-offer']);
   });
 
+  it('keeps only personal banking offers when the planner audience is consumer', () => {
+    const bundle = buildPlanRecommendationsFromQuiz(
+      [],
+      [
+        createBankingListItem({
+          slug: 'personal-offer',
+          customerType: 'personal'
+        }),
+        createBankingListItem({
+          slug: 'business-offer',
+          customerType: 'business'
+        })
+      ],
+      baseInput,
+      { maxBanking: 5 }
+    );
+
+    expect(bundle.recommendations.map((item) => item.id)).toEqual(['bank:personal-offer']);
+  });
+
   it('excludes bank offers that are not available in the selected state', async () => {
     const cards: QuizResult[] = [];
     const bankingBonuses = (await getBankingBonusesData()).bonuses;

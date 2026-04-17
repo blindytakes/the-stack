@@ -351,6 +351,7 @@ export function getDemoPlanPayload(options: {
       ownedBankNames: []
     },
     recommendations: filteredRecommendations,
+    consideredRecommendations: filteredRecommendations,
     exclusions: cardsOnlyMode ? exclusions.filter((item) => item.lane === 'cards') : exclusions,
     schedule: schedule.filter((item) => recommendationIds.has(item.recommendationId))
   });

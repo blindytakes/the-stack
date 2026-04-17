@@ -38,6 +38,7 @@ export function PlanEmailPanel({
   const [planId, setPlanId] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const [showTurnstile, setShowTurnstile] = useState(false);
+  const [pendingSubmission, setPendingSubmission] = useState(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
 
   const planSnapshot = useMemo<PlanSnapshotData>(
@@ -79,19 +80,7 @@ export function PlanEmailPanel({
     return EMAIL_PATTERN.test(input.trim());
   }
 
-  const handleTurnstileVerify = useCallback((token: string) => {
-    setTurnstileToken(token);
-    setStatus((current) => (current === 'error' ? 'idle' : current));
-    setMessage((current) =>
-      current === TURNSTILE_REQUIRED_MESSAGE ? '' : current
-    );
-  }, []);
-
-  const handleTurnstileExpire = useCallback(() => {
-    setTurnstileToken(null);
-  }, []);
-
-  async function ensureSavedPlanId(): Promise<string> {
+  const ensureSavedPlanId = useCallback(async (): Promise<string> => {
     if (planId) return planId;
 
     const response = await fetch('/api/plans', {
@@ -113,66 +102,97 @@ export function PlanEmailPanel({
 
     setPlanId(data.planId);
     return data.planId;
-  }
+  }, [planId, planSnapshot]);
 
-  async function handleSendEmail() {
-    const normalizedEmail = email.trim();
-    if (!validateEmail(normalizedEmail)) {
-      setStatus('error');
-      setMessage('Enter a valid email address.');
-      return;
-    }
-
-    if (turnstileEnabled && !turnstileToken) {
-      setShowTurnstile(true);
-      setStatus('error');
-      setMessage(TURNSTILE_REQUIRED_MESSAGE);
-      return;
-    }
-
-    setStatus('sending');
-    setMessage('');
-
-    try {
-      const savedPlanId = await ensureSavedPlanId();
-      const response = await fetch('/api/email-plan', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: normalizedEmail,
-          planId: savedPlanId,
-          referenceDateKey: buildReferenceDateKey(referenceDate),
-          ...(turnstileToken ? { turnstileToken } : {})
-        })
-      });
-
-      let data: { error?: string; message?: string } = {};
-      try {
-        data = await response.json();
-      } catch {
-        data = {};
-      }
-
-      if (response.ok) {
-        setStatus('sent');
-        setMessage(data.message ?? 'Your plan has been emailed. Check your inbox.');
-        setEmail('');
+  const startSendAttempt = useCallback(
+    async (verifiedToken?: string) => {
+      const normalizedEmail = email.trim();
+      if (!validateEmail(normalizedEmail)) {
+        setPendingSubmission(false);
+        setStatus('error');
+        setMessage('Enter a valid email address.');
         return;
       }
 
-      setStatus('error');
-      setMessage(data.error ?? 'Could not send the plan email right now.');
-    } catch (error) {
-      setStatus('error');
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : 'Could not connect. Please try again.'
-      );
-    } finally {
-      setTurnstileToken(null);
-      turnstileRef.current?.reset();
+      const activeTurnstileToken = verifiedToken ?? turnstileToken;
+      if (turnstileEnabled && !activeTurnstileToken) {
+        setShowTurnstile(true);
+        setPendingSubmission(true);
+        setStatus('idle');
+        setMessage(TURNSTILE_REQUIRED_MESSAGE);
+        return;
+      }
+
+      setPendingSubmission(false);
+      setStatus('sending');
+      setMessage('');
+
+      try {
+        const savedPlanId = await ensureSavedPlanId();
+        const response = await fetch('/api/email-plan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: normalizedEmail,
+            planId: savedPlanId,
+            referenceDateKey: buildReferenceDateKey(referenceDate),
+            ...(activeTurnstileToken ? { turnstileToken: activeTurnstileToken } : {})
+          })
+        });
+
+        let data: { error?: string; message?: string } = {};
+        try {
+          data = await response.json();
+        } catch {
+          data = {};
+        }
+
+        if (response.ok) {
+          setStatus('sent');
+          setMessage(data.message ?? 'Your plan has been emailed. Check your inbox.');
+          setEmail('');
+          return;
+        }
+
+        setStatus('error');
+        setMessage(data.error ?? 'Could not send the plan email right now.');
+      } catch (error) {
+        setStatus('error');
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : 'Could not connect. Please try again.'
+        );
+      } finally {
+        setPendingSubmission(false);
+        setTurnstileToken(null);
+        turnstileRef.current?.reset();
+      }
+    },
+    [email, ensureSavedPlanId, referenceDate, turnstileEnabled, turnstileToken]
+  );
+
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setStatus((current) => (current === 'error' ? 'idle' : current));
+    setMessage((current) =>
+      current === TURNSTILE_REQUIRED_MESSAGE ? '' : current
+    );
+
+    if (!pendingSubmission) {
+      return;
     }
+
+    setPendingSubmission(false);
+    void startSendAttempt(token);
+  }, [pendingSubmission, startSendAttempt]);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken(null);
+  }, []);
+
+  async function handleSendEmail() {
+    await startSendAttempt();
   }
 
   return (

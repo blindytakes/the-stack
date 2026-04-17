@@ -66,6 +66,7 @@ export async function submitPlanQuiz(input: PlanBuildRequest): Promise<PlanResul
     answers: request.answers,
     selectedOfferIntent: request.selectedOfferIntent,
     recommendations: data.recommendations,
+    consideredRecommendations: data.consideredRecommendations,
     exclusions: data.exclusions,
     schedule: data.schedule,
     scheduleIssues: data.scheduleIssues

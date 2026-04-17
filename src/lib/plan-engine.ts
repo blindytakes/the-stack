@@ -264,7 +264,11 @@ function sortByContribution(a: SearchCandidate, b: SearchCandidate) {
 }
 
 function buildLaneCandidatePools(
-  recommendations: SchedulablePlanRecommendation[]
+  recommendations: SchedulablePlanRecommendation[],
+  limits: {
+    cards: number;
+    banking: number;
+  }
 ): {
   cards: SearchCandidate[];
   banking: SearchCandidate[];
@@ -274,8 +278,8 @@ function buildLaneCandidatePools(
   const normalized = recommendations.map(normalizeCandidate);
   const cardsAll = normalized.filter((item) => item.lane === 'cards').sort(sortByContribution);
   const bankingAll = normalized.filter((item) => item.lane === 'banking').sort(sortByContribution);
-  const cards = pruneDominatedCandidates(cardsAll);
-  const banking = pruneDominatedCandidates(bankingAll);
+  const cards = limits.cards <= 1 ? pruneDominatedCandidates(cardsAll) : cardsAll;
+  const banking = limits.banking <= 1 ? pruneDominatedCandidates(bankingAll) : bankingAll;
   const lanePoolIds = new Set([...cards, ...banking].map((item) => item.id));
   const dominatedIds = new Set(
     [...cardsAll, ...bankingAll]
@@ -369,9 +373,8 @@ function getWindowReasons(
   const reasons = new Set<WindowIssueReason>();
   const activeDays = recommendation.scheduleConstraints.activeDays;
   const completeDay = startDay + activeDays;
-  const payoutDay = completeDay + recommendation.scheduleConstraints.payoutLagDays;
 
-  if (payoutDay > horizonDays) {
+  if (completeDay > horizonDays) {
     reasons.add('timeline_overflow');
     return [...reasons];
   }
@@ -419,8 +422,7 @@ function candidateStartDays(
   horizonDays: number
 ): number[] {
   const activeDays = recommendation.scheduleConstraints.activeDays;
-  const payoutLagDays = recommendation.scheduleConstraints.payoutLagDays;
-  const maxStartDay = Math.max(0, horizonDays - activeDays - payoutLagDays);
+  const maxStartDay = Math.max(0, horizonDays - activeDays);
   const days = new Set<number>([0]);
 
   for (const item of scheduled) {
@@ -441,7 +443,7 @@ function searchScheduleWindow(
   const activeDays = recommendation.scheduleConstraints.activeDays;
   const payoutLagDays = recommendation.scheduleConstraints.payoutLagDays;
 
-  if (activeDays + payoutLagDays > horizonDays) {
+  if (activeDays > horizonDays) {
     return { ok: false, reason: 'timeline_overflow' };
   }
 
@@ -637,7 +639,10 @@ export function buildPlanSchedule(
   const horizonDays = options.horizonDays ?? DEFAULT_HORIZON_DAYS;
   const maxCards = options.maxCards ?? config.maxCards;
   const maxBanking = options.maxBanking ?? config.maxBanking;
-  const lanePools = buildLaneCandidatePools(recommendations);
+  const lanePools = buildLaneCandidatePools(recommendations, {
+    cards: maxCards,
+    banking: maxBanking
+  });
   const initialPoolLimits: CandidatePoolLimits = {
     cards: Math.min(lanePools.cards.length, candidatePoolLimit(maxCards)),
     banking: Math.min(lanePools.banking.length, candidatePoolLimit(maxBanking))

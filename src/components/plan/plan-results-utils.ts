@@ -238,7 +238,7 @@ export function getFeaturedPlanRecommendations(
     selectedRecommendationId?: string | null;
   } = {}
 ): PlannerRecommendation[] {
-  const maxRecommendations = options.maxRecommendations ?? 4;
+  const maxRecommendations = options.maxRecommendations ?? 5;
   const selectedRecommendationId = options.selectedRecommendationId ?? null;
 
   if (recommendations.length <= maxRecommendations && !selectedRecommendationId) {

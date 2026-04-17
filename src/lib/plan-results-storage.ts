@@ -29,6 +29,7 @@ const planResultsStorageSchema = z.object({
   answers: quizRequestSchema,
   selectedOfferIntent: selectedOfferIntentSchema.optional(),
   recommendations: z.array(plannerRecommendationSchema),
+  consideredRecommendations: z.array(plannerRecommendationSchema).default([]),
   exclusions: z.array(plannerExcludedOfferSchema).default([]),
   schedule: z.array(planScheduleItemSchema).default([]),
   scheduleIssues: z.array(planScheduleIssueSchema).default([])
@@ -46,6 +47,7 @@ export function buildPlanResultsPayload(input: {
   answers: QuizRequest;
   selectedOfferIntent?: SelectedOfferIntent;
   recommendations: PlannerRecommendation[];
+  consideredRecommendations?: PlannerRecommendation[];
   exclusions: PlannerExcludedOffer[];
   schedule?: PlanScheduleItem[];
   scheduleIssues?: Array<z.infer<typeof planScheduleIssueSchema>>;
@@ -57,6 +59,7 @@ export function buildPlanResultsPayload(input: {
     answers: input.answers,
     selectedOfferIntent: input.selectedOfferIntent,
     recommendations: input.recommendations,
+    consideredRecommendations: input.consideredRecommendations ?? [],
     exclusions: input.exclusions,
     schedule: input.schedule ?? [],
     scheduleIssues: input.scheduleIssues ?? []

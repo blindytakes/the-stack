@@ -79,6 +79,7 @@ export type PlannerRecommendation = {
 
 export type PlannerRecommendationBundle = {
   recommendations: PlannerRecommendation[];
+  consideredRecommendations: PlannerRecommendation[];
   exclusions: PlannerExcludedOffer[];
   schedule: PlanScheduleItem[];
   scheduleIssues: PlanScheduleIssue[];
@@ -301,7 +302,10 @@ export function buildPlanRecommendationsFromQuiz(
 
   const eligibleCards: PlannerRecommendation[] = [];
   for (const card of cardResults) {
-    if (input.audience === 'business' && card.cardType !== 'business') {
+    if (
+      (input.audience === 'business' && card.cardType !== 'business') ||
+      (input.audience !== 'business' && card.cardType === 'business')
+    ) {
       continue;
     }
 
@@ -349,7 +353,10 @@ export function buildPlanRecommendationsFromQuiz(
 
   const eligibleBanking: PlannerRecommendation[] = [];
   for (const offer of bankingBonuses) {
-    if (input.audience === 'business' && offer.customerType !== 'business') {
+    if (
+      (input.audience === 'business' && offer.customerType !== 'business') ||
+      (input.audience !== 'business' && offer.customerType === 'business')
+    ) {
       continue;
     }
 
@@ -383,6 +390,10 @@ export function buildPlanRecommendationsFromQuiz(
   }
 
   const dedupedBanking = dedupeBankingRecommendationsByBank(eligibleBanking);
+  const consideredRecommendations = rankPlannerRecommendationsByPriority([
+    ...eligibleCards,
+    ...dedupedBanking
+  ]).slice(0, 16);
 
   const scheduleResult = buildPlanSchedule(
     [...eligibleCards, ...dedupedBanking],
@@ -402,6 +413,7 @@ export function buildPlanRecommendationsFromQuiz(
 
   return {
     recommendations: scheduledRecommendations,
+    consideredRecommendations,
     exclusions,
     schedule: scheduleResult.scheduled,
     scheduleIssues: scheduleResult.issues,

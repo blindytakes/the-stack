@@ -58,6 +58,7 @@ export async function buildPlan(rawBody: unknown | null): Promise<BuildPlanResul
     const responsePayload = planResponseSchema.safeParse({
       generatedAt,
       recommendations: planBundle.recommendations,
+      consideredRecommendations: planBundle.consideredRecommendations,
       exclusions: planBundle.exclusions,
       schedule: planBundle.schedule,
       scheduleIssues: planBundle.scheduleIssues
