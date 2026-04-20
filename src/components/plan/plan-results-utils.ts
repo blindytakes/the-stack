@@ -68,7 +68,7 @@ export function recommendationRationale(item: PlannerRecommendation) {
     if ((breakdown?.estimatedFees ?? 0) === 0) {
       return 'Cash bonus with minimal fee drag and a clear payout path.';
     }
-    return 'Cash bonus with requirements that fit the current plan pace.';
+    return 'Cash bonus with requirements that fit the current plan cadence.';
   }
 
   if ((breakdown?.headlineValue ?? 0) >= 750) {
@@ -81,7 +81,7 @@ export function recommendationRationale(item: PlannerRecommendation) {
     return 'Strong welcome bonus with useful perks that help offset the fee.';
   }
 
-  return 'Solid welcome bonus that fits the current spend pace.';
+  return 'Solid welcome bonus that fits the current spend window.';
 }
 
 export function formatShortDate(date: Date) {

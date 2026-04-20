@@ -192,7 +192,8 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
       await submitPlanQuiz({
         answers: parsedAnswers.data,
         options: {
-          maxBanking: 0
+          maxBanking: 0,
+          questionSet: 'cards_only'
         }
       });
 

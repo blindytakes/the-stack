@@ -139,6 +139,19 @@ describe('rankQuizResults', () => {
     expect(results.every((r) => ['fair', 'building'].includes(r.creditTierMin))).toBe(true);
   });
 
+  it('ignores hidden credit filtering for the full planner question set', () => {
+    const results = rankQuizResults(
+      [
+        makeCard({ slug: 'excellent-only', creditTierMin: 'excellent' }),
+        makeCard({ slug: 'starter', creditTierMin: 'building' })
+      ],
+      makeInput({ credit: 'fair' }),
+      { questionSet: 'full' }
+    );
+
+    expect(results.map((card) => card.slug)).toEqual(['excellent-only', 'starter']);
+  });
+
   it('limits ranked cards to business cards for the business audience', () => {
     const results = rankQuizResults(
       [
@@ -163,6 +176,32 @@ describe('rankQuizResults', () => {
     const results = rankQuizResults(cards, input);
     // travel-points has goal match + category match + fee match
     expect(results[0].slug).toBe('travel-points');
+  });
+
+  it('falls back to base offer value ordering for the full planner question set', () => {
+    const results = rankQuizResults(
+      [
+        makeCard({
+          slug: 'fit-but-lower-value',
+          topCategories: ['dining'],
+          bestSignUpBonusValue: 300,
+          plannerBenefitsValue: 0,
+          annualFee: 0
+        }),
+        makeCard({
+          slug: 'higher-value',
+          topCategories: ['travel'],
+          bestSignUpBonusValue: 900,
+          plannerBenefitsValue: 0,
+          annualFee: 95
+        })
+      ],
+      makeInput({ spend: 'dining', credit: 'good' }),
+      { questionSet: 'full' }
+    );
+
+    expect(results[0]?.slug).toBe('higher-value');
+    expect(results[1]?.slug).toBe('fit-but-lower-value');
   });
 
   it('penalizes annual fee when user wants no fee', () => {

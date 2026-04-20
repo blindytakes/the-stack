@@ -12,7 +12,8 @@ const toolCards = [
     href: '/tools/card-finder?mode=full',
     eyebrow: 'Planning',
     title: 'Card Finder',
-    description: 'Build a personalized bonus plan around your spend, timing, and eligibility.',
+    description:
+      'Build a personalized bonus plan around your spend capacity, deposit access, current accounts, and timing.',
     accentClassName: 'from-brand-teal/20 via-brand-teal/8 to-transparent'
   },
   {

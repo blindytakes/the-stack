@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { quizRequestSchema } from '@/lib/quiz-engine';
+import { plannerQuestionSetSchema } from '@/lib/planner-question-set';
 
 const plannerRecommendationLaneSchema = z.enum(['cards', 'banking']);
 const plannerRecommendationKindSchema = z.enum(['card_bonus', 'bank_bonus']);
@@ -103,7 +104,8 @@ export const planScheduleIssueSchema = z.object({
 
 export const planRequestOptionsSchema = z.object({
   maxCards: z.number().int().min(0).max(6).optional(),
-  maxBanking: z.number().int().min(0).max(6).optional()
+  maxBanking: z.number().int().min(0).max(6).optional(),
+  questionSet: plannerQuestionSetSchema.optional()
 });
 
 export const planRequestSchema = z.object({

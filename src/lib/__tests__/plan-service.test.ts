@@ -165,10 +165,76 @@ describe('plan-service', () => {
         startAt: expect.any(Number),
         maxCards: 5,
         maxBanking: 0,
+        questionSet: 'cards_only',
         selectedOfferIntent: expect.objectContaining({
           lane: 'cards',
           slug: 'test-card'
         })
+      })
+    );
+  });
+
+  it('uses the full planner question set when requested', async () => {
+    getCardsDataMock.mockResolvedValue({
+      cards: [
+        {
+          slug: 'excellent-card',
+          name: 'Excellent Card',
+          issuer: 'Test Bank',
+          cardType: 'personal',
+          rewardType: 'points',
+          topCategories: ['travel'],
+          annualFee: 95,
+          creditTierMin: 'excellent',
+          headline: 'Test headline',
+          totalBenefitsValue: 0,
+          plannerBenefitsValue: 0,
+          bestSignUpBonusValue: 800,
+          bestSignUpBonusSpendRequired: 4000,
+          bestSignUpBonusSpendPeriodDays: 90
+        }
+      ],
+      source: 'db'
+    });
+    getBankingBonusesDataMock.mockResolvedValue({
+      bonuses: [],
+      source: 'seed'
+    });
+    buildPlanRecommendationsFromQuizMock.mockReturnValue({
+      recommendations: [],
+      exclusions: [],
+      schedule: [],
+      scheduleIssues: [],
+      diagnostics: makeDiagnostics()
+    });
+
+    const result = await buildPlan({
+      answers: {
+        goal: 'flexibility',
+        spend: 'all',
+        fee: 'over_95_ok',
+        credit: 'good',
+        directDeposit: 'yes',
+        state: 'NY',
+        monthlySpend: 'from_2500_to_5000',
+        pace: 'balanced'
+      },
+      options: {
+        questionSet: 'full'
+      }
+    });
+
+    expect(result.ok).toBe(true);
+    expect(buildPlanRecommendationsFromQuizMock).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          slug: 'excellent-card'
+        })
+      ]),
+      [],
+      expect.any(Object),
+      expect.objectContaining({
+        questionSet: 'full'
       })
     );
   });

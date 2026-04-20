@@ -2,11 +2,13 @@ import type { CardImageAssetType, CardRecord } from '@/lib/cards';
 import type { QuizRequest, QuizResult } from '@/lib/quiz-engine';
 import type { AvailableCash } from '@/lib/quiz-engine';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
+import type { PlannerQuestionSet } from '@/lib/planner-question-set';
 import {
   getBankingOfferRequirements,
   type BankingBonusListItem,
   type BankingBonusRecord
 } from '@/lib/banking-bonuses';
+import { plannerUsesCreditProfile } from '@/lib/planner-question-set';
 import {
   creditTierLabel,
   estimateBankBonusNetValue,
@@ -112,7 +114,11 @@ const availableCashCeiling: Record<AvailableCash, number> = {
 // affects sort order among eligible candidates.
 const selectedOfferPriorityBoost = 250_000;
 
-function getCardExclusionReasons(card: QuizResult, input: QuizRequest): PlannerExclusionReason[] {
+function getCardExclusionReasons(
+  card: QuizResult,
+  input: QuizRequest,
+  questionSet: PlannerQuestionSet
+): PlannerExclusionReason[] {
   const reasons: PlannerExclusionReason[] = [];
 
   const bonusValue = card.bestSignUpBonusValue ?? 0;
@@ -120,7 +126,10 @@ function getCardExclusionReasons(card: QuizResult, input: QuizRequest): PlannerE
     reasons.push('no_signup_bonus');
   }
 
-  if (!meetsCreditTier(card.creditTierMin, input.credit)) {
+  if (
+    plannerUsesCreditProfile(questionSet) &&
+    !meetsCreditTier(card.creditTierMin, input.credit)
+  ) {
     reasons.push('credit_tier');
   }
 
@@ -288,11 +297,13 @@ export function buildPlanRecommendationsFromQuiz(
     maxBanking?: number;
     startAt?: number;
     selectedOfferIntent?: SelectedOfferIntent;
+    questionSet?: PlannerQuestionSet;
   } = {}
 ): PlannerRecommendationBundle {
   const paceConfig = getPlanPaceConfig();
   const maxCards = options.maxCards ?? paceConfig.maxCards;
   const maxBanking = options.maxBanking ?? paceConfig.maxBanking;
+  const questionSet = options.questionSet ?? 'cards_only';
   const ownedCardSlugSet = new Set(input.ownedCardSlugs);
   const selectedRecommendationId = options.selectedOfferIntent
     ? getSelectedOfferIntentRecommendationId(options.selectedOfferIntent)
@@ -313,7 +324,7 @@ export function buildPlanRecommendationsFromQuiz(
       continue;
     }
 
-    const reasons = getCardExclusionReasons(card, input);
+    const reasons = getCardExclusionReasons(card, input, questionSet);
     if (reasons.length > 0) {
       exclusions.push({
         id: `card:${card.slug}`,

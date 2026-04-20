@@ -105,8 +105,8 @@ export function CardFinderTool({
           <p className="text-xs uppercase tracking-[0.22em] text-brand-teal">Selected offer</p>
           <p className="mt-2 max-w-3xl text-sm leading-7 text-text-primary md:text-base">
             Building around <span className="font-semibold">{activeSelectedOfferIntent.title}</span> from{' '}
-            {activeSelectedOfferIntent.provider} if it still fits your{' '}
-            {isBusinessAudience ? 'business profile' : 'profile'}, pace, and timeline.
+            {activeSelectedOfferIntent.provider} if it still fits your answers, constraints, and
+            timeline.
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
             <Link

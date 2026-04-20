@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Bonus Plan',
   description:
-    'Build a combined card-and-bank bonus plan using your spend capacity, credit profile, direct deposit access, and state.'
+    'Build a combined card-and-bank bonus plan using your spend capacity, direct deposit access, state, and the cards and banks you already use.'
 };
 
 type Props = {
@@ -121,8 +121,8 @@ export default async function CardFinderPage({ searchParams }: Props) {
       title={plannerAudience === 'business' ? 'The Stack Business Bonus Plan' : 'The Stack Bonus Plan'}
       description={
         plannerAudience === 'business'
-          ? 'Build a business-only bonus plan using your business spend, cash runway, Chase status, and business-banking constraints.'
-          : ''
+          ? 'Build a business-only bonus plan using your business spend capacity, deposit access, state, and current business cards and banks.'
+          : 'Build a combined card-and-bank bonus plan using your spend capacity, direct deposit access, state, and the cards and banks you already use.'
       }
     >
       {showingChooser ? (

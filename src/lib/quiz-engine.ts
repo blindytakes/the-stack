@@ -2,7 +2,16 @@ import { z } from 'zod';
 import type { CardRecord } from '@/lib/cards';
 import { spendingCategoryValues } from '@/lib/cards';
 import { isCardBlockedByIssuerRules } from '@/lib/issuer-rules';
-import { meetsCreditTier, scoreCardFit } from '@/lib/scoring-policy';
+import type { PlannerQuestionSet } from '@/lib/planner-question-set';
+import {
+  plannerUsesCreditProfile,
+  plannerUsesSpendCategory
+} from '@/lib/planner-question-set';
+import {
+  estimateCardOpenValue,
+  meetsCreditTier,
+  scoreCardFit
+} from '@/lib/scoring-policy';
 
 /**
  * Quiz ranking logic for card recommendations.
@@ -85,12 +94,21 @@ export function getChase524StatusFromRecentCardOpenings(
 
 // Return highest scoring eligible cards first. Keep the list focused on
 // net-new openings and issuer-eligible bonuses.
-export function rankQuizResults(cards: CardRecord[], input: QuizRequest): QuizResult[] {
+export function rankQuizResults(
+  cards: CardRecord[],
+  input: QuizRequest,
+  options: {
+    questionSet?: PlannerQuestionSet;
+  } = {}
+): QuizResult[] {
+  const questionSet = options.questionSet ?? 'cards_only';
+  const useCreditProfile = plannerUsesCreditProfile(questionSet);
+  const useSpendCategory = plannerUsesSpendCategory(questionSet);
   const ownedCardSlugSet = new Set(input.ownedCardSlugs);
   const eligible = cards.filter(
     (card) =>
       (input.audience !== 'business' || card.cardType === 'business') &&
-      meetsCreditTier(card.creditTierMin, input.credit) &&
+      (!useCreditProfile || meetsCreditTier(card.creditTierMin, input.credit)) &&
       !ownedCardSlugSet.has(card.slug) &&
       !isCardBlockedByIssuerRules(card, input)
   );
@@ -98,8 +116,23 @@ export function rankQuizResults(cards: CardRecord[], input: QuizRequest): QuizRe
   return eligible
     .map((card) => ({
       ...card,
-      score: scoreCardFit(card, input)
+      score: useSpendCategory ? scoreCardFit(card, input) : 0
     }))
-    .sort((a, b) => b.score - a.score)
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        (useSpendCategory
+          ? 0
+          : estimateCardOpenValue({
+              bonusValue: b.bestSignUpBonusValue ?? 0,
+              plannerBenefitsValue: b.plannerBenefitsValue,
+              annualFee: b.annualFee
+            }) -
+            estimateCardOpenValue({
+              bonusValue: a.bestSignUpBonusValue ?? 0,
+              plannerBenefitsValue: a.plannerBenefitsValue,
+              annualFee: a.annualFee
+            }))
+    )
     .slice(0, 12);
 }

@@ -34,12 +34,12 @@ const faqs = [
   {
     question: 'Do I need excellent credit?',
     answer:
-      'No. Some offers are best for excellent credit, but the planner also filters for what is more realistic based on the credit profile you choose.'
+      'Not necessarily. Many bank bonuses do not depend on card approval at all, and the card-only path is there when you want a tighter screen around your credit profile.'
   },
   {
     question: 'How do you estimate value?',
     answer:
-      'We use the bonus value, annual fee, and practical assumptions around offer quality and fit so the ranking is more grounded than a raw points headline.'
+      'We use the bonus value, annual fee, and practical assumptions around benefits, effort, and timing so the ranking is more grounded than a raw points headline.'
   },
   {
     question: 'Will applying hurt my credit?',
@@ -57,9 +57,9 @@ const howItWorksSteps = [
   {
     step: '01',
     title: 'Answer a few questions',
-    summary: 'A 2-minute quiz about your spend, credit, and goals.',
+    summary: 'A 2-minute quiz about your spend capacity, deposit access, and current accounts.',
     description:
-      'We ask about your monthly spend, credit score range, and what you want from bonuses — cash back, travel, or both. No SSN, no bank login, no credit card numbers.',
+      'We ask about your monthly spend capacity, direct deposit access, state, and the cards and bank accounts you already have. No SSN, no bank login, no credit card numbers.',
     icon: (
       <svg viewBox="0 0 24 24" fill="none" className="h-6 w-6" aria-hidden="true">
         <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
@@ -110,7 +110,7 @@ const differentiationCards = [
   {
     title: 'Filtered to what you qualify for',
     description:
-      'Your monthly spend, credit score, and goals determine which bonuses show up — so every recommendation is one you can actually earn.',
+      'Your monthly spend capacity, direct deposit access, state, and current accounts determine which bonuses show up — so every recommendation is one you can realistically complete.',
     icon: (
       <svg viewBox="0 0 20 20" fill="none" className="h-5 w-5" aria-hidden="true">
         <path d="M10 4a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM4.5 14.5c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />

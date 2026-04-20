@@ -180,6 +180,9 @@ export function useCardFinderState(
     try {
       await submitPlanQuiz({
         answers: parsedAnswers.data,
+        options: {
+          questionSet: 'full'
+        },
         selectedOfferIntent: selectedOfferIntent ?? undefined
       });
 

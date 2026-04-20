@@ -388,6 +388,46 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     expect(bundle.exclusions.some((item) => item.reasons.includes('no_signup_bonus'))).toBe(true);
   });
 
+  it('does not exclude cards by hidden credit defaults for the full planner question set', () => {
+    const cards: QuizResult[] = [
+      {
+        slug: 'premium-card',
+        name: 'Premium Card',
+        issuer: 'Premium Bank',
+        imageAssetType: 'text_fallback',
+        cardType: 'personal',
+        rewardType: 'points',
+        topCategories: ['travel'],
+        annualFee: 550,
+        creditTierMin: 'excellent',
+        headline: 'Premium',
+        score: 0,
+        bestSignUpBonusValue: 1000,
+        bestSignUpBonusSpendRequired: 5000,
+        bestSignUpBonusSpendPeriodDays: 90,
+        totalBenefitsValue: 1200,
+        plannerBenefitsValue: 250
+      }
+    ];
+
+    const bundle = buildPlanRecommendationsFromQuiz(
+      cards,
+      [],
+      {
+        ...baseInput,
+        credit: 'good'
+      },
+      {
+        maxCards: 1,
+        maxBanking: 0,
+        questionSet: 'full'
+      }
+    );
+
+    expect(bundle.recommendations.map((item) => item.id)).toEqual(['card:premium-card']);
+    expect(bundle.exclusions.some((item) => item.reasons.includes('credit_tier'))).toBe(false);
+  });
+
   it('skips cards the user already has open', () => {
     const cards: QuizResult[] = [
       {

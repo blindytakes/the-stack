@@ -5,6 +5,7 @@ import {
   planResponseSchema,
   type PlanApiResponse
 } from '@/lib/plan-contract';
+import { resolvePlannerQuestionSet } from '@/lib/planner-question-set';
 import { rankQuizResults } from '@/lib/quiz-engine';
 import { getPlanPaceConfig } from '@/lib/plan-engine';
 import { buildPlanRecommendationsFromQuiz } from '@/lib/planner-recommendations';
@@ -31,11 +32,16 @@ export async function buildPlan(rawBody: unknown | null): Promise<BuildPlanResul
     const paceConfig = getPlanPaceConfig();
     const maxCards = parsed.data.options?.maxCards ?? paceConfig.maxCards;
     const maxBanking = parsed.data.options?.maxBanking ?? paceConfig.maxBanking;
+    const questionSet = resolvePlannerQuestionSet(parsed.data.options?.questionSet, {
+      maxBanking
+    });
     const [{ cards }, { bonuses }] = await Promise.all([
       getCardsData(),
       getBankingBonusesData()
     ]);
-    const rankedCards = rankQuizResults(cards, parsed.data.answers);
+    const rankedCards = rankQuizResults(cards, parsed.data.answers, {
+      questionSet
+    });
     const planBundle = buildPlanRecommendationsFromQuiz(
       rankedCards,
       bonuses,
@@ -44,7 +50,8 @@ export async function buildPlan(rawBody: unknown | null): Promise<BuildPlanResul
         startAt: generatedAt,
         maxCards,
         maxBanking,
-        selectedOfferIntent: parsed.data.selectedOfferIntent
+        selectedOfferIntent: parsed.data.selectedOfferIntent,
+        questionSet
       }
     );
     if (
