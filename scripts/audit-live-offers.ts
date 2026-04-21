@@ -1,5 +1,7 @@
+import { loadEnvConfig } from '@next/env';
 import { PrismaClient } from '@prisma/client';
 import { isDatabaseConfigured } from '@/lib/db';
+import { getAffiliateEnv } from '@/lib/env';
 
 type OfferRecord = {
   kind: 'card' | 'banking';
@@ -30,6 +32,9 @@ const STALE_THRESHOLD_DAYS = 21;
 const EXPIRING_SOON_DAYS = 14;
 const FETCH_TIMEOUT_MS = 20_000;
 const FETCH_BATCH_SIZE = 6;
+const MAX_REDIRECTS = 12;
+
+loadEnvConfig(process.cwd());
 
 function formatDate(date: Date) {
   return date.toLocaleDateString('en-CA', {
@@ -98,55 +103,109 @@ function isSuspiciousDestination(entry: UrlAuditEntry) {
   );
 }
 
-async function inspectUrl(target: string): Promise<UrlInspection> {
+function isRedirectStatus(status: number) {
+  return status === 301 || status === 302 || status === 303 || status === 307 || status === 308;
+}
+
+function isAllowedTargetHost(target: string, allowedHosts: string[]) {
+  const hostname = new URL(target).hostname.toLowerCase();
+  return allowedHosts.some((host) => hostname === host || hostname.endsWith(`.${host}`));
+}
+
+async function readResponsePreview(res: Response): Promise<Pick<UrlInspection, 'title' | 'sample'>> {
   const decoder = new TextDecoder();
+  const contentType = res.headers.get('content-type') ?? '';
+  let sample = '';
+  let title: string | null = null;
 
+  if (res.body && /(text\/html|application\/xhtml\+xml)/i.test(contentType)) {
+    const reader = res.body.getReader();
+    let total = 0;
+
+    while (total < 32_768) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      sample += decoder.decode(value, { stream: true });
+      total += value.length;
+
+      if (/<\/title>/i.test(sample) || sample.length >= 16_384) {
+        break;
+      }
+    }
+
+    try {
+      await reader.cancel();
+    } catch {
+      // Ignore cleanup errors from short-circuiting the response body.
+    }
+
+    const titleMatch = sample.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+    title = titleMatch ? titleMatch[1].replace(/\s+/g, ' ').trim() : null;
+  }
+
+  return {
+    title,
+    sample: sample.slice(0, 1000)
+  };
+}
+
+async function inspectUrl(target: string): Promise<UrlInspection> {
   try {
-    const res = await fetch(target, {
-      redirect: 'follow',
-      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
-      headers: {
-        'user-agent': 'Mozilla/5.0 (compatible; TheStackCatalogAudit/1.0)'
-      }
-    });
+    let currentUrl = target;
 
-    const contentType = res.headers.get('content-type') ?? '';
-    let sample = '';
-    let title: string | null = null;
-
-    if (res.body && /(text\/html|application\/xhtml\+xml)/i.test(contentType)) {
-      const reader = res.body.getReader();
-      let total = 0;
-
-      while (total < 32_768) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        sample += decoder.decode(value, { stream: true });
-        total += value.length;
-
-        if (/<\/title>/i.test(sample) || sample.length >= 16_384) {
-          break;
+    for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
+      const res = await fetch(currentUrl, {
+        redirect: 'manual',
+        signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+        headers: {
+          'user-agent': 'Mozilla/5.0 (compatible; TheStackCatalogAudit/1.0)'
         }
+      });
+
+      if (isRedirectStatus(res.status)) {
+        const location = res.headers.get('location');
+        if (!location) {
+          return {
+            url: target,
+            ok: false,
+            status: res.status,
+            finalUrl: currentUrl,
+            error: 'Redirect response missing Location header'
+          };
+        }
+
+        const nextUrl = new URL(location, currentUrl).toString();
+        if (redirectCount === MAX_REDIRECTS) {
+          return {
+            url: target,
+            ok: false,
+            status: res.status,
+            finalUrl: currentUrl,
+            error: `Too many redirects (>${MAX_REDIRECTS})`,
+            sample: `Last redirect target: ${nextUrl}`
+          };
+        }
+
+        currentUrl = nextUrl;
+        continue;
       }
 
-      try {
-        await reader.cancel();
-      } catch {
-        // Ignore cleanup errors from short-circuiting the response body.
-      }
-
-      const titleMatch = sample.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
-      title = titleMatch ? titleMatch[1].replace(/\s+/g, ' ').trim() : null;
+      const preview = await readResponsePreview(res);
+      return {
+        url: target,
+        ok: res.ok,
+        status: res.status,
+        finalUrl: currentUrl,
+        ...preview
+      };
     }
 
     return {
       url: target,
-      ok: res.ok,
-      status: res.status,
-      finalUrl: res.url,
-      title,
-      sample: sample.slice(0, 1000)
+      ok: false,
+      finalUrl: currentUrl,
+      error: `Too many redirects (>${MAX_REDIRECTS})`
     };
   } catch (error) {
     return {
@@ -269,6 +328,29 @@ async function main() {
     );
     const suspiciousUrls = auditedUrls.filter((entry) => !entry.error && isSuspiciousDestination(entry));
     const duplicateUrls = auditedUrls.filter((entry) => entry.offerCount > 1);
+    const affiliateEnv = getAffiliateEnv();
+    const cardTargetsOutsideAllowlist = affiliateEnv.ok
+      ? cards
+          .map((card) => {
+            const url = card.affiliateUrl ?? card.applyUrl;
+            if (!url) return null;
+
+            const host = new URL(url).hostname.toLowerCase();
+            return isAllowedTargetHost(url, affiliateEnv.config.AFFILIATE_ALLOWED_HOSTS)
+              ? null
+              : `${card.slug} (${host})`;
+          })
+          .filter((value): value is string => Boolean(value))
+      : [];
+    const fetchFailureDetails = fetchFailures.flatMap((entry) =>
+      entry.offers.map((offer) => `${offer.slug} (${entry.error ?? 'fetch failed'})`)
+    );
+    const deadDestinationDetails = deadUrls.flatMap((entry) =>
+      entry.offers.map((offer) => `${offer.slug} (${entry.status ?? 'unknown status'})`)
+    );
+    const suspiciousDestinationDetails = suspiciousUrls.flatMap((entry) =>
+      entry.offers.map((offer) => `${offer.slug} (${entry.finalUrl ?? entry.url})`)
+    );
 
     const lines = [
       '# Live Offer Audit',
@@ -296,16 +378,28 @@ async function main() {
       `- Shared duplicate URLs: ${duplicateUrls.length}`,
       `- Missing URL slugs: ${renderList(missingUrls.map((offer) => offer.slug))}`,
       `- Fetch-failure slugs: ${renderList(fetchFailures.flatMap((entry) => entry.offers.map((offer) => offer.slug)))}`,
+      `- Fetch-failure details: ${renderList(fetchFailureDetails, 8)}`,
       `- Dead-destination slugs: ${renderList(deadUrls.flatMap((entry) => entry.offers.map((offer) => offer.slug)))}`,
+      `- Dead-destination details: ${renderList(deadDestinationDetails, 8)}`,
       `- Suspicious-destination slugs: ${renderList(
         suspiciousUrls.flatMap((entry) => entry.offers.map((offer) => offer.slug))
       )}`,
+      `- Suspicious-destination details: ${renderList(suspiciousDestinationDetails, 8)}`,
       `- Duplicate URL groups: ${renderList(
         duplicateUrls.map(
           (entry) => `${entry.url} -> ${entry.offers.map((offer) => offer.slug).join(', ')}`
         ),
         8
-      )}`
+      )}`,
+      '',
+      '## Card Redirect Path',
+      `- Affiliate allowlist configured: ${affiliateEnv.ok ? 'yes' : `no (${affiliateEnv.errors.join('; ')})`}`,
+      `- Card targets outside allowlist: ${
+        affiliateEnv.ok ? String(cardTargetsOutsideAllowlist.length) : 'skipped'
+      }`,
+      `- Outside-allowlist card slugs: ${
+        affiliateEnv.ok ? renderList(cardTargetsOutsideAllowlist) : 'skipped'
+      }`
     ];
 
     console.log(lines.join('\n'));

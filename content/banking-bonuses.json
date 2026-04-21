@@ -143,22 +143,25 @@
     "bankName": "Chime",
     "offerName": "Chime Checking Bonus",
     "accountType": "checking",
-    "headline": "Earn up to $350 over three months with qualifying direct deposits.",
+    "headline": "Earn up to $350 with a new Chime Checking Account through a $50 direct-deposit bonus plus up to $300 in 90-day cash back.",
     "bonusAmount": 350,
     "estimatedFees": 0,
     "directDeposit": {
       "required": true,
-      "minimumAmount": 200
+      "minimumAmount": 500
     },
-    "holdingPeriodDays": 97,
+    "holdingPeriodDays": 90,
     "requiredActions": [
-      "Open a new Chime Checking account.",
-      "Receive a qualifying direct deposit of at least $200 within 30 days to earn the first $100.",
-      "Repeat qualifying direct deposits in each of the next two consecutive months to earn the remaining bonus tiers."
+      "Open a new Chime Checking Account through the official promo page as a first-time Chime account holder.",
+      "Receive a single qualifying direct deposit of at least $500 within 34 days of account opening to earn the $50 direct-deposit reward.",
+      "Activate a physical Chime Visa card within 14 days of receiving the qualifying direct deposit.",
+      "Make eligible Chime card purchases to earn 10% cash back, up to $100 per month for 90 days after account opening."
     ],
-    "notes": "No current public Chime-owned checking bonus page could be confirmed on chime.com or help.chime.com when re-verified on March 29, 2026.",
-    "isActive": false,
-    "lastVerified": "2026-03-29T00:00:00.000Z"
+    "notes": "Chime's official promo page and terms currently advertise this offer through May 27, 2026. The terms say eligibility requires receiving the invitation/advertisement from Chime and enrolling through the promo landing page.",
+    "offerUrl": "https://www.chime.com/join/promos/intro-offer-v2b/",
+    "isActive": true,
+    "expiresAt": "2026-05-27T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "chase-total-checking-400",
@@ -178,10 +181,11 @@
       "Receive direct deposits totaling at least $1,000 within 90 days of coupon enrollment.",
       "Keep the account open and unrestricted at payout."
     ],
+    "notes": "Chase's official Total Checking offer page currently advertises the $400 bonus through July 15, 2026.",
     "offerUrl": "https://account.chase.com/consumer/banking/seo",
     "isActive": true,
-    "expiresAt": "2026-04-15T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "expiresAt": "2026-07-15T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "chase-secure-banking-125",
@@ -287,9 +291,9 @@
   {
     "slug": "etrade-max-rate-checking-300",
     "bankName": "E*TRADE from Morgan Stanley Private Bank",
-    "offerName": "Max-Rate Checking Bonus",
+    "offerName": "Checking / Max-Rate Checking Bonus",
     "accountType": "checking",
-    "headline": "Earn $300 with qualifying direct deposits into a new E*TRADE checking account.",
+    "headline": "Earn $300 with qualifying direct deposits into a new E*TRADE Checking or Max-Rate Checking account.",
     "bonusAmount": 300,
     "estimatedFees": 15,
     "apyDisplay": "Variable APY (see official ratesheet)",
@@ -300,15 +304,15 @@
     },
     "holdingPeriodDays": 120,
     "requiredActions": [
-      "Open a new Max-Rate Checking (or eligible standard checking) account using promo code CHECKING25.",
+      "Open a new E*TRADE Checking or Max-Rate Checking account using promo code CHECKING25.",
       "Receive at least two direct deposits of at least $1,500 each within 90 days.",
       "Keep the account in good standing through payout."
     ],
-    "notes": "E*TRADE's official accounts page still advertised the $300 checking bonus through March 31, 2026 when re-verified on March 29, 2026.",
-    "offerUrl": "https://us.etrade.com/what-we-offer/our-accounts",
+    "notes": "E*TRADE's official checking promo page currently advertises the $300 bonus through May 31, 2026.",
+    "offerUrl": "https://us.etrade.com/promo/checking-offer",
     "isActive": true,
-    "expiresAt": "2026-03-31T23:59:59.999-04:00",
-    "lastVerified": "2026-03-29T00:00:00.000Z"
+    "expiresAt": "2026-05-31T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "chase-private-client-checking-3000",
@@ -328,14 +332,15 @@
     "minimumOpeningDeposit": 150000,
     "holdingPeriodDays": 175,
     "requiredActions": [
-      "Open or upgrade to a Chase Private Client Checking account with an offer code by the deadline.",
+      "Open or upgrade to a Chase Private Client Checking account with an offer code by July 15, 2026.",
       "Transfer at least $150,000 in eligible new money within 45 days.",
       "Maintain the qualifying new-money balance for at least 90 days after enrollment."
     ],
+    "notes": "Chase's official Private Client bonus page currently advertises the up-to-$3,000 offer through July 15, 2026.",
     "offerUrl": "https://account.chase.com/consumer/banking/chase-private-client-checking-account",
     "isActive": true,
-    "expiresAt": "2026-04-15T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "expiresAt": "2026-07-15T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "sofi-checking-savings-300",
@@ -545,15 +550,16 @@
     "minimumOpeningDeposit": 50,
     "holdingPeriodDays": 120,
     "requiredActions": [
-      "Open a new Truist One Checking account online and enroll with promo code DC400TR1Q425 during the offer window.",
+      "Open a new Truist One Checking account online and enroll with promo code DC400TR1Q226 by July 9, 2026.",
       "Receive at least two qualifying direct deposits totaling at least $2,000 within 120 days of account opening.",
       "Complete at least 20 qualifying debit card purchases within 120 days of account opening."
     ],
-    "notes": "Truist's official offer terms on the account-opening page showed the Truist One Checking bonus window ending March 25, 2026 when re-verified on March 29, 2026.",
+    "stateRestrictions": ["AL", "AR", "DC", "FL", "GA", "IN", "KY", "MD", "MS", "NC", "NJ", "OH", "PA", "SC", "TN", "TX", "VA", "WV"],
+    "notes": "Truist's official account-opening page currently advertises the Truist One Checking $400 online offer through July 9, 2026 with promo code DC400TR1Q226.",
     "offerUrl": "https://www.truist.com/open-account/banking-accounts",
-    "isActive": false,
-    "expiresAt": "2026-03-25T23:59:59.999-04:00",
-    "lastVerified": "2026-03-29T00:00:00.000Z"
+    "isActive": true,
+    "expiresAt": "2026-07-09T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "marcus-online-savings-1500",
@@ -600,7 +606,7 @@
     },
     "holdingPeriodDays": 104,
     "requiredActions": [
-      "Open a new Huntington Perks Checking account using the promotion flow.",
+      "Open a new Huntington Perks Checking account with your promotion code by June 15, 2026.",
       "Receive a qualifying direct deposit of at least $500 within 90 days.",
       "Keep the account open through bonus payout."
     ],
@@ -615,14 +621,15 @@
       "OH",
       "PA",
       "SC",
+      "TX",
       "WV",
       "WI"
     ],
-    "notes": "Huntington's official personal checking promotions page no longer supported this personal Perks offer when re-verified on March 29, 2026 after the March 15, 2026 deadline.",
+    "notes": "Huntington's official personal checking promotions page currently advertises the Perks Checking $400 offer through June 15, 2026.",
     "offerUrl": "https://www.huntington.com/checking-account-promotions-bonuses-offers",
-    "isActive": false,
-    "expiresAt": "2026-03-15T23:59:59.999-04:00",
-    "lastVerified": "2026-03-29T00:00:00.000Z"
+    "isActive": true,
+    "expiresAt": "2026-06-15T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "huntington-platinum-perks-checking-600",
@@ -641,7 +648,7 @@
     "minimumOpeningDeposit": 25000,
     "holdingPeriodDays": 104,
     "requiredActions": [
-      "Open a new Huntington Platinum Perks Checking account using the promotion flow.",
+      "Open a new Huntington Platinum Perks Checking account with your promotion code by June 15, 2026.",
       "Make cumulative new-money deposits of at least $25,000 within 90 days.",
       "Keep the account open through bonus payout."
     ],
@@ -656,13 +663,14 @@
       "OH",
       "PA",
       "SC",
+      "TX",
       "WV",
       "WI"
     ],
-    "notes": "Huntington's official personal checking promotions page no longer supported this Platinum Perks offer when re-verified on March 29, 2026 after the March 15, 2026 deadline.",
+    "notes": "Huntington's official personal checking promotions page currently advertises the Platinum Perks $600 offer through June 15, 2026.",
     "offerUrl": "https://www.huntington.com/checking-account-promotions-bonuses-offers",
-    "isActive": false,
-    "expiresAt": "2026-03-15T23:59:59.999-04:00",
-    "lastVerified": "2026-03-29T00:00:00.000Z"
+    "isActive": true,
+    "expiresAt": "2026-06-15T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   }
 ]

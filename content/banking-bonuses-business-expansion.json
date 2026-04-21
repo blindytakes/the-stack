@@ -39,15 +39,15 @@
     "minimumOpeningDeposit": 5000,
     "holdingPeriodDays": 60,
     "requiredActions": [
-      "Open a new U.S. Bank Business Essentials account with promo code Q1PRO26 by March 31, 2026.",
+      "Open a new U.S. Bank Business Essentials account with promo code Q2PRO26 by June 30, 2026.",
       "Deposit at least $5,000 in new money within 30 days and maintain at least that balance through day 60.",
       "Complete 6 qualifying transactions within 60 days of opening."
     ],
-    "notes": "The account has no monthly maintenance fee. A $100 opening deposit is required to open the account, but the bonus threshold is $5,000.",
+    "notes": "U.S. Bank's current Business Essentials disclosures show promo code Q2PRO26 and a bonus window through June 30, 2026. A $100 opening deposit is required to open the account, but the bonus threshold is $5,000.",
     "offerUrl": "https://www.usbank.com/business-banking/banking-products/business-bank-accounts/business-checking-account/business-essentials.html",
     "isActive": true,
-    "expiresAt": "2026-03-31T23:59:59.999-04:00",
-    "lastVerified": "2026-03-25T00:00:00.000Z"
+    "expiresAt": "2026-06-30T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "us-bank-platinum-business-checking-1200",
@@ -64,15 +64,15 @@
     "minimumOpeningDeposit": 25000,
     "holdingPeriodDays": 60,
     "requiredActions": [
-      "Open a new U.S. Bank Platinum Business Checking account with promo code Q1PRO26 by March 31, 2026.",
+      "Open a new U.S. Bank Platinum Business Checking account with promo code Q2PRO26 by June 30, 2026.",
       "Deposit at least $25,000 in new money within 30 days and maintain at least that balance through day 60.",
       "Complete 6 qualifying transactions within 60 days of opening."
     ],
-    "notes": "U.S. Bank currently discloses a $30 monthly maintenance fee that can be waived with the same $25,000 average balance required for the bonus.",
+    "notes": "U.S. Bank's current Business Essentials disclosures show promo code Q2PRO26 and a bonus window through June 30, 2026. Platinum Business Checking currently carries a $30 monthly maintenance fee that can be waived with the same $25,000 average balance required for the bonus.",
     "offerUrl": "https://www.usbank.com/business-banking/banking-products/business-bank-accounts/business-checking-account/platinum-business-checking-account-package.html",
     "isActive": true,
-    "expiresAt": "2026-03-31T23:59:59.999-04:00",
-    "lastVerified": "2026-03-25T00:00:00.000Z"
+    "expiresAt": "2026-06-30T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "wells-fargo-initiate-business-checking-400",
