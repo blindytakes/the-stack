@@ -267,111 +267,6 @@ function TimelineTrack({
   );
 }
 
-type StartSequenceGroup = {
-  key: string;
-  label: string;
-  items: Array<{
-    id: string;
-    action: 'Apply for' | 'Open';
-    title: string;
-  }>;
-};
-
-function isSameCalendarDay(left: Date, right: Date) {
-  return (
-    left.getFullYear() === right.getFullYear() &&
-    left.getMonth() === right.getMonth() &&
-    left.getDate() === right.getDate()
-  );
-}
-
-function buildStartSequenceGroups(
-  recommendations: PlannerRecommendation[],
-  entriesById: Map<string, TimelineEntry>,
-  referenceDate: Date
-): StartSequenceGroup[] {
-  const groups = new Map<string, StartSequenceGroup>();
-
-  for (const recommendation of recommendations) {
-    const entry = entriesById.get(recommendation.id);
-    const startDate = entry?.startDate;
-    const key = startDate
-      ? `${startDate.getFullYear()}-${startDate.getMonth()}-${startDate.getDate()}`
-      : `manual-${recommendation.id}`;
-    const existing = groups.get(key);
-
-    if (existing) {
-      existing.items.push({
-        id: recommendation.id,
-        action: recommendation.kind === 'card_bonus' ? 'Apply for' : 'Open',
-        title: recommendation.title
-      });
-      continue;
-    }
-
-    groups.set(key, {
-      key,
-      label: startDate
-        ? isSameCalendarDay(startDate, referenceDate)
-          ? 'Start now'
-          : formatShortDate(startDate)
-        : 'Manual timing',
-      items: [
-        {
-          id: recommendation.id,
-          action: recommendation.kind === 'card_bonus' ? 'Apply for' : 'Open',
-          title: recommendation.title
-        }
-      ]
-    });
-  }
-
-  return [...groups.values()];
-}
-
-function PlanStartSequence({ groups }: { groups: StartSequenceGroup[] }) {
-  if (groups.length === 0) return null;
-
-  return (
-    <div className="mt-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.22em] text-brand-teal">Sequence of events</p>
-          <p className="mt-2 max-w-2xl text-sm text-text-secondary">
-            This is the execution order for the opening moves, not a one-size-fits-all ranking.
-          </p>
-        </div>
-        <span className="rounded-full border border-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
-          {groups.length} start window{groups.length === 1 ? '' : 's'}
-        </span>
-      </div>
-
-      <div className="mt-4 grid gap-3 xl:grid-cols-3">
-        {groups.map((group, index) => (
-          <div
-            key={group.key}
-            className={`rounded-[1.35rem] border px-4 py-4 ${
-              index === 0
-                ? 'border-brand-teal/20 bg-brand-teal/10'
-                : 'border-white/[0.08] bg-white/[0.03]'
-            }`}
-          >
-            <p className="text-[11px] uppercase tracking-[0.2em] text-text-muted">{group.label}</p>
-            <div className="mt-3 space-y-2.5">
-              {group.items.map((item) => (
-                <div key={item.id} className="rounded-xl border border-white/[0.06] bg-black/10 px-3 py-2.5">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-text-muted">{item.action}</p>
-                  <p className="mt-1 text-sm font-semibold text-text-primary">{item.title}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 /* ─────────────────────────────────────────────────────────
  * Plan schedule board — timeline and details in one surface
  * ───────────────────────────────────────────────────────── */
@@ -407,7 +302,8 @@ function PlanScheduleRow({
   const detailsPillClass = expanded
     ? 'border-brand-teal/35 bg-brand-teal/10 text-brand-teal'
     : 'border-white/[0.12] bg-white/[0.03] text-text-secondary';
-  const detailsLabel = expanded ? 'Hide details' : 'View details';
+  const detailsLabel = expanded ? 'Hide details' : 'Show details';
+  const detailsButtonLabel = `${detailsLabel} for ${item.title}`;
   const artworkClass =
     item.lane === 'cards'
       ? 'h-[4.75rem] w-[7.15rem] shrink-0 rounded-[1.2rem] border border-brand-gold/16 bg-white/[0.025] shadow-[inset_0_1px_0_rgba(242,205,110,0.06)]'
@@ -415,6 +311,7 @@ function PlanScheduleRow({
   const dateRangeText = entry
     ? `${formatShortDate(entry.startDate)} – ${formatShortDate(entry.completeDate)}`
     : 'Not scheduled';
+  const detailsButtonClass = `inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-brand-teal/28 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal/60 ${detailsPillClass}`;
 
   return (
     <div
@@ -424,13 +321,7 @@ function PlanScheduleRow({
           : 'border-white/[0.07] bg-white/[0.026]'
       }`}
     >
-      <button
-        type="button"
-        onClick={() => setExpanded((prev) => !prev)}
-        aria-expanded={expanded}
-        aria-controls={detailsId}
-        className="w-full px-4 py-4 text-left sm:px-5 lg:px-5"
-      >
+      <div className="px-4 py-4 sm:px-5 lg:px-5">
         <div className="lg:hidden">
           <div className="flex items-start gap-4">
             <div className="mt-1 flex w-9 shrink-0 flex-col items-center">
@@ -450,7 +341,9 @@ function PlanScheduleRow({
             <div className="min-w-0 flex-1">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <p className="truncate text-[17px] font-semibold leading-6 text-text-primary">{item.title}</p>
+                  <p className="truncate text-[17px] font-semibold leading-6 text-text-primary" title={item.title}>
+                    {item.title}
+                  </p>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2">
                     <p className="text-sm text-text-secondary">{item.provider}</p>
                     {isFirstStep ? (
@@ -470,8 +363,13 @@ function PlanScheduleRow({
                   <div className="text-right">
                     <p className="text-[2.1rem] font-semibold leading-none text-text-primary">{formatValue(netValue)}</p>
                   </div>
-                  <span
-                    className={`inline-flex items-center gap-1 whitespace-nowrap rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors ${detailsPillClass}`}
+                  <button
+                    type="button"
+                    onClick={() => setExpanded((prev) => !prev)}
+                    aria-expanded={expanded}
+                    aria-controls={detailsId}
+                    aria-label={detailsButtonLabel}
+                    className={detailsButtonClass}
                   >
                     {detailsLabel}
                     <span
@@ -480,7 +378,7 @@ function PlanScheduleRow({
                     >
                       ▾
                     </span>
-                  </span>
+                  </button>
                 </div>
               </div>
 
@@ -510,7 +408,9 @@ function PlanScheduleRow({
           />
 
           <div className="min-w-0 pr-3">
-            <p className="truncate text-[17px] font-semibold leading-6 text-text-primary">{item.title}</p>
+            <p className="truncate text-[17px] font-semibold leading-6 text-text-primary" title={item.title}>
+              {item.title}
+            </p>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
               <p className="text-sm text-text-secondary">{item.provider}</p>
               {isFirstStep ? (
@@ -528,14 +428,24 @@ function PlanScheduleRow({
 
           <div className="min-w-0 rounded-[1.25rem] border border-white/[0.07] bg-white/[0.03] px-5 py-4">
             <TimelineTrack entry={entry} geometry={geometry} />
+            <div className="mt-2.5 text-[11px] text-text-secondary">
+              <span>{dateRangeText}</span>
+            </div>
           </div>
 
-          <div className="text-right">
-            <p className="text-[2.1rem] font-semibold leading-none text-text-primary">{formatValue(netValue)}</p>
+          <div className="min-w-0 text-right">
+            <p className="whitespace-nowrap text-[2.1rem] font-semibold leading-none text-text-primary">
+              {formatValue(netValue)}
+            </p>
           </div>
 
-          <span
-            className={`inline-flex items-center justify-self-end gap-1 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors ${detailsPillClass}`}
+          <button
+            type="button"
+            onClick={() => setExpanded((prev) => !prev)}
+            aria-expanded={expanded}
+            aria-controls={detailsId}
+            aria-label={detailsButtonLabel}
+            className={`${detailsButtonClass} justify-self-end`}
           >
             {detailsLabel}
             <span
@@ -544,9 +454,9 @@ function PlanScheduleRow({
             >
               ▾
             </span>
-          </span>
+          </button>
         </div>
-      </button>
+      </div>
 
       {expanded ? (
         <div id={detailsId} className="border-t border-white/[0.06] px-5 pb-6 pt-5 sm:px-6">
@@ -626,7 +536,7 @@ function PlanScheduleRow({
               href={`${item.detailPath}${item.detailPath.includes('?') ? '&' : '?'}src=plan_results`}
               className="inline-flex items-center text-sm font-semibold text-brand-teal transition hover:underline"
             >
-              View details →
+              Open offer page →
             </Link>
           </div>
         </div>
@@ -654,23 +564,15 @@ function PlanScheduleBoard({
   );
   const geometry = useMemo(() => buildTimelineGeometry(scheduledEntries), [scheduledEntries]);
   const desktopGridClass =
-    'lg:grid-cols-[40px_124px_minmax(225px,320px)_minmax(430px,1fr)_92px_132px]';
-  const summaryEyebrow = `Featured ${visibleRecommendations.length} move${visibleRecommendations.length === 1 ? '' : 's'}`;
-  const summaryText =
-    'These are the first moves to work through. Expand any row to see the exact requirement window and bonus-posting timing.';
+    'lg:grid-cols-[40px_124px_minmax(0,1.05fr)_minmax(220px,1.4fr)_minmax(110px,auto)_auto] xl:grid-cols-[40px_124px_minmax(0,1.1fr)_minmax(300px,1.55fr)_minmax(118px,auto)_auto]';
 
   return (
-    <div className="mt-5 overflow-hidden rounded-[1.8rem] border border-white/[0.09] bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
-      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-white/[0.06] px-5 pb-4 pt-5 lg:px-10 lg:pt-6">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.22em] text-brand-teal">{summaryEyebrow}</p>
-          <p className="mt-2 max-w-2xl text-sm text-text-secondary">{summaryText}</p>
-        </div>
-      </div>
-
+    <div className="overflow-hidden rounded-[1.8rem] border border-white/[0.09] bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
       {geometry ? (
-        <div className={`hidden lg:grid ${desktopGridClass} items-end gap-x-3 px-10 pb-2 pt-4`}>
-          <div className="col-span-3 h-5" />
+        <div className={`hidden lg:grid ${desktopGridClass} items-end gap-x-3 px-10 pb-2 pt-5`}>
+          <p className="col-span-3 text-[11px] font-medium uppercase tracking-[0.2em] text-text-muted">
+            Your Planned Moves
+          </p>
           <div className="px-5">
             <div className="relative h-5">
               {geometry.monthLabels.map((month) => (
@@ -687,14 +589,17 @@ function PlanScheduleBoard({
           <div className="col-span-2 h-5" />
         </div>
       ) : (
-        <div className="px-5 pt-4 lg:px-10">
+        <div className="px-5 pt-5 lg:px-10">
           <p className="text-sm text-text-muted">
             Timing will appear once schedule windows are available for these moves.
           </p>
         </div>
       )}
 
-      <div className="space-y-3 px-3 pb-3 pt-2 sm:px-4 sm:pb-4 lg:px-5 lg:pb-5">
+      <div className="space-y-3 px-3 pb-3 pt-3 sm:px-4 sm:pb-4 lg:px-5 lg:pb-5">
+        <p className="px-1 text-[11px] font-medium uppercase tracking-[0.2em] text-text-muted lg:hidden">
+          Your Planned Moves
+        </p>
         {visibleRecommendations.map((item, index) => (
           <div key={item.id}>
             <PlanScheduleRow
@@ -1019,10 +924,6 @@ function PlanSummary({
     () => new Map(featuredTimelineEntries.map((entry) => [entry.id, entry])),
     [featuredTimelineEntries]
   );
-  const featuredStartSequenceGroups = useMemo(
-    () => buildStartSequenceGroups(featuredRecommendations, featuredEntriesById, referenceDate),
-    [featuredEntriesById, featuredRecommendations, referenceDate]
-  );
   const cardAlternatives = useMemo(
     () =>
       scopedConsideredRecommendations
@@ -1041,6 +942,16 @@ function PlanSummary({
   );
 
   const animatedTotal = useCountUp(fullPlanValue);
+  const heroEyebrow = cardsOnlyMode
+    ? 'Personalized card sequence'
+    : plannerAudience === 'business'
+      ? 'Personalized business sequence'
+      : 'Personalized rewards sequence';
+  const heroTitle = cardsOnlyMode
+    ? 'Your Card Plan'
+    : plannerAudience === 'business'
+      ? 'Your Business Bonus Plan'
+      : 'Your Bonus Plan';
 
   return (
     <div>
@@ -1048,49 +959,49 @@ function PlanSummary({
 
       {/* ── ① Hero ── */}
       <section
-        className="mt-2 rounded-[2rem] border border-white/[0.08] bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-6 py-6 md:px-8"
+        className="relative mt-2 overflow-hidden rounded-[2rem] border border-white/[0.08] bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.08),transparent_26%),radial-gradient(circle_at_top_right,rgba(242,205,110,0.08),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-6 py-6 md:px-8"
       >
-        <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(320px,420px)] lg:items-end">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),transparent)]" />
+
+        <div className="relative grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(300px,360px)] lg:items-center">
           <div className="max-w-3xl">
             {isDemo ? (
               <span className="inline-flex rounded-full border border-brand-teal/20 bg-brand-teal/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em] text-brand-teal">
                 Demo fixture
               </span>
             ) : null}
-            <h1
-              className={`font-heading text-5xl leading-none text-text-primary md:text-6xl ${
-                isDemo ? 'mt-5' : 'mt-3'
+            <p
+              className={`text-[11px] font-medium uppercase tracking-[0.22em] text-brand-teal/90 ${
+                isDemo ? 'mt-4' : 'mt-1'
               }`}
             >
-              {cardsOnlyMode
-                ? 'Your Card Plan'
-                : plannerAudience === 'business'
-                  ? 'Your Business Bonus Plan'
-                  : 'Your Bonus Plan'}
+              {heroEyebrow}
+            </p>
+            <h1
+              className={`font-heading text-5xl leading-[0.94] text-text-primary md:text-6xl ${
+                isDemo ? 'mt-4' : 'mt-3'
+              }`}
+            >
+              {heroTitle}
             </h1>
           </div>
 
           <div className="lg:justify-self-end lg:text-right">
-            <p className="font-heading text-6xl text-text-primary md:text-7xl">
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-text-muted">Estimated plan value</p>
+            <p className="mt-3 font-heading text-[3.8rem] leading-none text-text-primary md:text-[4.8rem]">
               {formatValue(animatedTotal)}
-            </p>
-            <p className="mt-2 text-sm text-text-secondary">
-              Across {orderedRecommendations.length} planned move{orderedRecommendations.length === 1 ? '' : 's'}
             </p>
           </div>
         </div>
 
-        <div className="mt-6 border-t border-white/[0.06] pt-5">
-          <PlanStartSequence groups={featuredStartSequenceGroups} />
-          <div>
-            <PlanScheduleBoard
-              recommendations={featuredRecommendations}
-              entriesById={featuredEntriesById}
-              selectedRecommendationId={
-                selectedOfferStatus?.status === 'included' ? selectedOfferStatus.recommendationId : null
-              }
-            />
-          </div>
+        <div className="relative mt-6 border-t border-white/[0.06] pt-5">
+          <PlanScheduleBoard
+            recommendations={featuredRecommendations}
+            entriesById={featuredEntriesById}
+            selectedRecommendationId={
+              selectedOfferStatus?.status === 'included' ? selectedOfferStatus.recommendationId : null
+            }
+          />
         </div>
       </section>
 
