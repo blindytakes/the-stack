@@ -30,6 +30,7 @@ describe('normalizeVitalPathToRoute', () => {
   });
 
   it('maps unknown or invalid paths to /other', () => {
+    expect(normalizeVitalPathToRoute('/tools/not-a-real-tool')).toBe('/other');
     expect(normalizeVitalPathToRoute('/totally-random-path')).toBe('/other');
     expect(normalizeVitalPathToRoute('not a url')).toBe('/other');
     expect(normalizeVitalPathToRoute('')).toBe('/other');

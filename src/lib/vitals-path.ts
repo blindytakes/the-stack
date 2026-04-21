@@ -11,7 +11,6 @@ const allowedStaticPaths = new Set([
   '/terms',
   '/tools/card-finder',
   '/tools/card-vs-card',
-  '/tools/hidden-benefits',
   '/tools/premium-card-calculator'
 ]);
 

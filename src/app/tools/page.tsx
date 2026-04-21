@@ -4,7 +4,7 @@ import Link from 'next/link';
 export const metadata: Metadata = {
   title: 'Tools',
   description:
-    'Use The Stack tools to build a bonus plan, compare offers, uncover hidden benefits, and run the premium card calculator.'
+    'Use The Stack tools to build a bonus plan, compare offers, track spending, and run the premium card calculator.'
 };
 
 const toolCards = [
@@ -29,13 +29,6 @@ const toolCards = [
     title: 'Personal Finance Tracker',
     description: 'Download a spreadsheet tracker to log spending, bills, savings goals, and monthly cash flow.',
     accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
-  },
-  {
-    href: '/tools/hidden-benefits',
-    eyebrow: 'Benefits',
-    title: 'Hidden Benefits',
-    description: 'Find the less-obvious protections, credits, and perks attached to your card.',
-    accentClassName: 'from-brand-coral/18 via-brand-coral/7 to-transparent'
   },
   {
     href: '/tools/premium-card-calculator',

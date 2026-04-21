@@ -52,12 +52,6 @@ const toolNavItems: ToolNavItem[] = [
     activePath: '/tools/card-vs-card'
   },
   {
-    href: '/tools/hidden-benefits',
-    label: 'Hidden Benefits',
-    description: 'Find protections, credits, and perks.',
-    activePath: '/tools/hidden-benefits'
-  },
-  {
     href: '/tools/premium-card-calculator',
     label: 'Travel Rewards Calculator',
     description: 'Run the annual-fee math.',

@@ -5,12 +5,10 @@ type ToolPageShellProps = {
   tool:
     | 'card_finder'
     | 'business_plan'
-    | 'hidden_benefits'
     | 'card_vs_card'
     | 'premium_card_calculator';
   path:
     | '/tools/card-finder'
-    | '/tools/hidden-benefits'
     | '/tools/card-vs-card'
     | '/tools/premium-card-calculator';
   title: string;
