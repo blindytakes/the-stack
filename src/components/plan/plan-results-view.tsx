@@ -21,6 +21,7 @@ import { Button } from '@/components/ui/button';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 
 import {
+  getPlanResultsAudience,
   loadPlanResults,
   type PlanResultsLoadResult,
   type PlanResultsStoragePayload
@@ -1137,7 +1138,7 @@ export function PlanResultsView() {
     setState(loaded);
 
     if (loaded.status === 'fresh' || loaded.status === 'recovered') {
-      const plannerAudience = loaded.payload.answers.audience;
+      const plannerAudience = getPlanResultsAudience(loaded.payload);
       const businessMode = plannerAudience === 'business';
       trackFunnelEvent('plan_results_view', {
         source: cardsOnlyMode
@@ -1155,7 +1156,7 @@ export function PlanResultsView() {
 
   const plannerAudience =
     state.status === 'fresh' || state.status === 'recovered'
-      ? state.payload.answers.audience
+      ? getPlanResultsAudience(state.payload)
       : businessModeParam
         ? 'business'
         : 'consumer';

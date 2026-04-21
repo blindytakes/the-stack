@@ -5,10 +5,12 @@ import {
   planResponseSchema,
   type PlanApiResponse
 } from '@/lib/plan-contract';
-import { resolvePlannerQuestionSet } from '@/lib/planner-question-set';
-import { rankQuizResults } from '@/lib/quiz-engine';
+import {
+  normalizePlannerContext
+} from '@/lib/planner/normalize-context';
+import { rankPlannerResults } from '@/lib/planner/ranking-engine';
 import { getPlanPaceConfig } from '@/lib/plan-engine';
-import { buildPlanRecommendationsFromQuiz } from '@/lib/planner-recommendations';
+import { buildPlanRecommendations } from '@/lib/planner-recommendations';
 
 export type BuildPlanResult =
   | {
@@ -30,28 +32,28 @@ export async function buildPlan(rawBody: unknown | null): Promise<BuildPlanResul
   try {
     const generatedAt = Date.now();
     const paceConfig = getPlanPaceConfig();
+    const mode = parsed.data.mode;
     const maxCards = parsed.data.options?.maxCards ?? paceConfig.maxCards;
-    const maxBanking = parsed.data.options?.maxBanking ?? paceConfig.maxBanking;
-    const questionSet = resolvePlannerQuestionSet(parsed.data.options?.questionSet, {
-      maxBanking
+    const maxBanking = parsed.data.options?.maxBanking ?? (mode === 'cards_only' ? 0 : paceConfig.maxBanking);
+    const plannerContext = normalizePlannerContext({
+      mode,
+      answers: parsed.data.answers,
+      overrides: parsed.data.overrides
     });
     const [{ cards }, { bonuses }] = await Promise.all([
       getCardsData(),
       getBankingBonusesData()
     ]);
-    const rankedCards = rankQuizResults(cards, parsed.data.answers, {
-      questionSet
-    });
-    const planBundle = buildPlanRecommendationsFromQuiz(
+    const rankedCards = rankPlannerResults(cards, plannerContext);
+    const planBundle = buildPlanRecommendations(
       rankedCards,
       bonuses,
-      parsed.data.answers,
+      plannerContext,
       {
         startAt: generatedAt,
         maxCards,
         maxBanking,
-        selectedOfferIntent: parsed.data.selectedOfferIntent,
-        questionSet
+        selectedOfferIntent: parsed.data.selectedOfferIntent
       }
     );
     if (

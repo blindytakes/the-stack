@@ -1,171 +1,119 @@
 import { describe, expect, it } from 'vitest';
-import type { QuizRequest, QuizResult } from '../quiz-engine';
+import type { CardRecord } from '../cards';
+import type { RankedCardResult } from '../planner/ranking-engine';
+import { rankPlannerResults } from '../planner/ranking-engine';
+import type {
+  CardsOnlyPlannerContext,
+  FullPlannerContext
+} from '../planner/schemas';
 import { createBankingListItem } from './banking-test-helpers';
 import {
-  buildPlanRecommendationsFromQuiz,
-  rankPlannerRecommendationsByPriority,
-  rankPlannerRecommendationsByValue,
-  toPlannerRecommendationFromBankingBonus,
-  toPlannerRecommendationFromCard
+  buildPlanRecommendations,
+  rankPlannerRecommendationsByPriority
 } from '../planner-recommendations';
 import { getBankingBonusesData } from '../banking-bonuses';
 
-const baseInput: QuizRequest = {
-  audience: 'consumer',
-  goal: 'cashback',
-  spend: 'dining',
-  fee: 'up_to_95',
-  credit: 'good',
-  ownedCardSlugs: [],
-  amexLifetimeBlockedSlugs: [],
-  chase524Status: 'not_sure',
-  directDeposit: 'yes',
-  state: 'NY',
-  monthlySpend: 'from_2500_to_5000',
-  pace: 'balanced',
-  availableCash: 'from_2501_to_9999',
-  bankAccountPreference: 'no_preference',
-  ownedBankNames: []
-};
+function makeFullInput(overrides: Partial<FullPlannerContext> = {}): FullPlannerContext {
+  return {
+    mode: 'full',
+    audience: 'consumer',
+    monthlySpend: 'from_2500_to_5000',
+    directDeposit: 'yes',
+    state: 'NY',
+    ownedCardSlugs: [],
+    availableCash: 'from_2501_to_9999',
+    ownedBankNames: [],
+    amexLifetimeBlockedSlugs: [],
+    chase524Status: 'not_sure',
+    ...overrides
+  };
+}
 
-describe('toPlannerRecommendationFromCard', () => {
-  it('maps card inputs into normalized planner recommendation fields', () => {
-    const recommendation = toPlannerRecommendationFromCard({
-      slug: 'sample-card',
-      name: 'Sample Rewards Card',
-      issuer: 'Sample Bank',
-      imageAssetType: 'text_fallback',
-      annualFee: 95,
-      creditTierMin: 'good',
-      bonusValue: 750,
-      plannerBenefitsValue: 200,
-      spendRequired: 4000,
-      spendPeriodDays: 90
-    });
+function makeCardsOnlyInput(
+  overrides: Partial<CardsOnlyPlannerContext> = {}
+): CardsOnlyPlannerContext {
+  return {
+    mode: 'cards_only',
+    audience: 'consumer',
+    monthlySpend: 'from_2500_to_5000',
+    spend: 'dining',
+    credit: 'good',
+    ownedCardSlugs: [],
+    amexLifetimeBlockedSlugs: [],
+    chase524Status: 'not_sure',
+    ...overrides
+  };
+}
 
-    expect(recommendation.id).toBe('card:sample-card');
-    expect(recommendation.lane).toBe('cards');
-    expect(recommendation.kind).toBe('card_bonus');
-    expect(recommendation.estimatedNetValue).toBe(755);
-    expect(recommendation.valueBreakdown).toEqual({
-      headlineValue: 750,
-      headlineLabel: 'Welcome bonus',
-      benefitAdjustment: 100,
-      annualFee: 95
-    });
-    expect(recommendation.detailPath).toBe('/cards/sample-card');
-    expect(recommendation.keyRequirements[0]).toContain('$4,000');
-  });
-
-  it('falls back to default spend requirement metadata when source values are zero', () => {
-    const recommendation = toPlannerRecommendationFromCard({
-      slug: 'broken-card',
-      name: 'Broken Metadata Card',
-      issuer: 'Sample Bank',
-      imageAssetType: 'text_fallback',
-      annualFee: 0,
-      creditTierMin: 'good',
-      bonusValue: 500,
-      plannerBenefitsValue: 0,
-      spendRequired: 0,
-      spendPeriodDays: 0
-    });
-
-    expect(recommendation.timelineDays).toBe(90);
-    expect(recommendation.scheduleConstraints.activeDays).toBe(90);
-    expect(recommendation.scheduleConstraints.requiredSpend).toBe(3000);
-    expect(recommendation.keyRequirements[0]).toContain('$3,000');
-  });
-});
-
-describe('toPlannerRecommendationFromBankingBonus', () => {
-  it('maps banking bonus records into normalized planner recommendation fields', async () => {
-    const { bonuses } = await getBankingBonusesData();
-    const offer = bonuses.find((bonus) => bonus.slug === 'summit-national-checking-300');
-    expect(offer).toBeDefined();
-    if (!offer) return;
-
-    const recommendation = toPlannerRecommendationFromBankingBonus(offer);
-
-    expect(recommendation.id).toBe('bank:summit-national-checking-300');
-    expect(recommendation.lane).toBe('banking');
-    expect(recommendation.kind).toBe('bank_bonus');
-    expect(recommendation.estimatedNetValue).toBe(288);
-    expect(recommendation.valueBreakdown).toEqual({
-      headlineValue: 300,
-      headlineLabel: 'Bank bonus',
-      estimatedFees: 12
-    });
-    expect(recommendation.detailPath).toBe('/banking/summit-national-checking-300');
-    expect(recommendation.keyRequirements.some((item) => item.includes('direct deposit'))).toBe(true);
-  });
-});
-
-describe('rankPlannerRecommendationsByValue', () => {
-  it('returns recommendations sorted by estimated net value descending', () => {
-    const low = toPlannerRecommendationFromCard({
-      slug: 'low',
-      name: 'Low Value',
-      issuer: 'Sample',
-      imageAssetType: 'text_fallback',
-      annualFee: 0,
-      creditTierMin: 'building',
-      bonusValue: 150,
-      plannerBenefitsValue: 0,
-      spendRequired: 500,
-      spendPeriodDays: 60
-    });
-
-    const high = toPlannerRecommendationFromCard({
-      slug: 'high',
-      name: 'High Value',
-      issuer: 'Sample',
-      imageAssetType: 'text_fallback',
-      annualFee: 95,
-      creditTierMin: 'excellent',
-      bonusValue: 900,
-      plannerBenefitsValue: 0,
-      spendRequired: 5000,
-      spendPeriodDays: 90
-    });
-
-    const ranked = rankPlannerRecommendationsByValue([low, high]);
-    expect(ranked[0].id).toBe('card:high');
-    expect(ranked[1].id).toBe('card:low');
-  });
-});
+function makeCardRecord(overrides: Partial<CardRecord> = {}): CardRecord {
+  return {
+    slug: 'test-card',
+    name: 'Test Card',
+    issuer: 'Test Bank',
+    imageAssetType: 'text_fallback',
+    cardType: 'personal',
+    rewardType: 'cashback',
+    topCategories: ['dining'],
+    annualFee: 0,
+    creditTierMin: 'good',
+    headline: 'Test headline',
+    totalBenefitsValue: 0,
+    plannerBenefitsValue: 0,
+    ...overrides
+  };
+}
 
 describe('rankPlannerRecommendationsByPriority', () => {
   it('returns recommendations sorted by priority score descending', () => {
     const low = {
-      ...toPlannerRecommendationFromCard({
-        slug: 'low-priority',
-        name: 'Low Priority',
-        issuer: 'Sample',
-        imageAssetType: 'text_fallback',
+      id: 'card:low-priority',
+      lane: 'cards' as const,
+      kind: 'card_bonus' as const,
+      title: 'Low Priority',
+      provider: 'Sample',
+      imageAssetType: 'text_fallback' as const,
+      estimatedNetValue: 200,
+      priorityScore: 120,
+      effort: 'low' as const,
+      detailPath: '/cards/low-priority',
+      timelineDays: 90,
+      keyRequirements: ['Spend $500 within 1 month'],
+      scheduleConstraints: {
+        activeDays: 90,
+        payoutLagDays: 30,
+        requiredSpend: 500
+      },
+      valueBreakdown: {
+        headlineValue: 200,
+        headlineLabel: 'Welcome bonus',
         annualFee: 0,
-        creditTierMin: 'building',
-        bonusValue: 200,
-        plannerBenefitsValue: 0,
-        spendRequired: 500,
-        spendPeriodDays: 90
-      }),
-      priorityScore: 120
+        benefitAdjustment: 0
+      }
     };
     const high = {
-      ...toPlannerRecommendationFromCard({
-        slug: 'high-priority',
-        name: 'High Priority',
-        issuer: 'Sample',
-        imageAssetType: 'text_fallback',
+      id: 'card:high-priority',
+      lane: 'cards' as const,
+      kind: 'card_bonus' as const,
+      title: 'High Priority',
+      provider: 'Sample',
+      imageAssetType: 'text_fallback' as const,
+      estimatedNetValue: 600,
+      priorityScore: 220,
+      effort: 'medium' as const,
+      detailPath: '/cards/high-priority',
+      timelineDays: 90,
+      keyRequirements: ['Spend $3,000 within 3 months'],
+      scheduleConstraints: {
+        activeDays: 90,
+        payoutLagDays: 30,
+        requiredSpend: 3000
+      },
+      valueBreakdown: {
+        headlineValue: 600,
+        headlineLabel: 'Welcome bonus',
         annualFee: 95,
-        creditTierMin: 'good',
-        bonusValue: 600,
-        plannerBenefitsValue: 0,
-        spendRequired: 3000,
-        spendPeriodDays: 90
-      }),
-      priorityScore: 220
+        benefitAdjustment: 0
+      }
     };
 
     const ranked = rankPlannerRecommendationsByPriority([low, high]);
@@ -174,9 +122,9 @@ describe('rankPlannerRecommendationsByPriority', () => {
   });
 });
 
-describe('buildPlanRecommendationsFromQuiz', () => {
-  it('builds both card and banking lanes from quiz and banking seed data', async () => {
-    const cards: QuizResult[] = [
+describe('buildPlanRecommendations', () => {
+  it('builds both card and banking lanes from planner and banking seed data', async () => {
+    const cards: RankedCardResult[] = [
       {
         slug: 'sample-card',
         name: 'Sample Card',
@@ -198,14 +146,34 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     ];
 
     const bankingBonuses = (await getBankingBonusesData()).bonuses;
-    const bundle = buildPlanRecommendationsFromQuiz(cards, bankingBonuses, baseInput, {
+    const bundle = buildPlanRecommendations(cards, bankingBonuses, makeFullInput(), {
       maxCards: 1,
       maxBanking: 1
     });
 
     expect(bundle.recommendations).toHaveLength(2);
-    expect(bundle.recommendations.some((item) => item.lane === 'cards')).toBe(true);
-    expect(bundle.recommendations.some((item) => item.lane === 'banking')).toBe(true);
+    const cardRecommendation = bundle.recommendations.find((item) => item.lane === 'cards');
+    const bankingRecommendation = bundle.recommendations.find((item) => item.lane === 'banking');
+
+    expect(cardRecommendation).toMatchObject({
+      id: 'card:sample-card',
+      kind: 'card_bonus',
+      detailPath: '/cards/sample-card',
+      estimatedNetValue: 830
+    });
+    expect(cardRecommendation?.valueBreakdown).toEqual({
+      headlineValue: 800,
+      headlineLabel: 'Welcome bonus',
+      benefitAdjustment: 125,
+      annualFee: 95
+    });
+    expect(cardRecommendation?.keyRequirements[0]).toContain('$4,000');
+
+    expect(bankingRecommendation).toBeDefined();
+    expect(bankingRecommendation?.lane).toBe('banking');
+    expect(bankingRecommendation?.kind).toBe('bank_bonus');
+    expect(bankingRecommendation?.detailPath).toContain('/banking/');
+    expect(bankingRecommendation?.valueBreakdown?.headlineLabel).toBe('Bank bonus');
     expect(bundle.schedule).toHaveLength(2);
     // Remaining banking bonuses that didn't make the cut appear in scheduleIssues
     // rather than exclusions (no hard-filter exclusion reasons apply with directDeposit: 'yes')
@@ -213,16 +181,13 @@ describe('buildPlanRecommendationsFromQuiz', () => {
   });
 
   it('applies banking hard filters and returns exclusion reasons', async () => {
-    const cards: QuizResult[] = [];
+    const cards: RankedCardResult[] = [];
     const bankingBonuses = (await getBankingBonusesData()).bonuses;
 
-    const bundle = buildPlanRecommendationsFromQuiz(
+    const bundle = buildPlanRecommendations(
       cards,
       bankingBonuses,
-      {
-        ...baseInput,
-        directDeposit: 'no'
-      },
+      makeFullInput({ directDeposit: 'no' }),
       { maxBanking: 5 }
     );
 
@@ -233,7 +198,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
   });
 
   it('keeps only business banking offers when the planner audience is business', () => {
-    const bundle = buildPlanRecommendationsFromQuiz(
+    const bundle = buildPlanRecommendations(
       [],
       [
         createBankingListItem({
@@ -245,10 +210,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
           customerType: 'business'
         })
       ],
-      {
-        ...baseInput,
-        audience: 'business'
-      },
+      makeFullInput({ audience: 'business' }),
       { maxBanking: 5 }
     );
 
@@ -256,7 +218,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
   });
 
   it('keeps only personal banking offers when the planner audience is consumer', () => {
-    const bundle = buildPlanRecommendationsFromQuiz(
+    const bundle = buildPlanRecommendations(
       [],
       [
         createBankingListItem({
@@ -268,7 +230,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
           customerType: 'business'
         })
       ],
-      baseInput,
+      makeFullInput(),
       { maxBanking: 5 }
     );
 
@@ -276,16 +238,13 @@ describe('buildPlanRecommendationsFromQuiz', () => {
   });
 
   it('excludes bank offers that are not available in the selected state', async () => {
-    const cards: QuizResult[] = [];
+    const cards: RankedCardResult[] = [];
     const bankingBonuses = (await getBankingBonusesData()).bonuses;
 
-    const bundle = buildPlanRecommendationsFromQuiz(
+    const bundle = buildPlanRecommendations(
       cards,
       bankingBonuses,
-      {
-        ...baseInput,
-        state: 'NY'
-      },
+      makeFullInput({ state: 'NY' }),
       { maxBanking: 5 }
     );
 
@@ -299,7 +258,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
   });
 
   it('keeps only the strongest eligible offer per bank in planner output', () => {
-    const cards: QuizResult[] = [];
+    const cards: RankedCardResult[] = [];
     const bankingBonuses = [
       createBankingListItem({
         slug: 'same-bank-low',
@@ -325,7 +284,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
       })
     ];
 
-    const bundle = buildPlanRecommendationsFromQuiz(cards, bankingBonuses, baseInput, {
+    const bundle = buildPlanRecommendations(cards, bankingBonuses, makeFullInput(), {
       maxBanking: 3
     });
 
@@ -338,7 +297,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
   });
 
   it('applies card hard filters and excludes mismatched offers', () => {
-    const cards: QuizResult[] = [
+    const cards: RankedCardResult[] = [
       {
         slug: 'premium-card',
         name: 'Premium Card',
@@ -377,10 +336,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
       }
     ];
 
-    const bundle = buildPlanRecommendationsFromQuiz(cards, [], {
-      ...baseInput,
-      credit: 'good'
-    });
+    const bundle = buildPlanRecommendations(cards, [], makeCardsOnlyInput({ credit: 'good' }));
 
     // Premium card excluded for credit tier (requires excellent, user has good)
     // No-bonus card excluded for having no signup bonus
@@ -389,7 +345,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
   });
 
   it('does not exclude cards by hidden credit defaults for the full planner question set', () => {
-    const cards: QuizResult[] = [
+    const cards: RankedCardResult[] = [
       {
         slug: 'premium-card',
         name: 'Premium Card',
@@ -410,17 +366,13 @@ describe('buildPlanRecommendationsFromQuiz', () => {
       }
     ];
 
-    const bundle = buildPlanRecommendationsFromQuiz(
+    const bundle = buildPlanRecommendations(
       cards,
       [],
-      {
-        ...baseInput,
-        credit: 'good'
-      },
+      makeFullInput(),
       {
         maxCards: 1,
-        maxBanking: 0,
-        questionSet: 'full'
+        maxBanking: 0
       }
     );
 
@@ -429,7 +381,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
   });
 
   it('skips cards the user already has open', () => {
-    const cards: QuizResult[] = [
+    const cards: RankedCardResult[] = [
       {
         slug: 'owned-card',
         name: 'Owned Card',
@@ -468,16 +420,17 @@ describe('buildPlanRecommendationsFromQuiz', () => {
       }
     ];
 
-    const bundle = buildPlanRecommendationsFromQuiz(cards, [], {
-      ...baseInput,
-      ownedCardSlugs: ['owned-card']
-    });
+    const bundle = buildPlanRecommendations(
+      cards,
+      [],
+      makeCardsOnlyInput({ ownedCardSlugs: ['owned-card'] })
+    );
 
     expect(bundle.recommendations.map((item) => item.id)).toEqual(['card:new-card']);
   });
 
   it('excludes prior Amex cards under the lifetime rule', () => {
-    const cards: QuizResult[] = [
+    const cards: RankedCardResult[] = [
       {
         slug: 'amex-gold-card',
         name: 'American Express Gold Card',
@@ -498,17 +451,18 @@ describe('buildPlanRecommendationsFromQuiz', () => {
       }
     ];
 
-    const bundle = buildPlanRecommendationsFromQuiz(cards, [], {
-      ...baseInput,
-      amexLifetimeBlockedSlugs: ['amex-gold-card']
-    });
+    const bundle = buildPlanRecommendations(
+      cards,
+      [],
+      makeCardsOnlyInput({ amexLifetimeBlockedSlugs: ['amex-gold-card'] })
+    );
 
     expect(bundle.recommendations).toHaveLength(0);
     expect(bundle.exclusions.some((item) => item.reasons.includes('amex_lifetime_rule'))).toBe(true);
   });
 
   it('excludes Chase cards when the user is at or over 5/24', () => {
-    const cards: QuizResult[] = [
+    const cards: RankedCardResult[] = [
       {
         slug: 'chase-sapphire-preferred',
         name: 'Chase Sapphire Preferred Card',
@@ -529,10 +483,11 @@ describe('buildPlanRecommendationsFromQuiz', () => {
       }
     ];
 
-    const bundle = buildPlanRecommendationsFromQuiz(cards, [], {
-      ...baseInput,
-      chase524Status: 'at_or_over_5_24'
-    });
+    const bundle = buildPlanRecommendations(
+      cards,
+      [],
+      makeCardsOnlyInput({ chase524Status: 'at_or_over_5_24' })
+    );
 
     expect(bundle.recommendations).toHaveLength(0);
     expect(bundle.exclusions.some((item) => item.reasons.includes('chase_5_24'))).toBe(true);
@@ -543,13 +498,10 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     const summitOffer = bankingBonuses.find((b) => b.slug === 'summit-national-checking-300');
     expect(summitOffer).toBeDefined();
 
-    const bundle = buildPlanRecommendationsFromQuiz(
+    const bundle = buildPlanRecommendations(
       [],
       bankingBonuses,
-      {
-        ...baseInput,
-        ownedBankNames: ['Summit National Bank']
-      },
+      makeFullInput({ ownedBankNames: ['Summit National Bank'] }),
       { maxBanking: 5 }
     );
 
@@ -568,13 +520,10 @@ describe('buildPlanRecommendationsFromQuiz', () => {
     const atlasOffer = bankingBonuses.find((b) => b.slug === 'atlas-online-savings-250');
     expect(atlasOffer).toBeDefined();
 
-    const bundle = buildPlanRecommendationsFromQuiz(
+    const bundle = buildPlanRecommendations(
       [],
       bankingBonuses,
-      {
-        ...baseInput,
-        availableCash: 'from_2501_to_9999'
-      },
+      makeFullInput({ availableCash: 'from_2501_to_9999' }),
       { maxBanking: 5 }
     );
 
@@ -590,13 +539,10 @@ describe('buildPlanRecommendationsFromQuiz', () => {
   it('does not exclude banking offers when available cash covers the deposit', async () => {
     const bankingBonuses = (await getBankingBonusesData()).bonuses;
 
-    const bundle = buildPlanRecommendationsFromQuiz(
+    const bundle = buildPlanRecommendations(
       [],
       bankingBonuses,
-      {
-        ...baseInput,
-        availableCash: 'at_least_10000'
-      },
+      makeFullInput({ availableCash: 'at_least_10000' }),
       { maxBanking: 5 }
     );
 
@@ -610,7 +556,7 @@ describe('buildPlanRecommendationsFromQuiz', () => {
   });
 
   it('prioritizes a selected eligible offer within the same lane', () => {
-    const cards: QuizResult[] = [
+    const cards: RankedCardResult[] = [
       {
         slug: 'top-card',
         name: 'Top Card',
@@ -649,7 +595,48 @@ describe('buildPlanRecommendationsFromQuiz', () => {
       }
     ];
 
-    const bundle = buildPlanRecommendationsFromQuiz(cards, [], baseInput, {
+    const bundle = buildPlanRecommendations(cards, [], makeCardsOnlyInput(), {
+      maxCards: 1,
+      maxBanking: 0,
+      selectedOfferIntent: {
+        lane: 'cards',
+        slug: 'selected-card',
+        title: 'Selected Card',
+        provider: 'Sample Bank',
+        detailPath: '/cards/selected-card',
+        sourcePath: '/cards'
+      }
+    });
+
+    expect(bundle.recommendations.map((item) => item.id)).toEqual(['card:selected-card']);
+  });
+
+  it('keeps a selected eligible personal card reachable in consumer full-planner mode', () => {
+    const rankedCards = rankPlannerResults(
+      [
+        ...Array.from({ length: 12 }, (_, index) =>
+          makeCardRecord({
+            slug: `higher-value-card-${index}`,
+            name: `Higher Value Card ${index}`,
+            issuer: 'Sample Bank',
+            bestSignUpBonusValue: 1000 - index * 10,
+            bestSignUpBonusSpendRequired: 3000,
+            bestSignUpBonusSpendPeriodDays: 90
+          })
+        ),
+        makeCardRecord({
+          slug: 'selected-card',
+          name: 'Selected Card',
+          issuer: 'Sample Bank',
+          bestSignUpBonusValue: 250,
+          bestSignUpBonusSpendRequired: 1000,
+          bestSignUpBonusSpendPeriodDays: 90
+        })
+      ],
+      makeFullInput()
+    );
+
+    const bundle = buildPlanRecommendations(rankedCards, [], makeFullInput(), {
       maxCards: 1,
       maxBanking: 0,
       selectedOfferIntent: {

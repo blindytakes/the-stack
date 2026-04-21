@@ -1,14 +1,13 @@
 import type { CardImageAssetType, CardRecord } from '@/lib/cards';
-import type { QuizRequest, QuizResult } from '@/lib/quiz-engine';
-import type { AvailableCash } from '@/lib/quiz-engine';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
-import type { PlannerQuestionSet } from '@/lib/planner-question-set';
+import type { RankedCardResult } from '@/lib/planner/ranking-engine';
+import type { FullPlannerContext, PlannerContext } from '@/lib/planner/schemas';
+import type { AvailableCash } from '@/lib/planner/types';
 import {
   getBankingOfferRequirements,
   type BankingBonusListItem,
   type BankingBonusRecord
 } from '@/lib/banking-bonuses';
-import { plannerUsesCreditProfile } from '@/lib/planner-question-set';
 import {
   creditTierLabel,
   estimateBankBonusNetValue,
@@ -88,7 +87,7 @@ export type PlannerRecommendationBundle = {
   diagnostics: PlanScheduleDiagnostics;
 };
 
-export type CardPlannerInput = Pick<
+type CardPlannerInput = Pick<
   CardRecord,
   'slug' | 'name' | 'issuer' | 'imageUrl' | 'imageAssetType' | 'annualFee' | 'creditTierMin'
 > & {
@@ -115,9 +114,8 @@ const availableCashCeiling: Record<AvailableCash, number> = {
 const selectedOfferPriorityBoost = 250_000;
 
 function getCardExclusionReasons(
-  card: QuizResult,
-  input: QuizRequest,
-  questionSet: PlannerQuestionSet
+  card: RankedCardResult,
+  input: PlannerContext
 ): PlannerExclusionReason[] {
   const reasons: PlannerExclusionReason[] = [];
 
@@ -127,7 +125,7 @@ function getCardExclusionReasons(
   }
 
   if (
-    plannerUsesCreditProfile(questionSet) &&
+    input.mode === 'cards_only' &&
     !meetsCreditTier(card.creditTierMin, input.credit)
   ) {
     reasons.push('credit_tier');
@@ -140,7 +138,7 @@ function getCardExclusionReasons(
 
 function getBankingExclusionReasons(
   offer: BankingBonusListItem,
-  input: QuizRequest
+  input: FullPlannerContext
 ): PlannerExclusionReason[] {
   const reasons: PlannerExclusionReason[] = [];
 
@@ -173,7 +171,7 @@ function getBankingExclusionReasons(
   return reasons;
 }
 
-export function toPlannerRecommendationFromCard(input: CardPlannerInput): PlannerRecommendation {
+function toPlannerRecommendationFromCard(input: CardPlannerInput): PlannerRecommendation {
   const spendRequired = input.spendRequired > 0 ? input.spendRequired : 3000;
   const spendPeriodDays = input.spendPeriodDays > 0 ? input.spendPeriodDays : 90;
   const benefitAdjustment = estimateCardBenefitAdjustment(input.plannerBenefitsValue);
@@ -216,7 +214,7 @@ export function toPlannerRecommendationFromCard(input: CardPlannerInput): Planne
   };
 }
 
-export function toPlannerRecommendationFromBankingBonus(
+function toPlannerRecommendationFromBankingBonus(
   input: BankingBonusRecord | BankingBonusListItem
 ): PlannerRecommendation {
   const estimatedNetValue = estimateBankBonusNetValue(input.bonusAmount, input.estimatedFees);
@@ -246,12 +244,6 @@ export function toPlannerRecommendationFromBankingBonus(
       requiresDirectDeposit: input.directDeposit.required
     }
   };
-}
-
-export function rankPlannerRecommendationsByValue(
-  recommendations: PlannerRecommendation[]
-): PlannerRecommendation[] {
-  return [...recommendations].sort((a, b) => b.estimatedNetValue - a.estimatedNetValue);
 }
 
 export function rankPlannerRecommendationsByPriority(
@@ -288,26 +280,25 @@ function dedupeBankingRecommendationsByBank(
   return [...bestByBank.values()];
 }
 
-export function buildPlanRecommendationsFromQuiz(
-  cardResults: QuizResult[],
+export function buildPlanRecommendations(
+  cardResults: RankedCardResult[],
   bankingBonuses: BankingBonusListItem[],
-  input: QuizRequest,
+  input: PlannerContext,
   options: {
     maxCards?: number;
     maxBanking?: number;
     startAt?: number;
     selectedOfferIntent?: SelectedOfferIntent;
-    questionSet?: PlannerQuestionSet;
   } = {}
 ): PlannerRecommendationBundle {
   const paceConfig = getPlanPaceConfig();
   const maxCards = options.maxCards ?? paceConfig.maxCards;
   const maxBanking = options.maxBanking ?? paceConfig.maxBanking;
-  const questionSet = options.questionSet ?? 'cards_only';
   const ownedCardSlugSet = new Set(input.ownedCardSlugs);
   const selectedRecommendationId = options.selectedOfferIntent
     ? getSelectedOfferIntentRecommendationId(options.selectedOfferIntent)
     : null;
+  const fullPlannerInput = input.mode === 'full' ? input : null;
 
   const exclusions: PlannerExcludedOffer[] = [];
 
@@ -324,7 +315,7 @@ export function buildPlanRecommendationsFromQuiz(
       continue;
     }
 
-    const reasons = getCardExclusionReasons(card, input, questionSet);
+    const reasons = getCardExclusionReasons(card, input);
     if (reasons.length > 0) {
       exclusions.push({
         id: `card:${card.slug}`,
@@ -363,41 +354,42 @@ export function buildPlanRecommendationsFromQuiz(
   }
 
   const eligibleBanking: PlannerRecommendation[] = [];
-  for (const offer of bankingBonuses) {
-    if (
-      (input.audience === 'business' && offer.customerType !== 'business') ||
-      (input.audience !== 'business' && offer.customerType === 'business')
-    ) {
-      continue;
-    }
+  if (fullPlannerInput && maxBanking > 0) {
+    for (const offer of bankingBonuses) {
+      if (
+        (fullPlannerInput.audience === 'business' && offer.customerType !== 'business') ||
+        (fullPlannerInput.audience !== 'business' && offer.customerType === 'business')
+      ) {
+        continue;
+      }
 
-    const reasons = getBankingExclusionReasons(offer, input);
-    if (reasons.length > 0) {
-      exclusions.push({
-        id: `bank:${offer.slug}`,
-        lane: 'banking',
-        title: offer.offerName,
-        provider: offer.bankName,
-        reasons
+      const reasons = getBankingExclusionReasons(offer, fullPlannerInput);
+      if (reasons.length > 0) {
+        exclusions.push({
+          id: `bank:${offer.slug}`,
+          lane: 'banking',
+          title: offer.offerName,
+          provider: offer.bankName,
+          reasons
+        });
+        continue;
+      }
+
+      const recommendation = toPlannerRecommendationFromBankingBonus(offer);
+      eligibleBanking.push({
+        ...recommendation,
+        priorityScore:
+          scoreBankingPriority({
+            estimatedNetValue: recommendation.estimatedNetValue,
+            effort: recommendation.effort,
+            timelineDays: recommendation.timelineDays,
+            directDepositRequired: offer.directDeposit.required,
+            minimumOpeningDeposit: offer.minimumOpeningDeposit,
+            directDepositAvailability: fullPlannerInput.directDeposit,
+            accountType: offer.accountType
+          }) + (recommendation.id === selectedRecommendationId ? selectedOfferPriorityBoost : 0)
       });
-      continue;
     }
-
-    const recommendation = toPlannerRecommendationFromBankingBonus(offer);
-    eligibleBanking.push({
-      ...recommendation,
-      priorityScore:
-        scoreBankingPriority({
-          estimatedNetValue: recommendation.estimatedNetValue,
-          effort: recommendation.effort,
-          timelineDays: recommendation.timelineDays,
-          directDepositRequired: offer.directDeposit.required,
-          minimumOpeningDeposit: offer.minimumOpeningDeposit,
-          directDepositAvailability: input.directDeposit,
-          accountType: offer.accountType,
-          bankAccountPreference: input.bankAccountPreference
-        }) + (recommendation.id === selectedRecommendationId ? selectedOfferPriorityBoost : 0)
-    });
   }
 
   const dedupedBanking = dedupeBankingRecommendationsByBank(eligibleBanking);

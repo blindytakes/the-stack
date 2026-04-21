@@ -1,7 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { submitPlanQuiz } from '../plan-client';
+import { submitPlannerIntake } from '../plan-client';
 import type { SelectedOfferIntent } from '../plan-contract';
-import type { QuizRequest } from '../quiz-engine';
 
 function createMemoryStorage() {
   const store = new Map<string, string>();
@@ -28,22 +27,17 @@ function installWindow() {
   return { sessionStorage, localStorage };
 }
 
-const baseAnswers: QuizRequest = {
-  audience: 'consumer',
-  goal: 'cashback',
-  spend: 'dining',
-  fee: 'up_to_95',
-  credit: 'good',
-  ownedCardSlugs: [],
-  amexLifetimeBlockedSlugs: [],
-  chase524Status: 'not_sure',
-  directDeposit: 'yes',
-  state: 'NY',
-  monthlySpend: 'from_2500_to_5000',
-  pace: 'balanced',
-  availableCash: 'from_2501_to_9999',
-  bankAccountPreference: 'no_preference',
-  ownedBankNames: []
+const baseRequest = {
+  mode: 'full' as const,
+  answers: {
+    audience: 'consumer' as const,
+    monthlySpend: 'from_2500_to_5000' as const,
+    directDeposit: 'yes' as const,
+    state: 'NY',
+    availableCash: 'from_2501_to_9999' as const,
+    ownedCardSlugs: [],
+    ownedBankNames: []
+  }
 };
 
 const selectedOfferIntent: SelectedOfferIntent = {
@@ -60,7 +54,7 @@ describe('plan-client', () => {
     vi.unstubAllGlobals();
   });
 
-  it('posts plan inputs and saves the returned payload to storage', async () => {
+  it('posts mode-specific planner inputs and saves normalized planner context to storage', async () => {
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
@@ -73,31 +67,40 @@ describe('plan-client', () => {
     });
     vi.stubGlobal('fetch', fetchMock);
     const { sessionStorage, localStorage } = installWindow();
-
-    const payload = await submitPlanQuiz({
-      answers: baseAnswers,
+    const request = {
+      ...baseRequest,
       options: {
-        maxBanking: 0
+        maxBanking: 2
       },
       selectedOfferIntent
-    });
+    };
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/plan', {
+    const payload = await submitPlannerIntake(request);
+    const [url, init] = fetchMock.mock.calls[0] ?? [];
+
+    expect(url).toBe('/api/plan');
+    expect(init).toMatchObject({
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        answers: baseAnswers,
-        options: {
-          maxBanking: 0
-        },
-        selectedOfferIntent
-      })
+      headers: { 'Content-Type': 'application/json' }
     });
+    expect(JSON.parse(init.body)).toEqual(request);
     expect(payload.savedAt).toBe(123);
     expect(payload.selectedOfferIntent).toEqual(selectedOfferIntent);
     expect(payload.scheduleIssues).toEqual([]);
-    expect(JSON.parse(sessionStorage.getItem('thestack.plan.results.v1')!)).toEqual(payload);
-    expect(JSON.parse(localStorage.getItem('thestack.plan.results.backup.v1')!)).toEqual(payload);
+    expect(payload.plannerContext).toEqual({
+      mode: 'full',
+      audience: 'consumer',
+      monthlySpend: 'from_2500_to_5000',
+      directDeposit: 'yes',
+      state: 'NY',
+      ownedCardSlugs: [],
+      availableCash: 'from_2501_to_9999',
+      ownedBankNames: [],
+      amexLifetimeBlockedSlugs: [],
+      chase524Status: 'not_sure'
+    });
+    expect(JSON.parse(sessionStorage.getItem('thestack.plan.results.v2')!)).toEqual(payload);
+    expect(JSON.parse(localStorage.getItem('thestack.plan.results.backup.v2')!)).toEqual(payload);
   });
 
   it('throws when the plan request fails', async () => {
@@ -116,8 +119,8 @@ describe('plan-client', () => {
     installWindow();
 
     await expect(
-      submitPlanQuiz({
-        answers: baseAnswers
+      submitPlannerIntake({
+        ...baseRequest
       })
     ).rejects.toThrow('Too many plan requests. Please try again soon.');
   });
@@ -139,8 +142,8 @@ describe('plan-client', () => {
     installWindow();
 
     await expect(
-      submitPlanQuiz({
-        answers: baseAnswers
+      submitPlannerIntake({
+        ...baseRequest
       })
     ).rejects.toThrow('Plan generation returned an unexpected response.');
   });
@@ -182,8 +185,8 @@ describe('plan-client', () => {
     );
     installWindow();
 
-    const payload = await submitPlanQuiz({
-      answers: baseAnswers
+    const payload = await submitPlannerIntake({
+      ...baseRequest
     });
 
     expect(payload.recommendations[0]?.imageUrl).toBe('/card-logos/alaska-airlines.svg');

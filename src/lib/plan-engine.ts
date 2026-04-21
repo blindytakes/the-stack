@@ -1,9 +1,8 @@
-import type { QuizRequest } from '@/lib/quiz-engine';
+import type { PlannerContext } from '@/lib/planner/schemas';
 import { scoreScheduleContribution } from '@/lib/scoring-policy';
 
-// Only the balanced pace is used — the quiz always hardcodes pace: 'balanced'.
-// Conservative and aggressive configs have been removed to keep the engine honest
-// about what it actually supports.
+// Scheduler concurrency is fixed. The planner no longer accepts a user-facing
+// pace field, so these limits are the only supported operating mode.
 
 export type PlanScheduleLane = 'cards' | 'banking';
 
@@ -110,6 +109,8 @@ type BuildPlanScheduleOptions = {
   maxBanking?: number;
 };
 
+export type PlanScheduleInput = Pick<PlannerContext, 'monthlySpend'>;
+
 type SearchResult =
   | {
       ok: true;
@@ -156,7 +157,7 @@ function overlaps(startDay: number, completeDay: number, otherStartDay: number, 
   return startDay < otherCompleteDay && otherStartDay < completeDay;
 }
 
-function monthlySpendCapacity(input: QuizRequest): number {
+function monthlySpendCapacity(input: PlanScheduleInput): number {
   if (input.monthlySpend === 'lt_2500') return 2500;
   if (input.monthlySpend === 'from_2500_to_5000') return 5000;
   return Number.POSITIVE_INFINITY;
@@ -366,7 +367,7 @@ function getWindowReasons(
   recommendation: SearchCandidate,
   scheduled: ScheduledWindow[],
   startDay: number,
-  input: QuizRequest,
+  input: PlanScheduleInput,
   config: PlanPaceConfig,
   horizonDays: number
 ): WindowIssueReason[] {
@@ -436,7 +437,7 @@ function candidateStartDays(
 function searchScheduleWindow(
   recommendation: SearchCandidate,
   scheduled: ScheduledWindow[],
-  input: QuizRequest,
+  input: PlanScheduleInput,
   config: PlanPaceConfig,
   horizonDays: number
 ): SearchResult {
@@ -530,7 +531,7 @@ function optimisticBound(
 
 function optimizeSchedule(
   candidates: SearchCandidate[],
-  input: QuizRequest,
+  input: PlanScheduleInput,
   config: PlanPaceConfig,
   horizonDays: number,
   maxCards: number,
@@ -601,7 +602,7 @@ function optimizeSchedule(
 function inferIssueReason(
   recommendation: SearchCandidate,
   scheduled: ScheduledWindow[],
-  input: QuizRequest,
+  input: PlanScheduleInput,
   config: PlanPaceConfig,
   horizonDays: number,
   maxCards: number,
@@ -627,7 +628,7 @@ function inferIssueReason(
 
 export function buildPlanSchedule(
   recommendations: SchedulablePlanRecommendation[],
-  input: QuizRequest,
+  input: PlanScheduleInput,
   options: BuildPlanScheduleOptions = {}
 ): {
   scheduled: PlanScheduleItem[];

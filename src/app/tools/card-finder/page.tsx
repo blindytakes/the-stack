@@ -3,7 +3,7 @@ import { CardFinderPathChooser, CardFinderTool } from '@/components/tools/card-f
 import { ToolPageShell } from '@/components/layout/tool-page-shell';
 import { getCardsData, type CardRecord } from '@/lib/cards';
 import { getBankingBonusesData, type BankingBonusListItem } from '@/lib/banking-bonuses';
-import type { PlannerAudience } from '@/lib/quiz-engine';
+import type { PlannerAudience } from '@/lib/planner/types';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
 import { normalizeSelectedOfferSourcePath } from '@/lib/selected-offer-intent';
 

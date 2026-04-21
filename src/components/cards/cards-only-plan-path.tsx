@@ -12,13 +12,12 @@ import {
   CardFinderSelectQuestion,
   type FinderQuestionStep
 } from '@/components/tools/card-finder-sections';
-import { submitPlanQuiz } from '@/lib/plan-client';
-import {
-  getChase524StatusFromRecentCardOpenings,
-  quizRequestSchema,
-  type QuizRequest
-} from '@/lib/quiz-engine';
+import { submitPlannerIntake } from '@/lib/plan-client';
 import type { CardRecord } from '@/lib/cards';
+import {
+  cardsOnlyPlannerAnswersSchema,
+  type CardsOnlyPlannerAnswers
+} from '@/lib/planner/schemas';
 
 type CardOnlyQuestionId =
   | 'ownedCardSlugs'
@@ -26,16 +25,7 @@ type CardOnlyQuestionId =
   | 'spend'
   | 'monthlySpend'
   | 'credit';
-type CardOnlyAnswers = Partial<
-  Pick<
-    QuizRequest,
-    | 'ownedCardSlugs'
-    | 'recentCardOpenings24Months'
-    | 'spend'
-    | 'monthlySpend'
-    | 'credit'
-  >
->;
+type CardOnlyAnswers = Partial<CardsOnlyPlannerAnswers>;
 
 type CardOnlyStep = FinderQuestionStep & { id: CardOnlyQuestionId };
 
@@ -167,20 +157,7 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
     setLoading(true);
     setError('');
 
-    const parsedAnswers = quizRequestSchema.safeParse({
-      ownedCardSlugs: answers.ownedCardSlugs ?? [],
-      amexLifetimeBlockedSlugs: [],
-      recentCardOpenings24Months: answers.recentCardOpenings24Months,
-      chase524Status: getChase524StatusFromRecentCardOpenings(answers.recentCardOpenings24Months),
-      goal: 'flexibility',
-      spend: answers.spend,
-      monthlySpend: answers.monthlySpend,
-      fee: 'over_95_ok',
-      credit: answers.credit,
-      directDeposit: 'no',
-      state: 'OT',
-      pace: 'balanced'
-    });
+    const parsedAnswers = cardsOnlyPlannerAnswersSchema.safeParse(answers);
 
     if (!parsedAnswers.success) {
       setLoading(false);
@@ -189,11 +166,11 @@ export function CardsOnlyPlanPath({ cards }: { cards: CardRecord[] }) {
     }
 
     try {
-      await submitPlanQuiz({
+      await submitPlannerIntake({
+        mode: 'cards_only',
         answers: parsedAnswers.data,
         options: {
-          maxBanking: 0,
-          questionSet: 'cards_only'
+          maxBanking: 0
         }
       });
 

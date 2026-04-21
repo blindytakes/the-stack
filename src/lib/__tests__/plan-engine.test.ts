@@ -1,24 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { buildPlanSchedule, type SchedulablePlanRecommendation } from '../plan-engine';
-import type { QuizRequest } from '../quiz-engine';
+import {
+  buildPlanSchedule,
+  type PlanScheduleInput,
+  type SchedulablePlanRecommendation
+} from '../plan-engine';
 
-function makeInput(overrides: Partial<QuizRequest> = {}): QuizRequest {
+function makeInput(overrides: Partial<PlanScheduleInput> = {}): PlanScheduleInput {
   return {
-    audience: 'consumer',
-    goal: 'cashback',
-    spend: 'dining',
-    fee: 'up_to_95',
-    credit: 'good',
-    ownedCardSlugs: [],
-    amexLifetimeBlockedSlugs: [],
-    chase524Status: 'not_sure',
-    directDeposit: 'yes',
-    state: 'NY',
     monthlySpend: 'from_2500_to_5000',
-    pace: 'balanced',
-    availableCash: 'from_2501_to_9999',
-    bankAccountPreference: 'no_preference',
-    ownedBankNames: [],
     ...overrides
   };
 }
@@ -67,7 +56,7 @@ describe('buildPlanSchedule', () => {
           }
         })
       ],
-      makeInput({ pace: 'aggressive' }),
+      makeInput(),
       { startAt, maxCards: 2, maxBanking: 2 }
     );
 
@@ -102,8 +91,7 @@ describe('buildPlanSchedule', () => {
         })
       ],
       makeInput({
-        monthlySpend: 'lt_2500',
-        pace: 'aggressive'
+        monthlySpend: 'lt_2500'
       }),
       { startAt, maxCards: 2, maxBanking: 0, horizonDays: 365 }
     );
@@ -138,7 +126,7 @@ describe('buildPlanSchedule', () => {
           }
         })
       ],
-      makeInput({ pace: 'aggressive' }),
+      makeInput(),
       { startAt, maxCards: 2, maxBanking: 0, horizonDays: 180 }
     );
 
@@ -175,7 +163,7 @@ describe('buildPlanSchedule', () => {
           }
         })
       ],
-      makeInput({ pace: 'aggressive' }),
+      makeInput(),
       { startAt, maxCards: 0, maxBanking: 2, horizonDays: 365 }
     );
 
@@ -287,7 +275,7 @@ describe('buildPlanSchedule', () => {
           }
         })
       ],
-      makeInput({ pace: 'aggressive' }),
+      makeInput(),
       { maxCards: 0, maxBanking: 2, horizonDays: 240 }
     );
 

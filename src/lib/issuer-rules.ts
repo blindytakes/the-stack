@@ -1,7 +1,11 @@
 import type { CardRecord } from '@/lib/cards';
-import type { QuizRequest } from '@/lib/quiz-engine';
+import type { Chase524Status } from '@/lib/planner/types';
 
 export type CardIssuerEligibilityReason = 'amex_lifetime_rule' | 'chase_5_24';
+type CardIssuerEligibilityInput = {
+  amexLifetimeBlockedSlugs: string[];
+  chase524Status: Chase524Status;
+};
 
 const AMEX_ISSUER = 'American Express';
 const CHASE_ISSUER = 'Chase';
@@ -16,7 +20,7 @@ export function isChaseCard(card: Pick<CardRecord, 'issuer'>): boolean {
 
 export function getCardIssuerEligibilityReasons(
   card: Pick<CardRecord, 'slug' | 'issuer'>,
-  input: Pick<QuizRequest, 'amexLifetimeBlockedSlugs' | 'chase524Status'>
+  input: CardIssuerEligibilityInput
 ): CardIssuerEligibilityReason[] {
   const reasons: CardIssuerEligibilityReason[] = [];
 
@@ -33,7 +37,7 @@ export function getCardIssuerEligibilityReasons(
 
 export function isCardBlockedByIssuerRules(
   card: Pick<CardRecord, 'slug' | 'issuer'>,
-  input: Pick<QuizRequest, 'amexLifetimeBlockedSlugs' | 'chase524Status'>
+  input: CardIssuerEligibilityInput
 ): boolean {
   return getCardIssuerEligibilityReasons(card, input).length > 0;
 }

@@ -49,22 +49,17 @@ function installWindow(overrides?: {
 }
 
 const basePayload = buildPlanResultsPayload({
-  answers: {
+  plannerContext: {
+    mode: 'full',
     audience: 'consumer',
-    goal: 'cashback',
-    spend: 'dining',
-    fee: 'up_to_95',
-    credit: 'good',
-    ownedCardSlugs: [],
-    amexLifetimeBlockedSlugs: [],
-    chase524Status: 'not_sure',
+    monthlySpend: 'from_2500_to_5000',
     directDeposit: 'yes',
     state: 'NY',
-    monthlySpend: 'from_2500_to_5000',
-    pace: 'balanced',
+    ownedCardSlugs: [],
     availableCash: 'from_2501_to_9999',
-    bankAccountPreference: 'no_preference',
-    ownedBankNames: []
+    ownedBankNames: [],
+    amexLifetimeBlockedSlugs: [],
+    chase524Status: 'not_sure'
   },
   recommendations: [
     {
@@ -138,15 +133,52 @@ describe('plan-results-storage', () => {
     expect(loaded.status).toBe('fresh');
     if (loaded.status === 'fresh') {
       expect(loaded.source).toBe('session');
-      expect(loaded.payload.answers.goal).toBe('cashback');
+      expect(loaded.payload.plannerContext.mode).toBe('full');
+      expect(loaded.payload.plannerContext.audience).toBe('consumer');
       expect(loaded.payload.selectedOfferIntent?.slug).toBe('test');
       expect(loaded.payload.scheduleIssues[0]?.reason).toBe('lane_limit');
     }
   });
 
+  it('ignores unsupported stored payload versions', () => {
+    const { sessionStorage } = installWindow();
+    sessionStorage.setItem(
+      'thestack.plan.results.v2',
+      JSON.stringify({
+        version: 1,
+        savedAt: basePayload.savedAt,
+        answers: {
+          audience: 'consumer',
+          goal: 'cashback',
+          spend: 'dining',
+          fee: 'up_to_95',
+          credit: 'good',
+          ownedCardSlugs: [],
+          amexLifetimeBlockedSlugs: [],
+          chase524Status: 'not_sure',
+          directDeposit: 'no',
+          state: 'OT',
+          monthlySpend: 'from_2500_to_5000',
+          pace: 'balanced',
+          availableCash: 'from_2501_to_9999',
+          ownedBankNames: []
+        },
+        selectedOfferIntent: basePayload.selectedOfferIntent,
+        recommendations: basePayload.recommendations,
+        consideredRecommendations: basePayload.consideredRecommendations,
+        exclusions: basePayload.exclusions,
+        schedule: basePayload.schedule,
+        scheduleIssues: basePayload.scheduleIssues
+      })
+    );
+
+    const loaded = loadPlanResults();
+    expect(loaded.status).toBe('missing');
+  });
+
   it('recovers from local storage when session payload is missing', () => {
     const { localStorage } = installWindow();
-    localStorage.setItem('thestack.plan.results.backup.v1', JSON.stringify(basePayload));
+    localStorage.setItem('thestack.plan.results.backup.v2', JSON.stringify(basePayload));
 
     const loaded = loadPlanResults();
     expect(loaded.status).toBe('recovered');
@@ -179,7 +211,7 @@ describe('plan-results-storage', () => {
   it('marks stale payloads as stale', () => {
     const { sessionStorage } = installWindow();
     sessionStorage.setItem(
-      'thestack.plan.results.v1',
+      'thestack.plan.results.v2',
       JSON.stringify({
         ...basePayload,
         savedAt: Date.now() - 1000 * 60 * 60 * 48
@@ -192,12 +224,12 @@ describe('plan-results-storage', () => {
 
   it('clears saved plan keys', () => {
     const { sessionStorage, localStorage } = installWindow();
-    sessionStorage.setItem('thestack.plan.results.v1', JSON.stringify(basePayload));
-    localStorage.setItem('thestack.plan.results.backup.v1', JSON.stringify(basePayload));
+    sessionStorage.setItem('thestack.plan.results.v2', JSON.stringify(basePayload));
+    localStorage.setItem('thestack.plan.results.backup.v2', JSON.stringify(basePayload));
 
     clearPlanResults();
 
-    expect(sessionStorage.getItem('thestack.plan.results.v1')).toBeNull();
-    expect(localStorage.getItem('thestack.plan.results.backup.v1')).toBeNull();
+    expect(sessionStorage.getItem('thestack.plan.results.v2')).toBeNull();
+    expect(localStorage.getItem('thestack.plan.results.backup.v2')).toBeNull();
   });
 });

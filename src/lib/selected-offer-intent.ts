@@ -1,6 +1,6 @@
 import type { PlanResultsStoragePayload } from '@/lib/plan-results-storage';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
-import type { PlannerAudience } from '@/lib/quiz-engine';
+import type { PlannerAudience } from '@/lib/planner/types';
 
 export type SelectedOfferIntentStatus =
   | {

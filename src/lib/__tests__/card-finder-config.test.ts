@@ -2,17 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { buildCardFinderSteps } from '@/components/tools/card-finder-config';
 
 describe('buildCardFinderSteps', () => {
-  it('includes the cash step by default and when direct deposit is available', () => {
+  it('includes the cash step in the full planner flow', () => {
     expect(buildCardFinderSteps().some((step) => step.id === 'availableCash')).toBe(true);
-    expect(buildCardFinderSteps({ directDeposit: 'yes' }).some((step) => step.id === 'availableCash')).toBe(
-      true
-    );
   });
 
-  it('omits the cash step when direct deposit is unavailable', () => {
-    const steps = buildCardFinderSteps({ directDeposit: 'no' });
+  it('does not change the step list based on direct deposit answers anymore', () => {
+    const steps = buildCardFinderSteps();
 
-    expect(steps.some((step) => step.id === 'availableCash')).toBe(false);
+    expect(steps.some((step) => step.id === 'availableCash')).toBe(true);
   });
 
   it('marks the cash step as optional when it is included', () => {
@@ -29,6 +26,7 @@ describe('buildCardFinderSteps', () => {
 
     expect(monthlySpendStep?.title).toContain('business spend');
     expect(ownedCardsStep?.title).toContain('business cards');
-    expect(steps.some((step) => step.id === 'chase524Status')).toBe(false);
+    expect(steps.some((step) => step.id === 'recentCardOpenings24Months')).toBe(false);
+    expect(steps.some((step) => step.id === 'availableCash')).toBe(true);
   });
 });

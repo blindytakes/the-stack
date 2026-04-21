@@ -1,7 +1,7 @@
 'use client';
 
 import { usStateOptions, type FinderQuestionStep } from '@/components/tools/card-finder-sections';
-import type { PlannerAudience } from '@/lib/quiz-engine';
+import type { PlannerAudience } from '@/lib/planner/types';
 
 function buildMonthlySpendStep(audience: PlannerAudience): FinderQuestionStep {
   return {
@@ -128,11 +128,9 @@ function buildOwnedBanksStep(audience: PlannerAudience): FinderQuestionStep {
 }
 
 export function buildCardFinderSteps(options: {
-  directDeposit?: 'yes' | 'no';
   audience?: PlannerAudience;
 } = {}): FinderQuestionStep[] {
   const audience = options.audience ?? 'consumer';
-  const includeAvailableCash = options.directDeposit !== 'no';
   const includeChase524Step = audience !== 'business';
 
   return [
@@ -141,7 +139,7 @@ export function buildCardFinderSteps(options: {
     ...(includeChase524Step ? [buildRecentCardOpeningsStep(audience)] : []),
     buildStateStep(audience),
     buildOwnedCardsStep(audience),
-    ...(includeAvailableCash ? [buildAvailableCashStep(audience)] : []),
+    buildAvailableCashStep(audience),
     buildOwnedBanksStep(audience)
   ];
 }

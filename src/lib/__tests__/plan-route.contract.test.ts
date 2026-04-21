@@ -68,15 +68,13 @@ describe('/api/plan route contract', () => {
     const req = new Request('http://localhost/api/plan', {
       method: 'POST',
       body: JSON.stringify({
+        mode: 'cards_only',
         answers: {
-          goal: 'cashback',
-          spend: 'dining',
-          fee: 'no_fee',
-          credit: 'good',
-          directDeposit: 'yes',
-          state: 'NY',
+          audience: 'consumer',
           monthlySpend: 'from_2500_to_5000',
-          pace: 'balanced'
+          spend: 'dining',
+          credit: 'good',
+          ownedCardSlugs: []
         }
       })
     });

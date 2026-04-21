@@ -333,23 +333,39 @@ export function getDemoPlanPayload(options: {
 
   return buildPlanResultsPayload({
     savedAt,
-    answers: {
-      audience: 'consumer',
-      goal: 'travel',
-      spend: 'dining',
-      fee: 'over_95_ok',
-      credit: 'excellent',
-      ownedCardSlugs: ['chase-freedom-unlimited', 'amex-green-card', 'capital-one-quicksilver', 'discover-it-cash-back'],
-      amexLifetimeBlockedSlugs: ['amex-platinum-card'],
-      chase524Status: 'under_5_24',
-      directDeposit: 'yes',
-      state: 'NY',
-      monthlySpend: 'from_2500_to_5000',
-      pace: 'balanced',
-      availableCash: 'from_2501_to_9999',
-      bankAccountPreference: 'no_preference',
-      ownedBankNames: []
-    },
+    plannerContext: cardsOnlyMode
+      ? {
+          mode: 'cards_only',
+          audience: 'consumer',
+          monthlySpend: 'from_2500_to_5000',
+          spend: 'dining',
+          credit: 'excellent',
+          ownedCardSlugs: [
+            'chase-freedom-unlimited',
+            'amex-green-card',
+            'capital-one-quicksilver',
+            'discover-it-cash-back'
+          ],
+          amexLifetimeBlockedSlugs: ['amex-platinum-card'],
+          chase524Status: 'under_5_24'
+        }
+      : {
+          mode: 'full',
+          audience: 'consumer',
+          monthlySpend: 'from_2500_to_5000',
+          directDeposit: 'yes',
+          state: 'NY',
+          ownedCardSlugs: [
+            'chase-freedom-unlimited',
+            'amex-green-card',
+            'capital-one-quicksilver',
+            'discover-it-cash-back'
+          ],
+          availableCash: 'from_2501_to_9999',
+          ownedBankNames: [],
+          amexLifetimeBlockedSlugs: ['amex-platinum-card'],
+          chase524Status: 'under_5_24'
+        },
     recommendations: filteredRecommendations,
     consideredRecommendations: filteredRecommendations,
     exclusions: cardsOnlyMode ? exclusions.filter((item) => item.lane === 'cards') : exclusions,

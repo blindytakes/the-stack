@@ -1,6 +1,9 @@
 import { z } from 'zod';
-import { quizRequestSchema } from '@/lib/quiz-engine';
-import { plannerQuestionSetSchema } from '@/lib/planner-question-set';
+import {
+  cardsOnlyPlannerAnswersSchema,
+  fullPlannerAnswersSchema,
+  plannerEligibilityOverridesSchema
+} from '@/lib/planner/schemas';
 
 const plannerRecommendationLaneSchema = z.enum(['cards', 'banking']);
 const plannerRecommendationKindSchema = z.enum(['card_bonus', 'bank_bonus']);
@@ -104,15 +107,27 @@ export const planScheduleIssueSchema = z.object({
 
 export const planRequestOptionsSchema = z.object({
   maxCards: z.number().int().min(0).max(6).optional(),
-  maxBanking: z.number().int().min(0).max(6).optional(),
-  questionSet: plannerQuestionSetSchema.optional()
+  maxBanking: z.number().int().min(0).max(6).optional()
 });
 
-export const planRequestSchema = z.object({
-  answers: quizRequestSchema,
+const planRequestBaseSchema = z.object({
   options: planRequestOptionsSchema.optional(),
+  overrides: plannerEligibilityOverridesSchema.optional(),
   selectedOfferIntent: selectedOfferIntentSchema.optional()
 });
+
+export const modePlanRequestSchema = z.discriminatedUnion('mode', [
+  planRequestBaseSchema.extend({
+    mode: z.literal('full'),
+    answers: fullPlannerAnswersSchema
+  }),
+  planRequestBaseSchema.extend({
+    mode: z.literal('cards_only'),
+    answers: cardsOnlyPlannerAnswersSchema
+  })
+]);
+
+export const planRequestSchema = modePlanRequestSchema;
 
 export const planResponseSchema = z.object({
   generatedAt: z.number().int().positive(),
@@ -125,5 +140,6 @@ export const planResponseSchema = z.object({
 
 export type PlanRequestOptions = z.infer<typeof planRequestOptionsSchema>;
 export type SelectedOfferIntent = z.infer<typeof selectedOfferIntentSchema>;
-export type PlanBuildRequest = z.infer<typeof planRequestSchema>;
+export type ModePlanBuildRequest = z.infer<typeof modePlanRequestSchema>;
+export type PlanBuildRequest = ModePlanBuildRequest;
 export type PlanApiResponse = z.infer<typeof planResponseSchema>;

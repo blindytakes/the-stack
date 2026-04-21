@@ -13,7 +13,10 @@ import {
 } from '@/components/plan/plan-results-config';
 import { sameSlugSelections } from '@/components/plan/plan-results-utils';
 import type { CardRecord } from '@/lib/cards';
-import type { PlanResultsStoragePayload } from '@/lib/plan-results-storage';
+import {
+  getPlanResultsEligibility,
+  type PlanResultsStoragePayload
+} from '@/lib/plan-results-storage';
 
 type ResultsEligibilityEditorProps = {
   payload: PlanResultsStoragePayload;
@@ -30,14 +33,15 @@ export function ResultsEligibilityEditor({
   cardsError,
   onUpdateEligibility
 }: ResultsEligibilityEditorProps) {
+  const eligibility = getPlanResultsEligibility(payload);
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [ownedCardSlugs, setOwnedCardSlugs] = useState(payload.answers.ownedCardSlugs);
+  const [ownedCardSlugs, setOwnedCardSlugs] = useState(eligibility.ownedCardSlugs);
   const [amexLifetimeBlockedSlugs, setAmexLifetimeBlockedSlugs] = useState(
-    payload.answers.amexLifetimeBlockedSlugs
+    eligibility.amexLifetimeBlockedSlugs
   );
-  const [chase524Status, setChase524Status] = useState(payload.answers.chase524Status);
+  const [chase524Status, setChase524Status] = useState(eligibility.chase524Status);
   const amexCards = useMemo(
     () =>
       cards.filter(
@@ -48,26 +52,22 @@ export function ResultsEligibilityEditor({
     [amexLifetimeBlockedSlugs, cards, ownedCardSlugs]
   );
   const hasChanges =
-    !sameSlugSelections(ownedCardSlugs, payload.answers.ownedCardSlugs) ||
-    !sameSlugSelections(amexLifetimeBlockedSlugs, payload.answers.amexLifetimeBlockedSlugs) ||
-    chase524Status !== payload.answers.chase524Status;
+    !sameSlugSelections(ownedCardSlugs, eligibility.ownedCardSlugs) ||
+    !sameSlugSelections(amexLifetimeBlockedSlugs, eligibility.amexLifetimeBlockedSlugs) ||
+    chase524Status !== eligibility.chase524Status;
 
   useEffect(() => {
-    setOwnedCardSlugs(payload.answers.ownedCardSlugs);
-    setAmexLifetimeBlockedSlugs(payload.answers.amexLifetimeBlockedSlugs);
-    setChase524Status(payload.answers.chase524Status);
+    setOwnedCardSlugs(eligibility.ownedCardSlugs);
+    setAmexLifetimeBlockedSlugs(eligibility.amexLifetimeBlockedSlugs);
+    setChase524Status(eligibility.chase524Status);
     setError('');
     setLoading(false);
-  }, [
-    payload.answers.amexLifetimeBlockedSlugs,
-    payload.answers.chase524Status,
-    payload.answers.ownedCardSlugs
-  ]);
+  }, [eligibility.amexLifetimeBlockedSlugs, eligibility.chase524Status, eligibility.ownedCardSlugs]);
 
   function closeEditor() {
-    setOwnedCardSlugs(payload.answers.ownedCardSlugs);
-    setAmexLifetimeBlockedSlugs(payload.answers.amexLifetimeBlockedSlugs);
-    setChase524Status(payload.answers.chase524Status);
+    setOwnedCardSlugs(eligibility.ownedCardSlugs);
+    setAmexLifetimeBlockedSlugs(eligibility.amexLifetimeBlockedSlugs);
+    setChase524Status(eligibility.chase524Status);
     setError('');
     setLoading(false);
     setIsOpen(false);
@@ -107,11 +107,11 @@ export function ResultsEligibilityEditor({
     setIsOpen(false);
   }
 
-  const ownedCount = payload.answers.ownedCardSlugs.length;
+  const ownedCount = eligibility.ownedCardSlugs.length;
   const chase524Label =
-    payload.answers.chase524Status === 'at_or_over_5_24'
+    eligibility.chase524Status === 'at_or_over_5_24'
       ? 'At/over 5/24'
-      : payload.answers.chase524Status === 'under_5_24'
+      : eligibility.chase524Status === 'under_5_24'
         ? 'Under 5/24'
         : 'Not sure';
 

@@ -1,6 +1,5 @@
 import type { BankingBonusRecord } from '@/lib/banking-bonuses';
 import type { CardRecord, CreditTierValue, SpendingCategoryValue } from '@/lib/cards';
-import type { BankAccountPreference } from '@/lib/quiz-engine';
 
 type DirectDepositAvailability = 'yes' | 'no';
 type RecommendationEffort = 'low' | 'medium' | 'high';
@@ -32,7 +31,6 @@ type BankingPriorityInput = {
   minimumOpeningDeposit?: number;
   directDepositAvailability: DirectDepositAvailability;
   accountType?: BankingAccountType;
-  bankAccountPreference?: BankAccountPreference;
 };
 
 type ScheduleContributionInput = {
@@ -63,7 +61,7 @@ export const cardOpenScoringPolicy = {
  * Card recommendation priority weights.
  *
  * `estimatedNetValue` stays the base score in dollar terms. The weights below
- * adjust ordering for quiz fit and execution friction so ranking can be tuned
+ * adjust ordering for planner fit and execution friction so ranking can be tuned
  * without rewriting the scoring function.
  */
 export const cardPriorityScoringPolicy = {
@@ -103,8 +101,7 @@ export const bankingPriorityScoringPolicy = {
   depositAdjustment: {
     upTo2000: 20,
     upTo10000: 10
-  },
-  accountPreferenceBoost: 25
+  }
 } as const;
 
 function roundCurrencyValue(value: number): number {
@@ -200,15 +197,6 @@ export function scoreBankingPriority(input: BankingPriorityInput): number {
     score += bankingPriorityScoringPolicy.depositAdjustment.upTo2000;
   } else if (deposit <= 10000) {
     score += bankingPriorityScoringPolicy.depositAdjustment.upTo10000;
-  }
-
-  if (input.accountType && input.bankAccountPreference && input.bankAccountPreference !== 'no_preference') {
-    const matches =
-      input.accountType === input.bankAccountPreference ||
-      input.accountType === 'bundle';
-    if (matches) {
-      score += bankingPriorityScoringPolicy.accountPreferenceBoost;
-    }
   }
 
   return Math.round(score);

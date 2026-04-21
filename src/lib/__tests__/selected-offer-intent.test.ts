@@ -7,22 +7,17 @@ import {
 } from '../selected-offer-intent';
 
 const basePayload = buildPlanResultsPayload({
-  answers: {
+  plannerContext: {
+    mode: 'full',
     audience: 'consumer',
-    goal: 'cashback',
-    spend: 'dining',
-    fee: 'up_to_95',
-    credit: 'good',
-    ownedCardSlugs: [],
-    amexLifetimeBlockedSlugs: [],
-    chase524Status: 'not_sure',
+    monthlySpend: 'from_2500_to_5000',
     directDeposit: 'yes',
     state: 'NY',
-    monthlySpend: 'from_2500_to_5000',
-    pace: 'balanced',
+    ownedCardSlugs: [],
     availableCash: 'from_2501_to_9999',
-    bankAccountPreference: 'no_preference',
-    ownedBankNames: []
+    ownedBankNames: [],
+    amexLifetimeBlockedSlugs: [],
+    chase524Status: 'not_sure'
   },
   selectedOfferIntent: {
     lane: 'banking',

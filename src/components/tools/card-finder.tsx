@@ -11,8 +11,8 @@ import {
 } from '@/components/tools/card-finder-sections';
 import { useCardFinderState } from '@/components/tools/card-finder-state';
 import type { CardRecord } from '@/lib/cards';
-import type { PlannerAudience } from '@/lib/quiz-engine';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
+import type { PlannerAudience } from '@/lib/planner/types';
 
 export function CardFinderPathChooser() {
   return (
@@ -78,7 +78,7 @@ export function CardFinderTool({
     clearSelectedOfferIntent,
     goBack,
     goForward,
-    submitQuiz
+    submitPlanner
   } = useCardFinderState(selectedOfferIntent, audience);
   const selectionCards = currentStep.type !== 'card_selection' ? [] : cards;
 
@@ -91,6 +91,12 @@ export function CardFinderTool({
       ? (answers[currentStep.id]?.length ?? 0) === 0
       : !answers[currentStep.id]
     : false;
+  const currentAnswer = answers[currentStep.id];
+  const selectedArrayValue: string[] = Array.isArray(currentAnswer)
+    ? currentAnswer.filter((value): value is string => typeof value === 'string')
+    : [];
+  const selectedStringValue: string | undefined =
+    typeof currentAnswer === 'string' ? currentAnswer : undefined;
   const shouldAutoAdvance =
     currentStep.type === 'options' &&
     (
@@ -138,7 +144,7 @@ export function CardFinderTool({
         <CardSelectionQuestion
           step={currentStep}
           cards={selectionCards}
-          selectedSlugs={answers[currentStep.id] ?? []}
+          selectedSlugs={selectedArrayValue}
           onToggle={toggleCardSelection}
           onClear={clearCardSelection}
           searchId="owned-card-search"
@@ -163,20 +169,20 @@ export function CardFinderTool({
         <BankSelectionQuestion
           step={currentStep}
           bankNames={bankNames}
-          selectedNames={answers[currentStep.id] ?? []}
+          selectedNames={selectedArrayValue}
           onToggle={toggleBankSelection}
           onClear={clearBankSelection}
         />
       ) : currentStep.type === 'select' ? (
         <CardFinderSelectQuestion
           step={currentStep}
-          selectedValue={typeof answers[currentStep.id] === 'string' ? answers[currentStep.id] : undefined}
+          selectedValue={selectedStringValue}
           onSelect={selectCurrentOption}
         />
       ) : (
         <CardFinderQuestion
           step={currentStep}
-          selectedValue={typeof answers[currentStep.id] === 'string' ? answers[currentStep.id] : undefined}
+          selectedValue={selectedStringValue}
           onSelect={selectCurrentOption}
           onAutoAdvance={shouldAutoAdvance ? goForward : undefined}
         />
@@ -195,7 +201,7 @@ export function CardFinderTool({
         continueLabel={optionalStepEmpty ? 'Skip for now' : 'Continue'}
         onBack={goBack}
         onContinue={goForward}
-        onSubmit={submitQuiz}
+        onSubmit={submitPlanner}
       />
 
       {error && (

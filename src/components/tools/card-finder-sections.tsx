@@ -9,7 +9,6 @@ import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
 import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import { formatSpendCategoryLabel } from '@/lib/cards-directory-explorer';
 import type { CardRecord } from '@/lib/cards';
-import type { QuizRequest } from '@/lib/quiz-engine';
 import { usStateAndOtherOptions } from '@/lib/us-state-options';
 
 const popularOwnedCardSlugs = [
@@ -39,7 +38,14 @@ export const usStateOptions = usStateAndOtherOptions;
 
 export type CardSelectionQuestionId = 'ownedCardSlugs' | 'amexLifetimeBlockedSlugs';
 export type BankSelectionQuestionId = 'ownedBankNames';
-type FinderQuestionId = Exclude<keyof QuizRequest, CardSelectionQuestionId | BankSelectionQuestionId>;
+type FinderQuestionId =
+  | 'monthlySpend'
+  | 'directDeposit'
+  | 'recentCardOpenings24Months'
+  | 'state'
+  | 'availableCash'
+  | 'spend'
+  | 'credit';
 type FinderStepOption = { label: string; value: string };
 
 export type FinderOptionStep = {

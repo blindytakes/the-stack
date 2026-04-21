@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const getCardsDataMock = vi.fn();
 const getBankingBonusesDataMock = vi.fn();
-const buildPlanRecommendationsFromQuizMock = vi.fn();
+const buildPlanRecommendationsMock = vi.fn();
 
 function makeDiagnostics() {
   return {
@@ -42,8 +42,8 @@ vi.mock('@/lib/banking-bonuses', () => ({
 }));
 
 vi.mock('@/lib/planner-recommendations', () => ({
-  buildPlanRecommendationsFromQuiz: (...args: unknown[]) =>
-    buildPlanRecommendationsFromQuizMock(...args)
+  buildPlanRecommendations: (...args: unknown[]) =>
+    buildPlanRecommendationsMock(...args)
 }));
 
 import { buildPlan } from '@/lib/services/plan-service';
@@ -73,7 +73,7 @@ describe('plan-service', () => {
     });
   });
 
-  it('builds a server-side plan using pace defaults and request overrides', async () => {
+  it('builds a cards-only plan from mode-specific planner input', async () => {
     getCardsDataMock.mockResolvedValue({
       cards: [
         {
@@ -113,7 +113,7 @@ describe('plan-service', () => {
       ],
       source: 'seed'
     });
-    buildPlanRecommendationsFromQuizMock.mockReturnValue({
+    buildPlanRecommendationsMock.mockReturnValue({
       recommendations: [],
       exclusions: [],
       schedule: [],
@@ -122,15 +122,13 @@ describe('plan-service', () => {
     });
 
     const result = await buildPlan({
+      mode: 'cards_only',
       answers: {
-        goal: 'cashback',
-        spend: 'dining',
-        fee: 'no_fee',
-        credit: 'good',
-        directDeposit: 'yes',
-        state: 'NY',
+        audience: 'consumer',
         monthlySpend: 'from_2500_to_5000',
-        pace: 'balanced'
+        spend: 'dining',
+        credit: 'good',
+        ownedCardSlugs: []
       },
       options: {
         maxBanking: 0
@@ -146,7 +144,7 @@ describe('plan-service', () => {
     });
 
     expect(result.ok).toBe(true);
-    expect(buildPlanRecommendationsFromQuizMock).toHaveBeenCalledWith(
+    expect(buildPlanRecommendationsMock).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({
           slug: 'test-card',
@@ -159,13 +157,17 @@ describe('plan-service', () => {
         })
       ]),
       expect.objectContaining({
-        pace: 'balanced'
+        mode: 'cards_only',
+        audience: 'consumer',
+        monthlySpend: 'from_2500_to_5000',
+        spend: 'dining',
+        credit: 'good',
+        chase524Status: 'not_sure'
       }),
       expect.objectContaining({
         startAt: expect.any(Number),
         maxCards: 5,
         maxBanking: 0,
-        questionSet: 'cards_only',
         selectedOfferIntent: expect.objectContaining({
           lane: 'cards',
           slug: 'test-card'
@@ -174,7 +176,7 @@ describe('plan-service', () => {
     );
   });
 
-  it('uses the full planner question set when requested', async () => {
+  it('uses mode-specific full planner requests without fabricating hidden card fields', async () => {
     getCardsDataMock.mockResolvedValue({
       cards: [
         {
@@ -200,7 +202,7 @@ describe('plan-service', () => {
       bonuses: [],
       source: 'seed'
     });
-    buildPlanRecommendationsFromQuizMock.mockReturnValue({
+    buildPlanRecommendationsMock.mockReturnValue({
       recommendations: [],
       exclusions: [],
       schedule: [],
@@ -209,32 +211,37 @@ describe('plan-service', () => {
     });
 
     const result = await buildPlan({
+      mode: 'full',
       answers: {
-        goal: 'flexibility',
-        spend: 'all',
-        fee: 'over_95_ok',
-        credit: 'good',
+        audience: 'consumer',
+        monthlySpend: 'from_2500_to_5000',
         directDeposit: 'yes',
         state: 'NY',
-        monthlySpend: 'from_2500_to_5000',
-        pace: 'balanced'
-      },
-      options: {
-        questionSet: 'full'
+        availableCash: 'from_2501_to_9999',
+        ownedCardSlugs: [],
+        ownedBankNames: []
       }
     });
 
     expect(result.ok).toBe(true);
-    expect(buildPlanRecommendationsFromQuizMock).toHaveBeenCalledWith(
+    expect(buildPlanRecommendationsMock).toHaveBeenCalledWith(
       expect.arrayContaining([
         expect.objectContaining({
           slug: 'excellent-card'
         })
       ]),
       [],
-      expect.any(Object),
       expect.objectContaining({
-        questionSet: 'full'
+        mode: 'full',
+        audience: 'consumer',
+        monthlySpend: 'from_2500_to_5000',
+        directDeposit: 'yes',
+        state: 'NY',
+        availableCash: 'from_2501_to_9999',
+        ownedBankNames: []
+      }),
+      expect.objectContaining({
+        maxBanking: 4
       })
     );
   });
@@ -248,7 +255,7 @@ describe('plan-service', () => {
       bonuses: [],
       source: 'seed'
     });
-    buildPlanRecommendationsFromQuizMock.mockReturnValue({
+    buildPlanRecommendationsMock.mockReturnValue({
       recommendations: [
         {
           id: 'broken-recommendation'
@@ -261,15 +268,13 @@ describe('plan-service', () => {
     });
 
     const result = await buildPlan({
+      mode: 'cards_only',
       answers: {
-        goal: 'cashback',
-        spend: 'dining',
-        fee: 'no_fee',
-        credit: 'good',
-        directDeposit: 'yes',
-        state: 'NY',
+        audience: 'consumer',
         monthlySpend: 'from_2500_to_5000',
-        pace: 'balanced'
+        spend: 'dining',
+        credit: 'good',
+        ownedCardSlugs: []
       }
     });
 
@@ -289,7 +294,7 @@ describe('plan-service', () => {
       bonuses: [],
       source: 'seed'
     });
-    buildPlanRecommendationsFromQuizMock.mockReturnValue({
+    buildPlanRecommendationsMock.mockReturnValue({
       recommendations: [
         {
           id: 'card:alaska-airlines-visa-signature',
@@ -319,15 +324,13 @@ describe('plan-service', () => {
     });
 
     const result = await buildPlan({
+      mode: 'cards_only',
       answers: {
-        goal: 'cashback',
-        spend: 'dining',
-        fee: 'no_fee',
-        credit: 'good',
-        directDeposit: 'yes',
-        state: 'NY',
+        audience: 'consumer',
         monthlySpend: 'from_2500_to_5000',
-        pace: 'balanced'
+        spend: 'dining',
+        credit: 'good',
+        ownedCardSlugs: []
       }
     });
 
@@ -347,15 +350,13 @@ describe('plan-service', () => {
     getCardsDataMock.mockRejectedValue(new Error('db down'));
 
     const result = await buildPlan({
+      mode: 'cards_only',
       answers: {
-        goal: 'cashback',
-        spend: 'dining',
-        fee: 'no_fee',
-        credit: 'good',
-        directDeposit: 'yes',
-        state: 'NY',
+        audience: 'consumer',
         monthlySpend: 'from_2500_to_5000',
-        pace: 'balanced'
+        spend: 'dining',
+        credit: 'good',
+        ownedCardSlugs: []
       }
     });
 

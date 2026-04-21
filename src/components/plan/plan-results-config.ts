@@ -1,10 +1,10 @@
 import type { FinderCardSelectionStep } from '@/components/tools/card-finder-sections';
 import type { PlanScheduleIssueReason } from '@/lib/plan-engine';
-import type { QuizRequest } from '@/lib/quiz-engine';
+import type { PlannerContext } from '@/lib/planner/schemas';
 import type { PlannerExclusionReason } from '@/lib/planner-recommendations';
 
 export type EligibilityDraft = Pick<
-  QuizRequest,
+  PlannerContext,
   'ownedCardSlugs' | 'amexLifetimeBlockedSlugs' | 'chase524Status'
 >;
 
@@ -25,7 +25,7 @@ export const amexHistoryEditorStep: FinderCardSelectionStep = {
 
 export const chase524Options: Array<{
   label: string;
-  value: QuizRequest['chase524Status'];
+  value: PlannerContext['chase524Status'];
   description: string;
 }> = [
   {

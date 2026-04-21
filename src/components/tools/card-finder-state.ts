@@ -2,14 +2,10 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  getChase524StatusFromRecentCardOpenings,
-  quizRequestSchema,
-  type PlannerAudience,
-  type QuizRequest
-} from '@/lib/quiz-engine';
-import { submitPlanQuiz } from '@/lib/plan-client';
+import { submitPlannerIntake } from '@/lib/plan-client';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
+import { fullPlannerAnswersSchema, type FullPlannerAnswers } from '@/lib/planner/schemas';
+import { type PlannerAudience } from '@/lib/planner/types';
 import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import { buildCardFinderSteps } from '@/components/tools/card-finder-config';
 import type {
@@ -18,7 +14,13 @@ import type {
   FinderQuestionStep
 } from '@/components/tools/card-finder-sections';
 
-type QuizAnswers = Partial<QuizRequest>;
+type FullPlannerAnswerKey = keyof FullPlannerAnswers;
+type PlannerAnswerValue = string | string[] | undefined;
+type PlannerAnswers = Partial<FullPlannerAnswers> & Partial<Record<string, PlannerAnswerValue>>;
+
+function asFullPlannerAnswerKey(value: string): FullPlannerAnswerKey {
+  return value as FullPlannerAnswerKey;
+}
 
 export function useCardFinderState(
   initialSelectedOfferIntent: SelectedOfferIntent | null = null,
@@ -26,7 +28,7 @@ export function useCardFinderState(
 ) {
   const router = useRouter();
   const [stepIndex, setStepIndex] = useState(0);
-  const [answers, setAnswers] = useState<QuizAnswers>({});
+  const [answers, setAnswers] = useState<PlannerAnswers>({});
   const [selectedOfferIntent, setSelectedOfferIntent] = useState<SelectedOfferIntent | null>(
     initialSelectedOfferIntent
   );
@@ -36,10 +38,9 @@ export function useCardFinderState(
   const steps = useMemo(
     () =>
       buildCardFinderSteps({
-        directDeposit: answers.directDeposit,
         audience
       }),
-    [answers.directDeposit, audience]
+    [audience]
   );
 
   useEffect(() => {
@@ -59,19 +60,22 @@ export function useCardFinderState(
   const isLastStep = stepIndex === steps.length - 1;
   const canContinue = isOptionalStep(currentStep)
     ? true
-    : Boolean(answers[currentStep.id]);
+    : Boolean(answers[asFullPlannerAnswerKey(currentStep.id)]);
   const progress = useMemo(
     () => (stepIndex / steps.length) * 100,
     [stepIndex, steps.length]
   );
-  const isComplete = steps.every((step) => isOptionalStep(step) || Boolean(answers[step.id]));
+  const isComplete = steps.every(
+    (step) => isOptionalStep(step) || Boolean(answers[asFullPlannerAnswerKey(step.id)])
+  );
 
   function selectCurrentOption(value: string) {
     if (currentStep.type === 'card_selection' || currentStep.type === 'bank_selection') {
       return;
     }
 
-    setAnswers((prev) => ({ ...prev, [currentStep.id]: value }));
+    const answerKey = asFullPlannerAnswerKey(currentStep.id);
+    setAnswers((prev) => ({ ...prev, [answerKey]: value }));
   }
 
   function updateCardSelection(selectionId: CardSelectionQuestionId, nextValues: string[]) {
@@ -87,7 +91,7 @@ export function useCardFinderState(
     }
 
     const selectionId = currentStep.id;
-    const currentValues = answers[selectionId] ?? [];
+    const currentValues = Array.isArray(answers[selectionId]) ? answers[selectionId] : [];
     const next = new Set(currentValues);
     if (next.has(slug)) {
       next.delete(slug);
@@ -119,7 +123,7 @@ export function useCardFinderState(
     }
 
     const selectionId = currentStep.id;
-    const currentValues = answers[selectionId] ?? [];
+    const currentValues = Array.isArray(answers[selectionId]) ? answers[selectionId] : [];
     const next = new Set(currentValues);
     if (next.has(name)) {
       next.delete(name);
@@ -156,20 +160,13 @@ export function useCardFinderState(
     setSelectedOfferIntent(null);
   }
 
-  async function submitQuiz() {
+  async function submitPlanner() {
     setLoading(true);
     setError('');
 
-    const parsedAnswers = quizRequestSchema.safeParse({
+    const parsedAnswers = fullPlannerAnswersSchema.safeParse({
       ...answers,
-      audience,
-      chase524Status: getChase524StatusFromRecentCardOpenings(answers.recentCardOpenings24Months),
-      amexLifetimeBlockedSlugs: [],
-      goal: 'flexibility',
-      spend: 'all',
-      fee: 'over_95_ok',
-      credit: 'good',
-      pace: 'balanced'
+      audience
     });
     if (!parsedAnswers.success) {
       setLoading(false);
@@ -178,11 +175,9 @@ export function useCardFinderState(
     }
 
     try {
-      await submitPlanQuiz({
+      await submitPlannerIntake({
+        mode: 'full',
         answers: parsedAnswers.data,
-        options: {
-          questionSet: 'full'
-        },
         selectedOfferIntent: selectedOfferIntent ?? undefined
       });
 
@@ -220,7 +215,7 @@ export function useCardFinderState(
     clearSelectedOfferIntent,
     goBack,
     goForward,
-    submitQuiz,
+    submitPlanner,
     resetFinder
   };
 }

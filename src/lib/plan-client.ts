@@ -8,6 +8,9 @@ import {
   planResponseSchema,
   type PlanBuildRequest
 } from '@/lib/plan-contract';
+import {
+  normalizePlannerContext
+} from '@/lib/planner/normalize-context';
 
 async function getPlanRequestErrorMessage(res: Response): Promise<string | null> {
   const contentType = res.headers?.get?.('content-type') ?? '';
@@ -34,7 +37,7 @@ async function getPlanRequestErrorMessage(res: Response): Promise<string | null>
   return null;
 }
 
-export async function submitPlanQuiz(input: PlanBuildRequest): Promise<PlanResultsStoragePayload> {
+export async function submitPlannerIntake(input: PlanBuildRequest): Promise<PlanResultsStoragePayload> {
   const request = planRequestSchema.parse(input);
   let res: Response;
 
@@ -61,9 +64,14 @@ export async function submitPlanQuiz(input: PlanBuildRequest): Promise<PlanResul
   }
 
   const data = parsedResponse.data;
+  const plannerContext = normalizePlannerContext({
+    mode: request.mode,
+    answers: request.answers,
+    overrides: request.overrides
+  });
   const payload = buildPlanResultsPayload({
     savedAt: data.generatedAt,
-    answers: request.answers,
+    plannerContext,
     selectedOfferIntent: request.selectedOfferIntent,
     recommendations: data.recommendations,
     consideredRecommendations: data.consideredRecommendations,

@@ -6,9 +6,9 @@ import {
   planScheduleItemSchema
 } from '@/lib/plan-contract';
 import {
-  quizRequestSchema,
-  type QuizRequest
-} from '@/lib/quiz-engine';
+  plannerContextSchema,
+  type PlannerContext
+} from '@/lib/planner/schemas';
 import { type SelectedOfferIntent, selectedOfferIntentSchema } from '@/lib/plan-contract';
 import type { PlanScheduleItem } from '@/lib/plan-engine';
 import type {
@@ -16,9 +16,9 @@ import type {
   PlannerRecommendation
 } from '@/lib/planner-recommendations';
 
-const PLAN_RESULTS_VERSION = 1 as const;
-const SESSION_KEY = 'thestack.plan.results.v1';
-const LOCAL_KEY = 'thestack.plan.results.backup.v1';
+const PLAN_RESULTS_VERSION = 2 as const;
+const SESSION_KEY = 'thestack.plan.results.v2';
+const LOCAL_KEY = 'thestack.plan.results.backup.v2';
 const PLAN_RESULTS_MAX_AGE_MS = 1000 * 60 * 60 * 24;
 const STORAGE_ERROR_MESSAGE =
   'Could not save your plan in this browser. Please allow site storage and try again.';
@@ -26,7 +26,7 @@ const STORAGE_ERROR_MESSAGE =
 const planResultsStorageSchema = z.object({
   version: z.literal(PLAN_RESULTS_VERSION),
   savedAt: z.number().int().positive(),
-  answers: quizRequestSchema,
+  plannerContext: plannerContextSchema,
   selectedOfferIntent: selectedOfferIntentSchema.optional(),
   recommendations: z.array(plannerRecommendationSchema),
   consideredRecommendations: z.array(plannerRecommendationSchema).default([]),
@@ -36,6 +36,10 @@ const planResultsStorageSchema = z.object({
 });
 
 export type PlanResultsStoragePayload = z.infer<typeof planResultsStorageSchema>;
+export type PlanResultsEligibility = Pick<
+  PlannerContext,
+  'ownedCardSlugs' | 'amexLifetimeBlockedSlugs' | 'chase524Status'
+>;
 
 export type PlanResultsLoadResult =
   | { status: 'fresh'; payload: PlanResultsStoragePayload; source: 'session' | 'local' }
@@ -44,7 +48,7 @@ export type PlanResultsLoadResult =
   | { status: 'missing' };
 
 export function buildPlanResultsPayload(input: {
-  answers: QuizRequest;
+  plannerContext: PlannerContext;
   selectedOfferIntent?: SelectedOfferIntent;
   recommendations: PlannerRecommendation[];
   consideredRecommendations?: PlannerRecommendation[];
@@ -56,7 +60,7 @@ export function buildPlanResultsPayload(input: {
   return {
     version: PLAN_RESULTS_VERSION,
     savedAt: input.savedAt ?? Date.now(),
-    answers: input.answers,
+    plannerContext: input.plannerContext,
     selectedOfferIntent: input.selectedOfferIntent,
     recommendations: input.recommendations,
     consideredRecommendations: input.consideredRecommendations ?? [],
@@ -70,8 +74,8 @@ function parseStoredPayload(raw: string | null): PlanResultsStoragePayload | nul
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw);
-    const result = planResultsStorageSchema.safeParse(parsed);
-    return result.success ? result.data : null;
+    const currentResult = planResultsStorageSchema.safeParse(parsed);
+    return currentResult.success ? currentResult.data : null;
   } catch {
     return null;
   }
@@ -79,6 +83,18 @@ function parseStoredPayload(raw: string | null): PlanResultsStoragePayload | nul
 
 function isFresh(payload: PlanResultsStoragePayload): boolean {
   return Date.now() - payload.savedAt <= PLAN_RESULTS_MAX_AGE_MS;
+}
+
+export function getPlanResultsAudience(payload: PlanResultsStoragePayload) {
+  return payload.plannerContext.audience;
+}
+
+export function getPlanResultsEligibility(payload: PlanResultsStoragePayload): PlanResultsEligibility {
+  return {
+    ownedCardSlugs: payload.plannerContext.ownedCardSlugs,
+    amexLifetimeBlockedSlugs: payload.plannerContext.amexLifetimeBlockedSlugs,
+    chase524Status: payload.plannerContext.chase524Status
+  };
 }
 
 type BrowserStorageName = 'sessionStorage' | 'localStorage';

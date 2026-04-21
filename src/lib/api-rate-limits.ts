@@ -4,7 +4,7 @@ import type { RateLimitConfig } from '@/lib/rate-limit';
  * Public API rate limits tuned for interactive product usage.
  *
  * Read-heavy directory/detail endpoints get generous limits so normal browsing
- * and compare flows stay smooth. Quiz and plan endpoints are more expensive,
+ * and compare flows stay smooth. Plan and email endpoints are more expensive,
  * so they use tighter per-minute caps.
  */
 export const apiRateLimits = {
@@ -49,13 +49,6 @@ export const apiRateLimits = {
     window: '1 m',
     algorithm: 'sliding',
     message: 'Too many banking requests. Please try again soon.'
-  },
-  quiz: {
-    namespace: 'quiz_score',
-    limit: 30,
-    window: '1 m',
-    algorithm: 'sliding',
-    message: 'Too many quiz requests. Please try again soon.'
   },
   plan: {
     namespace: 'plan_build',
