@@ -161,15 +161,15 @@
     "minimumOpeningDeposit": 2000,
     "holdingPeriodDays": 90,
     "requiredActions": [
-      "Open a new PNC Business Checking account by March 31, 2026.",
+      "Open a new PNC Business Checking account by June 30, 2026.",
       "Maintain an average ledger balance of at least $2,000 for each of the first three statement cycles.",
       "Complete at least 10 qualifying transactions within the first three statement cycles."
     ],
-    "notes": "PNC says the offer is limited to businesses with annual revenue under $5 million. Qualifying transactions can include debit purchases, ACH, wires, Zelle, bill pay, remote deposit, merchant deposits, and checks.",
+    "notes": "PNC's official business checking offer page advertised the $400 business checking tier through June 30, 2026 when re-verified on April 21, 2026. PNC says the offer is limited to businesses with annual revenue under $5 million. Qualifying transactions can include debit purchases, ACH, wires, Zelle, bill pay, remote deposit, merchant deposits, and checks.",
     "offerUrl": "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html",
     "isActive": true,
-    "expiresAt": "2026-03-31T23:59:59.999-04:00",
-    "lastVerified": "2026-03-25T00:00:00.000Z"
+    "expiresAt": "2026-06-30T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "pnc-business-checking-plus-400",
@@ -186,15 +186,15 @@
     "minimumOpeningDeposit": 2000,
     "holdingPeriodDays": 90,
     "requiredActions": [
-      "Open a new PNC Business Checking Plus account by March 31, 2026.",
+      "Open a new PNC Business Checking Plus account by June 30, 2026.",
       "Maintain an average ledger balance of at least $2,000 for each of the first three statement cycles.",
       "Complete at least 10 qualifying transactions within the first three statement cycles."
     ],
-    "notes": "PNC says the offer is limited to businesses with annual revenue under $5 million. The Plus account currently carries a $22 monthly maintenance fee if waiver conditions are not met.",
+    "notes": "PNC's official business checking offer page advertised the $400 business checking tier through June 30, 2026 when re-verified on April 21, 2026. PNC says the offer is limited to businesses with annual revenue under $5 million. The Plus account currently carries a $22 monthly maintenance fee if waiver conditions are not met.",
     "offerUrl": "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html",
     "isActive": true,
-    "expiresAt": "2026-03-31T23:59:59.999-04:00",
-    "lastVerified": "2026-03-25T00:00:00.000Z"
+    "expiresAt": "2026-06-30T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "pnc-treasury-enterprise-plan-1000",
@@ -211,14 +211,14 @@
     "minimumOpeningDeposit": 30000,
     "holdingPeriodDays": 90,
     "requiredActions": [
-      "Open a new PNC Treasury Enterprise Plan account by March 31, 2026.",
+      "Open a new PNC Treasury Enterprise Plan account by June 30, 2026.",
       "Maintain an average ledger balance of at least $30,000 for each of the first three statement cycles."
     ],
-    "notes": "PNC currently markets Treasury Enterprise Plan and Analysis Business Checking under the same $1,000 promotion. PNC says the offer is limited to businesses with annual revenue under $5 million.",
+    "notes": "PNC's official business checking offer page advertised the $1,000 commercial tier through June 30, 2026 when re-verified on April 21, 2026. PNC currently markets Treasury Enterprise Plan and Analysis Business Checking under the same $1,000 promotion. PNC says the offer is limited to businesses with annual revenue under $5 million.",
     "offerUrl": "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html",
     "isActive": true,
-    "expiresAt": "2026-03-31T23:59:59.999-04:00",
-    "lastVerified": "2026-03-25T00:00:00.000Z"
+    "expiresAt": "2026-06-30T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "pnc-analysis-business-checking-1000",
@@ -235,14 +235,14 @@
     "minimumOpeningDeposit": 30000,
     "holdingPeriodDays": 90,
     "requiredActions": [
-      "Open a new PNC Analysis Business Checking account by March 31, 2026.",
+      "Open a new PNC Analysis Business Checking account by June 30, 2026.",
       "Maintain an average ledger balance of at least $30,000 for each of the first three statement cycles."
     ],
-    "notes": "PNC currently lists Analysis Business Checking alongside Treasury Enterprise Plan in the same $1,000 promotion. The account also has activity-based analysis charges that can be offset by earnings credit.",
+    "notes": "PNC's official business checking offer page advertised the $1,000 commercial tier through June 30, 2026 when re-verified on April 21, 2026. PNC currently lists Analysis Business Checking alongside Treasury Enterprise Plan in the same $1,000 promotion. The account also has activity-based analysis charges that can be offset by earnings credit.",
     "offerUrl": "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html",
     "isActive": true,
-    "expiresAt": "2026-03-31T23:59:59.999-04:00",
-    "lastVerified": "2026-03-25T00:00:00.000Z"
+    "expiresAt": "2026-06-30T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "huntington-unlimited-business-checking-400",
@@ -363,15 +363,15 @@
     "minimumOpeningDeposit": 2000,
     "holdingPeriodDays": 60,
     "requiredActions": [
-      "Open a new Truist Simple Business Checking account by April 2, 2026 and enroll with promo code SB25Q4CHECKING.",
+      "Open a new Truist Simple Business Checking account from April 7, 2026 through July 9, 2026 and enroll with promo code SB26Q2CHECKING.",
       "Make qualifying deposits totaling at least $2,000 within 30 days of account opening."
     ],
     "stateRestrictions": ["AL", "AR", "DC", "FL", "GA", "IN", "KY", "MD", "MS", "NC", "NJ", "OH", "PA", "SC", "TN", "TX", "VA", "WV"],
-    "notes": "Truist says the promotion must be enrolled at opening through the Promotions Center. Simple Business Checking has no monthly maintenance fee.",
+    "notes": "Truist's official small business account page advertised the $400 Simple or Dynamic Business Checking offer through July 9, 2026 when re-verified on April 21, 2026. Truist says the promotion must be enrolled at opening through promo code SB26Q2CHECKING. Simple Business Checking has no monthly maintenance fee.",
     "offerUrl": "https://www.truist.com/open-account/small-business",
     "isActive": true,
-    "expiresAt": "2026-04-02T23:59:59.999-04:00",
-    "lastVerified": "2026-03-25T00:00:00.000Z"
+    "expiresAt": "2026-07-09T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "truist-dynamic-business-checking-400",
@@ -388,15 +388,15 @@
     "minimumOpeningDeposit": 2000,
     "holdingPeriodDays": 60,
     "requiredActions": [
-      "Open a new Truist Dynamic Business Checking account by April 2, 2026 and enroll with promo code SB25Q4CHECKING.",
+      "Open a new Truist Dynamic Business Checking account from April 7, 2026 through July 9, 2026 and enroll with promo code SB26Q2CHECKING.",
       "Make qualifying deposits totaling at least $2,000 within 30 days of account opening."
     ],
     "stateRestrictions": ["AL", "AR", "DC", "FL", "GA", "IN", "KY", "MD", "MS", "NC", "NJ", "OH", "PA", "SC", "TN", "TX", "VA", "WV"],
-    "notes": "Truist says the promotion must be enrolled at opening through the Promotions Center. Dynamic Business Checking currently carries a $25 monthly maintenance fee if waiver requirements are not met.",
+    "notes": "Truist's official small business account page advertised the $400 Simple or Dynamic Business Checking offer through July 9, 2026 when re-verified on April 21, 2026. Truist says the promotion must be enrolled at opening through promo code SB26Q2CHECKING. Dynamic Business Checking currently carries a $25 monthly maintenance fee if waiver requirements are not met.",
     "offerUrl": "https://www.truist.com/open-account/small-business",
     "isActive": true,
-    "expiresAt": "2026-04-02T23:59:59.999-04:00",
-    "lastVerified": "2026-03-25T00:00:00.000Z"
+    "expiresAt": "2026-07-09T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "bmo-digital-business-checking-1000",

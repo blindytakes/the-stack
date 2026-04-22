@@ -52,11 +52,11 @@
       "WI",
       "WY"
     ],
-    "notes": "Offer validity and footprint reflected in public summaries updated in February-March 2026.",
-    "offerUrl": "https://www.usbank.com/bank-accounts/checking-accounts/smartly-checking-account.html",
-    "isActive": true,
+    "notes": "Deactivated on April 21, 2026 after U.S. Bank's prior Smartly bonus URL returned 404 and the current Bank Smartly Checking page no longer displayed a public checking bonus.",
+    "offerUrl": "https://www.usbank.com/bank-accounts/checking-accounts/bank-smartly-checking.html",
+    "isActive": false,
     "expiresAt": "2026-04-01T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "wells-fargo-everyday-checking-325",
@@ -80,11 +80,11 @@
       "Receive at least $1,000 in qualifying direct deposits within 90 days.",
       "Keep the account open and above $0 through bonus payout."
     ],
-    "notes": "Wells Fargo's official bonus page advertised the $325 Everyday Checking offer through April 14, 2026 when re-verified on March 29, 2026.",
+    "notes": "Wells Fargo's official bonus page advertised the $325 Everyday Checking offer through July 14, 2026 when re-verified on April 21, 2026.",
     "offerUrl": "https://accountoffers.wellsfargo.com/checkingoffer/",
     "isActive": true,
-    "expiresAt": "2026-04-14T23:59:59.999-04:00",
-    "lastVerified": "2026-03-29T00:00:00.000Z"
+    "expiresAt": "2026-07-14T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "bmo-smart-advantage-checking-400",
@@ -374,7 +374,7 @@
     "bankName": "Citibank",
     "offerName": "Regular Checking Enhanced Direct Deposit Bonus",
     "accountType": "checking",
-    "headline": "Earn $325 by opening eligible Citi checking and completing enhanced direct deposit requirements.",
+    "headline": "Earn $325 by opening a new Regular Checking account and completing Enhanced Direct Deposits and other required activities.",
     "bonusAmount": 325,
     "estimatedFees": 15,
     "apyPercent": 0,
@@ -386,15 +386,15 @@
     },
     "holdingPeriodDays": 120,
     "requiredActions": [
-      "Open a new eligible Citi checking account and enroll in the bonus offer before the deadline.",
+      "Open a new Citi Regular Checking account via the official offer page by October 26, 2026.",
       "Complete at least two Enhanced Direct Deposits totaling at least $3,000 within 90 days.",
       "Keep the account open and in good standing through the 90-to-120-day payout window."
     ],
-    "notes": "Offer deadline widely published as April 13, 2026 for the $325 enhanced-direct-deposit tier.",
+    "notes": "Citi's official enhanced-direct-deposit page advertised the $325 Regular Checking offer through October 26, 2026 when re-verified on April 21, 2026.",
     "offerUrl": "https://banking.citi.com/cbol/OM/checking/enhanced-direct-deposit-offer/default.htm",
     "isActive": true,
-    "expiresAt": "2026-04-13T23:59:59.999-04:00",
-    "lastVerified": "2026-04-03T00:00:00.000Z"
+    "expiresAt": "2026-10-26T23:59:59.999-04:00",
+    "lastVerified": "2026-04-21T00:00:00.000Z"
   },
   {
     "slug": "alliant-ultimate-opportunity-savings-100",

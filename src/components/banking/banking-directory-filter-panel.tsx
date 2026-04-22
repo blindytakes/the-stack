@@ -217,63 +217,59 @@ export function BankingDirectoryFilterPanel({
 
       {preFilterContent ? <div className="mt-5">{preFilterContent}</div> : null}
 
-      <div
-        className={`${preFilterContent ? 'mt-4' : 'mt-5'} rounded-2xl border border-white/10 bg-bg-elevated/65 p-3`}
-      >
-        <div className="grid gap-3 md:grid-cols-3">
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Direct Deposit
-            </span>
-            <select
-              value={directDeposit}
-              onChange={(event) =>
-                onDirectDepositChange(event.target.value as DirectDepositFilterValue)
-              }
-              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-            >
-              {directDepositOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+      <div className={`${preFilterContent ? 'mt-4' : 'mt-5'} grid gap-3 md:grid-cols-3`}>
+        <label className="block">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+            Direct Deposit
+          </span>
+          <select
+            value={directDeposit}
+            onChange={(event) =>
+              onDirectDepositChange(event.target.value as DirectDepositFilterValue)
+            }
+            className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+          >
+            {directDepositOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
 
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
-              Cash Needed
-            </span>
-            <select
-              value={cashRequirement}
-              onChange={(event) =>
-                onCashRequirementChange(event.target.value as CashRequirementFilterValue)
-              }
-              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-            >
-              {cashRequirementOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
+        <label className="block">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">
+            Cash Needed
+          </span>
+          <select
+            value={cashRequirement}
+            onChange={(event) =>
+              onCashRequirementChange(event.target.value as CashRequirementFilterValue)
+            }
+            className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+          >
+            {cashRequirementOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
 
-          <label className="block">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Sort</span>
-            <select
-              value={sortBy}
-              onChange={(event) => onSortByChange(event.target.value as BankingBonusesSort)}
-              className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
-            >
-              {bankingSortOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
+        <label className="block">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted">Sort</span>
+          <select
+            value={sortBy}
+            onChange={(event) => onSortByChange(event.target.value as BankingBonusesSort)}
+            className="mt-2 w-full rounded-xl border border-white/10 bg-bg-elevated px-3 py-2 text-sm text-text-primary focus:border-brand-teal focus:outline-none"
+          >
+            {bankingSortOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
 
       {showMore && (
