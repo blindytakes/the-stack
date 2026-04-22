@@ -377,12 +377,16 @@ describe('banking brand asset fallbacks', () => {
     expect(resolveBankingBrandImageUrl('Chase')).toBe(
       'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
     );
+    expect(resolveBankingBrandImageUrl('Coastal Credit Union')).toBe(
+      '/bank-logos/coastal-credit-union.svg'
+    );
     expect(resolveBankingBrandImageUrl('Bank of America')).toBe(
       'https://www1.bac-assets.com/homepage/spa-assets/images/assets-images-global-logos-bac-logo-v2-CSX3648cbbb.svg'
     );
     expect(resolveBankingBrandImageUrl('E*TRADE from Morgan Stanley Private Bank')).toBe(
       'https://cdn2.etrade.net/1/26022716140.0/aempros/content/dam/etrade/retail/en_US/images/global/logos/etrade-from-morgan-stanley-logo-dark-theme.svg'
     );
+    expect(resolveBankingBrandImageUrl('Harbor Federal')).toBe('/bank-logos/harbor-federal.svg');
     expect(resolveBankingBrandImageUrl('Huntington Bank')).toBe(
       'https://www.huntington.com/-/media/Project/huntington/hcom/logo.svg?h=34&hash=C30EA1B787772E50AB6A58FFB6AB51F3&iar=0&rev=4e84f6b1d5ba431f90d0f8adb3200280&w=231'
     );

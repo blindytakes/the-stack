@@ -150,11 +150,13 @@ const recommendations: PlannerRecommendation[] = [
     }
   },
   {
-    id: 'card:citi-premier-card',
+    id: 'card:citi-strata-premier-card',
     lane: 'cards',
     kind: 'card_bonus',
-    title: 'Citi Premier Card',
+    title: 'Citi Strata Premier Card',
     provider: 'Citi',
+    imageUrl:
+      'https://aemapi.citi.com/content/dam/cfs/uspb/usmkt/cards/en/static/images/citi-strata-premier-credit-card/citi-strata-premier-credit-card_306x192.webp',
     estimatedNetValue: 755,
     valueBreakdown: {
       headlineValue: 850,
@@ -163,7 +165,7 @@ const recommendations: PlannerRecommendation[] = [
     },
     priorityScore: 68,
     effort: 'medium',
-    detailPath: '/cards/citi-premier-card',
+    detailPath: '/cards/citi-strata-premier-card',
     timelineDays: 90,
     keyRequirements: [
       'Spend $4,000 within 3 months',
@@ -300,7 +302,7 @@ const schedule = [
     payoutAt: at('2027-02-02T09:00:00-05:00')
   },
   {
-    recommendationId: 'card:citi-premier-card',
+    recommendationId: 'card:citi-strata-premier-card',
     lane: 'cards' as const,
     startAt: at('2026-04-15T09:00:00-04:00'),
     completeAt: at('2026-07-14T09:00:00-04:00'),

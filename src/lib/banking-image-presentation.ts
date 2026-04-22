@@ -110,6 +110,10 @@ const presentationByBankName: Record<string, BankingImagePresentation> = {
     ...darkBankImagePresentation,
     scale: 1.14
   },
+  'coastal credit union': {
+    ...bareBankImagePresentation,
+    scale: 1.04
+  },
   citibank: {
     ...bareBankImagePresentation,
     scale: 1.02
@@ -117,6 +121,10 @@ const presentationByBankName: Record<string, BankingImagePresentation> = {
   'etrade from morgan stanley private bank': {
     ...darkWideBankImagePresentation,
     scale: 1.1
+  },
+  'harbor federal': {
+    ...bareBankImagePresentation,
+    scale: 1.04
   },
   'huntington bank': {
     ...darkWideBankImagePresentation,

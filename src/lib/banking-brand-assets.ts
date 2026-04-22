@@ -41,8 +41,10 @@ const bankingBrandImageUrlByBankName: Record<string, string> = {
   chase: CHASE_LOGO_URL,
   chime:
     'https://chime-mobile-assets.prod-ext.chmfin.com/prod/images/ck.logo.chime.chime_green.medium.registered.dark%403x.png',
+  'coastal credit union': '/bank-logos/coastal-credit-union.svg',
   citibank: CITI_LOGO_URL,
   'etrade from morgan stanley private bank': ETRADE_LOGO_URL,
+  'harbor federal': '/bank-logos/harbor-federal.svg',
   'huntington bank': HUNTINGTON_LOGO_URL,
   keybank: KEYBANK_LOGO_URL,
   'marcus by goldman sachs': MARCUS_LOGO_URL,
