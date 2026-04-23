@@ -386,12 +386,11 @@ export default async function HomePage() {
             Free Personalized Bonus Plan
           </p>
           <h1 className="font-heading text-4xl leading-tight text-text-primary md:text-6xl lg:text-[66px]">
-            Make Banks Work For You.
+            Build your credit card + bank bonus plan in 2 minutes
           </h1>
           <p className="max-w-[48ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl lg:max-w-[58ch]">
-            Stop guessing. Start Stacking. The Stack gives you an optimized plan for credit card
-            and bank bonuses, showing what to open first, when to apply, and what it takes to
-            earn each bonus.
+            The Stack tells you what to open first, when to apply, and how to sequence cards and
+            bank bonuses around 5/24, spend, and deposit requirements.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
