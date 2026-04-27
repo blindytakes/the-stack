@@ -56,6 +56,12 @@ const toolNavItems: ToolNavItem[] = [
     label: 'Travel Rewards Calculator',
     description: 'Run the annual-fee math.',
     activePath: '/tools/premium-card-calculator'
+  },
+  {
+    href: '/tools/points-advisor',
+    label: 'Points Advisor',
+    description: 'See the best next move for your points balance.',
+    activePath: '/tools/points-advisor'
   }
 ];
 

@@ -17,6 +17,10 @@ import {
   isOffsettingCreditBenefit
 } from '@/lib/cards/presentation-metrics';
 import { formatSpendCategoryLabel } from '@/lib/cards-directory-explorer';
+import {
+  buildPointsAdvisorHref,
+  getPointsAdvisorProgramFromCardSlug
+} from '@/lib/points-advisor';
 import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 
 type CardDetailPageProps = {
@@ -137,6 +141,10 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
   const bonusCandidates = activeBonuses.length > 0 ? activeBonuses : card.signUpBonuses;
   const primaryBonus = [...bonusCandidates].sort((a, b) => b.bonusValue - a.bonusValue)[0];
   const applyHref = buildApplyHref(card);
+  const pointsAdvisorProgramId = getPointsAdvisorProgramFromCardSlug(card.slug);
+  const pointsAdvisorHref = pointsAdvisorProgramId
+    ? buildPointsAdvisorHref({ programId: pointsAdvisorProgramId })
+    : null;
   const assumptionMonthlySpend = Object.values(defaultCardComparisonAssumptions.monthlySpend).reduce(
     (sum, value) => sum + value,
     0
@@ -209,6 +217,14 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
                 >
                   Build my plan with this card
                 </Link>
+                {pointsAdvisorHref ? (
+                  <Link
+                    href={pointsAdvisorHref}
+                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-3.5 text-base font-semibold text-text-primary transition hover:border-white/30 hover:text-brand-teal"
+                  >
+                    See best use for these points
+                  </Link>
+                ) : null}
                 {compareCandidates[0] ? (
                   <Link
                     href={compareCandidates[0].compareHref}
@@ -519,7 +535,9 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
             <p className="text-[10px] uppercase tracking-[0.22em] text-brand-teal">Next Move</p>
             <h2 className="mt-2 font-heading text-2xl text-text-primary">Turn this card into an actual plan</h2>
             <p className="mt-3 text-sm leading-6 text-text-secondary">
-              If this is the card you want to anchor around, send it straight into the planner and let the sequencing logic decide whether it should be first, later, or skipped.
+              {pointsAdvisorHref
+                ? "If you already earn this card's points, either build the full card plan or jump straight into the redemption advisor to see the strongest use for the balance."
+                : 'If this is the card you want to anchor around, send it straight into the planner and let the sequencing logic decide whether it should be first, later, or skipped.'}
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Link
@@ -532,7 +550,14 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
               >
                 Build my plan with this card
               </Link>
-              {compareCandidates[0] ? (
+              {pointsAdvisorHref ? (
+                <Link
+                  href={pointsAdvisorHref}
+                  className="inline-flex items-center rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-text-primary transition hover:border-white/30 hover:text-text-primary"
+                >
+                  See best use for these points
+                </Link>
+              ) : compareCandidates[0] ? (
                 <Link
                   href={compareCandidates[0].compareHref}
                   className="inline-flex items-center rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-text-primary transition hover:border-white/30 hover:text-text-primary"

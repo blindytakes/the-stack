@@ -1,10 +1,15 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { startTransition, useState, type ChangeEvent, type CSSProperties } from 'react';
 import { PremiumCardEmailPanel } from '@/components/tools/premium-card-email-panel';
 import { Button } from '@/components/ui/button';
 import { EntityImage } from '@/components/ui/entity-image';
+import {
+  buildPointsAdvisorHref,
+  getPointsAdvisorProgramFromCardSlug
+} from '@/lib/points-advisor';
 import {
   buildInitialPremiumCardScenario,
   calculatePremiumCardScenario,
@@ -889,6 +894,13 @@ export function PremiumCardCalculator() {
     '--card-accent-rgb': selectedVisual.accentRgb,
     '--card-highlight-rgb': selectedVisual.highlightRgb ?? selectedVisual.accentRgb
   } as CSSProperties;
+  const pointsAdvisorProgramId = getPointsAdvisorProgramFromCardSlug(selectedProfile.slug);
+  const pointsAdvisorHref = pointsAdvisorProgramId
+    ? buildPointsAdvisorHref({
+        programId: pointsAdvisorProgramId,
+        pointsBalance: selectedResult.totalPointsYear1
+      })
+    : null;
 
   return (
     <section className="relative mx-auto max-w-6xl space-y-6" style={accentStyle}>
@@ -1284,6 +1296,14 @@ export function PremiumCardCalculator() {
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-self-center">
+                  {pointsAdvisorHref ? (
+                    <Link
+                      href={pointsAdvisorHref}
+                      className="inline-flex min-w-[13.75rem] items-center justify-center rounded-full border border-white/10 px-7 py-3 text-base font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
+                    >
+                      See best use for these points
+                    </Link>
+                  ) : null}
                   <Button
                     type="button"
                     variant={showEmailPanel ? 'ghost' : 'primary'}

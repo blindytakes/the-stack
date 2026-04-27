@@ -36,6 +36,14 @@ const toolCards = [
     title: 'Premium Card Calculator',
     description: 'Run the real math on Amex Platinum, Sapphire Reserve, and Venture X.',
     accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
+  },
+  {
+    href: '/tools/points-advisor',
+    eyebrow: 'Redeem',
+    title: 'Points Redemption Advisor',
+    description:
+      'Enter your balance and get ranked redemption ideas for Sapphire Reserve, Amex Membership Rewards, and Venture X.',
+    accentClassName: 'from-[#d6e5ff]/18 via-[#d6e5ff]/6 to-transparent'
   }
 ] as const;
 

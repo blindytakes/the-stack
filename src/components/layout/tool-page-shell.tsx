@@ -6,11 +6,13 @@ type ToolPageShellProps = {
     | 'card_finder'
     | 'business_plan'
     | 'card_vs_card'
-    | 'premium_card_calculator';
+    | 'premium_card_calculator'
+    | 'points_redemption_advisor';
   path:
     | '/tools/card-finder'
     | '/tools/card-vs-card'
-    | '/tools/premium-card-calculator';
+    | '/tools/premium-card-calculator'
+    | '/tools/points-advisor';
   title: string;
   description: string;
   children: ReactNode;
