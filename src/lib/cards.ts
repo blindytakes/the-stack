@@ -51,6 +51,7 @@ export {
 export {
   type CardsDataResponse,
   getAllCardSlugs,
+  getBusinessCardsData,
   getCardBySlug,
   getCardsData
 } from '@/lib/cards/repository';

@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { BusinessOffersExplorer } from '@/components/business/business-offers-explorer';
-import { getCardsData } from '@/lib/cards';
-import { getBankingBonusesData } from '@/lib/banking-bonuses';
+import { getBusinessCardsData } from '@/lib/cards';
+import { getBusinessBankingBonusesData } from '@/lib/banking-bonuses';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,9 +33,10 @@ function buildInitialSearchParams(searchParams: SearchParams) {
 }
 
 export default async function BusinessPage({ searchParams }: Props) {
-  const [{ cards }, { bonuses }] = await Promise.all([getCardsData(), getBankingBonusesData()]);
-  const businessCards = cards.filter((card) => card.cardType === 'business');
-  const businessBonuses = bonuses.filter((bonus) => bonus.customerType === 'business');
+  const [{ cards: businessCards }, { bonuses: businessBonuses }] = await Promise.all([
+    getBusinessCardsData(),
+    getBusinessBankingBonusesData()
+  ]);
   const initialSearchParams = buildInitialSearchParams(await searchParams);
 
   return (

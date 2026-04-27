@@ -22,7 +22,8 @@ export {
 export {
   getAllBankingBonusSlugs,
   getBankingBonusBySlug,
-  getBankingBonusesData
+  getBankingBonusesData,
+  getBusinessBankingBonusesData
 } from '@/lib/banking/repository';
 export {
   formatBankingAccountType,

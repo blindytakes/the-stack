@@ -1,6 +1,11 @@
 import { getNodeEnv } from '@/lib/config/runtime';
 import { isDatabaseConfigured } from '@/lib/db';
-import { getActiveDbBankingBonuses, getActiveDbBankingBonusSlugs, getDbBankingBonusBySlug } from '@/lib/banking/db-source';
+import {
+  getActiveDbBankingBonuses,
+  getActiveDbBankingBonusSlugs,
+  getActiveDbBusinessBankingBonuses,
+  getDbBankingBonusBySlug
+} from '@/lib/banking/db-source';
 import { getActiveSeedBankingBonuses, getActiveSeedBankingBonusSlugs, getSeedBankingBonusBySlug } from '@/lib/banking/seed-source';
 import { resolveBankingOfferUrl } from '@/lib/banking/source-shared';
 import type { BankingBonusListItem, BankingBonusesDataSource } from '@/lib/banking/schema';
@@ -17,10 +22,12 @@ type BankingBonusesCacheEntry = {
 
 declare global {
   var bankingBonusesDataCache: BankingBonusesCacheEntry | undefined;
+  var businessBankingBonusesDataCache: BankingBonusesCacheEntry | undefined;
 }
 
 const BANKING_BONUSES_CACHE_TTL_MS = 5 * 60 * 1000;
 let bankingBonusesInFlight: Promise<BankingBonusesDataResponse> | null = null;
+let businessBankingBonusesInFlight: Promise<BankingBonusesDataResponse> | null = null;
 
 function shouldUseDbSource(): boolean {
   if (!isDatabaseConfigured()) return false;
@@ -51,9 +58,39 @@ function writeBankingBonusesCache(
   return value;
 }
 
+function readBusinessBankingBonusesCache(now = Date.now()): BankingBonusesDataResponse | null {
+  const cached = globalThis.businessBankingBonusesDataCache;
+  if (!cached) return null;
+
+  if (cached.expiresAt <= now) {
+    globalThis.businessBankingBonusesDataCache = undefined;
+    return null;
+  }
+
+  return cached.value;
+}
+
+function writeBusinessBankingBonusesCache(
+  value: BankingBonusesDataResponse
+): BankingBonusesDataResponse {
+  globalThis.businessBankingBonusesDataCache = {
+    value,
+    expiresAt: Date.now() + BANKING_BONUSES_CACHE_TTL_MS
+  };
+
+  return value;
+}
+
 function getSeedBankingBonusesData(): BankingBonusesDataResponse {
   return {
     bonuses: getActiveSeedBankingBonuses(),
+    source: 'seed'
+  };
+}
+
+function getSeedBusinessBankingBonusesData(): BankingBonusesDataResponse {
+  return {
+    bonuses: getActiveSeedBankingBonuses().filter((bonus) => bonus.customerType === 'business'),
     source: 'seed'
   };
 }
@@ -80,6 +117,28 @@ async function loadBankingBonusesData(): Promise<BankingBonusesDataResponse> {
   return getSeedBankingBonusesData();
 }
 
+async function loadBusinessBankingBonusesData(): Promise<BankingBonusesDataResponse> {
+  if (!shouldUseDbSource()) {
+    return getSeedBusinessBankingBonusesData();
+  }
+
+  try {
+    const dbBonuses = await getActiveDbBusinessBankingBonuses();
+    if (dbBonuses.length > 0) {
+      return {
+        bonuses: dbBonuses,
+        source: 'db'
+      };
+    }
+  } catch (error) {
+    console.error('[banking-bonuses] failed to load DB business offers; falling back to seed', {
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+
+  return getSeedBusinessBankingBonusesData();
+}
+
 export async function getBankingBonusesData(): Promise<BankingBonusesDataResponse> {
   const cached = readBankingBonusesCache();
   if (cached) return cached;
@@ -95,6 +154,23 @@ export async function getBankingBonusesData(): Promise<BankingBonusesDataRespons
     });
 
   return bankingBonusesInFlight;
+}
+
+export async function getBusinessBankingBonusesData(): Promise<BankingBonusesDataResponse> {
+  const cached = readBusinessBankingBonusesCache();
+  if (cached) return cached;
+
+  if (businessBankingBonusesInFlight) {
+    return businessBankingBonusesInFlight;
+  }
+
+  businessBankingBonusesInFlight = loadBusinessBankingBonusesData()
+    .then((value) => writeBusinessBankingBonusesCache(value))
+    .finally(() => {
+      businessBankingBonusesInFlight = null;
+    });
+
+  return businessBankingBonusesInFlight;
 }
 
 export async function getBankingBonusBySlug(slug: string): Promise<BankingBonusListItem | null> {

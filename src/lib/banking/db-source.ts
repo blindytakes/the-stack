@@ -72,6 +72,21 @@ export async function getActiveDbBankingBonuses(now = new Date()): Promise<Banki
   return sortByBonusAmountDesc(rows.map(toBankingRecordFromDb).map(toBankingBonusListItem));
 }
 
+export async function getActiveDbBusinessBankingBonuses(
+  now = new Date()
+): Promise<BankingBonusListItem[]> {
+  const rows = await db.bankingBonus.findMany({
+    where: {
+      isActive: true,
+      customerType: BankingCustomerType.BUSINESS,
+      OR: [{ expiresAt: null }, { expiresAt: { gte: now } }]
+    },
+    orderBy: [{ bankName: 'asc' }, { offerName: 'asc' }]
+  });
+
+  return sortByBonusAmountDesc(rows.map(toBankingRecordFromDb).map(toBankingBonusListItem));
+}
+
 export async function getDbBankingBonusBySlug(
   slug: string,
   now = new Date()
