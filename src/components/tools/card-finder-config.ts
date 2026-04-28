@@ -86,6 +86,7 @@ function buildAvailableCashStep(audience: PlannerAudience): FinderQuestionStep {
         : 'Optional. Some bank bonuses require a minimum opening deposit. Skip this and we will use a middle-range assumption.',
     optional: true,
     options: [
+      { label: '$0', value: 'none' },
       { label: 'Up to $2,500', value: 'up_to_2500' },
       { label: '$2,501 – $9,999', value: 'from_2501_to_9999' },
       { label: '$10,000+', value: 'at_least_10000' }

@@ -102,6 +102,7 @@ function normalizeBankName(name: string): string {
 }
 
 const availableCashCeiling: Record<AvailableCash, number> = {
+  none: 0,
   up_to_2500: 2500,
   from_2501_to_9999: 9999,
   at_least_10000: 25000

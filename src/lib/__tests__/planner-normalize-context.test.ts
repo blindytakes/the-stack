@@ -47,6 +47,27 @@ describe('normalizePlannerContext', () => {
     expect(context.directDeposit).toBe('yes');
   });
 
+  it('treats zero available cash as no direct deposit availability', () => {
+    const context = normalizePlannerContext({
+      mode: 'full',
+      answers: {
+        audience: 'consumer',
+        monthlySpend: 'from_2500_to_5000',
+        state: 'ny',
+        availableCash: 'none',
+        ownedCardSlugs: [],
+        ownedBankNames: []
+      }
+    });
+
+    if (context.mode !== 'full') {
+      throw new Error('Expected a full planner context');
+    }
+
+    expect(context.availableCash).toBe('none');
+    expect(context.directDeposit).toBe('no');
+  });
+
   it('derives Chase 5/24 status for cards-only answers and keeps override-only Amex history separate', () => {
     const context = normalizePlannerContext({
       mode: 'cards_only',

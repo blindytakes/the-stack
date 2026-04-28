@@ -1,4 +1,9 @@
-export const availableCashValues = ['up_to_2500', 'from_2501_to_9999', 'at_least_10000'] as const;
+export const availableCashValues = [
+  'none',
+  'up_to_2500',
+  'from_2501_to_9999',
+  'at_least_10000'
+] as const;
 export type AvailableCash = (typeof availableCashValues)[number];
 
 export const plannerAudienceValues = ['consumer', 'business'] as const;

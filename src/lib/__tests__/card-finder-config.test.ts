@@ -20,6 +20,15 @@ describe('buildCardFinderSteps', () => {
     expect(cashStep && 'optional' in cashStep ? cashStep.optional : false).toBe(true);
   });
 
+  it('allows users to choose zero bank deposit capacity', () => {
+    const cashStep = buildCardFinderSteps().find((step) => step.id === 'availableCash');
+
+    expect(cashStep && 'options' in cashStep ? cashStep.options : []).toContainEqual({
+      label: '$0',
+      value: 'none'
+    });
+  });
+
   it('uses business-specific copy when the business audience is selected', () => {
     const steps = buildCardFinderSteps({ audience: 'business' });
     const monthlySpendStep = steps.find((step) => step.id === 'monthlySpend');
