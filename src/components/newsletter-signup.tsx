@@ -57,6 +57,8 @@ export function NewsletterSignup({
   const [message, setMessage] = useState('');
   const [consultationInterest, setConsultationInterest] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [showTurnstile, setShowTurnstile] = useState(false);
+  const [pendingSubmission, setPendingSubmission] = useState(false);
   const turnstileRef = useRef<TurnstileHandle>(null);
   const largeSize = size === 'large';
   const formClassName = compact
@@ -69,11 +71,98 @@ export function NewsletterSignup({
     largeSize ? 'px-6 py-3.5 text-sm md:text-base' : ''
   }`;
 
-  const handleTurnstileVerify = useCallback((token: string) => {
-    setTurnstileToken(token);
-    setStatus((current) => (current === 'error' ? 'idle' : current));
-    setMessage((current) => (current === TURNSTILE_REQUIRED_MESSAGE ? '' : current));
-  }, []);
+  const startSubscribeAttempt = useCallback(
+    async (verifiedToken?: string) => {
+      const submitSource =
+        showConsultationOption && consultationInterest && consultationSource
+          ? consultationSource
+          : source;
+      const activeTurnstileToken = verifiedToken ?? turnstileToken;
+
+      if (turnstileEnabled && !activeTurnstileToken) {
+        setShowTurnstile(true);
+        setPendingSubmission(true);
+        setStatus('idle');
+        setMessage(TURNSTILE_REQUIRED_MESSAGE);
+        return;
+      }
+
+      setPendingSubmission(false);
+      setStatus('loading');
+      setMessage('');
+
+      try {
+        const res = await fetch('/api/newsletter/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            source: submitSource,
+            ...(activeTurnstileToken ? { turnstileToken: activeTurnstileToken } : {})
+          })
+        });
+
+        let data: { error?: string; message?: string; warning?: string };
+        try {
+          data = await res.json();
+        } catch {
+          setStatus('error');
+          setMessage('Something went wrong. Please try again.');
+          return;
+        }
+
+        if (!res.ok) {
+          setStatus('error');
+          setMessage(data.error ?? 'Something went wrong.');
+          return;
+        }
+
+        if (data.warning) {
+          setStatus('warning');
+          setMessage(data.warning);
+          return;
+        }
+
+        setStatus('success');
+        setMessage(data.message ?? 'Successfully subscribed!');
+        trackFunnelEvent('newsletter_subscribed', { source: submitSource });
+        setEmail('');
+      } catch {
+        setStatus('error');
+        setMessage('Could not connect. Please try again.');
+      } finally {
+        // Turnstile tokens are single-use — reset the widget so retries
+        // get a fresh token instead of resubmitting a consumed one.
+        setTurnstileToken(null);
+        turnstileRef.current?.reset();
+      }
+    },
+    [
+      consultationInterest,
+      consultationSource,
+      showConsultationOption,
+      source,
+      email,
+      turnstileEnabled,
+      turnstileToken
+    ]
+  );
+
+  const handleTurnstileVerify = useCallback(
+    (token: string) => {
+      setTurnstileToken(token);
+      setStatus((current) => (current === 'error' ? 'idle' : current));
+      setMessage((current) => (current === TURNSTILE_REQUIRED_MESSAGE ? '' : current));
+
+      if (!pendingSubmission) {
+        return;
+      }
+
+      setPendingSubmission(false);
+      void startSubscribeAttempt(token);
+    },
+    [pendingSubmission, startSubscribeAttempt]
+  );
 
   const handleTurnstileExpire = useCallback(() => {
     setTurnstileToken(null);
@@ -81,65 +170,7 @@ export function NewsletterSignup({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const submitSource =
-      showConsultationOption && consultationInterest && consultationSource
-        ? consultationSource
-        : source;
-
-    if (turnstileEnabled && !turnstileToken) {
-      setStatus('error');
-      setMessage(TURNSTILE_REQUIRED_MESSAGE);
-      return;
-    }
-
-    setStatus('loading');
-    setMessage('');
-
-    try {
-      const res = await fetch('/api/newsletter/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email,
-          source: submitSource,
-          ...(turnstileToken ? { turnstileToken } : {})
-        })
-      });
-
-      let data: { error?: string; message?: string; warning?: string };
-      try {
-        data = await res.json();
-      } catch {
-        setStatus('error');
-        setMessage('Something went wrong. Please try again.');
-        return;
-      }
-
-      if (!res.ok) {
-        setStatus('error');
-        setMessage(data.error ?? 'Something went wrong.');
-        return;
-      }
-
-      if (data.warning) {
-        setStatus('warning');
-        setMessage(data.warning);
-        return;
-      }
-
-      setStatus('success');
-      setMessage(data.message ?? 'Successfully subscribed!');
-      trackFunnelEvent('newsletter_subscribed', { source: submitSource });
-      setEmail('');
-    } catch {
-      setStatus('error');
-      setMessage('Could not connect. Please try again.');
-    } finally {
-      // Turnstile tokens are single-use — reset the widget so retries
-      // get a fresh token instead of resubmitting a consumed one.
-      setTurnstileToken(null);
-      turnstileRef.current?.reset();
-    }
+    await startSubscribeAttempt();
   }
 
   if (status === 'success') {
@@ -202,7 +233,7 @@ export function NewsletterSignup({
       {finePrint && !compact && (
         <p className="mt-3 text-xs text-text-muted">{finePrint}</p>
       )}
-      {turnstileEnabled && (
+      {showTurnstile && (
         <div className="mt-3">
           <Turnstile
             ref={turnstileRef}
