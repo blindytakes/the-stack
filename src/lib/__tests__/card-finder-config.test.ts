@@ -6,9 +6,10 @@ describe('buildCardFinderSteps', () => {
     expect(buildCardFinderSteps().some((step) => step.id === 'availableCash')).toBe(true);
   });
 
-  it('does not change the step list based on direct deposit answers anymore', () => {
+  it('does not include a direct deposit question in the planner flow', () => {
     const steps = buildCardFinderSteps();
 
+    expect(steps.some((step) => String(step.id) === 'directDeposit')).toBe(false);
     expect(steps.some((step) => step.id === 'availableCash')).toBe(true);
   });
 

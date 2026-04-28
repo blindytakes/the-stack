@@ -40,7 +40,6 @@ export type CardSelectionQuestionId = 'ownedCardSlugs' | 'amexLifetimeBlockedSlu
 export type BankSelectionQuestionId = 'ownedBankNames';
 type FinderQuestionId =
   | 'monthlySpend'
-  | 'directDeposit'
   | 'recentCardOpenings24Months'
   | 'state'
   | 'availableCash'

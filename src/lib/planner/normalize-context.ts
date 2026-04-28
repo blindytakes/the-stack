@@ -11,6 +11,7 @@ import {
 } from '@/lib/planner/schemas';
 
 const defaultAvailableCash = 'from_2501_to_9999' as const;
+const assumedDirectDepositAvailability = 'yes' as const;
 
 type NormalizePlannerContextInput = {
   mode: PlannerMode;
@@ -27,7 +28,7 @@ export function normalizePlannerContext(input: NormalizePlannerContextInput): Pl
       mode: input.mode,
       audience: answers.audience,
       monthlySpend: answers.monthlySpend,
-      directDeposit: answers.directDeposit,
+      directDeposit: assumedDirectDepositAvailability,
       state: answers.state,
       ownedCardSlugs: answers.ownedCardSlugs,
       availableCash: answers.availableCash ?? defaultAvailableCash,

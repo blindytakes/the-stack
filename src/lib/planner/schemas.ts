@@ -34,7 +34,6 @@ const audienceSchema = z.enum(plannerAudienceValues).default('consumer');
 export const fullPlannerAnswersSchema = z.object({
   audience: audienceSchema,
   monthlySpend: monthlySpendSchema,
-  directDeposit: z.enum(['yes', 'no']),
   state: stateSchema,
   ownedCardSlugs: slugArraySchema,
   availableCash: z.enum(availableCashValues).optional(),

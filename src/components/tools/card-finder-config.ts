@@ -23,25 +23,6 @@ function buildMonthlySpendStep(audience: PlannerAudience): FinderQuestionStep {
   };
 }
 
-function buildDirectDepositStep(audience: PlannerAudience): FinderQuestionStep {
-  return {
-    id: 'directDeposit',
-    type: 'options',
-    title:
-      audience === 'business'
-        ? 'Can your business route qualifying deposits to a new bank account?'
-        : 'Can you route direct deposit to a new bank account?',
-    description:
-      audience === 'business'
-        ? 'This keeps the business-banking lane focused on offers your company can actually complete.'
-        : 'This unlocks or removes most checking account bonus paths, which can be stacked to earn over $3,000/year.',
-    options: [
-      { label: 'Yes, I can route direct deposit', value: 'yes' },
-      { label: 'No, I cannot route direct deposit', value: 'no' }
-    ]
-  };
-}
-
 function buildRecentCardOpeningsStep(audience: PlannerAudience): FinderQuestionStep {
   return {
     id: 'recentCardOpenings24Months',
@@ -135,7 +116,6 @@ export function buildCardFinderSteps(options: {
 
   return [
     buildMonthlySpendStep(audience),
-    buildDirectDepositStep(audience),
     ...(includeChase524Step ? [buildRecentCardOpeningsStep(audience)] : []),
     buildStateStep(audience),
     buildOwnedCardsStep(audience),

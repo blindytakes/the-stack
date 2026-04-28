@@ -8,7 +8,6 @@ describe('normalizePlannerContext', () => {
       answers: {
         audience: 'consumer',
         monthlySpend: 'from_2500_to_5000',
-        directDeposit: 'yes',
         state: 'ny',
         ownedCardSlugs: ['chase-sapphire-preferred'],
         ownedBankNames: ['Chase']
@@ -27,6 +26,25 @@ describe('normalizePlannerContext', () => {
       amexLifetimeBlockedSlugs: [],
       chase524Status: 'not_sure'
     });
+  });
+
+  it('assumes direct deposit availability for full planner answers', () => {
+    const context = normalizePlannerContext({
+      mode: 'full',
+      answers: {
+        audience: 'consumer',
+        monthlySpend: 'from_2500_to_5000',
+        state: 'ny',
+        ownedCardSlugs: [],
+        ownedBankNames: []
+      }
+    });
+
+    if (context.mode !== 'full') {
+      throw new Error('Expected a full planner context');
+    }
+
+    expect(context.directDeposit).toBe('yes');
   });
 
   it('derives Chase 5/24 status for cards-only answers and keeps override-only Amex history separate', () => {

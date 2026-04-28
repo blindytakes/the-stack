@@ -32,7 +32,6 @@ const baseRequest = {
   answers: {
     audience: 'consumer' as const,
     monthlySpend: 'from_2500_to_5000' as const,
-    directDeposit: 'yes' as const,
     state: 'NY',
     availableCash: 'from_2501_to_9999' as const,
     ownedCardSlugs: [],
