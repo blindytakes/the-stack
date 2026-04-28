@@ -1,26 +1,34 @@
 import { registerOTel } from '@vercel/otel';
+import { getOTelExporterEnvStatus } from '@/lib/observability-config';
 
 export function register() {
-  const hasOtlpEndpoint = Boolean(process.env.OTEL_EXPORTER_OTLP_ENDPOINT);
-  const hasOtlpHeaders = Boolean(process.env.OTEL_EXPORTER_OTLP_HEADERS);
+  const otelEnv = getOTelExporterEnvStatus();
 
-  if (!hasOtlpEndpoint || !hasOtlpHeaders) {
+  if (!otelEnv.configured) {
     console.warn(
-      '[otel] OTLP exporter env vars are not fully configured. Metrics/traces will not reach Grafana Cloud yet.'
+      '[otel] OTLP exporter env vars are not fully configured. Metrics/traces/logs will not reach Grafana Cloud yet.'
     );
     registerOTel({ serviceName: 'the-stack' });
     return;
   }
 
-  // Only create the OTLP log exporter when credentials are present.
+  // Only create OTLP exporters when credentials are present.
   // Dynamic imports avoid failed HTTP requests in local dev without Grafana config.
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { OTLPLogExporter } = require('@opentelemetry/exporter-logs-otlp-http');
   // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { OTLPMetricExporter } = require('@opentelemetry/exporter-metrics-otlp-http');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { BatchLogRecordProcessor } = require('@opentelemetry/sdk-logs');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { PeriodicExportingMetricReader } = require('@opentelemetry/sdk-metrics');
 
   registerOTel({
     serviceName: 'the-stack',
-    logRecordProcessor: new BatchLogRecordProcessor(new OTLPLogExporter())
+    logRecordProcessor: new BatchLogRecordProcessor(new OTLPLogExporter()),
+    metricReader: new PeriodicExportingMetricReader({
+      exporter: new OTLPMetricExporter(),
+      exportIntervalMillis: 60000
+    })
   });
 }

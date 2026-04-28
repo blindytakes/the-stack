@@ -1,6 +1,7 @@
 import { db } from '@/lib/db';
 import { getNewsletterProviderStatus } from '@/lib/newsletter/provider';
 import { isDatabaseUrlConfigured } from '@/lib/config/server';
+import { getOTelExporterEnvStatus } from '@/lib/observability-config';
 
 export type HealthCheckResult = {
   status: 200 | 503;
@@ -8,12 +9,28 @@ export type HealthCheckResult = {
     status: 'ok' | 'degraded';
     timestamp: string;
     reason?: string;
+    observability: {
+      otelExporterConfigured: boolean;
+      otelEndpointConfigured: boolean;
+      otelHeadersConfigured: boolean;
+    };
   };
 };
+
+function buildObservabilityStatus() {
+  const otel = getOTelExporterEnvStatus();
+
+  return {
+    otelExporterConfigured: otel.configured,
+    otelEndpointConfigured: otel.endpointConfigured,
+    otelHeadersConfigured: otel.headersConfigured
+  };
+}
 
 export async function runHealthCheck(): Promise<HealthCheckResult> {
   const newsletter = getNewsletterProviderStatus();
   const timestamp = new Date().toISOString();
+  const observability = buildObservabilityStatus();
 
   if (!isDatabaseUrlConfigured()) {
     return {
@@ -21,7 +38,8 @@ export async function runHealthCheck(): Promise<HealthCheckResult> {
       body: {
         status: 'degraded',
         timestamp,
-        reason: 'DATABASE_URL is not configured'
+        reason: 'DATABASE_URL is not configured',
+        observability
       }
     };
   }
@@ -32,7 +50,8 @@ export async function runHealthCheck(): Promise<HealthCheckResult> {
       status: newsletter.ok ? 200 : 503,
       body: {
         status: newsletter.ok ? 'ok' : 'degraded',
-        timestamp
+        timestamp,
+        observability
       }
     };
   } catch (error) {
@@ -41,7 +60,8 @@ export async function runHealthCheck(): Promise<HealthCheckResult> {
       status: 503,
       body: {
         status: 'degraded',
-        timestamp
+        timestamp,
+        observability
       }
     };
   }
