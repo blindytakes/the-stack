@@ -14,14 +14,14 @@ const toolCards = [
     title: 'Card Finder',
     description:
       'Build a personalized bonus plan around your spend capacity, deposit access, current accounts, and timing.',
-    accentClassName: 'from-brand-teal/20 via-brand-teal/8 to-transparent'
+    accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
   },
   {
     href: '/cards/compare',
     eyebrow: 'Compare',
     title: 'Compare Cards',
     description: 'Run year-one and ongoing value math for any two cards under your own spend assumptions.',
-    accentClassName: 'from-brand-gold/20 via-brand-gold/7 to-transparent'
+    accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
   },
   {
     href: '/tools/card-vs-card',
@@ -55,15 +55,11 @@ export default function ToolsPage() {
         <div className="pointer-events-none absolute -left-10 top-[-2rem] h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.16),transparent_72%)] blur-3xl" />
         <div className="pointer-events-none absolute right-[-3rem] top-8 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.08),transparent_72%)] blur-3xl" />
 
-        <div className="relative max-w-3xl">
+        <div className="relative max-w-none">
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-teal">The Stack Tools</p>
-          <h1 className="mt-4 font-heading text-[clamp(2.7rem,5vw,4.8rem)] leading-[0.94] tracking-[-0.04em] text-text-primary">
-            Run the numbers before you make the move
+          <h1 className="mt-4 font-heading text-[clamp(2.35rem,4.7vw,4.8rem)] leading-[0.94] tracking-[-0.04em] text-text-primary md:whitespace-nowrap">
+            Tools for Stacking Your Money
           </h1>
-          <p className="mt-4 max-w-2xl text-[1.02rem] leading-7 text-text-secondary">
-            Use the calculators and comparison tools to pressure-test an offer, compare cards, and
-            see where premium products actually clear the fee.
-          </p>
         </div>
 
         <div className="relative mt-8 grid gap-4 md:grid-cols-2">
@@ -85,7 +81,7 @@ export default function ToolsPage() {
                   {tool.description}
                 </p>
                 <div className="mt-6 flex items-center gap-2 text-sm font-semibold text-text-primary">
-                  <span>Open tool</span>
+                  <span>Open {tool.title}</span>
                   <span className="transition group-hover:translate-x-1">→</span>
                 </div>
               </div>
