@@ -3,21 +3,18 @@ import Link from 'next/link';
 import {
   allBlogArticles,
   allBlogArticlesByDate,
-  evergreenAssetArticles,
-  corePlaybookArticles,
   learnCategoryColor,
   formatArticleDate,
   type LearnArticleCard
 } from '@/lib/learn-articles';
 import { BlogHero } from '@/components/blog/blog-hero';
 import { BlogCoverImage } from '@/components/blog/blog-cover-image';
-import { NewsletterSignup } from '@/components/newsletter-signup';
 import { RevealOnScroll } from '@/components/ui/reveal-on-scroll';
 
 export const metadata: Metadata = {
   title: 'Blog',
   description:
-    'Guides, strategy breakdowns, and high-conviction takes on cards, banking, and benefits.'
+    'Practical strategy for stacking cards, banking, bonuses, and benefits without the marketing noise.'
 };
 
 type Props = {
@@ -28,6 +25,8 @@ function firstParam(value: string | string[] | undefined) {
   if (Array.isArray(value)) return value[0];
   return value;
 }
+
+const visibleBlogCategories = ['Strategy', 'Card Reviews', 'Banking', 'Benefits'];
 
 function BlogCard({
   article,
@@ -75,7 +74,7 @@ function BlogCard({
         <h3
           className={`mt-3 text-lg font-semibold text-text-primary transition ${titleHover}`}
         >
-          {article.title}
+          {article.cardTitle}
         </h3>
         <p className="mt-2 line-clamp-2 text-sm text-text-secondary">
           {article.description}
@@ -90,17 +89,21 @@ function BlogCard({
 
 function CategoryFilter({
   categories,
-  selectedCategory
+  selectedCategory,
+  className = ''
 }: {
   categories: string[];
   selectedCategory: string | null;
+  className?: string;
 }) {
   return (
-    <div className="sticky top-16 z-20 -mx-5 border-b border-white/5 bg-bg/80 px-5 py-3 backdrop-blur-md">
+    <div
+      className={`sticky top-16 z-20 -mx-5 border-y border-white/5 bg-bg/80 px-5 py-3 backdrop-blur-md ${className}`}
+    >
       <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
         <Link
           href="/blog"
-          className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium transition ${
+          className={`shrink-0 rounded-full border px-4 py-2 text-[13px] font-medium transition ${
             selectedCategory === null
               ? 'border-brand-coral/50 bg-brand-coral/15 text-brand-coral'
               : 'border-white/10 text-text-secondary hover:border-white/20 hover:text-text-primary'
@@ -112,7 +115,7 @@ function CategoryFilter({
           <Link
             key={category}
             href={`/blog?category=${encodeURIComponent(category)}`}
-            className={`shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-medium transition ${
+            className={`shrink-0 rounded-full border px-4 py-2 text-[13px] font-medium transition ${
               selectedCategory === category
                 ? 'border-brand-coral/50 bg-brand-coral/15 text-brand-coral'
                 : 'border-white/10 text-text-secondary hover:border-white/20 hover:text-text-primary'
@@ -128,7 +131,9 @@ function CategoryFilter({
 
 export default async function BlogPage({ searchParams }: Props) {
   const search = await searchParams;
-  const categories = [...new Set(allBlogArticles.map((a) => a.category))];
+  const categories = visibleBlogCategories.filter((category) =>
+    allBlogArticles.some((article) => article.category === category)
+  );
   const requestedCategory = firstParam(search.category);
   const selectedCategory =
     requestedCategory && categories.includes(requestedCategory)
@@ -168,6 +173,7 @@ export default async function BlogPage({ searchParams }: Props) {
         <CategoryFilter
           categories={categories}
           selectedCategory={selectedCategory}
+          className="mt-8"
         />
 
         <div className="mt-8 grid gap-5 md:mt-10 md:grid-cols-2 lg:grid-cols-3">
@@ -181,77 +187,37 @@ export default async function BlogPage({ searchParams }: Props) {
 
   // Default: magazine layout
   return (
-    <div className="container-page pt-16 pb-20 md:pt-20">
-      <div className="max-w-3xl">
-        <p className="text-xs uppercase tracking-[0.3em] text-brand-coral">Blog</p>
-        <h1 className="mt-3 font-heading text-5xl text-text-primary md:text-6xl">
-          Guides, Strategy &amp; Takes
+    <div className="container-page pt-12 pb-20 md:pt-18">
+      <div className="max-w-4xl">
+        <h1 className="max-w-3xl font-heading text-5xl leading-[0.98] text-text-primary md:text-6xl">
+          Stack your finances with sharper strategy
         </h1>
       </div>
 
+      <CategoryFilter
+        categories={categories}
+        selectedCategory={null}
+        className="mt-5 md:mt-6"
+      />
+
       <BlogHero featured={featured} />
 
-      <div className="mt-8 md:mt-10">
-        <CategoryFilter categories={categories} selectedCategory={null} />
-      </div>
-
-      {/* Evergreen Assets */}
+      {/* All Articles */}
       <RevealOnScroll>
-        <section className="mt-16">
-          <p className="text-xs uppercase tracking-[0.28em] text-brand-gold">
-            Evergreen Assets
+        <section className="mt-18 md:mt-20">
+          <p className="text-xs uppercase tracking-[0.28em] text-brand-coral">
+            Browse
           </p>
           <h2 className="mt-2 font-heading text-2xl text-text-primary md:text-3xl">
-            Opinions that hold up
+            All articles
           </h2>
           <p className="mt-2 max-w-xl text-sm text-text-secondary">
-            High-conviction takes on specific cards and benefit strategies.
+            The latest strategy notes, card reviews, banking moves, and benefit
+            breakdowns from The Stack.
           </p>
-          <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {evergreenAssetArticles.map((article) => (
-              <BlogCard
-                key={article.slug}
-                article={article}
-                accentColor="gold"
-              />
-            ))}
-          </div>
-        </section>
-      </RevealOnScroll>
-
-      {/* Newsletter */}
-      <RevealOnScroll>
-        <section className="mx-auto mt-16 max-w-2xl rounded-3xl border border-white/10 bg-bg-elevated p-8 text-center">
-          <NewsletterSignup
-            source="blog"
-            eyebrow="Stay Sharp"
-            heading="Get bonus plays"
-            description="Bonus offers, timing tips, and strategy breakdowns. Curated, not sponsored."
-            size="large"
-            submitLabel="Get bonus plays"
-          />
-        </section>
-      </RevealOnScroll>
-
-      {/* Core Playbooks */}
-      <RevealOnScroll>
-        <section className="mt-16">
-          <p className="text-xs uppercase tracking-[0.28em] text-brand-teal">
-            Core Playbooks
-          </p>
-          <h2 className="mt-2 font-heading text-2xl text-text-primary md:text-3xl">
-            Foundations that compound
-          </h2>
-          <p className="mt-2 max-w-xl text-sm text-text-secondary">
-            The frameworks and fundamentals behind every strong card strategy.
-          </p>
-          <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {corePlaybookArticles.map((article) => (
-              <BlogCard
-                key={article.slug}
-                article={article}
-                accentColor="teal"
-              />
+          <div className="mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {allBlogArticlesByDate.map((article) => (
+              <BlogCard key={article.slug} article={article} />
             ))}
           </div>
         </section>

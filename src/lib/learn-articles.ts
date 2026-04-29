@@ -511,6 +511,7 @@ export const learnCategoryColor: Record<string, string> = {
 export type LearnArticleCard = {
   slug: string;
   title: string;
+  cardTitle: string;
   category: string;
   readTime: string;
   description: string;
@@ -526,10 +527,38 @@ function getArticleSeries(article: LearnArticle): LearnArticleSeries {
   return article.series ?? 'Core Playbooks';
 }
 
+const articleCardTitles: Record<string, string> = {
+  'why-sign-up-bonuses-matter-more-than-everything-else-combined':
+    'Why Sign-Up Bonuses Matter Most',
+  'why-amex-platinum-is-overrated':
+    'Amex Platinum: Overrated for Most',
+  'why-chase-sapphire-reserve-is-losing-its-shine':
+    'Sapphire Reserve Is Losing Its Shine',
+  'why-capital-one-venture-x-is-the-future-winner':
+    'Why Venture X Keeps Winning',
+  'why-return-protection-is-the-secret-you-need-now':
+    'Return Protection Is Underrated',
+  'how-credit-card-rewards-actually-work':
+    'How Card Rewards Actually Work',
+  'annual-fee-math':
+    'Annual Fee Math, Made Simple',
+  'first-card-playbook':
+    'Your First Credit Card Playbook',
+  'signup-bonus-strategy':
+    'Maximize Bonuses Without the Games',
+  'bank-account-bonuses-101':
+    'Bank Bonuses 101',
+  'travel-vs-cashback':
+    'Travel Points vs. Cash Back',
+  'credit-score-myths':
+    'Credit Score Myths That Cost You'
+};
+
 const allLearnArticleCards: LearnArticleCard[] = Object.entries(learnArticles).map(
   ([slug, article]) => ({
     slug,
     title: article.title,
+    cardTitle: articleCardTitles[slug] ?? article.title,
     category: article.category,
     readTime: article.readTime,
     description: article.description,
