@@ -27,7 +27,6 @@ export type BenefitCalendarRule = {
   cadence: 'monthly' | 'quarterly' | 'semiannual' | 'annual-calendar' | 'annual-anniversary' | 'trusted-traveler';
   month?: number;
   day?: number;
-  reminderDay?: number;
   offsetDays?: number;
 };
 
@@ -123,8 +122,7 @@ export const benefitCalendarRules: BenefitCalendarRule[] = [
     description: 'Check Uber Cash before month-end. December is usually richer than other months.',
     value: 15,
     category: 'credit',
-    cadence: 'monthly',
-    reminderDay: 24
+    cadence: 'monthly'
   },
   {
     id: 'amex-platinum-digital-entertainment',
@@ -133,8 +131,7 @@ export const benefitCalendarRules: BenefitCalendarRule[] = [
     description: 'Verify the monthly streaming or entertainment credit posted before the month closes.',
     value: 25,
     category: 'credit',
-    cadence: 'monthly',
-    reminderDay: 24
+    cadence: 'monthly'
   },
   {
     id: 'amex-platinum-resy',
@@ -143,8 +140,7 @@ export const benefitCalendarRules: BenefitCalendarRule[] = [
     description: 'Use the quarterly Resy dining credit before the quarter resets.',
     value: 100,
     category: 'credit',
-    cadence: 'quarterly',
-    reminderDay: 20
+    cadence: 'quarterly'
   },
   {
     id: 'amex-platinum-hotel',
@@ -153,8 +149,7 @@ export const benefitCalendarRules: BenefitCalendarRule[] = [
     description: 'Book eligible prepaid Fine Hotels + Resorts or Hotel Collection stays before the half-year window closes.',
     value: 300,
     category: 'credit',
-    cadence: 'semiannual',
-    reminderDay: 15
+    cadence: 'semiannual'
   },
   {
     id: 'amex-platinum-airline',
@@ -174,8 +169,7 @@ export const benefitCalendarRules: BenefitCalendarRule[] = [
     description: 'Use eligible dining partners before the monthly credit expires.',
     value: 10,
     category: 'credit',
-    cadence: 'monthly',
-    reminderDay: 23
+    cadence: 'monthly'
   },
   {
     id: 'amex-gold-uber',
@@ -184,8 +178,7 @@ export const benefitCalendarRules: BenefitCalendarRule[] = [
     description: 'Check Uber or Uber Eats before month-end.',
     value: 10,
     category: 'credit',
-    cadence: 'monthly',
-    reminderDay: 23
+    cadence: 'monthly'
   },
   {
     id: 'amex-gold-resy',
@@ -194,8 +187,7 @@ export const benefitCalendarRules: BenefitCalendarRule[] = [
     description: 'Use the dining credit before the six-month window resets.',
     value: 50,
     category: 'credit',
-    cadence: 'semiannual',
-    reminderDay: 15
+    cadence: 'semiannual'
   },
   {
     id: 'chase-sapphire-reserve-travel',
@@ -213,8 +205,7 @@ export const benefitCalendarRules: BenefitCalendarRule[] = [
     title: 'Review quarterly partner credits',
     description: 'Check active dining, delivery, rideshare, or travel partner credits before the quarter closes.',
     category: 'activation',
-    cadence: 'quarterly',
-    reminderDay: 18
+    cadence: 'quarterly'
   },
   {
     id: 'chase-sapphire-preferred-hotel',
@@ -311,6 +302,10 @@ function dateForMonth(year: number, month: number, day: number) {
   return new Date(year, month - 1, Math.min(day, lastDay), 9, 0, 0, 0);
 }
 
+function dateForMonthEnd(year: number, month: number) {
+  return dateForMonth(year, month, new Date(year, month, 0).getDate());
+}
+
 function isWithinWindow(date: Date, start: Date, end: Date) {
   return date >= start && date <= end;
 }
@@ -346,7 +341,7 @@ function buildRuleEvents(
   if (rule.cadence === 'monthly') {
     for (let cursor = new Date(start.getFullYear(), start.getMonth(), 1); cursor <= end; cursor = addMonths(cursor, 1)) {
       const month = cursor.getMonth() + 1;
-      pushEvent(dateForMonth(cursor.getFullYear(), month, rule.reminderDay ?? 24), `${cursor.getFullYear()}-${month}`);
+      pushEvent(dateForMonthEnd(cursor.getFullYear(), month), `${cursor.getFullYear()}-${month}`);
     }
   }
 
@@ -354,15 +349,15 @@ function buildRuleEvents(
     const quarterMonths = [3, 6, 9, 12];
     for (let year = start.getFullYear(); year <= end.getFullYear(); year += 1) {
       for (const month of quarterMonths) {
-        pushEvent(dateForMonth(year, month, rule.reminderDay ?? 20), `${year}-${month}`);
+        pushEvent(dateForMonthEnd(year, month), `${year}-${month}`);
       }
     }
   }
 
   if (rule.cadence === 'semiannual') {
     for (let year = start.getFullYear(); year <= end.getFullYear(); year += 1) {
-      pushEvent(dateForMonth(year, 6, rule.reminderDay ?? 15), `${year}-6`);
-      pushEvent(dateForMonth(year, 12, rule.reminderDay ?? 15), `${year}-12`);
+      pushEvent(dateForMonthEnd(year, 6), `${year}-6`);
+      pushEvent(dateForMonthEnd(year, 12), `${year}-12`);
     }
   }
 
@@ -453,6 +448,10 @@ function pad(value: number) {
 }
 
 function formatIcsDate(date: Date) {
+  return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}`;
+}
+
+function formatIcsDateTime(date: Date) {
   return `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}T${pad(
     date.getUTCHours()
   )}${pad(date.getUTCMinutes())}${pad(date.getUTCSeconds())}Z`;
@@ -463,7 +462,7 @@ function escapeIcsText(value: string) {
 }
 
 export function buildBenefitCalendarIcs(events: BenefitCalendarEvent[]) {
-  const now = formatIcsDate(new Date());
+  const now = formatIcsDateTime(new Date());
   const lines = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -480,8 +479,8 @@ export function buildBenefitCalendarIcs(events: BenefitCalendarEvent[]) {
       'BEGIN:VEVENT',
       `UID:${event.id}@thestackhq.com`,
       `DTSTAMP:${now}`,
-      `DTSTART:${formatIcsDate(event.startsAt)}`,
-      `DTEND:${formatIcsDate(end)}`,
+      `DTSTART;VALUE=DATE:${formatIcsDate(event.startsAt)}`,
+      `DTEND;VALUE=DATE:${formatIcsDate(end)}`,
       `SUMMARY:${escapeIcsText(`${event.cardName}: ${event.title}`)}`,
       `DESCRIPTION:${escapeIcsText(`${event.description}${valueText}`)}`,
       'END:VEVENT'

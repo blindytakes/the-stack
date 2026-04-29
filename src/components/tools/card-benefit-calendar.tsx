@@ -73,8 +73,8 @@ const cardThemeStyles: Record<
     exportEyebrowClassName: 'text-[#d6e5ff]',
     exportButtonStyle: { background: '#d6e5ff', color: '#000' },
     accentColor: '#d6e5ff',
-    accentSoft: 'rgba(214,229,255,0.1)',
-    accentBorder: 'rgba(214,229,255,0.32)',
+    accentSoft: 'rgba(214,229,255,0.16)',
+    accentBorder: 'rgba(214,229,255,0.52)',
     accentText: '#d6e5ff'
   },
   'amex-gold': {
@@ -92,8 +92,8 @@ const cardThemeStyles: Record<
     exportEyebrowClassName: 'text-brand-gold',
     exportButtonStyle: { background: '#D4A853', color: '#000' },
     accentColor: '#D4A853',
-    accentSoft: 'rgba(212,168,83,0.1)',
-    accentBorder: 'rgba(212,168,83,0.32)',
+    accentSoft: 'rgba(212,168,83,0.16)',
+    accentBorder: 'rgba(212,168,83,0.52)',
     accentText: '#D4A853'
   },
   'chase-sapphire-reserve': {
@@ -111,8 +111,8 @@ const cardThemeStyles: Record<
     exportEyebrowClassName: 'text-[#5ae0ff]',
     exportButtonStyle: { background: '#5ae0ff', color: '#000' },
     accentColor: '#5ae0ff',
-    accentSoft: 'rgba(90,224,255,0.1)',
-    accentBorder: 'rgba(90,224,255,0.32)',
+    accentSoft: 'rgba(90,224,255,0.16)',
+    accentBorder: 'rgba(90,224,255,0.52)',
     accentText: '#5ae0ff'
   },
   'chase-sapphire-preferred': {
@@ -130,8 +130,8 @@ const cardThemeStyles: Record<
     exportEyebrowClassName: 'text-[#9bb8ff]',
     exportButtonStyle: { background: '#9bb8ff', color: '#000' },
     accentColor: '#9bb8ff',
-    accentSoft: 'rgba(115,157,255,0.1)',
-    accentBorder: 'rgba(115,157,255,0.32)',
+    accentSoft: 'rgba(115,157,255,0.16)',
+    accentBorder: 'rgba(115,157,255,0.52)',
     accentText: '#9bb8ff'
   },
   'capital-one-venture-x': {
@@ -149,8 +149,8 @@ const cardThemeStyles: Record<
     exportEyebrowClassName: 'text-brand-coral',
     exportButtonStyle: { background: '#E8634A', color: '#000' },
     accentColor: '#E8634A',
-    accentSoft: 'rgba(232,99,74,0.1)',
-    accentBorder: 'rgba(232,99,74,0.32)',
+    accentSoft: 'rgba(232,99,74,0.16)',
+    accentBorder: 'rgba(232,99,74,0.52)',
     accentText: '#E8634A'
   },
   'citi-strata-elite': {
@@ -168,8 +168,8 @@ const cardThemeStyles: Record<
     exportEyebrowClassName: 'text-[#9bc8ff]',
     exportButtonStyle: { background: '#9bc8ff', color: '#000' },
     accentColor: '#9bc8ff',
-    accentSoft: 'rgba(122,180,255,0.1)',
-    accentBorder: 'rgba(122,180,255,0.32)',
+    accentSoft: 'rgba(122,180,255,0.16)',
+    accentBorder: 'rgba(122,180,255,0.52)',
     accentText: '#9bc8ff'
   }
 };
@@ -209,6 +209,13 @@ function getDateParts(date: Date) {
   };
 }
 
+function slugifyFilePart(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 export function CardBenefitCalendar() {
   const defaultDate = todayInputValue();
   const selectorRef = useRef<HTMLDivElement>(null);
@@ -245,7 +252,7 @@ export function CardBenefitCalendar() {
   );
 
   const selectedCards = benefitCalendarCards.filter((card) => selectedCardIds.includes(card.id));
-  const availableCards = benefitCalendarCards.filter((card) => !selectedCardIds.includes(card.id));
+  const availableCards = benefitCalendarCards.filter((card) => card.id !== activeCardId);
   const filteredAvailableCards = availableCards.filter((card) =>
     `${card.name} ${card.shortName} ${card.issuer}`.toLowerCase().includes(cardQuery.trim().toLowerCase())
   );
@@ -295,21 +302,6 @@ export function CardBenefitCalendar() {
     }
   }, [activeCardId, selectedCardIds]);
 
-  const toggleCard = (cardId: BenefitCalendarCardId) => {
-    setSelectedCardIds((current) => {
-      if (!current.includes(cardId)) {
-        setActiveCardId(cardId);
-        return [...current, cardId];
-      }
-
-      const next = current.filter((id) => id !== cardId);
-      if (activeCardId === cardId && next[0]) {
-        setActiveCardId(next[0]);
-      }
-      return next;
-    });
-  };
-
   const addCard = (cardId: BenefitCalendarCardId) => {
     setSelectedCardIds((current) => (current.includes(cardId) ? current : [...current, cardId]));
     setActiveCardId(cardId);
@@ -338,7 +330,9 @@ export function CardBenefitCalendar() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'the-stack-card-benefit-calendar.ics';
+    link.download = activeCard
+      ? `the-stack-${slugifyFilePart(activeCard.shortName)}-benefit-calendar.ics`
+      : 'the-stack-card-benefit-calendar.ics';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -366,7 +360,7 @@ export function CardBenefitCalendar() {
                 <h1 className="mt-3 font-heading text-[clamp(1.9rem,3.2vw,3.1rem)] leading-[0.96] text-text-primary lg:whitespace-nowrap">
                   Pick the cards you carry.
                 </h1>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-text-secondary">
+                <p className="mt-3 max-w-2xl text-base leading-7 text-text-secondary">
                   Then export a calendar for credits, annual fees, and renewal decisions.
                 </p>
               </div>
@@ -378,39 +372,26 @@ export function CardBenefitCalendar() {
                   className="relative overflow-hidden rounded-xl border p-3"
                   style={activeTheme.cardStyle}
                 >
-                  <button
-                    type="button"
-                    onClick={() => toggleCard(activeCard.id)}
-                    className="absolute right-3 top-3 z-10 rounded-full border border-white/15 bg-black/35 px-2 py-1 text-xs font-semibold text-text-secondary transition hover:text-text-primary"
-                    aria-label={`Remove ${activeCard.shortName}`}
-                  >
-                    Remove
-                  </button>
-                  <div className="grid gap-5 md:grid-cols-[18rem_1fr]">
-                    <div
-                      className="relative flex min-h-56 items-center justify-center overflow-hidden rounded-lg border md:min-h-64"
-                      style={{
-                        borderColor: activeTheme.inputStyle.borderColor,
-                        background:
-                          'radial-gradient(circle at 50% 0%, rgba(255,255,255,0.12), transparent 58%), rgba(0,0,0,0.18)'
-                      }}
-                    >
+                  <div className="grid items-center gap-5 md:grid-cols-[13.5rem_1fr]">
+                    <div className="relative flex items-center justify-center py-3">
                       {/* Product art is issuer-hosted card imagery from curated card metadata. */}
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={activeCard.artUrl}
                         alt={`${activeCard.shortName} card art`}
-                        className="h-full max-h-52 w-full object-contain p-5 md:max-h-60"
+                        className="w-full max-w-[14rem] object-contain drop-shadow-[0_18px_38px_rgba(0,0,0,0.42)] md:max-w-[13.5rem]"
                       />
                     </div>
                     <div>
-                      <p className="text-xl font-semibold text-text-primary">{activeCard.shortName}</p>
-                      <p className="mt-1 text-[11px] uppercase tracking-[0.16em] text-text-muted">
+                      <p className="whitespace-nowrap text-[clamp(1.35rem,6.2vw,1.875rem)] font-semibold text-text-primary">
+                        {activeCard.shortName}
+                      </p>
+                      <p className="mt-2 text-sm font-semibold uppercase tracking-[0.16em] text-text-muted md:text-base">
                         {activeCard.issuer} - {currencyFormatter.format(activeCard.annualFee)}
                       </p>
-                      <div className="mt-4">
+                      <div className="mt-5">
                         <label className="block">
-                          <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+                          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted md:text-sm">
                             Card anniversary / annual fee date
                           </span>
                           <input
@@ -419,7 +400,7 @@ export function CardBenefitCalendar() {
                             onChange={(event) =>
                               updateCardSettings(activeCard.id, 'anniversaryDate', event.currentTarget.value)
                             }
-                            className="mt-1.5 w-full rounded-lg border bg-black/25 px-3 py-2 text-sm text-text-primary outline-none focus:border-white"
+                            className="mt-2 w-full rounded-xl border bg-black/25 px-4 py-3 text-base text-text-primary outline-none focus:border-white md:text-lg"
                             style={activeTheme.inputStyle}
                           />
                         </label>
@@ -492,9 +473,7 @@ export function CardBenefitCalendar() {
                   ))}
                   {filteredAvailableCards.length === 0 ? (
                     <p className="rounded-lg border border-dashed border-white/10 px-3 py-3 text-sm text-text-muted">
-                      {availableCards.length === 0
-                        ? 'All supported cards are already selected.'
-                        : 'No supported cards matched that search.'}
+                      No supported cards matched that search.
                     </p>
                   ) : null}
                 </div>
@@ -508,11 +487,11 @@ export function CardBenefitCalendar() {
                 Calendar export
               </p>
               <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <div className="rounded-lg border border-white/10 bg-black/16 p-4">
+                <div className="rounded-lg border border-white/10 bg-black/16 p-4 text-center">
                   <p className="text-3xl font-semibold text-text-primary">{visibleEvents.length}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-text-muted">Events</p>
+                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-text-muted">Benefit reminders</p>
                 </div>
-                <div className="rounded-lg border border-white/10 bg-black/16 p-4">
+                <div className="rounded-lg border border-white/10 bg-black/16 p-4 text-center">
                   <p className="text-3xl font-semibold text-text-primary">{currencyFormatter.format(totalTrackedValue)}</p>
                   <p className="mt-1 text-xs uppercase tracking-[0.16em] text-text-muted">Tracked value</p>
                 </div>
@@ -536,7 +515,7 @@ export function CardBenefitCalendar() {
                 rel="noreferrer"
                 className="mt-3 block rounded-full border border-white/14 px-5 py-2.5 text-center text-sm font-semibold text-text-primary transition hover:border-white/28"
               >
-                Open Google import
+                Open Google Calendar import
               </a>
             </div>
           </aside>
@@ -593,7 +572,8 @@ export function CardBenefitCalendar() {
                             style={{
                               borderColor: activeTheme.accentBorder,
                               background: activeTheme.accentSoft,
-                              color: activeTheme.accentText
+                              color: activeTheme.accentText,
+                              boxShadow: `0 0 22px ${activeTheme.accentSoft}`
                             }}
                           >
                             {currencyFormatter.format(event.value)}
@@ -627,7 +607,10 @@ export function CardBenefitCalendar() {
                       <article
                         key={event.id}
                         className="grid gap-4 rounded-xl border border-l-4 border-white/10 bg-white/[0.025] p-4 transition hover:bg-white/[0.04] md:grid-cols-[5.4rem_1fr_auto] md:items-center md:p-5"
-                        style={{ borderLeftColor: activeTheme.accentColor }}
+                        style={{
+                          borderLeftColor: activeTheme.accentColor,
+                          boxShadow: `inset 3px 0 18px -12px ${activeTheme.accentColor}`
+                        }}
                       >
                         <div className="flex items-center gap-3 md:block md:text-center">
                           <div className="w-16 rounded-lg border border-white/10 bg-black/18 px-2.5 py-2 md:mx-auto">
@@ -667,12 +650,12 @@ export function CardBenefitCalendar() {
                                 style={{
                                   borderColor: activeTheme.accentBorder,
                                   background: activeTheme.accentSoft,
-                                  color: activeTheme.accentText
+                                  color: activeTheme.accentText,
+                                  boxShadow: `0 0 22px ${activeTheme.accentSoft}`
                                 }}
                               >
                                 {currencyFormatter.format(event.value)}
                               </p>
-                              <p className="mt-1 text-xs uppercase tracking-[0.16em] text-text-muted">value</p>
                             </>
                           ) : (
                             <p className="inline-flex rounded-full border border-white/10 px-4 py-2 text-sm font-semibold text-text-secondary">

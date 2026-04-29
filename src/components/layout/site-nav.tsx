@@ -67,6 +67,12 @@ const toolNavItems: SubmenuNavItem[] = [
     activePath: '/tools/premium-card-calculator'
   },
   {
+    href: '/tools/card-benefit-calendar',
+    label: 'Card Benefit Calendar',
+    description: 'Track premium card credits and renewal reminders.',
+    activePath: '/tools/card-benefit-calendar'
+  },
+  {
     href: '/tools/points-advisor',
     label: 'Points Advisor',
     description: 'See the best next move for your points balance.',
