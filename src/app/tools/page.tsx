@@ -38,6 +38,13 @@ const toolCards = [
     accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
   },
   {
+    href: '/tools/card-benefit-calendar',
+    eyebrow: 'Reminders',
+    title: 'Card Benefit Calendar',
+    description: 'Create calendar reminders for credits, bonus deadlines, annual fees, and renewal decisions.',
+    accentClassName: 'from-[#d4a853]/18 via-[#d4a853]/6 to-transparent'
+  },
+  {
     href: '/tools/points-advisor',
     eyebrow: 'Redeem',
     title: 'Points Redemption Advisor',
