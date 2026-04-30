@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { badRequest, jsonError } from '@/lib/api-helpers';
 import { recordApiDuration, recordApiError } from '@/lib/metrics';
+import { flushObservability } from '@/lib/observability-flush';
 import type { RateLimitConfig } from '@/lib/rate-limit';
 import { applyIpRateLimit } from '@/lib/rate-limit';
 import { isValidOrigin } from '@/lib/turnstile';
@@ -46,6 +47,7 @@ export async function instrumentedApi(
       severityNumber
     });
     recordApiDuration(route, method, statusCode, performance.now() - start);
+    await flushObservability();
     return result;
   } catch (error) {
     recordApiError(route, error instanceof Error ? error.name : 'UnknownError');
@@ -61,6 +63,7 @@ export async function instrumentedApi(
       severityText: 'ERROR',
       severityNumber: SeverityNumber.ERROR
     });
+    await flushObservability();
     return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }

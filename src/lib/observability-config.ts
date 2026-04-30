@@ -1,6 +1,8 @@
 export type OTelExporterEnvStatus = {
   endpointConfigured: boolean;
   headersConfigured: boolean;
+  protocol: string | null;
+  protocolConfigured: boolean;
   configured: boolean;
 };
 
@@ -17,10 +19,18 @@ export function getOTelExporterEnvStatus(): OTelExporterEnvStatus {
       process.env.OTEL_EXPORTER_OTLP_METRICS_HEADERS ||
       process.env.OTEL_EXPORTER_OTLP_LOGS_HEADERS
   );
+  const protocol =
+    process.env.OTEL_EXPORTER_OTLP_PROTOCOL ||
+    process.env.OTEL_EXPORTER_OTLP_TRACES_PROTOCOL ||
+    process.env.OTEL_EXPORTER_OTLP_METRICS_PROTOCOL ||
+    process.env.OTEL_EXPORTER_OTLP_LOGS_PROTOCOL ||
+    null;
 
   return {
     endpointConfigured,
     headersConfigured,
+    protocol,
+    protocolConfigured: Boolean(protocol),
     configured: endpointConfigured && headersConfigured
   };
 }

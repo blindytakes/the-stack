@@ -30,13 +30,59 @@ OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <base64-instance-id-and-token>
   "observability": {
     "otelExporterConfigured": true,
     "otelEndpointConfigured": true,
-    "otelHeadersConfigured": true
+    "otelHeadersConfigured": true,
+    "otelProtocolConfigured": true,
+    "otelProtocol": "http/protobuf"
   }
 }
 ```
 
 6. Import `observability/grafana/the-stack-overview-dashboard.json` in Grafana via **Dashboards > New > Import**.
 7. Select the stack's Prometheus/Mimir data source for metrics and Loki data source for logs.
+8. Keep the dashboard label variables at their Grafana Cloud OTLP defaults unless Explore shows different labels:
+   - `Metric Service Label`: `service_name`
+   - `Log Service Label`: `service_name`
+
+Metrics are exported every 60 seconds, so generate traffic and wait at least one export interval before treating an empty dashboard as a failure.
+
+## Local Smoke Test
+
+Run the app and check whether this checkout is actually configured to export telemetry:
+
+```bash
+npm run dev
+curl -i http://localhost:3000/api/health
+```
+
+If `HEALTH_CHECK_TOKEN` is configured, pass either `Authorization: Bearer <token>` or `x-health-token: <token>`.
+
+The health response should include:
+
+```json
+{
+  "observability": {
+    "otelExporterConfigured": true,
+    "otelEndpointConfigured": true,
+    "otelHeadersConfigured": true,
+    "otelProtocolConfigured": true,
+    "otelProtocol": "http/protobuf"
+  }
+}
+```
+
+If any of those values are `false`, the app can run but telemetry will not reach Grafana Cloud from that environment.
+
+To generate test telemetry after OTLP env vars are set:
+
+```bash
+curl -i http://localhost:3000/api/cards
+curl -i http://localhost:3000/api/vitals \
+  -X POST \
+  -H 'content-type: application/json' \
+  --data '{"name":"LCP","value":1234,"path":"/","device":"desktop"}'
+```
+
+Then check Grafana Explore for `thestack_api_duration_milliseconds_count` in the metrics data source and `{service_name="the-stack"}` in the logs data source. If logs only appear under `job`, switch the dashboard's `Log Service Label` variable to `job`.
 
 ## Expected Grafana Metric Names
 
@@ -53,6 +99,8 @@ Grafana Cloud stores OTLP metrics in Prometheus-compatible form. Dots become und
 | `thestack.web.inp` | `thestack_web_inp_milliseconds_bucket/count/sum` |
 | `thestack.web.ttfb` | `thestack_web_ttfb_milliseconds_bucket/count/sum` |
 | `thestack.web.cls` | `thestack_web_cls_bucket/count/sum` |
+
+The dashboard defaults metric and log queries to `service_name="the-stack"` because this Grafana Cloud stack exposes existing OTLP services under the `service_name` label in Explore. If imported dashboards are empty but Explore shows The Stack under `job`, switch the dashboard's `Metric Service Label` variable to `job`.
 
 ## First Alerts To Add
 

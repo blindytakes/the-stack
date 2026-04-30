@@ -13,6 +13,8 @@ export type HealthCheckResult = {
       otelExporterConfigured: boolean;
       otelEndpointConfigured: boolean;
       otelHeadersConfigured: boolean;
+      otelProtocolConfigured: boolean;
+      otelProtocol: string | null;
     };
   };
 };
@@ -23,7 +25,9 @@ function buildObservabilityStatus() {
   return {
     otelExporterConfigured: otel.configured,
     otelEndpointConfigured: otel.endpointConfigured,
-    otelHeadersConfigured: otel.headersConfigured
+    otelHeadersConfigured: otel.headersConfigured,
+    otelProtocolConfigured: otel.protocolConfigured,
+    otelProtocol: otel.protocol
   };
 }
 

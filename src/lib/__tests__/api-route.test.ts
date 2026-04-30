@@ -17,6 +17,10 @@ vi.mock('@/lib/metrics', () => ({
   recordApiError: vi.fn()
 }));
 
+vi.mock('@/lib/observability-flush', () => ({
+  flushObservability: vi.fn()
+}));
+
 vi.mock('@/lib/rate-limit', async () => {
   const actual = await vi.importActual<typeof import('@/lib/rate-limit')>('@/lib/rate-limit');
   return {

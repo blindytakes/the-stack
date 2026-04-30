@@ -19,13 +19,13 @@ export function register() {
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { OTLPMetricExporter } = require('@opentelemetry/exporter-metrics-otlp-http');
   // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { BatchLogRecordProcessor } = require('@opentelemetry/sdk-logs');
+  const { SimpleLogRecordProcessor } = require('@opentelemetry/sdk-logs');
   // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { PeriodicExportingMetricReader } = require('@opentelemetry/sdk-metrics');
 
   registerOTel({
     serviceName: 'the-stack',
-    logRecordProcessor: new BatchLogRecordProcessor(new OTLPLogExporter()),
+    logRecordProcessor: new SimpleLogRecordProcessor(new OTLPLogExporter()),
     metricReader: new PeriodicExportingMetricReader({
       exporter: new OTLPMetricExporter(),
       exportIntervalMillis: 60000

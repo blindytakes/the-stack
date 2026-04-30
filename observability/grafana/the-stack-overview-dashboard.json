@@ -76,7 +76,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(thestack_api_duration_milliseconds_count{job=~\"$service\"}[$__rate_interval]))",
+          "expr": "sum(rate(thestack_api_duration_milliseconds_count{${metric_service_label}=~\"$service\"}[$__rate_interval]))",
           "legendFormat": "requests",
           "range": true,
           "refId": "A"
@@ -144,7 +144,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(thestack_api_errors_total{job=~\"$service\"}[$__rate_interval])) / clamp_min(sum(rate(thestack_api_duration_milliseconds_count{job=~\"$service\"}[$__rate_interval])), 1)",
+          "expr": "sum(rate(thestack_api_errors_total{${metric_service_label}=~\"$service\"}[$__rate_interval])) / clamp_min(sum(rate(thestack_api_duration_milliseconds_count{${metric_service_label}=~\"$service\"}[$__rate_interval])), 1)",
           "legendFormat": "5xx and exceptions",
           "range": true,
           "refId": "A"
@@ -237,7 +237,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le, route) (rate(thestack_api_duration_milliseconds_bucket{job=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.95, sum by (le, route) (rate(thestack_api_duration_milliseconds_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
           "legendFormat": "p95 {{route}}",
           "range": true,
           "refId": "A"
@@ -248,7 +248,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, sum by (le, route) (rate(thestack_api_duration_milliseconds_bucket{job=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.50, sum by (le, route) (rate(thestack_api_duration_milliseconds_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
           "hide": true,
           "legendFormat": "p50 {{route}}",
           "range": true,
@@ -342,7 +342,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "sum by (route, status_code) (rate(thestack_api_duration_milliseconds_count{job=~\"$service\"}[$__rate_interval]))",
+          "expr": "sum by (route, status_code) (rate(thestack_api_duration_milliseconds_count{${metric_service_label}=~\"$service\"}[$__rate_interval]))",
           "legendFormat": "{{route}} {{status_code}}",
           "range": true,
           "refId": "A"
@@ -435,7 +435,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "sum by (source) (increase(thestack_affiliate_clicks_total{job=~\"$service\"}[$__range]))",
+          "expr": "sum by (source) (increase(thestack_affiliate_clicks_total{${metric_service_label}=~\"$service\"}[$__range]))",
           "legendFormat": "affiliate clicks {{source}}",
           "range": true,
           "refId": "A"
@@ -446,7 +446,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "sum by (provider, result) (increase(thestack_newsletter_sync_results_total{job=~\"$service\"}[$__range]))",
+          "expr": "sum by (provider, result) (increase(thestack_newsletter_sync_results_total{${metric_service_label}=~\"$service\"}[$__range]))",
           "legendFormat": "newsletter {{provider}} {{result}}",
           "range": true,
           "refId": "B"
@@ -539,7 +539,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_lcp_milliseconds_bucket{job=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_lcp_milliseconds_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
           "legendFormat": "LCP p75 {{path}} {{device}}",
           "range": true,
           "refId": "A"
@@ -550,7 +550,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_inp_milliseconds_bucket{job=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_inp_milliseconds_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
           "legendFormat": "INP p75 {{path}} {{device}}",
           "range": true,
           "refId": "B"
@@ -561,7 +561,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_ttfb_milliseconds_bucket{job=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_ttfb_milliseconds_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
           "legendFormat": "TTFB p75 {{path}} {{device}}",
           "range": true,
           "refId": "C"
@@ -654,7 +654,7 @@
             "uid": "${prometheus}"
           },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_cls_bucket{job=~\"$service\"}[$__rate_interval])))",
+          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_cls_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
           "legendFormat": "CLS p75 {{path}} {{device}}",
           "range": true,
           "refId": "A"
@@ -692,7 +692,7 @@
             "uid": "${loki}"
           },
           "editorMode": "code",
-          "expr": "{job=~\"$service\"} | json | type=~\"api_request|api_exception\"",
+          "expr": "{${log_service_label}=~\"$service\"} | json | type=~\"api_request|api_exception\"",
           "queryType": "range",
           "refId": "A"
         }
@@ -754,6 +754,54 @@
         ],
         "query": "the-stack",
         "type": "constant"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "service_name",
+          "value": "service_name"
+        },
+        "hide": 0,
+        "label": "Metric Service Label",
+        "name": "metric_service_label",
+        "options": [
+          {
+            "selected": false,
+            "text": "job",
+            "value": "job"
+          },
+          {
+            "selected": true,
+            "text": "service_name",
+            "value": "service_name"
+          }
+        ],
+        "query": "job,service_name",
+        "type": "custom"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "service_name",
+          "value": "service_name"
+        },
+        "hide": 0,
+        "label": "Log Service Label",
+        "name": "log_service_label",
+        "options": [
+          {
+            "selected": true,
+            "text": "service_name",
+            "value": "service_name"
+          },
+          {
+            "selected": false,
+            "text": "job",
+            "value": "job"
+          }
+        ],
+        "query": "service_name,job",
+        "type": "custom"
       }
     ]
   },
