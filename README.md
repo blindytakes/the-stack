@@ -193,6 +193,10 @@ Expected steady-state result: `0` null image rows for both tables.
 
 See [docs/deliverability.md](docs/deliverability.md) for SPF/DKIM/DMARC and monitoring setup.
 
+## Observability
+
+See [docs/observability-grafana.md](docs/observability-grafana.md) for Grafana Cloud OTLP setup and dashboard import instructions.
+
 ## Scripts
 
 | Command | Description |
