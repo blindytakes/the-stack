@@ -153,7 +153,7 @@ export function getCardDecisionMetrics(
     {
       label: 'Annual fee',
       value: card.annualFee === 0 ? 'No fee' : formatCardCurrency(card.annualFee),
-      detail: card.annualFee === 0 ? 'No yearly fee listed' : 'Year-one card cost',
+      detail: card.annualFee === 0 ? 'No yearly fee listed' : 'Annual card cost',
       tone: 'default' as DecisionMetricTone
     },
     {

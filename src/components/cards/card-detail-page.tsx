@@ -5,7 +5,6 @@ import { EntityImage } from '@/components/ui/entity-image';
 import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import type { CardDetail, CardRecord, SpendingCategoryValue } from '@/lib/cards';
 import {
-  formatCardCreditTier,
   formatCardCurrency,
   getCardDecisionMetrics,
   isOffsettingCreditBenefit
@@ -45,21 +44,71 @@ function formatRewardRate(rate: number, rateType: CardDetail['rewardType']) {
   return `${rate}x`;
 }
 
-function formatRewardTypeLabel(rewardType: CardDetail['rewardType']) {
-  if (rewardType === 'cashback') return 'Cash back';
-  if (rewardType === 'miles') return 'Miles';
-  return 'Points';
-}
-
-function formatCardTypeLabel(cardType: CardDetail['cardType']) {
-  if (cardType === 'business') return 'Business card';
-  if (cardType === 'student') return 'Student card';
-  if (cardType === 'secured') return 'Secured card';
-  return 'Personal card';
-}
-
 function normalizeCategories(categories: SpendingCategoryValue[]) {
   return categories.filter((category) => category !== 'other');
+}
+
+function formatCalendarDate(value?: string) {
+  if (!value) return null;
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+    year: 'numeric'
+  }).format(date);
+}
+
+function formatLowerSpendCategoryLabel(category: SpendingCategoryValue) {
+  if (category === 'all') return 'everyday spend';
+  return formatSpendCategoryLabel(category).toLowerCase();
+}
+
+function formatCategoryFit(categories: SpendingCategoryValue[]) {
+  const labels = categories.slice(0, 2).map(formatLowerSpendCategoryLabel);
+  if (labels.length === 0) return 'normal card spend';
+  if (labels.length === 1) return labels[0];
+  return `${labels[0]} and ${labels[1]}`;
+}
+
+function getCardRequiredMonthlySpendLabel(card: CardDetail) {
+  if (
+    typeof card.bestSignUpBonusSpendRequired !== 'number' ||
+    card.bestSignUpBonusSpendRequired <= 0 ||
+    typeof card.bestSignUpBonusSpendPeriodDays !== 'number' ||
+    card.bestSignUpBonusSpendPeriodDays <= 0
+  ) {
+    return null;
+  }
+
+  return `${formatCardCurrency(
+    card.bestSignUpBonusSpendRequired / (card.bestSignUpBonusSpendPeriodDays / 30)
+  )}/mo`;
+}
+
+function formatRewardNoteLines(reward: CardDetail['rewards'][number]) {
+  const note =
+    reward.notes ??
+    (reward.capAmount != null
+      ? `Up to ${formatCardCurrency(reward.capAmount)}${
+          reward.capPeriod ? `/${reward.capPeriod}` : ''
+        }`
+      : '');
+
+  if (!note) return [];
+
+  return note.split(/ and (?=\d+(?:x|X|%))/).map((line) => {
+    const withoutLeadingRate = line
+      .trim()
+      .replace(/^\d+(?:x|X|%)\s+(?:points|miles)\s+on\s+/i, '');
+
+    return withoutLeadingRate
+      ? withoutLeadingRate.charAt(0).toUpperCase() + withoutLeadingRate.slice(1)
+      : withoutLeadingRate;
+  });
 }
 
 function buildCompareReason(current: CardDetail, candidate: CardRecord) {
@@ -147,9 +196,28 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
   const decisionMetrics = getCardDecisionMetrics(card);
   const heroDecisionMetrics = [
     ...decisionMetrics.filter((metric) => metric.label === 'Bonus ROI'),
-    ...decisionMetrics.filter((metric) => metric.label !== 'Bonus ROI')
+    ...decisionMetrics.filter(
+      (metric) => metric.label !== 'Bonus ROI' && metric.label !== 'Offsetting credits'
+    )
   ];
   const useSingleLineTitle = card.name.length <= 26;
+  const verifiedLabel = formatCalendarDate(card.lastVerified);
+  const monthlyRequiredSpend = getCardRequiredMonthlySpendLabel(card);
+  const categoryFit = formatCategoryFit(displayCategories);
+  const verdictTitle =
+    card.annualFee >= 395
+      ? 'Strong fit if your spend and credits line up'
+      : card.annualFee > 0
+        ? 'Worth a closer look if the benefits fit your routine'
+        : 'Low-friction option if the rewards match your spend';
+  const bestFitText = monthlyRequiredSpend
+    ? `Best fit if ${categoryFit} is already in your budget and you can route about ${monthlyRequiredSpend} of normal spend.`
+    : `Best fit if ${categoryFit} is already in your budget and the card perks match your routine.`;
+  const watchoutText =
+    card.annualFee > 0
+      ? `${formatCardCurrency(card.annualFee)} fee only works if the benefits are useful without changing your spending behavior.`
+      : 'Low fee drag, but still compare the rewards against simpler cards.';
+  const hasSecondaryActions = Boolean(pointsAdvisorHref || compareCandidates[0] || applyHref);
 
   return (
     <div className="container-page pt-5 pb-16 md:pt-8">
@@ -164,8 +232,8 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
         <div className="pointer-events-none absolute right-[-3rem] top-8 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.08),transparent_72%)] blur-3xl" />
 
         <div className="relative">
-          <div className="grid gap-8 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
-            <div>
+          <div className="grid min-w-0 gap-8 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
+            <div className="min-w-0">
               <Link
                 href="/cards"
                 className="mb-4 inline-flex items-center text-sm font-medium text-text-muted transition hover:text-text-primary"
@@ -174,7 +242,7 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
               </Link>
 
               <div
-                className={`overflow-hidden rounded-[1.4rem] border border-white/10 shadow-[0_16px_42px_rgba(0,0,0,0.22)] ${
+                className={`w-full max-w-full overflow-hidden rounded-[1.4rem] border border-white/10 shadow-[0_16px_42px_rgba(0,0,0,0.22)] ${
                   cardImage.imageAssetType === 'card_art' ? 'bg-black/20 p-0' : 'bg-black/10 p-2.5'
                 }`}
               >
@@ -206,43 +274,57 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
                     <span className="block">with this card</span>
                   </span>
                 </Link>
-                {pointsAdvisorHref ? (
-                  <Link
-                    href={pointsAdvisorHref}
-                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-3.5 text-center text-base font-semibold text-text-primary transition hover:border-white/30 hover:text-brand-teal"
-                  >
-                    Go To Points Calculator
-                  </Link>
-                ) : null}
-                {compareCandidates[0] ? (
-                  <Link
-                    href={compareCandidates[0].compareHref}
-                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-3.5 text-base font-semibold text-text-primary transition hover:border-white/30 hover:text-brand-teal"
-                  >
-                    Compare this card
-                  </Link>
-                ) : null}
-                {applyHref ? (
-                  <AffiliateLink
-                    href={applyHref}
-                    cardSlug={card.slug}
-                    source="card_detail_page"
-                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-3.5 text-center text-base font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
-                  >
-                    Apply for this offer
-                  </AffiliateLink>
+                {hasSecondaryActions ? (
+                  <details className="group rounded-[1.15rem] border border-white/8 bg-white/[0.02]">
+                    <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-text-secondary transition hover:text-text-primary [&::-webkit-details-marker]:hidden">
+                      <span>Card tools</span>
+                      <span className="text-base leading-none text-text-muted transition group-open:rotate-45">
+                        +
+                      </span>
+                    </summary>
+                    <div className="border-t border-white/8 px-3 py-2">
+                      <div className="flex flex-col gap-1">
+                        {pointsAdvisorHref ? (
+                          <Link
+                            href={pointsAdvisorHref}
+                            className="rounded-[0.9rem] px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-white/[0.04] hover:text-brand-teal"
+                          >
+                            Run the points math
+                          </Link>
+                        ) : null}
+                        {compareCandidates[0] ? (
+                          <Link
+                            href={compareCandidates[0].compareHref}
+                            className="rounded-[0.9rem] px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-white/[0.04] hover:text-brand-teal"
+                          >
+                            Compare against alternatives
+                          </Link>
+                        ) : null}
+                        {applyHref ? (
+                          <AffiliateLink
+                            href={applyHref}
+                            cardSlug={card.slug}
+                            source="card_detail_page"
+                            className="rounded-[0.9rem] px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-white/[0.04] hover:text-brand-teal"
+                          >
+                            Go to issuer offer
+                          </AffiliateLink>
+                        ) : null}
+                      </div>
+                    </div>
+                  </details>
                 ) : null}
               </div>
             </div>
 
-            <div>
+            <div className="min-w-0">
               <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-teal">
                 {card.issuer}
               </p>
               <h1
                 className={`mt-4 font-heading text-text-primary ${
                   useSingleLineTitle
-                    ? 'max-w-full whitespace-nowrap text-[1.4rem] leading-none tracking-[-0.03em] sm:text-[3.2rem] sm:tracking-[-0.04em] lg:text-[4.2rem] xl:text-[4.8rem]'
+                    ? 'max-w-full text-[1.4rem] leading-none tracking-[-0.03em] sm:whitespace-nowrap sm:text-[3.2rem] sm:tracking-[-0.04em] lg:text-[4.2rem] xl:text-[4.8rem]'
                     : 'max-w-[14ch] text-[2.8rem] leading-[0.94] tracking-[-0.05em] md:text-[4rem] xl:text-[4.8rem]'
                 }`}
               >
@@ -252,89 +334,120 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
                 {card.longDescription ?? card.description ?? card.headline}
               </p>
 
-              <div className="mt-5 flex flex-wrap gap-2">
-                {displayCategories.slice(0, 3).map((category) => (
-                  <span
-                    key={category}
-                    className="rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2.5 py-1 text-[11px] text-brand-teal"
-                  >
-                    Best for {formatSpendCategoryLabel(category)}
-                  </span>
-                ))}
-                <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-secondary">
-                  {formatRewardTypeLabel(card.rewardType)}
-                </span>
-                <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-secondary">
-                  {formatCardTypeLabel(card.cardType)}
-                </span>
-                <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-secondary">
-                  {formatCardCreditTier(card.creditTierMin)} credit
-                </span>
+              {verifiedLabel ? (
+                <p className="mt-5 text-xs leading-5 text-text-muted">
+                  Last verified {verifiedLabel}. Confirm live issuer terms before applying.
+                </p>
+              ) : null}
+
+              <div className="mt-6 border-y border-white/8 py-4">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.7fr)] lg:items-start">
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-brand-teal">
+                      Bottom line
+                    </p>
+                    <p className="mt-2 text-base font-semibold leading-6 text-text-primary">
+                      {verdictTitle}
+                    </p>
+                  </div>
+                  <dl className="grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                        Best fit
+                      </dt>
+                      <dd className="mt-1 text-sm leading-5 text-text-secondary">{bestFitText}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                        Watch out
+                      </dt>
+                      <dd className="mt-1 text-sm leading-5 text-text-secondary">{watchoutText}</dd>
+                    </div>
+                  </dl>
+                </div>
               </div>
 
-              <div className="mt-7 grid gap-3.5 sm:grid-cols-2 xl:grid-cols-5">
-                {heroDecisionMetrics.map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="flex min-h-[7rem] flex-col items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] px-4 py-4 text-center sm:min-h-[7.5rem]"
-                  >
-                    <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">{stat.label}</p>
-                    <p
-                      className={`mt-2.5 text-lg font-semibold leading-none sm:text-xl ${
-                        stat.tone === 'positive'
-                          ? 'text-brand-teal'
-                          : stat.tone === 'warning'
-                            ? 'text-brand-gold'
-                            : stat.tone === 'negative'
-                              ? 'text-brand-coral'
-                              : 'text-text-primary'
-                      }`}
-                    >
-                      {stat.value}
-                    </p>
-                    <p className="mt-2.5 text-xs leading-4 text-text-muted">{stat.detail}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
       </section>
 
+      <section className="mt-4 rounded-[1.45rem] border border-white/10 bg-bg-elevated/50 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.18)]">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {heroDecisionMetrics.map((stat) => (
+            <div
+              key={stat.label}
+              className="flex min-h-[7.5rem] flex-col items-center justify-center rounded-xl border border-white/8 bg-black/15 px-4 py-4 text-center"
+            >
+              <p className="text-[11px] uppercase tracking-[0.18em] text-text-muted">{stat.label}</p>
+              <p
+                className={`mt-3 whitespace-nowrap text-[1.45rem] font-semibold leading-none sm:text-[1.55rem] xl:text-[1.6rem] ${
+                  stat.tone === 'positive'
+                    ? 'text-brand-teal'
+                    : stat.tone === 'warning'
+                      ? 'text-brand-gold'
+                      : stat.tone === 'negative'
+                        ? 'text-brand-coral'
+                        : 'text-text-primary'
+                }`}
+              >
+                {stat.value}
+              </p>
+              <p className="mt-3 text-sm leading-5 text-text-muted">{stat.detail}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {topRewards.length > 0 ? (
+        <section className="mt-4 rounded-[1.45rem] border border-white/10 bg-bg-elevated/50 p-3 shadow-[0_18px_60px_rgba(0,0,0,0.16)]">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {topRewards.map((reward, index) => {
+              const rewardNoteLines = formatRewardNoteLines(reward);
+
+              return (
+                <div
+                  key={`${reward.category}-${index}`}
+                  className="flex min-h-[9.25rem] flex-col items-center rounded-xl border border-white/8 bg-black/15 px-4 py-4 text-center"
+                >
+                  <p className="flex min-h-8 items-center justify-center text-[11px] uppercase tracking-[0.18em] text-text-muted">
+                    {formatSpendCategoryLabel(reward.category)}
+                  </p>
+                  <p className="mt-2 text-[1.45rem] font-semibold leading-none text-brand-teal sm:text-[1.55rem] xl:text-[1.6rem]">
+                    {formatRewardRate(reward.rate, reward.rateType)}
+                  </p>
+                  <p className="mt-3 text-sm leading-5 text-text-muted">
+                    {rewardNoteLines.length > 0
+                      ? rewardNoteLines.map((line) => (
+                          <span key={line} className="block">
+                            {line}
+                          </span>
+                        ))
+                      : '\u00A0'}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+          {pointsAdvisorHref ? (
+            <div className="mt-3 rounded-xl border border-brand-teal/15 bg-brand-teal/5 px-4 py-3 text-center">
+              <p className="text-sm leading-6 text-text-secondary">
+                Want to value the points side-by-side?{' '}
+                <Link
+                  href={pointsAdvisorHref}
+                  className="font-semibold text-brand-teal transition hover:text-brand-teal/80"
+                >
+                  Run the points math
+                </Link>
+                .
+              </p>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
         <div className="space-y-6">
-          {topRewards.length > 0 ? (
-            <section className="rounded-[1.6rem] border border-white/10 bg-bg-elevated/60 p-5">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-brand-teal">How You Earn</p>
-              <h2 className="mt-2 font-heading text-2xl text-text-primary">Where this card pays you back</h2>
-              <div className="mt-4 space-y-3">
-                {topRewards.map((reward, index) => (
-                  <div
-                    key={`${reward.category}-${index}`}
-                    className="flex items-start justify-between gap-4 rounded-[1rem] border border-white/8 bg-black/15 px-4 py-3"
-                  >
-                    <div>
-                      <p className="text-sm font-semibold text-text-primary">
-                        {formatSpendCategoryLabel(reward.category)}
-                      </p>
-                      {(reward.notes || reward.capAmount != null) ? (
-                        <p className="mt-1 text-xs leading-5 text-text-secondary">
-                          {reward.notes ??
-                            `Up to ${formatCardCurrency(reward.capAmount ?? 0)}${
-                              reward.capPeriod ? `/${reward.capPeriod}` : ''
-                            }`}
-                        </p>
-                      ) : null}
-                    </div>
-                    <span className="shrink-0 text-base font-semibold text-brand-teal">
-                      {formatRewardRate(reward.rate, reward.rateType)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
           {highlightedBenefits.length > 0 ? (
             <section className="rounded-[1.6rem] border border-white/10 bg-bg-elevated/60 p-5">
               <p className="text-[10px] uppercase tracking-[0.22em] text-brand-gold">Credits And Perks</p>
@@ -365,64 +478,6 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
             </section>
           ) : null}
 
-          {compareCandidates.length > 0 ? (
-            <section className="rounded-[1.6rem] border border-white/10 bg-bg-elevated/60 p-5">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-brand-teal">Compare Next</p>
-              <h2 className="mt-2 font-heading text-2xl text-text-primary">Pressure-test this card against real alternatives</h2>
-              <div className="mt-4 grid gap-4 md:grid-cols-3">
-                {compareCandidates.map((candidate) => {
-                  const candidateImage = getCardImageDisplay({
-                    slug: candidate.card.slug,
-                    name: candidate.card.name,
-                    issuer: candidate.card.issuer,
-                    imageUrl: candidate.card.imageUrl,
-                    imageAssetType: candidate.card.imageAssetType
-                  });
-
-                  return (
-                    <article
-                      key={candidate.card.slug}
-                      className="rounded-[1.2rem] border border-white/8 bg-black/15 p-4"
-                    >
-                      <EntityImage
-                        src={candidateImage.src}
-                        alt={candidateImage.alt}
-                        label={candidateImage.label}
-                        className="aspect-[1.586/1] rounded-[1rem]"
-                        imgClassName={candidateImage.presentation.imgClassName}
-                        fallbackClassName="bg-black/10"
-                        fallbackVariant={candidateImage.fallbackVariant}
-                        fit={candidateImage.presentation.fit}
-                        position={candidateImage.presentation.position}
-                        scale={candidateImage.presentation.scale}
-                      />
-                      <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-text-muted">
-                        {candidate.card.issuer}
-                      </p>
-                      <h3 className="mt-1 text-lg font-semibold text-text-primary">{candidate.card.name}</h3>
-                      <p className="mt-2 text-sm leading-6 text-text-secondary">{candidate.reason}</p>
-                      <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-text-muted">
-                        <span className="rounded-full border border-white/10 px-2.5 py-1">
-                          {candidate.card.annualFee === 0 ? 'No fee' : formatCardCurrency(candidate.card.annualFee)}
-                        </span>
-                        <span className="rounded-full border border-white/10 px-2.5 py-1">
-                          {candidate.card.bestSignUpBonusValue
-                            ? `${formatCardCurrency(candidate.card.bestSignUpBonusValue)} bonus`
-                            : 'No listed bonus'}
-                        </span>
-                      </div>
-                      <Link
-                        href={candidate.compareHref}
-                        className="mt-4 inline-flex items-center text-sm font-semibold text-brand-teal transition hover:underline"
-                      >
-                        Compare these cards
-                      </Link>
-                    </article>
-                  );
-                })}
-              </div>
-            </section>
-          ) : null}
         </div>
 
         <div className="space-y-6">
@@ -479,8 +534,87 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
             </section>
           ) : null}
 
+          {applyHref ? (
+            <section className="rounded-[1.6rem] border border-white/10 bg-bg-elevated/60 p-5">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-brand-gold">Issuer Offer</p>
+              <h2 className="mt-2 font-heading text-2xl text-text-primary">Check the live terms before applying</h2>
+              <p className="mt-3 text-sm leading-6 text-text-secondary">
+                Confirm the welcome offer, annual fee, credits, and eligibility rules on the issuer site.
+              </p>
+              <AffiliateLink
+                href={applyHref}
+                cardSlug={card.slug}
+                source="card_detail_page"
+                className="mt-4 inline-flex items-center justify-center rounded-full border border-brand-gold/25 px-4 py-2.5 text-sm font-semibold text-brand-gold transition hover:border-brand-gold/50 hover:text-brand-gold/80"
+              >
+                Go to issuer offer
+              </AffiliateLink>
+            </section>
+          ) : null}
+
         </div>
       </div>
+
+      {compareCandidates.length > 0 ? (
+        <section className="mt-6 rounded-[1.6rem] border border-white/10 bg-bg-elevated/60 p-5">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-brand-teal">Compare Next</p>
+          <h2 className="mt-2 font-heading text-2xl text-text-primary">
+            Pressure-test this card against real alternatives
+          </h2>
+          <div className="mt-4 grid gap-4 md:grid-cols-3">
+            {compareCandidates.map((candidate) => {
+              const candidateImage = getCardImageDisplay({
+                slug: candidate.card.slug,
+                name: candidate.card.name,
+                issuer: candidate.card.issuer,
+                imageUrl: candidate.card.imageUrl,
+                imageAssetType: candidate.card.imageAssetType
+              });
+
+              return (
+                <article
+                  key={candidate.card.slug}
+                  className="flex h-full flex-col rounded-[1.2rem] border border-white/8 bg-black/15 p-4"
+                >
+                  <EntityImage
+                    src={candidateImage.src}
+                    alt={candidateImage.alt}
+                    label={candidateImage.label}
+                    className="aspect-[1.586/1] rounded-[1rem]"
+                    imgClassName={candidateImage.presentation.imgClassName}
+                    fallbackClassName="bg-black/10"
+                    fallbackVariant={candidateImage.fallbackVariant}
+                    fit={candidateImage.presentation.fit}
+                    position={candidateImage.presentation.position}
+                    scale={candidateImage.presentation.scale}
+                  />
+                  <p className="mt-4 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+                    {candidate.card.issuer}
+                  </p>
+                  <h3 className="mt-1 text-lg font-semibold text-text-primary">{candidate.card.name}</h3>
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">{candidate.reason}</p>
+                  <div className="mt-3 flex flex-wrap gap-2 text-[11px] text-text-muted">
+                    <span className="rounded-full border border-white/10 px-2.5 py-1">
+                      {candidate.card.annualFee === 0 ? 'No fee' : formatCardCurrency(candidate.card.annualFee)}
+                    </span>
+                    <span className="rounded-full border border-white/10 px-2.5 py-1">
+                      {candidate.card.bestSignUpBonusValue
+                        ? `${formatCardCurrency(candidate.card.bestSignUpBonusValue)} bonus`
+                        : 'No listed bonus'}
+                    </span>
+                  </div>
+                  <Link
+                    href={candidate.compareHref}
+                    className="mt-auto inline-flex pt-4 text-sm font-semibold text-brand-teal transition hover:underline"
+                  >
+                    Compare these cards
+                  </Link>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
 }

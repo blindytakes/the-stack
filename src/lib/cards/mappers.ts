@@ -165,6 +165,7 @@ export function toCardRecordFromDb(row: DbCardRow): CardRecord {
     headline: `${row.name} by ${row.issuer}${Number(row.annualFee) === 0 ? ' with no annual fee' : ''}`.trim(),
     description: row.description ?? undefined,
     longDescription: row.longDescription ?? undefined,
+    lastVerified: row.lastVerified.toISOString(),
     editorRating: row.editorRating != null ? Number(row.editorRating) : undefined,
     pros: row.pros.length > 0 ? row.pros : undefined,
     cons: row.cons.length > 0 ? row.cons : undefined,

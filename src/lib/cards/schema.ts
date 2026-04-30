@@ -50,6 +50,7 @@ export const cardRecordSchema = z.object({
   headline: z.string().min(1),
   description: z.string().optional(),
   longDescription: z.string().optional(),
+  lastVerified: z.string().datetime().optional(),
   editorRating: z.number().finite().optional(),
   pros: z.array(z.string()).optional(),
   cons: z.array(z.string()).optional(),
