@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { EntityImage } from '@/components/ui/entity-image';
+import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import type { CardRecord } from '@/lib/cards';
 
 type CardPickerProps = {
@@ -10,6 +12,40 @@ type CardPickerProps = {
   placeholder?: string;
   label?: string;
 };
+
+function CardPickerThumbnail({ card }: { card: CardRecord }) {
+  const cardImage = getCardImageDisplay({
+    slug: card.slug,
+    name: card.name,
+    issuer: card.issuer,
+    imageUrl: card.imageUrl,
+    imageAssetType: card.imageAssetType
+  });
+  const imageClassName =
+    cardImage.imageAssetType === 'brand_logo'
+      ? 'bg-black/10 px-1.5 py-1'
+      : cardImage.presentation.imgClassName;
+  const imageScale =
+    cardImage.imageAssetType === 'brand_logo'
+      ? Math.max(cardImage.presentation.scale ?? 1, 1.08)
+      : cardImage.presentation.scale;
+
+  return (
+    <EntityImage
+      src={cardImage.src}
+      alt={cardImage.alt}
+      label={cardImage.label}
+      className="h-11 w-[4.35rem] shrink-0 rounded-lg"
+      imgClassName={imageClassName}
+      fallbackClassName="bg-black/10"
+      fallbackTextClassName="text-xs sm:text-xs"
+      fallbackVariant={cardImage.fallbackVariant}
+      fit={cardImage.presentation.fit}
+      position={cardImage.presentation.position}
+      scale={imageScale}
+    />
+  );
+}
 
 export function CardPicker({
   cards,
@@ -180,8 +216,11 @@ export function CardPicker({
                     : 'text-text-secondary hover:bg-bg-surface'
                 } ${card.slug === selectedSlug ? 'border-l-2 border-brand-teal' : ''}`}
               >
-                <span className="min-w-[80px] text-xs text-text-muted">{card.issuer}</span>
-                <span className="text-text-primary">{card.name}</span>
+                <CardPickerThumbnail card={card} />
+                <span className="min-w-0">
+                  <span className="block text-xs text-text-muted">{card.issuer}</span>
+                  <span className="mt-0.5 block truncate text-text-primary">{card.name}</span>
+                </span>
               </button>
             ))
           )}

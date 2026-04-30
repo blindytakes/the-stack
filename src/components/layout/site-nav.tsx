@@ -24,22 +24,6 @@ const primaryNavItems: NavItem[] = [
   { href: '/blog', label: 'Blog' }
 ];
 
-const cardsNavItems: SubmenuNavItem[] = [
-  {
-    href: '/cards',
-    label: 'Browse Cards',
-    description: 'Explore the full card directory.',
-    activePath: '/cards',
-    exact: true
-  },
-  {
-    href: '/cards/compare',
-    label: 'Compare Cards',
-    description: 'See two cards side by side with real value math.',
-    activePath: '/cards/compare'
-  }
-];
-
 const toolNavItems: SubmenuNavItem[] = [
   {
     href: '/tools',
@@ -53,6 +37,12 @@ const toolNavItems: SubmenuNavItem[] = [
     label: 'Bonus Plan',
     description: 'Build a personalized bonus plan.',
     activePath: '/tools/card-finder'
+  },
+  {
+    href: '/cards/compare',
+    label: 'Compare Cards',
+    description: 'Run year-one and ongoing value math.',
+    activePath: '/cards/compare'
   },
   {
     href: '/tools/card-vs-card',
@@ -98,9 +88,7 @@ function isItemActive(pathname: string, item: { href?: string; activePath?: stri
 
 export function SiteNav() {
   const [open, setOpen] = useState(false);
-  const [cardsOpen, setCardsOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
-  const [mobileCardsOpen, setMobileCardsOpen] = useState(false);
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false);
   const [pulseTarget, setPulseTarget] = useState<string | null>(null);
   const pathname = usePathname();
@@ -112,9 +100,7 @@ export function SiteNav() {
 
   const closeAll = useCallback(() => {
     setOpen(false);
-    setCardsOpen(false);
     setToolsOpen(false);
-    setMobileCardsOpen(false);
     setMobileToolsOpen(false);
   }, []);
 
@@ -162,7 +148,7 @@ export function SiteNav() {
   }, [closeAll]);
 
   useEffect(() => {
-    if (!open && !cardsOpen && !toolsOpen) return;
+    if (!open && !toolsOpen) return;
 
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') closeAll();
@@ -180,7 +166,7 @@ export function SiteNav() {
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('mousedown', onClickOutside);
     };
-  }, [open, cardsOpen, toolsOpen, closeAll]);
+  }, [open, toolsOpen, closeAll]);
 
   return (
     <header
@@ -193,75 +179,15 @@ export function SiteNav() {
         </Link>
 
         <nav className="hidden items-center gap-6 text-lg text-text-secondary md:flex">
-          <div className="relative flex items-center gap-1">
-            <Link
-              href="/cards"
-              onClick={() => triggerNavPulse('desktop-cards')}
-              className={`${desktopNavLinkClassName} ${getPulseClassName('desktop-cards')} ${
-                cardsActive ? desktopNavActiveClassName : desktopNavInactiveClassName
-              }`}
-            >
-              Credit Cards
-            </Link>
-
-            <button
-              type="button"
-              aria-expanded={cardsOpen}
-              aria-haspopup="menu"
-              onClick={() => {
-                triggerNavPulse('desktop-cards-menu');
-                setCardsOpen((current) => !current);
-                setToolsOpen(false);
-              }}
-              className={`inline-flex items-center rounded-md p-1 transition hover:text-text-primary active:scale-95 ${getPulseClassName(
-                'desktop-cards-menu'
-              )} ${
-                cardsActive ? 'text-brand-teal' : 'text-text-secondary'
-              }`}
-              aria-label="Open credit cards menu"
-            >
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 20 20"
-                fill="none"
-                className={`transition-transform ${cardsOpen ? 'rotate-180' : ''}`}
-                aria-hidden
-              >
-                <path d="M5 8L10 13L15 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-
-            {cardsOpen ? (
-              <div
-                role="menu"
-                className="absolute left-1/2 top-[calc(100%+0.9rem)] z-50 w-[20rem] -translate-x-1/2 overflow-hidden rounded-[1.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.98),rgba(10,14,24,0.99))] p-2 shadow-[0_24px_70px_rgba(0,0,0,0.35)]"
-              >
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent)]" />
-                <div className="relative flex flex-col gap-1">
-                  {cardsNavItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      role="menuitem"
-                      onClick={() => {
-                        triggerNavPulse(`desktop-menu-${item.activePath}`);
-                        queueMenuClose();
-                      }}
-                      className={`rounded-[1rem] border px-4 py-3 transition ${getPulseClassName(
-                        `desktop-menu-${item.activePath}`
-                      )} ${
-                        isItemActive(pathname, item) ? menuItemActiveClassName : menuItemInactiveClassName
-                      }`}
-                    >
-                      <span className="block text-sm font-semibold text-text-primary">{item.label}</span>
-                      <span className="mt-1 block text-xs leading-5 text-text-secondary">{item.description}</span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
+          <Link
+            href="/cards"
+            onClick={() => triggerNavPulse('desktop-cards')}
+            className={`${desktopNavLinkClassName} ${getPulseClassName('desktop-cards')} ${
+              cardsActive ? desktopNavActiveClassName : desktopNavInactiveClassName
+            }`}
+          >
+            Credit Cards
+          </Link>
 
           {primaryNavItems.slice(0, 2).map((item) => (
             <Link
@@ -284,7 +210,6 @@ export function SiteNav() {
               onClick={() => {
                 triggerNavPulse('desktop-tools');
                 setToolsOpen((current) => !current);
-                setCardsOpen(false);
               }}
               className={`${desktopNavLinkClassName} inline-flex items-center gap-2 ${getPulseClassName('desktop-tools')} ${
                 toolsActive ? desktopNavActiveClassName : desktopNavInactiveClassName
@@ -360,9 +285,7 @@ export function SiteNav() {
             onClick={() =>
               setOpen((current) => {
                 const next = !current;
-                setCardsOpen(false);
                 setToolsOpen(false);
-                setMobileCardsOpen(next && cardsActive);
                 setMobileToolsOpen(next && toolsActive);
                 return next;
               })
@@ -389,56 +312,20 @@ export function SiteNav() {
       {open ? (
         <nav className="border-t border-white/5 bg-[linear-gradient(180deg,rgba(18,24,27,0.98)_0%,rgba(10,10,15,0.98)_100%)] shadow-[inset_0_1px_0_rgba(45,212,191,0.08)] md:hidden">
           <div className="container-page flex flex-col gap-1 py-4">
-            <div className="rounded-xl border border-white/8 bg-white/[0.02]">
-              <button
-                type="button"
-                onClick={() => {
-                  triggerNavPulse('mobile-cards-menu');
-                  setMobileCardsOpen((current) => !current);
-                }}
-                className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-base transition hover:bg-bg-surface hover:text-text-primary ${getPulseClassName(
-                  'mobile-cards-menu'
-                )} ${
-                  cardsActive ? mobileItemActiveClassName : mobileItemInactiveClassName
-                }`}
-                aria-expanded={mobileCardsOpen}
-              >
-                <span>Credit Cards</span>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  className={`transition-transform ${mobileCardsOpen ? 'rotate-180' : ''}`}
-                  aria-hidden
-                >
-                  <path d="M5 8L10 13L15 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
-
-              {mobileCardsOpen ? (
-                <div className="mx-4 mb-3 flex flex-col gap-1 border-l border-white/10 pl-3">
-                  {cardsNavItems.map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => {
-                        triggerNavPulse(`mobile-menu-${item.activePath}`);
-                        queueMenuClose();
-                      }}
-                      className={`rounded-xl border px-4 py-3 text-base transition hover:bg-bg-surface hover:text-text-primary ${getPulseClassName(
-                        `mobile-menu-${item.activePath}`
-                      )} ${
-                        isItemActive(pathname, item) ? mobileItemActiveClassName : mobileItemInactiveClassName
-                      }`}
-                    >
-                      <span className="block font-medium">{item.label}</span>
-                      <span className="mt-1 block text-xs leading-5 text-text-muted">{item.description}</span>
-                    </Link>
-                  ))}
-                </div>
-              ) : null}
-            </div>
+            <Link
+              href="/cards"
+              onClick={() => {
+                triggerNavPulse('mobile-cards');
+                queueMenuClose();
+              }}
+              className={`rounded-xl border px-4 py-3 text-base transition hover:bg-bg-surface hover:text-text-primary ${getPulseClassName(
+                'mobile-cards'
+              )} ${
+                cardsActive ? mobileItemActiveClassName : mobileItemInactiveClassName
+              }`}
+            >
+              Credit Cards
+            </Link>
 
             {primaryNavItems.slice(0, 2).map((item) => (
               <Link

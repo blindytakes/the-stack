@@ -81,7 +81,6 @@ describe('card-compare', () => {
         travel: 0,
         gas: 0,
         online_shopping: 0,
-        streaming: 0,
         general: 1000
       },
       creditUsagePercent: 50,
@@ -129,7 +128,6 @@ describe('card-compare', () => {
         travel: 0,
         gas: 0,
         online_shopping: 0,
-        streaming: 0,
         general: 0
       }
     });
@@ -167,7 +165,6 @@ describe('card-compare', () => {
         travel: 0,
         gas: 0,
         online_shopping: 0,
-        streaming: 0,
         general: 2000
       },
       creditUsagePercent: 100
@@ -197,7 +194,6 @@ describe('card-compare', () => {
         travel: 0,
         gas: 0,
         online_shopping: 0,
-        streaming: 0,
         general: 1000
       },
       creditUsagePercent: 50

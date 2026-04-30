@@ -295,6 +295,7 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
                         {compareCandidates[0] ? (
                           <Link
                             href={compareCandidates[0].compareHref}
+                            scroll
                             className="rounded-[0.9rem] px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-white/[0.04] hover:text-brand-teal"
                           >
                             Compare against alternatives
@@ -557,7 +558,7 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
 
       {compareCandidates.length > 0 ? (
         <section className="mt-6 rounded-[1.6rem] border border-white/10 bg-bg-elevated/60 p-5">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-brand-teal">Compare Next</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-brand-teal">Compare Next</p>
           <h2 className="mt-2 font-heading text-2xl text-text-primary">
             Pressure-test this card against real alternatives
           </h2>
@@ -605,6 +606,7 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
                   </div>
                   <Link
                     href={candidate.compareHref}
+                    scroll
                     className="mt-auto inline-flex pt-4 text-sm font-semibold text-brand-teal transition hover:underline"
                   >
                     Compare these cards

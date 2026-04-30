@@ -5,7 +5,6 @@ import { startTransition, useEffect, useMemo, useState } from 'react';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { CardVsCardComparison } from '@/components/tools/card-vs-card-sections';
 import { CardPicker } from '@/components/ui/card-picker';
-import { Button } from '@/components/ui/button';
 import { EntityImage } from '@/components/ui/entity-image';
 import { fetchCardDetail } from '@/lib/cards-client';
 import type { CardDetail, CardRecord } from '@/lib/cards';
@@ -29,66 +28,82 @@ type CardsCompareExperienceProps = {
   initialCardB: CardDetail | null;
 };
 
-type AssumptionPreset = {
-  id: string;
-  label: string;
-  pointValueCents: number;
-  creditUsagePercent: number;
-  monthlySpend: typeof defaultCardComparisonAssumptions.monthlySpend;
-};
-
 const spendLabels: Record<CardComparisonSpendCategory, string> = {
   dining: 'Dining',
   groceries: 'Groceries',
   travel: 'Travel',
   gas: 'Gas',
   online_shopping: 'Online Shopping',
-  streaming: 'Streaming',
   general: 'General'
 };
 
-const assumptionPresets: AssumptionPreset[] = [
+const spendInputTones: Record<
+  CardComparisonSpendCategory,
   {
-    id: 'balanced',
-    label: 'Balanced',
-    pointValueCents: 1.5,
-    creditUsagePercent: 70,
-    monthlySpend: defaultCardComparisonAssumptions.monthlySpend
-  },
-  {
-    id: 'traveler',
-    label: 'Traveler',
-    pointValueCents: 1.8,
-    creditUsagePercent: 85,
-    monthlySpend: {
-      dining: 500,
-      groceries: 450,
-      travel: 700,
-      gas: 120,
-      online_shopping: 180,
-      streaming: 40,
-      general: 650
-    }
-  },
-  {
-    id: 'everyday',
-    label: 'Everyday',
-    pointValueCents: 1.2,
-    creditUsagePercent: 55,
-    monthlySpend: {
-      dining: 350,
-      groceries: 850,
-      travel: 120,
-      gas: 220,
-      online_shopping: 260,
-      streaming: 45,
-      general: 900
-    }
+    labelClassName: string;
+    prefixClassName: string;
   }
-];
+> = {
+  dining: {
+    labelClassName: 'text-brand-gold',
+    prefixClassName: 'text-brand-gold'
+  },
+  groceries: {
+    labelClassName: 'text-brand-teal',
+    prefixClassName: 'text-brand-teal'
+  },
+  travel: {
+    labelClassName: 'text-[#7dd3fc]',
+    prefixClassName: 'text-[#7dd3fc]'
+  },
+  gas: {
+    labelClassName: 'text-brand-coral',
+    prefixClassName: 'text-brand-coral'
+  },
+  online_shopping: {
+    labelClassName: 'text-[#c4b5fd]',
+    prefixClassName: 'text-[#c4b5fd]'
+  },
+  general: {
+    labelClassName: 'text-text-secondary',
+    prefixClassName: 'text-text-secondary'
+  }
+};
 
 function formatMoney(value: number) {
   return `$${Math.round(value).toLocaleString()}`;
+}
+
+function buildWinnerMetric({
+  winner,
+  aName,
+  bName,
+  aValue,
+  bValue
+}: {
+  winner: 'a' | 'b' | 'tie';
+  aName: string;
+  bName: string;
+  aValue: number;
+  bValue: number;
+}) {
+  if (winner === 'tie') {
+    return {
+      title: 'Tie',
+      delta: 'No meaningful gap',
+      detail: `${formatMoney(aValue)} vs ${formatMoney(bValue)}`
+    };
+  }
+
+  const winnerName = winner === 'a' ? aName : bName;
+  const winnerValue = winner === 'a' ? aValue : bValue;
+  const loserValue = winner === 'a' ? bValue : aValue;
+
+  return {
+    title: winnerName,
+    delta: `Wins by ${formatMoney(Math.abs(winnerValue - loserValue))}`,
+    detail: `${formatMoney(winnerValue)} vs ${formatMoney(loserValue)}`
+  };
 }
 
 function buildComparisonHref(slugA: string, slugB: string) {
@@ -188,19 +203,21 @@ function useCompareCardDetail(
 function AssumptionInput({
   label,
   value,
-  onChange
+  onChange,
+  tone
 }: {
   label: string;
   value: number;
   onChange: (value: number) => void;
+  tone: (typeof spendInputTones)[CardComparisonSpendCategory];
 }) {
   return (
-    <label className="rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-3.5 py-3">
-      <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+    <label className="rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+      <span className={`block text-sm font-semibold uppercase tracking-[0.14em] ${tone.labelClassName}`}>
         {label}
       </span>
-      <div className="mt-2 flex items-center rounded-full border border-white/10 bg-bg px-3">
-        <span className="text-sm text-text-muted">$</span>
+      <div className="mt-3 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center rounded-full border border-white/10 bg-black/20 px-3 transition focus-within:border-white/30">
+        <span className={`text-lg font-semibold ${tone.prefixClassName}`}>$</span>
         <input
           type="number"
           min={0}
@@ -208,9 +225,9 @@ function AssumptionInput({
           inputMode="numeric"
           value={value}
           onChange={(event) => onChange(Number(event.target.value) || 0)}
-          className="w-full bg-transparent px-2 py-2.5 text-sm text-text-primary outline-none"
+          className="w-full bg-transparent px-2 py-3 text-center text-2xl font-semibold text-text-primary outline-none"
         />
-        <span className="text-xs text-text-muted">/mo</span>
+        <span className="text-sm font-medium text-text-muted">/mo</span>
       </div>
     </label>
   );
@@ -232,6 +249,49 @@ function SummaryMetric({
       <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">{label}</p>
       <p className={`mt-1.5 text-lg font-semibold ${tone}`}>{value}</p>
       <p className="mt-1 text-xs leading-5 text-text-muted">{detail}</p>
+    </div>
+  );
+}
+
+function SelectedCompareCardPreview({ card }: { card: CardRecord | null }) {
+  if (!card) {
+    return (
+      <div className="mb-3 flex aspect-[1.586/1] w-full items-center justify-center rounded-[1.25rem] border border-dashed border-white/12 bg-black/10 px-4 text-center text-sm text-text-muted">
+        Select a card
+      </div>
+    );
+  }
+
+  const cardImage = getCardImageDisplay({
+    slug: card.slug,
+    name: card.name,
+    issuer: card.issuer,
+    imageUrl: card.imageUrl,
+    imageAssetType: card.imageAssetType
+  });
+  const imageClassName =
+    cardImage.imageAssetType === 'brand_logo'
+      ? 'bg-black/10 px-2 py-1'
+      : cardImage.presentation.imgClassName;
+  const imageScale =
+    cardImage.imageAssetType === 'brand_logo'
+      ? Math.max(cardImage.presentation.scale ?? 1, 1.16)
+      : cardImage.presentation.scale;
+
+  return (
+    <div className="mb-3 rounded-[1.25rem] border border-white/10 bg-black/15 p-1.5">
+      <EntityImage
+        src={cardImage.src}
+        alt={cardImage.alt}
+        label={cardImage.label}
+        className="mx-auto aspect-[1.586/1] w-full rounded-[1rem]"
+        imgClassName={imageClassName}
+        fallbackClassName="bg-black/10"
+        fallbackVariant={cardImage.fallbackVariant}
+        fit={cardImage.presentation.fit}
+        position={cardImage.presentation.position}
+        scale={imageScale}
+      />
     </div>
   );
 }
@@ -442,10 +502,13 @@ export function CardsCompareExperience({
   const [slugA, setSlugA] = useState<string | null>(initialSlugA);
   const [slugB, setSlugB] = useState<string | null>(initialSlugB);
   const [assumptions, setAssumptions] = useState(defaultCardComparisonAssumptions);
-  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle');
 
   const detailA = useCompareCardDetail(slugA, initialCardA);
   const detailB = useCompareCardDetail(slugB, initialCardB);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -459,12 +522,6 @@ export function CardsCompareExperience({
 
     window.history.replaceState(window.history.state, '', nextUrl.toString());
   }, [slugA, slugB]);
-
-  useEffect(() => {
-    if (copyState !== 'copied') return;
-    const timer = window.setTimeout(() => setCopyState('idle'), 2000);
-    return () => window.clearTimeout(timer);
-  }, [copyState]);
 
   const comparison = useMemo(() => {
     if (!detailA.card || !detailB.card) return null;
@@ -499,49 +556,37 @@ export function CardsCompareExperience({
     });
   }
 
-  function applyPreset(preset: AssumptionPreset) {
-    startTransition(() => {
-      setAssumptions(
-        normalizeCardComparisonAssumptions({
-          monthlySpend: preset.monthlySpend,
-          pointValueCents: preset.pointValueCents,
-          creditUsagePercent: preset.creditUsagePercent
-        })
-      );
-    });
-  }
-
-  async function copyLink() {
-    if (typeof window === 'undefined') return;
-
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopyState('copied');
-    } catch {
-      setCopyState('error');
-    }
-  }
-
   const loading = detailA.loading || detailB.loading;
   const error = detailA.error || detailB.error;
   const compareSourcePath = slugA && slugB ? buildComparisonHref(slugA, slugB) : null;
-  const winningSummary =
-    comparison?.overallWinner === 'a'
-      ? comparison.a
-      : comparison?.overallWinner === 'b'
-        ? comparison.b
-        : null;
-  const primaryPlanHref = winningSummary
-    ? buildSelectedOfferIntentHref({
-        lane: 'cards',
-        slug: winningSummary.card.slug,
-        audience: winningSummary.card.cardType === 'business' ? 'business' : undefined,
-        sourcePath: compareSourcePath
+  const selectedCardA = useMemo(() => cards.find((card) => card.slug === slugA) ?? null, [cards, slugA]);
+  const selectedCardB = useMemo(() => cards.find((card) => card.slug === slugB) ?? null, [cards, slugB]);
+  const monthlySpendTotal = useMemo(
+    () =>
+      cardComparisonSpendCategories.reduce(
+        (sum, category) => sum + assumptions.monthlySpend[category],
+        0
+      ),
+    [assumptions.monthlySpend]
+  );
+  const yearOneMetric = comparison
+    ? buildWinnerMetric({
+        winner: comparison.firstYearWinner,
+        aName: comparison.a.card.name,
+        bName: comparison.b.card.name,
+        aValue: comparison.a.firstYearValue,
+        bValue: comparison.b.firstYearValue
       })
-    : '/tools/card-finder?mode=full';
-  const primaryPlanLabel = winningSummary
-    ? `Build around ${winningSummary.card.name}`
-    : 'Build a bonus plan';
+    : null;
+  const keeperMetric = comparison
+    ? buildWinnerMetric({
+        winner: comparison.ongoingWinner,
+        aName: comparison.a.card.name,
+        bName: comparison.b.card.name,
+        aValue: comparison.a.ongoingValue,
+        bValue: comparison.b.ongoingValue
+      })
+    : null;
 
   return (
     <div className="space-y-8">
@@ -557,38 +602,25 @@ export function CardsCompareExperience({
 
         <div className="relative">
           <div className="flex flex-wrap items-start justify-between gap-4">
-            <div className="max-w-3xl">
+            <div className="w-full">
               <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-teal">
                 Compare Cards
               </p>
               <h1 className="mt-4 font-heading text-[clamp(2.7rem,5vw,4.9rem)] leading-[0.94] tracking-[-0.05em] text-text-primary">
-                See which card actually wins for your spend.
+                Stack up the better credit card
               </h1>
-              <p className="mt-4 max-w-2xl text-[1.02rem] leading-7 text-text-secondary">
-                This page compares year-one value, ongoing value, welcome-offer difficulty, usable credits,
-                and transfer flexibility under your own assumptions instead of generic rankings.
+              <p className="mt-4 w-full text-xl leading-8 text-text-secondary lg:whitespace-nowrap">
+                Compare two cards side by side with your real spend, credits, fees, and rewards.
               </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="ghost" onClick={copyLink} className="px-4 py-2.5">
-                {copyState === 'copied'
-                  ? 'Link copied'
-                  : copyState === 'error'
-                    ? 'Copy failed'
-                    : 'Copy compare link'}
-              </Button>
-              <Link
-                href={primaryPlanHref}
-                className="inline-flex items-center rounded-full bg-brand-teal px-5 py-2.5 text-sm font-semibold text-black transition hover:opacity-90"
-              >
-                {primaryPlanLabel}
-              </Link>
             </div>
           </div>
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-end">
-            <CardPicker cards={cards} selectedSlug={slugA} onSelect={handleSelectA} label="Card A" />
+          <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center">
+            <div>
+              <p className="mb-2 text-center text-sm font-semibold uppercase tracking-[0.18em] text-text-muted">Card A</p>
+              <SelectedCompareCardPreview card={selectedCardA} />
+              <CardPicker cards={cards} selectedSlug={slugA} onSelect={handleSelectA} />
+            </div>
             <div className="flex items-center justify-center">
               <button
                 type="button"
@@ -601,105 +633,107 @@ export function CardsCompareExperience({
                 Swap
               </button>
             </div>
-            <CardPicker cards={cards} selectedSlug={slugB} onSelect={handleSelectB} label="Card B" />
+            <div>
+              <p className="mb-2 text-center text-sm font-semibold uppercase tracking-[0.18em] text-text-muted">Card B</p>
+              <SelectedCompareCardPreview card={selectedCardB} />
+              <CardPicker cards={cards} selectedSlug={slugB} onSelect={handleSelectB} />
+            </div>
           </div>
 
           <div className="mt-8 rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-4 md:p-5">
-            <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="flex flex-col gap-4 text-center md:flex-row md:items-center md:justify-between md:text-left">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.22em] text-text-muted">Assumptions</p>
-                <h2 className="mt-2 text-xl font-semibold text-text-primary">Pressure-test the math</h2>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary">
-                  Rewards use your annual spend mix. Credits are discounted by your usage slider. Points and miles use
-                  your valuation assumption.
-                </p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-muted">Assumptions</p>
+                <h2 className="mt-2 text-2xl font-semibold text-text-primary">Pressure-test the math</h2>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {assumptionPresets.map((preset) => (
-                  <button
-                    key={preset.id}
-                    type="button"
-                    onClick={() => applyPreset(preset)}
-                    className="rounded-full border border-white/10 px-3.5 py-1.5 text-xs font-semibold text-text-secondary transition hover:border-white/25 hover:text-text-primary"
-                  >
-                    {preset.label}
-                  </button>
-                ))}
+              <div className="rounded-[1rem] border border-white/10 bg-black/15 px-5 py-3 text-center md:min-w-[12rem] md:text-right">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">Monthly Total</p>
+                <p className="mt-1 text-2xl font-semibold text-text-primary">{formatMoney(monthlySpendTotal)}</p>
               </div>
             </div>
 
-            <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
               {cardComparisonSpendCategories.map((category) => (
                 <AssumptionInput
                   key={category}
                   label={spendLabels[category]}
                   value={assumptions.monthlySpend[category]}
                   onChange={(value) => handleSpendChange(category, value)}
+                  tone={spendInputTones[category]}
                 />
               ))}
             </div>
 
-            <div className="mt-5 grid gap-4 lg:grid-cols-2">
-              <label className="rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                    Point Value
-                  </span>
-                  <span className="text-sm font-semibold text-text-primary">
-                    {assumptions.pointValueCents.toFixed(1)} cpp
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={1}
-                  max={2.5}
-                  step={0.1}
-                  value={assumptions.pointValueCents}
-                  onChange={(event) =>
-                    setAssumptions((current) =>
-                      normalizeCardComparisonAssumptions({
-                        ...current,
-                        pointValueCents: Number(event.target.value)
-                      })
-                    )
-                  }
-                  className="mt-4 w-full accent-brand-teal"
-                />
-                <p className="mt-2 text-xs leading-5 text-text-muted">
-                  Used for points and miles cards. Cash-back cards stay fixed.
-                </p>
-              </label>
+            <details className="group mt-5 rounded-[1.2rem] border border-white/10 bg-white/[0.025]">
+              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-text-secondary transition hover:text-text-primary [&::-webkit-details-marker]:hidden">
+                <span>Advanced assumptions</span>
+                <span className="text-base leading-none text-text-muted transition group-open:rotate-45">
+                  +
+                </span>
+              </summary>
 
-              <label className="rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                    Credit Usage
-                  </span>
-                  <span className="text-sm font-semibold text-text-primary">
-                    {assumptions.creditUsagePercent}%
-                  </span>
-                </div>
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={5}
-                  value={assumptions.creditUsagePercent}
-                  onChange={(event) =>
-                    setAssumptions((current) =>
-                      normalizeCardComparisonAssumptions({
-                        ...current,
-                        creditUsagePercent: Number(event.target.value)
-                      })
-                    )
-                  }
-                  className="mt-4 w-full accent-brand-gold"
-                />
-                <p className="mt-2 text-xs leading-5 text-text-muted">
-                  This discounts recurring credits so the page does not assume perfect usage.
-                </p>
-              </label>
-            </div>
+              <div className="grid gap-4 border-t border-white/8 p-4 lg:grid-cols-2">
+                <label className="rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                      Point Value
+                    </span>
+                    <span className="text-sm font-semibold text-text-primary">
+                      {assumptions.pointValueCents.toFixed(1)} cpp
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={1}
+                    max={2.5}
+                    step={0.1}
+                    value={assumptions.pointValueCents}
+                    onChange={(event) =>
+                      setAssumptions((current) =>
+                        normalizeCardComparisonAssumptions({
+                          ...current,
+                          pointValueCents: Number(event.target.value)
+                        })
+                      )
+                    }
+                    className="mt-4 w-full accent-brand-teal"
+                  />
+                  <p className="mt-2 text-xs leading-5 text-text-muted">
+                    Used for points and miles cards. Cash-back cards stay fixed.
+                  </p>
+                </label>
+
+                <label className="rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                      Credit Usage
+                    </span>
+                    <span className="text-sm font-semibold text-text-primary">
+                      {assumptions.creditUsagePercent}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={5}
+                    value={assumptions.creditUsagePercent}
+                    onChange={(event) =>
+                      setAssumptions((current) =>
+                        normalizeCardComparisonAssumptions({
+                          ...current,
+                          creditUsagePercent: Number(event.target.value)
+                        })
+                      )
+                    }
+                    className="mt-4 w-full accent-brand-gold"
+                  />
+                  <p className="mt-2 text-xs leading-5 text-text-muted">
+                    This discounts recurring credits so the page does not assume perfect usage.
+                  </p>
+                </label>
+              </div>
+            </details>
           </div>
         </div>
       </section>
@@ -733,23 +767,15 @@ export function CardsCompareExperience({
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="rounded-[1.1rem] border border-white/10 bg-black/15 px-4 py-3">
                   <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Year One Winner</p>
-                  <p className="mt-2 text-sm font-semibold text-text-primary">
-                    {comparison.firstYearWinner === 'tie'
-                      ? 'Tie'
-                      : comparison.firstYearWinner === 'a'
-                        ? comparison.a.card.name
-                        : comparison.b.card.name}
-                  </p>
+                  <p className="mt-2 text-sm font-semibold text-text-primary">{yearOneMetric?.title}</p>
+                  <p className="mt-1 text-lg font-semibold text-brand-gold">{yearOneMetric?.delta}</p>
+                  <p className="mt-1 text-xs text-text-muted">{yearOneMetric?.detail}</p>
                 </div>
                 <div className="rounded-[1.1rem] border border-white/10 bg-black/15 px-4 py-3">
                   <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Keeper Winner</p>
-                  <p className="mt-2 text-sm font-semibold text-text-primary">
-                    {comparison.ongoingWinner === 'tie'
-                      ? 'Tie'
-                      : comparison.ongoingWinner === 'a'
-                        ? comparison.a.card.name
-                        : comparison.b.card.name}
-                  </p>
+                  <p className="mt-2 text-sm font-semibold text-text-primary">{keeperMetric?.title}</p>
+                  <p className="mt-1 text-lg font-semibold text-brand-teal">{keeperMetric?.delta}</p>
+                  <p className="mt-1 text-xs text-text-muted">{keeperMetric?.detail}</p>
                 </div>
               </div>
             </div>
