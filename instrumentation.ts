@@ -2,6 +2,11 @@ import { registerOTel } from '@vercel/otel';
 import { getOTelExporterEnvStatus } from '@/lib/observability-config';
 
 export function register() {
+  if (process.env.NEXT_RUNTIME !== 'nodejs') {
+    registerOTel({ serviceName: 'the-stack' });
+    return;
+  }
+
   const otelEnv = getOTelExporterEnvStatus();
 
   if (!otelEnv.configured) {
@@ -30,5 +35,10 @@ export function register() {
       exporter: new OTLPMetricExporter(),
       exportIntervalMillis: 60000
     })
+  });
+  console.info('[otel] Registered OTLP exporters for the-stack', {
+    endpointConfigured: otelEnv.endpointConfigured,
+    headersConfigured: otelEnv.headersConfigured,
+    protocol: otelEnv.protocol
   });
 }
