@@ -1299,9 +1299,9 @@ export function PremiumCardCalculator() {
                   {pointsAdvisorHref ? (
                     <Link
                       href={pointsAdvisorHref}
-                      className="inline-flex min-w-[13.75rem] items-center justify-center rounded-full border border-white/10 px-7 py-3 text-base font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
+                      className="inline-flex min-w-[13.75rem] items-center justify-center rounded-full border border-white/10 px-7 py-3 text-center text-base font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
                     >
-                      See best use for these points
+                      Go To Points Calculator
                     </Link>
                   ) : null}
                   <Button

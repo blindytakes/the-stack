@@ -2,17 +2,11 @@ import Link from 'next/link';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { AffiliateLink } from '@/components/analytics/affiliate-link';
 import { EntityImage } from '@/components/ui/entity-image';
-import { DetailPageDismissButton } from '@/components/ui/detail-page-dismiss-button';
 import { getCardImageDisplay } from '@/lib/card-image-presentation';
-import {
-  buildCardComparisonCardSummary,
-  defaultCardComparisonAssumptions
-} from '@/lib/card-compare';
 import type { CardDetail, CardRecord, SpendingCategoryValue } from '@/lib/cards';
 import {
   formatCardCreditTier,
   formatCardCurrency,
-  formatCardSpendWindow,
   getCardDecisionMetrics,
   isOffsettingCreditBenefit
 } from '@/lib/cards/presentation-metrics';
@@ -136,19 +130,11 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
     imageUrl: card.imageUrl,
     imageAssetType: card.imageAssetType
   });
-  const summary = buildCardComparisonCardSummary(card, defaultCardComparisonAssumptions);
-  const activeBonuses = card.signUpBonuses.filter((bonus) => bonus.isCurrentOffer !== false);
-  const bonusCandidates = activeBonuses.length > 0 ? activeBonuses : card.signUpBonuses;
-  const primaryBonus = [...bonusCandidates].sort((a, b) => b.bonusValue - a.bonusValue)[0];
   const applyHref = buildApplyHref(card);
   const pointsAdvisorProgramId = getPointsAdvisorProgramFromCardSlug(card.slug);
   const pointsAdvisorHref = pointsAdvisorProgramId
     ? buildPointsAdvisorHref({ programId: pointsAdvisorProgramId })
     : null;
-  const assumptionMonthlySpend = Object.values(defaultCardComparisonAssumptions.monthlySpend).reduce(
-    (sum, value) => sum + value,
-    0
-  );
   const topRewards = [...card.rewards]
     .sort((a, b) => b.rate - a.rate)
     .slice(0, 4);
@@ -158,35 +144,35 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
     .slice(0, 4);
   const compareCandidates = buildCompareCandidates(card, cards);
   const displayCategories = normalizeCategories(card.topCategories);
+  const decisionMetrics = getCardDecisionMetrics(card);
+  const heroDecisionMetrics = [
+    ...decisionMetrics.filter((metric) => metric.label === 'Bonus ROI'),
+    ...decisionMetrics.filter((metric) => metric.label !== 'Bonus ROI')
+  ];
+  const useSingleLineTitle = card.name.length <= 26;
 
   return (
-    <div className="container-page pt-12 pb-16">
+    <div className="container-page pt-5 pb-16 md:pt-8">
       <TrackFunnelEventOnView
         event="card_detail_view"
         properties={{ source: 'card_detail_page', card_slug: card.slug, path: `/cards/${card.slug}` }}
       />
 
-      <section className="relative overflow-hidden rounded-[2.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,12,20,0.99),rgba(12,18,30,0.97))] px-5 py-8 shadow-[0_28px_90px_rgba(0,0,0,0.3)] md:px-8 md:py-10">
+      <section className="relative overflow-hidden rounded-[2.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,12,20,0.99),rgba(12,18,30,0.97))] px-5 py-5 shadow-[0_28px_90px_rgba(0,0,0,0.3)] md:px-8 md:py-8">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
         <div className="pointer-events-none absolute -left-10 top-[-2rem] h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(45,212,191,0.16),transparent_72%)] blur-3xl" />
         <div className="pointer-events-none absolute right-[-3rem] top-8 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.08),transparent_72%)] blur-3xl" />
 
         <div className="relative">
-          <DetailPageDismissButton
-            fallbackHref="/cards"
-            ariaLabel="Close card details"
-            className="absolute right-0 top-0 z-10"
-          />
-
-          <Link
-            href="/cards"
-            className="inline-flex items-center text-sm font-medium text-text-muted transition hover:text-text-primary"
-          >
-            Back to cards
-          </Link>
-
-          <div className="mt-6 grid gap-8 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
+          <div className="grid gap-8 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
             <div>
+              <Link
+                href="/cards"
+                className="mb-4 inline-flex items-center text-sm font-medium text-text-muted transition hover:text-text-primary"
+              >
+                Back to cards
+              </Link>
+
               <div
                 className={`overflow-hidden rounded-[1.4rem] border border-white/10 shadow-[0_16px_42px_rgba(0,0,0,0.22)] ${
                   cardImage.imageAssetType === 'card_art' ? 'bg-black/20 p-0' : 'bg-black/10 p-2.5'
@@ -213,16 +199,19 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
                     slug: card.slug,
                     audience: card.cardType === 'business' ? 'business' : undefined
                   })}
-                  className="inline-flex items-center justify-center rounded-full bg-brand-teal px-5 py-3.5 text-base font-semibold text-black transition hover:opacity-90"
+                  className="inline-flex min-h-[4.75rem] items-center justify-center rounded-full bg-brand-teal px-5 py-3.5 text-center text-lg font-semibold leading-tight text-black transition hover:opacity-90"
                 >
-                  Build my plan with this card
+                  <span className="block">
+                    <span className="block">Build my bonus plan</span>
+                    <span className="block">with this card</span>
+                  </span>
                 </Link>
                 {pointsAdvisorHref ? (
                   <Link
                     href={pointsAdvisorHref}
-                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-3.5 text-base font-semibold text-text-primary transition hover:border-white/30 hover:text-brand-teal"
+                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-3.5 text-center text-base font-semibold text-text-primary transition hover:border-white/30 hover:text-brand-teal"
                   >
-                    See best use for these points
+                    Go To Points Calculator
                   </Link>
                 ) : null}
                 {compareCandidates[0] ? (
@@ -238,9 +227,9 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
                     href={applyHref}
                     cardSlug={card.slug}
                     source="card_detail_page"
-                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-3.5 text-base font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
+                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-3.5 text-center text-base font-semibold text-text-primary transition hover:border-brand-teal/40 hover:text-brand-teal"
                   >
-                    View current offer
+                    Apply for this offer
                   </AffiliateLink>
                 ) : null}
               </div>
@@ -250,7 +239,13 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
               <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-brand-teal">
                 {card.issuer}
               </p>
-              <h1 className="mt-4 max-w-[14ch] font-heading text-[clamp(2.8rem,5vw,4.8rem)] leading-[0.94] tracking-[-0.05em] text-text-primary">
+              <h1
+                className={`mt-4 font-heading text-text-primary ${
+                  useSingleLineTitle
+                    ? 'max-w-full whitespace-nowrap text-[1.4rem] leading-none tracking-[-0.03em] sm:text-[3.2rem] sm:tracking-[-0.04em] lg:text-[4.2rem] xl:text-[4.8rem]'
+                    : 'max-w-[14ch] text-[2.8rem] leading-[0.94] tracking-[-0.05em] md:text-[4rem] xl:text-[4.8rem]'
+                }`}
+              >
                 {card.name}
               </h1>
               <p className="mt-4 max-w-3xl text-[1.02rem] leading-7 text-text-secondary">
@@ -277,80 +272,33 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
                 </span>
               </div>
 
-              <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                <div className="rounded-[1.15rem] border border-brand-gold/20 bg-white/[0.03] p-4">
-                  <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">Year-one value</p>
-                  <p className="mt-2 text-[2.05rem] font-semibold leading-none text-brand-gold">
-                    {formatCardCurrency(summary.firstYearValue)}
-                  </p>
-                  <p className="mt-2 text-xs leading-5 text-text-secondary">
-                    Balanced assumption model with the welcome offer included.
-                  </p>
-                </div>
-                <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] p-4">
-                  <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">Ongoing value</p>
-                  <p className="mt-2 text-[2.05rem] font-semibold leading-none text-text-primary">
-                    {formatCardCurrency(summary.ongoingValue)}
-                  </p>
-                  <p className="mt-2 text-xs leading-5 text-text-secondary">
-                    Rewards plus usable credits minus the annual fee.
-                  </p>
-                </div>
-                <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] p-4">
-                  <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">Welcome offer</p>
-                  <p className="mt-2 text-[2.05rem] font-semibold leading-none text-text-primary">
-                    {summary.welcomeOfferValue > 0 ? formatCardCurrency(summary.welcomeOfferValue) : 'None'}
-                  </p>
-                  <p className="mt-2 text-xs leading-5 text-text-secondary">
-                    {primaryBonus
-                      ? `${formatCardCurrency(primaryBonus.spendRequired)} in ${formatCardSpendWindow(primaryBonus.spendPeriodDays, { abbreviated: false }) ?? 'the issuer window'}`
-                      : 'No active welcome-offer hurdle in the dataset.'}
-                  </p>
-                </div>
-                <div className="rounded-[1.15rem] border border-white/10 bg-white/[0.03] p-4">
-                  <p className="text-[10px] uppercase tracking-[0.24em] text-text-muted">Usable credits</p>
-                  <p className="mt-2 text-[2.05rem] font-semibold leading-none text-text-primary">
-                    {summary.usedCreditsValue > 0 ? formatCardCurrency(summary.usedCreditsValue) : 'None'}
-                  </p>
-                  <p className="mt-2 text-xs leading-5 text-text-secondary">
-                    Assumes {defaultCardComparisonAssumptions.creditUsagePercent}% real-world usage.
-                  </p>
-                </div>
-              </div>
-
-              <div className="mt-4 rounded-[1.2rem] border border-white/10 bg-black/15 px-4 py-3 text-sm leading-6 text-text-secondary">
-                Modeled on a balanced {formatCardCurrency(assumptionMonthlySpend)}/month spend mix,{' '}
-                {defaultCardComparisonAssumptions.pointValueCents.toFixed(1)} cpp point valuation, and{' '}
-                {defaultCardComparisonAssumptions.creditUsagePercent}% credit usage.
+              <div className="mt-7 grid gap-3.5 sm:grid-cols-2 xl:grid-cols-5">
+                {heroDecisionMetrics.map((stat) => (
+                  <div
+                    key={stat.label}
+                    className="flex min-h-[7rem] flex-col items-center justify-center rounded-xl border border-white/10 bg-white/[0.035] px-4 py-4 text-center sm:min-h-[7.5rem]"
+                  >
+                    <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">{stat.label}</p>
+                    <p
+                      className={`mt-2.5 text-lg font-semibold leading-none sm:text-xl ${
+                        stat.tone === 'positive'
+                          ? 'text-brand-teal'
+                          : stat.tone === 'warning'
+                            ? 'text-brand-gold'
+                            : stat.tone === 'negative'
+                              ? 'text-brand-coral'
+                              : 'text-text-primary'
+                      }`}
+                    >
+                      {stat.value}
+                    </p>
+                    <p className="mt-2.5 text-xs leading-4 text-text-muted">{stat.detail}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
-      </section>
-
-      <section className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-        {getCardDecisionMetrics(card).map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-xl border border-white/10 bg-bg-elevated/70 px-3.5 py-3"
-          >
-            <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">{stat.label}</p>
-            <p
-              className={`mt-1 text-sm font-semibold ${
-                stat.tone === 'positive'
-                  ? 'text-brand-teal'
-                  : stat.tone === 'warning'
-                    ? 'text-brand-gold'
-                    : stat.tone === 'negative'
-                      ? 'text-brand-coral'
-                      : 'text-text-primary'
-              }`}
-            >
-              {stat.value}
-            </p>
-            <p className="mt-1 text-[11px] leading-4 text-text-muted">{stat.detail}</p>
-          </div>
-        ))}
       </section>
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
@@ -531,42 +479,6 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
             </section>
           ) : null}
 
-          <section className="rounded-[1.6rem] border border-brand-teal/20 bg-brand-teal/10 p-5">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-brand-teal">Next Move</p>
-            <h2 className="mt-2 font-heading text-2xl text-text-primary">Turn this card into an actual plan</h2>
-            <p className="mt-3 text-sm leading-6 text-text-secondary">
-              {pointsAdvisorHref
-                ? "If you already earn this card's points, either build the full card plan or jump straight into the redemption advisor to see the strongest use for the balance."
-                : 'If this is the card you want to anchor around, send it straight into the planner and let the sequencing logic decide whether it should be first, later, or skipped.'}
-            </p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Link
-                href={buildSelectedOfferIntentHref({
-                  lane: 'cards',
-                  slug: card.slug,
-                  audience: card.cardType === 'business' ? 'business' : undefined
-                })}
-                className="inline-flex items-center rounded-full bg-brand-teal px-5 py-3 text-sm font-semibold text-black transition hover:opacity-90"
-              >
-                Build my plan with this card
-              </Link>
-              {pointsAdvisorHref ? (
-                <Link
-                  href={pointsAdvisorHref}
-                  className="inline-flex items-center rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-text-primary transition hover:border-white/30 hover:text-text-primary"
-                >
-                  See best use for these points
-                </Link>
-              ) : compareCandidates[0] ? (
-                <Link
-                  href={compareCandidates[0].compareHref}
-                  className="inline-flex items-center rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-text-primary transition hover:border-white/30 hover:text-text-primary"
-                >
-                  Compare first
-                </Link>
-              ) : null}
-            </div>
-          </section>
         </div>
       </div>
     </div>
