@@ -1,48 +1,64 @@
-import { metrics } from '@opentelemetry/api';
+import { metrics, type Counter, type Histogram } from '@opentelemetry/api';
 
-const meter = metrics.getMeter('the-stack');
+type WebVitalName = 'LCP' | 'CLS' | 'INP' | 'TTFB';
 
-export const apiDuration = meter.createHistogram('thestack.api.duration', {
-  unit: 'ms',
-  description: 'API route latency'
-});
+type AppMetrics = {
+  apiDuration: Histogram;
+  apiErrors: Counter;
+  newsletterSyncAttempts: Counter;
+  newsletterSyncResults: Counter;
+  affiliateClicks: Counter;
+  webVitalHistograms: Record<WebVitalName, Histogram>;
+};
 
-export const apiErrors = meter.createCounter('thestack.api.errors', {
-  description: 'API error count'
-});
+let appMetrics: AppMetrics | null = null;
 
-const newsletterSyncAttempts = meter.createCounter('thestack.newsletter.sync.attempts', {
-  description: 'Newsletter provider sync attempts'
-});
+function getAppMetrics() {
+  if (appMetrics) return appMetrics;
 
-const newsletterSyncResults = meter.createCounter('thestack.newsletter.sync.results', {
-  description: 'Newsletter provider sync result count'
-});
+  const meter = metrics.getMeter('the-stack');
 
-const affiliateClicks = meter.createCounter('thestack.affiliate.clicks', {
-  description: 'Outbound affiliate/apply clicks'
-});
+  appMetrics = {
+    apiDuration: meter.createHistogram('thestack.api.duration', {
+      unit: 'ms',
+      description: 'API route latency'
+    }),
+    apiErrors: meter.createCounter('thestack.api.errors', {
+      description: 'API error count'
+    }),
+    newsletterSyncAttempts: meter.createCounter('thestack.newsletter.sync.attempts', {
+      description: 'Newsletter provider sync attempts'
+    }),
+    newsletterSyncResults: meter.createCounter('thestack.newsletter.sync.results', {
+      description: 'Newsletter provider sync result count'
+    }),
+    affiliateClicks: meter.createCounter('thestack.affiliate.clicks', {
+      description: 'Outbound affiliate/apply clicks'
+    }),
+    webVitalHistograms: {
+      LCP: meter.createHistogram('thestack.web.lcp', {
+        unit: 'ms',
+        description: 'Largest Contentful Paint'
+      }),
+      CLS: meter.createHistogram('thestack.web.cls', {
+        description: 'Cumulative Layout Shift'
+      }),
+      INP: meter.createHistogram('thestack.web.inp', {
+        unit: 'ms',
+        description: 'Interaction to Next Paint'
+      }),
+      TTFB: meter.createHistogram('thestack.web.ttfb', {
+        unit: 'ms',
+        description: 'Time to First Byte'
+      })
+    }
+  };
 
-const webVitalHistograms = {
-  LCP: meter.createHistogram('thestack.web.lcp', {
-    unit: 'ms',
-    description: 'Largest Contentful Paint'
-  }),
-  CLS: meter.createHistogram('thestack.web.cls', {
-    description: 'Cumulative Layout Shift'
-  }),
-  INP: meter.createHistogram('thestack.web.inp', {
-    unit: 'ms',
-    description: 'Interaction to Next Paint'
-  }),
-  TTFB: meter.createHistogram('thestack.web.ttfb', {
-    unit: 'ms',
-    description: 'Time to First Byte'
-  })
-} as const;
+  return appMetrics;
+}
 
 export function recordApiDuration(route: string, method: string, statusCode: number, durationMs: number) {
-  apiDuration.record(durationMs, {
+  getAppMetrics().apiDuration.record(durationMs, {
     route,
     method,
     status_code: String(statusCode)
@@ -50,14 +66,14 @@ export function recordApiDuration(route: string, method: string, statusCode: num
 }
 
 export function recordApiError(route: string, errorType: string) {
-  apiErrors.add(1, {
+  getAppMetrics().apiErrors.add(1, {
     route,
     error_type: errorType
   });
 }
 
 export function recordNewsletterSyncAttempt(provider: string, attempt: number) {
-  newsletterSyncAttempts.add(1, {
+  getAppMetrics().newsletterSyncAttempts.add(1, {
     provider,
     attempt: String(attempt)
   });
@@ -68,7 +84,7 @@ export function recordNewsletterSyncResult(
   result: 'subscribed' | 'already_subscribed' | 'failed',
   attempts: number
 ) {
-  newsletterSyncResults.add(1, {
+  getAppMetrics().newsletterSyncResults.add(1, {
     provider,
     result,
     attempts: String(attempts)
@@ -76,19 +92,19 @@ export function recordNewsletterSyncResult(
 }
 
 export function recordAffiliateClick(cardSlug: string, source: string) {
-  affiliateClicks.add(1, {
+  getAppMetrics().affiliateClicks.add(1, {
     card_slug: cardSlug,
     source
   });
 }
 
 export function recordWebVital(
-  metricName: keyof typeof webVitalHistograms,
+  metricName: WebVitalName,
   value: number,
   attributes: {
     path: string;
     device: 'mobile' | 'desktop';
   }
 ) {
-  webVitalHistograms[metricName].record(value, attributes);
+  getAppMetrics().webVitalHistograms[metricName].record(value, attributes);
 }
