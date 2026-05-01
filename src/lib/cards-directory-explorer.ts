@@ -192,26 +192,48 @@ export function parseCardsDirectoryFilters(
 
   const issuerValueFromUrl = issuerFromUrl ? issuerKey(issuerFromUrl) : null;
   const validIssuerValues = new Set(issuerOptions.map((option) => option.value));
+  const cardType = isCardTypeFilterValue(typeFromUrl)
+    ? typeFromUrl
+    : defaultCardsDirectoryFilters.cardType;
+  const businessQuickFilterSelected = typeFromUrl === 'business';
+  const parsedIssuer =
+    issuerValueFromUrl && validIssuerValues.has(issuerValueFromUrl)
+      ? issuerValueFromUrl
+      : defaultCardsDirectoryFilters.issuer;
+  const parsedSpendCategory = isSpendCategoryFilterValue(spendFromUrl)
+    ? spendFromUrl
+    : defaultCardsDirectoryFilters.spendCategory;
+  const parsedForeignFee = isForeignFeeFilterValue(foreignFeeFromUrl)
+    ? foreignFeeFromUrl
+    : defaultCardsDirectoryFilters.foreignFee;
+  const parsedRewardType = isRewardTypeFilterValue(rewardTypeFromUrl)
+    ? rewardTypeFromUrl
+    : defaultCardsDirectoryFilters.rewardType;
+  const parsedBonusFilter = isBonusFilterValue(bonusFromUrl)
+    ? bonusFromUrl
+    : defaultCardsDirectoryFilters.bonusFilter;
+  const parsedMaxFee = isFeeFilterValue(feeFromUrl)
+    ? feeFromUrl
+    : defaultCardsDirectoryFilters.maxFee;
 
   return {
-    issuer:
-      issuerValueFromUrl && validIssuerValues.has(issuerValueFromUrl)
-        ? issuerValueFromUrl
-        : defaultCardsDirectoryFilters.issuer,
-    spendCategory: isSpendCategoryFilterValue(spendFromUrl)
-      ? spendFromUrl
-      : defaultCardsDirectoryFilters.spendCategory,
-    foreignFee: isForeignFeeFilterValue(foreignFeeFromUrl)
-      ? foreignFeeFromUrl
-      : defaultCardsDirectoryFilters.foreignFee,
-    rewardType: isRewardTypeFilterValue(rewardTypeFromUrl)
-      ? rewardTypeFromUrl
-      : defaultCardsDirectoryFilters.rewardType,
-    bonusFilter: isBonusFilterValue(bonusFromUrl)
-      ? bonusFromUrl
-      : defaultCardsDirectoryFilters.bonusFilter,
-    maxFee: isFeeFilterValue(feeFromUrl) ? feeFromUrl : defaultCardsDirectoryFilters.maxFee,
-    cardType: isCardTypeFilterValue(typeFromUrl) ? typeFromUrl : defaultCardsDirectoryFilters.cardType,
+    issuer: businessQuickFilterSelected ? defaultCardsDirectoryFilters.issuer : parsedIssuer,
+    spendCategory: businessQuickFilterSelected
+      ? defaultCardsDirectoryFilters.spendCategory
+      : parsedSpendCategory,
+    foreignFee: businessQuickFilterSelected
+      ? defaultCardsDirectoryFilters.foreignFee
+      : parsedForeignFee,
+    rewardType: businessQuickFilterSelected
+      ? defaultCardsDirectoryFilters.rewardType
+      : parsedRewardType,
+    bonusFilter: businessQuickFilterSelected
+      ? defaultCardsDirectoryFilters.bonusFilter
+      : parsedBonusFilter,
+    maxFee: businessQuickFilterSelected
+      ? defaultCardsDirectoryFilters.maxFee
+      : parsedMaxFee,
+    cardType,
     sortBy: isSortValue(sortFromUrl) ? sortFromUrl : defaultCardsDirectoryFilters.sortBy
   };
 }

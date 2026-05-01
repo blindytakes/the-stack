@@ -66,7 +66,7 @@ describe('cards-directory-explorer', () => {
         reward: 'cashback',
         bonus: '750',
         fee: '95',
-        type: 'business',
+        type: 'personal',
         sort: 'highest_bonus_roi'
       }),
       issuerOptions
@@ -79,7 +79,7 @@ describe('cards-directory-explorer', () => {
       rewardType: 'cashback',
       bonusFilter: '750',
       maxFee: '95',
-      cardType: 'business',
+      cardType: 'personal',
       sortBy: 'highest_bonus_roi'
     });
 
@@ -95,6 +95,32 @@ describe('cards-directory-explorer', () => {
         issuerOptions
       )
     ).toEqual(defaultCardsDirectoryFilters);
+  });
+
+  it('treats the business quick filter as exclusive when parsing directory params', () => {
+    const issuerOptions = buildIssuerOptions([
+      createCard({ slug: 'chase-1', issuer: 'Chase' })
+    ]);
+
+    const filters = parseCardsDirectoryFilters(
+      new URLSearchParams({
+        issuer: 'Chase',
+        spend: 'groceries',
+        intl: '0',
+        reward: 'cashback',
+        bonus: '750',
+        fee: '95',
+        type: 'business',
+        sort: 'lowest_fee'
+      }),
+      issuerOptions
+    );
+
+    expect(filters).toEqual({
+      ...defaultCardsDirectoryFilters,
+      cardType: 'business',
+      sortBy: 'lowest_fee'
+    });
   });
 
   it('accepts everyday spend as a valid spend filter', () => {

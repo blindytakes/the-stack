@@ -60,6 +60,7 @@ export function useCardsDirectoryState(
     build: buildSearchParams,
     isActive: options.isActive
   });
+  const defaultCardType = defaultFilters.cardType;
   const [selectedCompare, setSelectedCompare] = useState<string[]>([]);
   const [compareError, setCompareError] = useState('');
 
@@ -68,9 +69,41 @@ export function useCardsDirectoryState(
       key: TKey,
       value: CardsDirectoryFilters[TKey]
     ) => {
-      setFilters((current) => ({ ...current, [key]: value }));
+      setFilters((current) => {
+        const shouldExitBusinessQuickFilter =
+          defaultCardType !== 'business' &&
+          current.cardType === 'business' &&
+          key !== 'cardType' &&
+          key !== 'sortBy';
+
+        return {
+          ...current,
+          ...(shouldExitBusinessQuickFilter ? { cardType: defaultCardType } : {}),
+          [key]: value
+        };
+      });
     },
-    [setFilters]
+    [defaultCardType, setFilters]
+  );
+  const setCardType = useCallback(
+    (value: CardTypeFilterValue) => {
+      setFilters((current) => {
+        const shouldResetBusinessQuickFilters =
+          defaultCardType !== 'business' &&
+          (value === 'business' || current.cardType === 'business');
+
+        if (!shouldResetBusinessQuickFilters) {
+          return { ...current, cardType: value };
+        }
+
+        return {
+          ...defaultFilters,
+          sortBy: current.sortBy,
+          cardType: value
+        };
+      });
+    },
+    [defaultCardType, defaultFilters, setFilters]
   );
 
   const filteredSortedCards = useMemo(() => filterAndSortCards(cards, filters), [cards, filters]);
@@ -138,7 +171,7 @@ export function useCardsDirectoryState(
     setSpendCategory: (value: SpendCategoryFilterValue) => updateFilter('spendCategory', value),
     setForeignFee: (value: ForeignFeeFilterValue) => updateFilter('foreignFee', value),
     setRewardType: (value: RewardTypeFilterValue) => updateFilter('rewardType', value),
-    setCardType: (value: CardTypeFilterValue) => updateFilter('cardType', value),
+    setCardType,
     setSortBy: (value: SortValue) => updateFilter('sortBy', value),
     clearFilters,
     toggleCompare,

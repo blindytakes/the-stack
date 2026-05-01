@@ -110,8 +110,11 @@ function parseBusinessCardsDirectoryFilters(
   searchParams: URLSearchParams,
   issuerOptions: ReturnType<typeof buildIssuerOptions>
 ) {
+  const params = new URLSearchParams(searchParams);
+  params.delete('type');
+
   return {
-    ...parseCardsDirectoryFilters(searchParams, issuerOptions),
+    ...parseCardsDirectoryFilters(params, issuerOptions),
     cardType: businessCardsPageCardType
   };
 }
