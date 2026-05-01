@@ -175,7 +175,7 @@ export function getBankingDecisionMetrics(
     {
       label: 'Bonus ROI',
       value:
-        bonusRoi != null ? `${bonusRoi.toFixed(1)}%` : 'N/A',
+        bonusRoi != null ? `${bonusRoi.toFixed(0)}%` : 'N/A',
       detail:
         bonusRoi != null ? 'Bonus vs required funding' : 'Needs one clear funding threshold',
       tone:

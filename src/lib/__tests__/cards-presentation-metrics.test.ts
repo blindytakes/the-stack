@@ -61,7 +61,7 @@ describe('card presentation metrics', () => {
 
     expect(metric).toMatchObject({
       label: 'Bonus ROI',
-      value: '15.0%',
+      value: '15%',
       detail: 'Welcome bonus on required spend'
     });
   });

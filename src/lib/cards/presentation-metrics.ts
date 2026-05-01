@@ -183,7 +183,7 @@ export function getCardDecisionMetrics(
     },
     {
       label: 'Bonus ROI',
-      value: bonusRoi != null ? `${bonusRoi.toFixed(1)}%` : 'N/A',
+      value: bonusRoi != null ? `${bonusRoi.toFixed(0)}%` : 'N/A',
       detail: bonusRoi != null ? 'Welcome bonus on required spend' : 'Needs a listed spend threshold',
       tone:
         bonusRoi == null
@@ -220,7 +220,7 @@ export function getCardDirectoryMetrics(
     },
     {
       label: 'Bonus ROI',
-      value: bonusRoi != null ? `${bonusRoi.toFixed(1)}%` : 'N/A',
+      value: bonusRoi != null ? `${bonusRoi.toFixed(0)}%` : 'N/A',
       supportingText: bonusRoi != null ? undefined : 'Needs listed threshold',
       tone:
         bonusRoi == null

@@ -79,7 +79,7 @@ describe('banking presentation metrics', () => {
 
     expect(metric).toMatchObject({
       label: 'Bonus ROI',
-      value: '20.0%',
+      value: '20%',
       detail: 'Bonus vs required funding'
     });
   });

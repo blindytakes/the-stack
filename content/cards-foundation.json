@@ -386,7 +386,7 @@
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/platinum-card.png",
       "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/platinum/",
       "isActive": true,
-      "lastVerified": "2026-03-29T00:00:00.000Z",
+      "lastVerified": "2026-05-01T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -400,7 +400,18 @@
           "rateType": "points"
         }
       ],
-      "signUpBonuses": [],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1500,
+          "bonusType": "points",
+          "displayHeadline": "80,000 Membership Rewards points",
+          "displayDescription": "Earn 80,000 Membership Rewards points after you spend $8,000 on eligible purchases on your new Card in your first 6 months of Card Membership.",
+          "bonusPoints": 80000,
+          "spendRequired": 8000,
+          "spendPeriodDays": 180,
+          "isCurrentOffer": true
+        }
+      ],
       "benefits": [
         {
           "category": "LOUNGE_ACCESS",
