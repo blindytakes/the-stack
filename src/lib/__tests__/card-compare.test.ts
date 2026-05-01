@@ -137,6 +137,51 @@ describe('card-compare', () => {
     expect(comparison.a.categoryBreakdown.find((item) => item.category === 'groceries')?.rewardLabel).toContain('then');
   });
 
+  it('does not apply portal-only travel multipliers to generic travel spend', () => {
+    const portalTravelCard = createCard({
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [
+        {
+          category: 'travel',
+          rate: 10,
+          rateType: 'cashback',
+          notes: '10% on hotels and rental cars booked through issuer travel.'
+        },
+        { category: 'all', rate: 2, rateType: 'cashback' }
+      ],
+      signUpBonuses: []
+    });
+    const flatCard = createCard({
+      slug: 'flat-card',
+      name: 'Flat Card',
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [{ category: 'all', rate: 2, rateType: 'cashback' }],
+      signUpBonuses: []
+    });
+
+    const comparison = buildCardComparison(portalTravelCard, flatCard, {
+      monthlySpend: {
+        ...defaultCardComparisonAssumptions.monthlySpend,
+        dining: 0,
+        groceries: 0,
+        travel: 1000,
+        gas: 0,
+        online_shopping: 0,
+        general: 0
+      }
+    });
+
+    const travelRow = comparison.a.categoryBreakdown.find((item) => item.category === 'travel');
+
+    expect(travelRow?.annualValue).toBe(240);
+    expect(travelRow?.effectiveReturnPercent).toBe(2);
+    expect(travelRow?.rewardLabel).toBe('2%');
+  });
+
   it('calls out when one card wins year one and the other is the better keeper', () => {
     const opener = createCard({
       slug: 'opener',

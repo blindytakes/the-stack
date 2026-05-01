@@ -24,14 +24,14 @@ function formatCurrency(value: number) {
 }
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
-  return <h3 className="text-xs uppercase tracking-[0.3em] text-text-muted">{children}</h3>;
+  return <h3 className="text-sm uppercase tracking-[0.28em] text-text-muted">{children}</h3>;
 }
 
 function CardLabels({ a, b }: { a: CardDetail; b: CardDetail }) {
   return (
-    <div className="mb-3 grid grid-cols-2 gap-4">
-      <p className="text-xs font-medium text-text-secondary">{a.name}</p>
-      <p className="text-xs font-medium text-text-secondary">{b.name}</p>
+    <div className="mb-4 grid grid-cols-2 gap-4">
+      <p className="text-sm font-semibold text-text-secondary">{a.name}</p>
+      <p className="text-sm font-semibold text-text-secondary">{b.name}</p>
     </div>
   );
 }
@@ -44,8 +44,8 @@ function AnnualFeeRow({ a, b }: { a: CardDetail; b: CardDetail }) {
       <div className="mt-3 rounded-2xl border border-white/5 bg-bg-surface p-5">
         <CardLabels a={a} b={b} />
         <div className="grid grid-cols-2 gap-4">
-          <p className={`text-lg font-semibold ${winColor(w, 'a')}`}>{formatCurrency(a.annualFee)}</p>
-          <p className={`text-lg font-semibold ${winColor(w, 'b')}`}>{formatCurrency(b.annualFee)}</p>
+          <p className={`text-xl font-semibold ${winColor(w, 'a')}`}>{formatCurrency(a.annualFee)}</p>
+          <p className={`text-xl font-semibold ${winColor(w, 'b')}`}>{formatCurrency(b.annualFee)}</p>
         </div>
       </div>
     </div>
@@ -81,12 +81,12 @@ function RewardsComparison({ a, b }: { a: CardDetail; b: CardDetail }) {
 
             return (
               <div key={category} className="flex items-center gap-4">
-                <span className="min-w-[100px] text-xs text-text-muted">{formatCategory(category)}</span>
+                <span className="min-w-[100px] text-sm text-text-muted">{formatCategory(category)}</span>
                 <div className="grid flex-1 grid-cols-2 gap-4">
-                  <span className={`text-sm font-semibold ${winColor(w, 'a')}`}>
+                  <span className={`text-base font-semibold ${winColor(w, 'a')}`}>
                     {rA ? formatRate(rA) : '—'}
                   </span>
-                  <span className={`text-sm font-semibold ${winColor(w, 'b')}`}>
+                  <span className={`text-base font-semibold ${winColor(w, 'b')}`}>
                     {rB ? formatRate(rB) : '—'}
                   </span>
                 </div>
@@ -127,12 +127,12 @@ function SignUpBonusRow({ a, b }: { a: CardDetail; b: CardDetail }) {
         <CardLabels a={a} b={b} />
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className={`text-lg font-semibold ${winColor(w, 'a')}`}>{formatBonus(bonusA)}</p>
-            <p className="text-xs text-text-muted">{formatSpend(bonusA)}</p>
+            <p className={`text-xl font-semibold ${winColor(w, 'a')}`}>{formatBonus(bonusA)}</p>
+            <p className="mt-1 text-sm leading-5 text-text-muted">{formatSpend(bonusA)}</p>
           </div>
           <div>
-            <p className={`text-lg font-semibold ${winColor(w, 'b')}`}>{formatBonus(bonusB)}</p>
-            <p className="text-xs text-text-muted">{formatSpend(bonusB)}</p>
+            <p className={`text-xl font-semibold ${winColor(w, 'b')}`}>{formatBonus(bonusB)}</p>
+            <p className="mt-1 text-sm leading-5 text-text-muted">{formatSpend(bonusB)}</p>
           </div>
         </div>
       </div>
@@ -146,6 +146,18 @@ function BenefitsRow({ a, b }: { a: CardDetail; b: CardDetail }) {
 
   if (a.benefits.length === 0 && b.benefits.length === 0) return null;
   const w = winner(totalA, totalB);
+  const benefitValue = (card: CardDetail, total: number) => {
+    if (total > 0) return `~$${total.toLocaleString()}/yr`;
+    if (card.benefits.length > 0) return `${card.benefits.length} listed`;
+    return '—';
+  };
+  const benefitDetail = (card: CardDetail) => {
+    if (card.benefits.length === 0) return 'No listed benefits';
+
+    const names = card.benefits.slice(0, 2).map((benefit) => benefit.name).join(' · ');
+    const remaining = card.benefits.length > 2 ? ` · +${card.benefits.length - 2} more` : '';
+    return `${names}${remaining}`;
+  };
 
   return (
     <div>
@@ -154,20 +166,16 @@ function BenefitsRow({ a, b }: { a: CardDetail; b: CardDetail }) {
         <CardLabels a={a} b={b} />
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className={`text-lg font-semibold ${winColor(w, 'a')}`}>
-              {totalA > 0 ? `~$${totalA.toLocaleString()}/yr` : '—'}
+            <p className={`text-xl font-semibold ${winColor(w, 'a')}`}>
+              {benefitValue(a, totalA)}
             </p>
-            <p className="text-xs text-text-muted">
-              {a.benefits.length} benefit{a.benefits.length !== 1 ? 's' : ''}
-            </p>
+            <p className="mt-1 text-sm leading-5 text-text-muted">{benefitDetail(a)}</p>
           </div>
           <div>
-            <p className={`text-lg font-semibold ${winColor(w, 'b')}`}>
-              {totalB > 0 ? `~$${totalB.toLocaleString()}/yr` : '—'}
+            <p className={`text-xl font-semibold ${winColor(w, 'b')}`}>
+              {benefitValue(b, totalB)}
             </p>
-            <p className="text-xs text-text-muted">
-              {b.benefits.length} benefit{b.benefits.length !== 1 ? 's' : ''}
-            </p>
+            <p className="mt-1 text-sm leading-5 text-text-muted">{benefitDetail(b)}</p>
           </div>
         </div>
       </div>
@@ -189,13 +197,13 @@ function TransferPartnersRow({ a, b }: { a: CardDetail; b: CardDetail }) {
               a.transferPartners.map((partner) => (
                 <span
                   key={partner.partnerName}
-                  className="rounded-full border border-white/10 px-2.5 py-0.5 text-[10px] text-text-secondary"
+                  className="rounded-full border border-white/10 px-2.5 py-1 text-xs text-text-secondary"
                 >
                   {partner.partnerName}
                 </span>
               ))
             ) : (
-              <span className="text-xs text-text-muted">None</span>
+              <span className="text-sm text-text-muted">None</span>
             )}
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -203,13 +211,13 @@ function TransferPartnersRow({ a, b }: { a: CardDetail; b: CardDetail }) {
               b.transferPartners.map((partner) => (
                 <span
                   key={partner.partnerName}
-                  className="rounded-full border border-white/10 px-2.5 py-0.5 text-[10px] text-text-secondary"
+                  className="rounded-full border border-white/10 px-2.5 py-1 text-xs text-text-secondary"
                 >
                   {partner.partnerName}
                 </span>
               ))
             ) : (
-              <span className="text-xs text-text-muted">None</span>
+              <span className="text-sm text-text-muted">None</span>
             )}
           </div>
         </div>
@@ -254,10 +262,10 @@ function QuickFactsRow({ a, b }: { a: CardDetail; b: CardDetail }) {
         <div className="space-y-3">
           {rows.map((row) => (
             <div key={row.label} className="flex items-center gap-4">
-              <span className="min-w-[100px] text-xs text-text-muted">{row.label}</span>
+              <span className="min-w-[100px] text-sm text-text-muted">{row.label}</span>
               <div className="grid flex-1 grid-cols-2 gap-4">
-                <span className={`text-sm capitalize ${winColor(row.w, 'a')}`}>{row.valA}</span>
-                <span className={`text-sm capitalize ${winColor(row.w, 'b')}`}>{row.valB}</span>
+                <span className={`text-base capitalize ${winColor(row.w, 'a')}`}>{row.valA}</span>
+                <span className={`text-base capitalize ${winColor(row.w, 'b')}`}>{row.valB}</span>
               </div>
             </div>
           ))}

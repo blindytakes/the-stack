@@ -1,7 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { startTransition, useEffect, useMemo, useState } from 'react';
+import {
+  startTransition,
+  type MouseEvent,
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import { TrackFunnelEventOnView } from '@/components/analytics/funnel-events';
 import { CardVsCardComparison } from '@/components/tools/card-vs-card-sections';
 import { CardPicker } from '@/components/ui/card-picker';
@@ -18,7 +24,6 @@ import {
   type CardComparisonSpendCategory
 } from '@/lib/card-compare';
 import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
-import { formatCardCreditTier } from '@/lib/cards/presentation-metrics';
 
 type CardsCompareExperienceProps = {
   cards: CardRecord[];
@@ -106,8 +111,70 @@ function buildWinnerMetric({
   };
 }
 
+type WinnerMetric = ReturnType<typeof buildWinnerMetric>;
+
+function VerdictOutcomeCard({
+  eyebrow,
+  label,
+  metric,
+  tone
+}: {
+  eyebrow: string;
+  label: string;
+  metric: WinnerMetric | null;
+  tone: 'gold' | 'teal';
+}) {
+  const toneClassNames =
+    tone === 'gold'
+      ? {
+          panel:
+            'border-brand-gold/25 bg-[linear-gradient(180deg,rgba(250,204,21,0.13),rgba(0,0,0,0.16))]',
+          badge: 'border-brand-gold/25 bg-brand-gold/10 text-brand-gold',
+          value: 'text-brand-gold'
+        }
+      : {
+          panel:
+            'border-brand-teal/25 bg-[linear-gradient(180deg,rgba(45,212,191,0.13),rgba(0,0,0,0.16))]',
+          badge: 'border-brand-teal/25 bg-brand-teal/10 text-brand-teal',
+          value: 'text-brand-teal'
+        };
+
+  return (
+    <article
+      className={`flex min-h-[12rem] flex-col items-center justify-center rounded-[1.35rem] border px-5 py-5 text-center ${toneClassNames.panel}`}
+    >
+      <div className="flex flex-wrap items-center justify-center gap-2">
+        <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase ${toneClassNames.badge}`}>
+          {eyebrow}
+        </span>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</p>
+      </div>
+      <h3 className="mt-4 max-w-[18rem] break-words font-heading text-2xl leading-[1.05] text-text-primary">
+        {metric?.title}
+      </h3>
+      <p className={`mt-3 text-xl font-semibold ${toneClassNames.value}`}>{metric?.delta}</p>
+      <p className="mt-1 text-xs text-text-muted">{metric?.detail}</p>
+    </article>
+  );
+}
+
 function buildComparisonHref(slugA: string, slugB: string) {
   return `/cards/compare?${new URLSearchParams({ a: slugA, b: slugB }).toString()}`;
+}
+
+function scrollToTopOnPlainClick(event: MouseEvent<HTMLAnchorElement>) {
+  if (
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.altKey ||
+    event.ctrlKey ||
+    event.shiftKey
+  ) {
+    return;
+  }
+
+  window.scrollTo(0, 0);
 }
 
 function winnerTone(
@@ -125,18 +192,34 @@ function winnerTone(
 }
 
 function effortLabel(summary: CardComparisonCardSummary) {
-  if (summary.bonusEffort === 'none' || !summary.monthlySpendNeededForBonus) {
-    return 'No listed hurdle';
+  if (summary.bonusEffort === 'none' || !summary.bonusSpendRequired) {
+    return 'No listed offer';
   }
 
-  const spendNeeded = formatMoney(summary.monthlySpendNeededForBonus);
-  if (summary.bonusEffort === 'easy') {
-    return `${spendNeeded}/mo feels comfortable`;
+  return formatMoney(summary.bonusSpendRequired);
+}
+
+function bonusHurdleDetail(summary: CardComparisonCardSummary) {
+  if (
+    summary.bonusEffort === 'none' ||
+    !summary.bonusSpendRequired ||
+    !summary.monthlySpendNeededForBonus
+  ) {
+    return 'No spend threshold in dataset';
   }
-  if (summary.bonusEffort === 'manageable') {
-    return `${spendNeeded}/mo is doable`;
-  }
-  return `${spendNeeded}/mo is a stretch`;
+
+  const windowLabel = summary.bonusSpendWindowMonths
+    ? `${summary.bonusSpendWindowMonths} mo window`
+    : 'Listed offer window';
+  const paceLabel = `${formatMoney(summary.monthlySpendNeededForBonus)}/mo pace`;
+  const effortLabel =
+    summary.bonusEffort === 'easy'
+      ? 'Comfortable'
+      : summary.bonusEffort === 'manageable'
+        ? 'Doable'
+        : 'Stretch';
+
+  return `${windowLabel} · ${paceLabel} · ${effortLabel}`;
 }
 
 function toneForBonusEffort(summary: CardComparisonCardSummary) {
@@ -319,22 +402,14 @@ function ComparisonCardHero({
 
   return (
     <article className="rounded-[1.7rem] border border-white/10 bg-[linear-gradient(180deg,rgba(18,24,36,0.96),rgba(12,16,25,0.98))] p-5">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
+      <div className="flex flex-wrap items-start justify-between gap-x-5 gap-y-4">
+        <div className="min-w-[14rem] flex-1 basis-[18rem]">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-teal">
             {summary.card.issuer}
           </p>
-          <h2 className="mt-2 max-w-[16ch] font-heading text-[2.1rem] leading-[0.94] text-text-primary">
+          <h2 className="mt-2 max-w-[22ch] text-balance font-heading text-[2.1rem] leading-[0.94] text-text-primary">
             {summary.card.name}
           </h2>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <span className="rounded-full border border-brand-teal/20 bg-brand-teal/10 px-2.5 py-1 text-[11px] text-brand-teal">
-              {summary.fitLabel}
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 text-[11px] text-text-secondary">
-              {summary.card.cardType === 'business' ? 'Business' : 'Personal'}
-            </span>
-          </div>
         </div>
 
         <EntityImage
@@ -359,7 +434,7 @@ function ComparisonCardHero({
           tone={winnerTone(side, firstYearWinner)}
         />
         <SummaryMetric
-          label="Ongoing Year"
+          label="After Year 1"
           value={formatMoney(summary.ongoingValue)}
           detail="Annual rewards + usable credits - fee"
           tone={winnerTone(side, ongoingWinner)}
@@ -383,9 +458,9 @@ function ComparisonCardHero({
           detail="Discounted by your credit-usage assumption"
         />
         <SummaryMetric
-          label="Bonus Hurdle"
+          label="Bonus Spend"
           value={effortLabel(summary)}
-          detail={`Needs ${formatCardCreditTier(summary.card.creditTierMin)} credit`}
+          detail={bonusHurdleDetail(summary)}
           tone={toneForBonusEffort(summary)}
         />
       </div>
@@ -427,6 +502,8 @@ function ComparisonCardHero({
         </Link>
         <Link
           href={`/cards/${summary.card.slug}`}
+          scroll
+          onClick={scrollToTopOnPlainClick}
           className="inline-flex items-center rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
         >
           View offer details
@@ -445,10 +522,12 @@ function CategoryTable({
 }) {
   return (
     <section className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,18,30,0.98),rgba(10,14,22,0.98))] p-5 md:p-6">
-      <div className="max-w-2xl">
+      <div className="max-w-3xl">
         <p className="text-[10px] uppercase tracking-[0.22em] text-brand-gold">Spend Mix Math</p>
-        <h3 className="mt-2 font-heading text-2xl text-text-primary">Where the value actually comes from</h3>
-        <p className="mt-2 text-sm leading-6 text-text-secondary">
+        <h3 className="mt-2 font-heading text-4xl leading-[0.98] text-text-primary md:text-5xl">
+          Where the value actually comes from
+        </h3>
+        <p className="mt-3 max-w-2xl text-base leading-7 text-text-secondary">
           Category returns are based on the spend mix you entered, your point-value assumption, and
           a discounted view of recurring credits.
         </p>
@@ -755,32 +834,30 @@ export function CardsCompareExperience({
       {comparison ? (
         <>
           <section className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(135deg,rgba(24,18,20,0.96),rgba(12,12,18,0.94))] px-5 py-6 shadow-[0_20px_80px_rgba(0,0,0,0.32)] md:px-6">
-            <div className="flex flex-wrap items-start justify-between gap-4">
-              <div className="max-w-3xl">
-                <p className="text-[10px] uppercase tracking-[0.22em] text-brand-gold">Verdict</p>
-                <h2 className="mt-2 font-heading text-3xl text-text-primary">{comparison.verdictTitle}</h2>
-                <p className="mt-3 text-base leading-7 text-text-secondary">
-                  {comparison.verdictSummary}
-                </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2">
-                <div className="rounded-[1.1rem] border border-white/10 bg-black/15 px-4 py-3">
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Year One Winner</p>
-                  <p className="mt-2 text-sm font-semibold text-text-primary">{yearOneMetric?.title}</p>
-                  <p className="mt-1 text-lg font-semibold text-brand-gold">{yearOneMetric?.delta}</p>
-                  <p className="mt-1 text-xs text-text-muted">{yearOneMetric?.detail}</p>
-                </div>
-                <div className="rounded-[1.1rem] border border-white/10 bg-black/15 px-4 py-3">
-                  <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">Keeper Winner</p>
-                  <p className="mt-2 text-sm font-semibold text-text-primary">{keeperMetric?.title}</p>
-                  <p className="mt-1 text-lg font-semibold text-brand-teal">{keeperMetric?.delta}</p>
-                  <p className="mt-1 text-xs text-text-muted">{keeperMetric?.detail}</p>
-                </div>
-              </div>
+            <div className="max-w-3xl">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-brand-gold">Verdict</p>
+              <h2 className="mt-2 font-heading text-3xl text-text-primary">{comparison.verdictTitle}</h2>
+              <p className="mt-3 max-w-2xl text-base leading-7 text-text-secondary">
+                {comparison.verdictSummary}
+              </p>
             </div>
 
-            <div className="mt-5 grid gap-4 xl:grid-cols-2">
+            <div className="mx-auto mt-6 grid w-full max-w-4xl gap-3 md:grid-cols-2">
+              <VerdictOutcomeCard
+                eyebrow="Year 1"
+                label="Best opener"
+                metric={yearOneMetric}
+                tone="gold"
+              />
+              <VerdictOutcomeCard
+                eyebrow="After Year 1"
+                label="Best keeper"
+                metric={keeperMetric}
+                tone="teal"
+              />
+            </div>
+
+            <div className="mt-6 grid gap-4 xl:grid-cols-2">
               <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4">
                 <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">{comparison.a.card.name}</p>
                 <ul className="mt-3 space-y-2 text-sm leading-6 text-text-secondary">
@@ -830,10 +907,12 @@ export function CardsCompareExperience({
           <CategoryTable summaryA={comparison.a} summaryB={comparison.b} />
 
           <section className="rounded-[1.8rem] border border-white/10 bg-bg-elevated p-5 md:p-6">
-            <div className="max-w-2xl">
+            <div className="max-w-3xl">
               <p className="text-[10px] uppercase tracking-[0.22em] text-brand-teal">Raw Breakdown</p>
-              <h3 className="mt-2 font-heading text-2xl text-text-primary">Full side-by-side details</h3>
-              <p className="mt-2 text-sm leading-6 text-text-secondary">
+              <h3 className="mt-2 font-heading text-4xl leading-[0.98] text-text-primary md:text-5xl">
+                Full side-by-side details
+              </h3>
+              <p className="mt-3 max-w-2xl text-base leading-7 text-text-secondary">
                 Use the spec table below when you want the literal field-by-field differences in rewards, benefits,
                 transfer partners, fees, and approval profile.
               </p>

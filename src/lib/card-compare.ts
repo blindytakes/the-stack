@@ -35,6 +35,8 @@ export type CardComparisonCardSummary = {
   welcomeOfferValue: number;
   firstYearValue: number;
   ongoingValue: number;
+  bonusSpendRequired: number | null;
+  bonusSpendWindowMonths: number | null;
   monthlySpendCapacity: number;
   monthlySpendNeededForBonus: number | null;
   bonusSpendRatio: number | null;
@@ -71,7 +73,7 @@ const monthlySpendDefaults: Record<CardComparisonSpendCategory, number> = {
 
 export const defaultCardComparisonAssumptions: CardComparisonAssumptions = {
   monthlySpend: monthlySpendDefaults,
-  pointValueCents: 1.5,
+  pointValueCents: 1,
   creditUsagePercent: 70
 };
 
@@ -182,6 +184,33 @@ function pickBestReward(
   })[0];
 }
 
+function isPortalTravelReward(reward: RewardDetail) {
+  if (reward.category !== 'travel') return false;
+  const notes = reward.notes?.toLowerCase() ?? '';
+
+  return (
+    notes.includes('booked through') ||
+    notes.includes('purchased through') ||
+    notes.includes('capital one travel') ||
+    notes.includes('capital one business travel') ||
+    notes.includes('chase travel') ||
+    notes.includes('travel portal')
+  );
+}
+
+function pickRepresentativeReward(
+  rewards: RewardDetail[],
+  category: RewardDetail['category'] | 'all',
+  pointValueCents: number
+) {
+  if (category === 'travel') {
+    const broadTravelRewards = rewards.filter((reward) => !isPortalTravelReward(reward));
+    return pickBestReward(broadTravelRewards, pointValueCents);
+  }
+
+  return pickBestReward(rewards, pointValueCents);
+}
+
 function annualizeCapAmount(
   reward: Pick<RewardDetail, 'capAmount' | 'capPeriod'>
 ): number | null {
@@ -251,8 +280,9 @@ function summarizeRewardForCategory(
   const exactReward =
     rewardCategory === 'all'
       ? null
-      : pickBestReward(
+      : pickRepresentativeReward(
           card.rewards.filter((reward) => reward.category === rewardCategory),
+          rewardCategory,
           assumptions.pointValueCents
         );
   const baseReward = pickBestReward(
@@ -442,6 +472,7 @@ function summarizeCard(
     bonusSpendRequirement && bonusMonths
       ? roundCurrency(bonusSpendRequirement.spendRequired / bonusMonths)
       : null;
+  const bonusSpendRequired = bonusSpendRequirement?.spendRequired ?? null;
   const bonusSpendRatio =
     monthlySpendNeededForBonus && monthlySpendCapacity > 0
       ? roundCurrency(monthlySpendNeededForBonus / monthlySpendCapacity)
@@ -467,6 +498,8 @@ function summarizeCard(
     welcomeOfferValue,
     firstYearValue,
     ongoingValue,
+    bonusSpendRequired,
+    bonusSpendWindowMonths: bonusMonths,
     monthlySpendCapacity,
     monthlySpendNeededForBonus,
     bonusSpendRatio,

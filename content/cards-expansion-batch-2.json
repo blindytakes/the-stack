@@ -373,6 +373,7 @@
       "topCategories": ["travel", "all"],
       "annualFee": 395,
       "creditTierMin": "excellent",
+      "network": "mastercard",
       "headline": "Premium Capital One business travel card with strong lounge and portal value.",
       "description": "Built for businesses that can justify the fee through premium travel perks, annual credits, and a large welcome offer.",
       "foreignTxFee": 0,
