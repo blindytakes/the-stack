@@ -522,12 +522,12 @@ function CategoryTable({
 }) {
   return (
     <section className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,18,30,0.98),rgba(10,14,22,0.98))] p-5 md:p-6">
-      <div className="max-w-3xl">
+      <div className="w-full">
         <p className="text-[10px] uppercase tracking-[0.22em] text-brand-gold">Spend Mix Math</p>
-        <h3 className="mt-2 font-heading text-4xl leading-[0.98] text-text-primary md:text-5xl">
+        <h3 className="mt-2 font-heading text-4xl leading-[0.98] text-text-primary md:text-5xl xl:whitespace-nowrap">
           Where the value actually comes from
         </h3>
-        <p className="mt-3 max-w-2xl text-base leading-7 text-text-secondary">
+        <p className="mt-3 text-base leading-7 text-text-secondary xl:whitespace-nowrap">
           Category returns are based on the spend mix you entered, your point-value assumption, and
           a discounted view of recurring credits.
         </p>
@@ -834,10 +834,12 @@ export function CardsCompareExperience({
       {comparison ? (
         <>
           <section className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(135deg,rgba(24,18,20,0.96),rgba(12,12,18,0.94))] px-5 py-6 shadow-[0_20px_80px_rgba(0,0,0,0.32)] md:px-6">
-            <div className="max-w-3xl">
+            <div className="w-full">
               <p className="text-[10px] uppercase tracking-[0.22em] text-brand-gold">Verdict</p>
-              <h2 className="mt-2 font-heading text-3xl text-text-primary">{comparison.verdictTitle}</h2>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-text-secondary">
+              <h2 className="mt-2 font-heading text-3xl text-text-primary xl:whitespace-nowrap">
+                {comparison.verdictTitle}
+              </h2>
+              <p className="mt-3 text-base leading-7 text-text-secondary xl:whitespace-nowrap">
                 {comparison.verdictSummary}
               </p>
             </div>
@@ -912,7 +914,7 @@ export function CardsCompareExperience({
               <h3 className="mt-2 font-heading text-4xl leading-[0.98] text-text-primary md:text-5xl">
                 Full side-by-side details
               </h3>
-              <p className="mt-3 max-w-2xl text-base leading-7 text-text-secondary">
+              <p className="mt-3 text-base leading-7 text-text-secondary xl:whitespace-nowrap">
                 Use the spec table below when you want the literal field-by-field differences in rewards, benefits,
                 transfer partners, fees, and approval profile.
               </p>
