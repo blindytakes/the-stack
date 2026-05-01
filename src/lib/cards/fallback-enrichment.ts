@@ -34,6 +34,8 @@ export type ResolvedCardImage = {
 
 export const CHASE_CARD_LOGO_URL =
   'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg';
+const AMEX_GREEN_CARD_ART_URL =
+  'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/green-card.png';
 const LEGACY_WELLS_FARGO_LOGO_URL =
   'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png';
 
@@ -52,6 +54,7 @@ const cardBrandImageUrlByIssuer: Record<string, string> = {
 
 const cardBrandImageUrlBySlug: Record<string, string> = {
   'alaska-airlines-visa-signature': '/card-logos/alaska-airlines.svg',
+  'amex-green-card': AMEX_GREEN_CARD_ART_URL,
   'apple-card': '/card-logos/apple.svg',
   'bank-of-america-business-advantage-customized-cash-rewards':
     'https://www1.bac-assets.com/homepage/spa-assets/images/assets-images-global-logos-bac-logo-v2-CSX3648cbbb.svg',
@@ -737,14 +740,19 @@ export function resolveCardImage(
 
   if (curatedSlugImageUrl) {
     if (!imageUrl) {
-        return {
-          imageUrl: curatedSlugImageUrl,
-          imageAssetType: getCardImageAssetTypeForUrl(curatedSlugImageUrl, issuer)
-        };
-      }
+      return {
+        imageUrl: curatedSlugImageUrl,
+        imageAssetType: getCardImageAssetTypeForUrl(curatedSlugImageUrl, issuer)
+      };
+    }
 
     const normalizedImageUrl = imageUrl.trim();
-    if (isLowValueCardImageUrl(normalizedImageUrl)) {
+    const normalizedCuratedCardImageUrl = curatedCardImageUrl?.trim().toLowerCase();
+    if (
+      isLowValueCardImageUrl(normalizedImageUrl) ||
+      (normalizedCuratedCardImageUrl != null &&
+        normalizedImageUrl.toLowerCase() === normalizedCuratedCardImageUrl)
+    ) {
       return {
         imageUrl: curatedSlugImageUrl,
         imageAssetType: getCardImageAssetTypeForUrl(curatedSlugImageUrl, issuer)

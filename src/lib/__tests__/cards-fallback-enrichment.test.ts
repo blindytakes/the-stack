@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { resolveCardBrandImageUrl, resolveCardImage } from '../cards/fallback-enrichment';
 import { isLowValueCardImageUrl } from '../entity-image-source';
 
+const AMEX_GREEN_CARD_ART_URL =
+  'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/green-card.png';
+
 describe('resolveCardBrandImageUrl', () => {
   it('uses curated local issuer assets for previously weak fallback issuers', () => {
     expect(resolveCardBrandImageUrl('amex-gold-card', 'American Express')).toBe('/card-logos/american-express.svg');
@@ -31,7 +34,21 @@ describe('resolveCardBrandImageUrl', () => {
     );
   });
 
+  it('replaces issuer-logo fallbacks with slug-specific card art', () => {
+    expect(
+      resolveCardBrandImageUrl(
+        'amex-green-card',
+        'American Express',
+        '/card-logos/american-express.svg',
+        'American Express Green Card'
+      )
+    ).toBe(AMEX_GREEN_CARD_ART_URL);
+  });
+
   it('uses slug-specific art for curated co-brand cards', () => {
+    expect(resolveCardBrandImageUrl('amex-green-card', 'American Express')).toBe(
+      AMEX_GREEN_CARD_ART_URL
+    );
     expect(resolveCardBrandImageUrl('alaska-airlines-visa-signature', 'Bank of America')).toBe(
       '/card-logos/alaska-airlines.svg'
     );
@@ -94,6 +111,17 @@ describe('resolveCardBrandImageUrl', () => {
 
 describe('resolveCardImage', () => {
   it('classifies curated card-style fallback art as card art', () => {
+    expect(
+      resolveCardImage(
+        'amex-green-card',
+        'American Express',
+        '/card-logos/american-express.svg',
+        'American Express Green Card'
+      )
+    ).toMatchObject({
+      imageUrl: AMEX_GREEN_CARD_ART_URL,
+      imageAssetType: 'card_art'
+    });
     expect(resolveCardImage('alaska-airlines-visa-signature', 'Bank of America')).toMatchObject({
       imageUrl: '/card-logos/alaska-airlines.svg',
       imageAssetType: 'card_art'

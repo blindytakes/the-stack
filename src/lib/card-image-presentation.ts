@@ -45,6 +45,11 @@ const defaultPresentationByAssetType: Record<CardImageAssetType, Required<CardIm
 };
 
 const presentationBySlug: Record<string, CardImagePresentation> = {
+  'amex-green-card': {
+    fit: 'contain',
+    scale: 1.02,
+    imgClassName: 'bg-transparent p-0'
+  },
   'discover-it-cash-back': {
     scale: 1.02,
     imgClassName: 'bg-transparent p-0'

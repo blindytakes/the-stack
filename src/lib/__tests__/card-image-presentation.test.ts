@@ -46,6 +46,21 @@ describe('getCardImagePresentation', () => {
     });
   });
 
+  it('keeps Amex Green product art fully visible', () => {
+    expect(
+      getCardImagePresentation(
+        'amex-green-card',
+        'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/green-card.png',
+        'card_art'
+      )
+    ).toMatchObject({
+      fit: 'contain',
+      position: 'center center',
+      scale: 1.02,
+      imgClassName: 'bg-transparent p-0'
+    });
+  });
+
   it('keeps issuer-logo fallbacks inset by default', () => {
     expect(
       getCardImagePresentation('us-bank-altitude-reserve', '/bank-logos/us-bank.svg', 'brand_logo')
