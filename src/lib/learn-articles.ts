@@ -343,7 +343,7 @@ export const learnArticles: Record<string, LearnArticle> = {
       },
       {
         heading: 'Step 5: Graduate up',
-        body: 'Once you have 12+ months of history and a score above 670, you can start looking at real rewards cards. Use the Card Finder to see what matches your profile — your spend patterns, fee tolerance, and credit tier will determine which cards make sense. Don\'t close your first card when you upgrade — the age of your oldest account matters for your score. Just sock-drawer it or use it for one small recurring charge.'
+        body: 'Once you have 12+ months of history and a score above 670, you can start looking at real rewards cards. Use the Personalized Bonus Plan to see what matches your profile — your spend patterns, fee tolerance, and credit tier will determine which cards make sense. Don\'t close your first card when you upgrade — the age of your oldest account matters for your score. Just sock-drawer it or use it for one small recurring charge.'
       }
     ]
   },
@@ -454,7 +454,7 @@ export const learnArticles: Record<string, LearnArticle> = {
       },
       {
         heading: 'Run your own numbers',
-        body: 'The best card for you is the one that returns the most value given your actual spending patterns — not the one with the flashiest marketing. Use the Card Finder to compare options side by side, and use Card vs Card to see the real differences in rewards, fees, and benefits for any two cards you\'re considering.'
+        body: 'The best card for you is the one that returns the most value given your actual spending patterns — not the one with the flashiest marketing. Use the Personalized Bonus Plan to compare options side by side, and use Card vs Card to see the real differences in rewards, fees, and benefits for any two cards you\'re considering.'
       }
     ]
   },

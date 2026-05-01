@@ -10,44 +10,37 @@ export const metadata: Metadata = {
 const toolCards = [
   {
     href: '/tools/card-finder?mode=full',
-    eyebrow: 'Planning',
-    title: 'Card Finder',
-    description:
-      'Build a personalized bonus plan around your spend capacity, deposit access, current accounts, and timing.',
+    title: 'Personalized Bonus Plan',
+    description: 'Build a personalized bonus plan that combines both credit cards and banking accounts',
     accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
   },
   {
     href: '/cards/compare',
-    eyebrow: 'Compare',
-    title: 'Compare Cards',
+    title: 'Card Comparison Tool',
     description: 'Run year-one and ongoing value math for any two cards under your own spend assumptions.',
     accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
   },
   {
     href: '/tools/card-vs-card',
-    eyebrow: 'Tracker',
     title: 'Personal Finance Tracker',
     description: 'Download a spreadsheet tracker to log spending, bills, savings goals, and monthly cash flow.',
     accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
   },
   {
     href: '/tools/premium-card-calculator',
-    eyebrow: 'Premium',
     title: 'Premium Card Calculator',
     description: 'Run the real math on Amex Platinum, Sapphire Reserve, and Venture X.',
     accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
   },
   {
     href: '/tools/card-benefit-calendar',
-    eyebrow: 'Reminders',
     title: 'Card Benefit Calendar',
     description: 'Create calendar reminders for credits, bonus deadlines, annual fees, and renewal decisions.',
     accentClassName: 'from-[#d4a853]/18 via-[#d4a853]/6 to-transparent'
   },
   {
     href: '/tools/points-advisor',
-    eyebrow: 'Redeem',
-    title: 'Points Redemption Advisor',
+    title: 'Points Redemption Tool',
     description:
       'Enter your balance and get ranked redemption ideas for Sapphire Reserve, Amex Membership Rewards, and Venture X.',
     accentClassName: 'from-[#d6e5ff]/18 via-[#d6e5ff]/6 to-transparent'
@@ -80,8 +73,7 @@ export default function ToolsPage() {
               <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${tool.accentClassName} opacity-100`} />
               <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent)]" />
               <div className="relative">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">{tool.eyebrow}</p>
-                <h2 className="mt-3 font-heading text-[1.9rem] leading-[1] tracking-[-0.03em] text-text-primary">
+                <h2 className="font-heading text-[1.9rem] leading-[1] tracking-[-0.03em] text-text-primary">
                   {tool.title}
                 </h2>
                 <p className="mt-3 max-w-[28rem] text-sm leading-6 text-text-secondary">

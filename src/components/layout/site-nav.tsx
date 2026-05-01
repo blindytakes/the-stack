@@ -34,13 +34,13 @@ const toolNavItems: SubmenuNavItem[] = [
   },
   {
     href: '/tools/card-finder?mode=full',
-    label: 'Bonus Plan',
+    label: 'Personalized Bonus Plan',
     description: 'Build a personalized bonus plan.',
     activePath: '/tools/card-finder'
   },
   {
     href: '/cards/compare',
-    label: 'Compare Cards',
+    label: 'Card Comparison Tool',
     description: 'Run year-one and ongoing value math.',
     activePath: '/cards/compare'
   },
@@ -52,7 +52,7 @@ const toolNavItems: SubmenuNavItem[] = [
   },
   {
     href: '/tools/premium-card-calculator',
-    label: 'Travel Rewards Calculator',
+    label: 'Premium Card Calculator',
     description: 'Run the annual-fee math.',
     activePath: '/tools/premium-card-calculator'
   },
@@ -64,7 +64,7 @@ const toolNavItems: SubmenuNavItem[] = [
   },
   {
     href: '/tools/points-advisor',
-    label: 'Points Advisor',
+    label: 'Points Redemption Tool',
     description: 'See the best next move for your points balance.',
     activePath: '/tools/points-advisor'
   }
