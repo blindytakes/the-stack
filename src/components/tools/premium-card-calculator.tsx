@@ -2,7 +2,15 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { startTransition, useState, type ChangeEvent, type CSSProperties } from 'react';
+import {
+  startTransition,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type CSSProperties
+} from 'react';
 import { PremiumCardEmailPanel } from '@/components/tools/premium-card-email-panel';
 import { Button } from '@/components/ui/button';
 import { EntityImage } from '@/components/ui/entity-image';
@@ -209,13 +217,6 @@ const selectorGroups: ReadonlyArray<{
   }
 ];
 
-function getSelectorGridClassName(cardCount: number) {
-  if (cardCount <= 1) return 'md:grid-cols-1';
-  if (cardCount === 2) return 'md:grid-cols-2';
-  if (cardCount === 4) return 'md:grid-cols-2 xl:grid-cols-4';
-  return 'md:grid-cols-3';
-}
-
 type GlyphName =
   | 'star'
   | 'shield'
@@ -230,7 +231,8 @@ type GlyphName =
   | 'compass'
   | 'fork'
   | 'road'
-  | 'wallet';
+  | 'wallet'
+  | 'chevron';
 
 function Glyph({
   name,
@@ -346,6 +348,12 @@ function Glyph({
           <path {...base} d="M10.5 16h3" />
         </svg>
       );
+    case 'chevron':
+      return (
+        <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+          <path {...base} d="M6 9l6 6 6-6" />
+        </svg>
+      );
     default:
       return (
         <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
@@ -424,7 +432,7 @@ const activeIconSurfaceClassName =
 const activeBadgeSurfaceClassName =
   'border-[rgb(var(--card-accent-rgb)/0.46)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.16),rgb(var(--card-accent-rgb)_/_0.22))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.22)]';
 
-function SelectorCard({
+function CardSwitcherOption({
   profile,
   selected,
   onSelect
@@ -438,73 +446,185 @@ function SelectorCard({
   return (
     <button
       type="button"
+      role="option"
+      aria-selected={selected}
       onClick={onSelect}
-      className="group relative h-full w-full text-left transition focus-visible:outline-none"
+      className={`group flex w-full items-center gap-3 rounded-[1.05rem] border px-3 py-3 text-left transition focus-visible:outline-none ${
+        selected
+          ? 'border-[rgb(var(--card-accent-rgb)/0.52)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.14),rgb(var(--card-accent-rgb)_/_0.2))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.24)]'
+          : 'border-white/8 bg-white/[0.025] hover:border-white/16 hover:bg-white/[0.055]'
+      }`}
     >
-      <div
-        className={`relative h-full overflow-hidden rounded-[1.7rem] border p-4 transition duration-300 ${
-          selected
-            ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[linear-gradient(180deg,rgba(22,28,43,0.985),rgba(12,16,26,0.94),rgb(var(--card-accent-rgb)/0.14))] shadow-[0_24px_80px_rgba(0,0,0,0.3),inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.24)]'
-            : 'border-white/10 bg-[linear-gradient(180deg,rgba(14,19,30,0.9),rgba(9,13,22,0.92))] hover:border-white/16 hover:bg-[linear-gradient(180deg,rgba(16,22,35,0.94),rgba(11,15,24,0.96))]'
-        }`}
-      >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent)]" />
-        <div className={`pointer-events-none absolute -right-6 top-1 h-20 w-20 rounded-full opacity-80 blur-[44px] ${visual.accentGlowClassName}`} />
-        <div className="relative flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${selected ? visual.accentClassName : 'text-text-muted'}`}>
-              {visual.laneLabel}
-            </p>
-            <p className="mt-2 text-[1.08rem] font-semibold leading-tight text-text-primary">{profile.shortName}</p>
-          </div>
+      <div className="relative flex h-16 w-[5.8rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.9rem] bg-black/10">
+        <div
+          className={`absolute inset-x-3 bottom-2 h-7 rounded-full opacity-70 blur-[20px] ${visual.accentGlowClassName}`}
+        />
+        <EntityImage
+          src={visual.artUrl}
+          alt={profile.name}
+          label={profile.shortName}
+          className="relative aspect-[1.62/1] w-full max-w-[5.35rem] overflow-visible rounded-none border-0 bg-transparent"
+          imgClassName={`bg-transparent p-0 drop-shadow-[0_12px_22px_rgba(0,0,0,0.36)] ${visual.selectorArtEffectClassName ?? ''}`}
+          fallbackClassName="bg-black/10"
+          fit={visual.selectorArtFit ?? visual.artFit ?? 'contain'}
+          position={visual.selectorArtPosition ?? visual.artPosition}
+          scale={visual.selectorArtScale ?? visual.artScale ?? 1}
+        />
+      </div>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center justify-between gap-3">
+          <span className="min-w-0 truncate text-[15px] font-semibold leading-5 text-text-primary">
+            {profile.shortName}
+          </span>
+          <span className="shrink-0 text-[12px] font-semibold text-text-secondary">
+            {formatCurrency(profile.annualFee)}
+          </span>
+        </span>
+        <span className="mt-1 flex items-center justify-between gap-3">
+          <span className={`truncate text-[10px] font-semibold uppercase tracking-[0.18em] ${selected ? visual.accentClassName : 'text-text-muted'}`}>
+            {visual.laneLabel}
+          </span>
           {selected ? (
-            <span className={`shrink-0 flex items-center gap-1.5 rounded-full border border-[rgb(var(--card-accent-rgb)/0.5)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.16),rgb(var(--card-accent-rgb)_/_0.24))] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.34)] ${visual.accentClassName}`}>
+            <span className={`flex shrink-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${visual.accentClassName}`}>
               <span className={`h-1.5 w-1.5 rounded-full ${visual.accentBarClassName}`} />
               Active
             </span>
-          ) : (
-            <span className="shrink-0 rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">
-              Pick
-            </span>
-          )}
-        </div>
+          ) : null}
+        </span>
+      </span>
+    </button>
+  );
+}
 
-        <div className="relative mx-auto mt-4 flex h-[10.8rem] items-center justify-center">
-          <div
-            className={`absolute inset-x-10 bottom-4 h-12 rounded-full opacity-85 blur-[34px] transition duration-300 ease-out ${visual.accentGlowClassName} ${
-              selected
-                ? 'scale-100 opacity-100'
-                : 'scale-75 opacity-0 group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100'
-            }`}
+function CardSwitcher({
+  selectedCardId,
+  onSelect
+}: {
+  selectedCardId: PremiumCardId;
+  onSelect: (cardId: PremiumCardId) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const selectedProfile = premiumCardProfileById[selectedCardId];
+  const selectedVisual = cardVisuals[selectedCardId];
+
+  const close = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function onClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        close();
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') close();
+    }
+
+    document.addEventListener('mousedown', onClickOutside);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onClickOutside);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [close, isOpen]);
+
+  function handleSelect(cardId: PremiumCardId) {
+    onSelect(cardId);
+    close();
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative z-20 overflow-visible rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.96),rgba(9,13,22,0.98))] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)]"
+    >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-20 rounded-t-[1.9rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent)]" />
+      <div className={`pointer-events-none absolute -right-6 top-2 h-20 w-20 rounded-full opacity-80 blur-[44px] ${selectedVisual.accentGlowClassName}`} />
+      <div className="relative flex items-start justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">Selected Card</p>
+          <p className="mt-2 truncate text-[1.1rem] font-semibold leading-tight text-text-primary">
+            {selectedProfile.shortName}
+          </p>
+        </div>
+        <button
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-label={`Switch selected card, currently ${selectedProfile.shortName}`}
+          onClick={() => setIsOpen((current) => !current)}
+          className="group flex shrink-0 items-center gap-2 rounded-full border border-[rgb(var(--card-accent-rgb)/0.42)] bg-[rgb(var(--card-accent-rgb)/0.12)] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[rgb(var(--card-accent-rgb))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.16)] transition hover:border-[rgb(var(--card-accent-rgb)/0.62)] hover:bg-[rgb(var(--card-accent-rgb)/0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)]"
+        >
+          <span>Switch Card</span>
+          <span className={`transition ${isOpen ? 'rotate-180' : ''}`}>
+            <Glyph name="chevron" className="h-3.5 w-3.5" />
+          </span>
+        </button>
+      </div>
+
+      <button
+        type="button"
+        aria-label={`Open card selector from card art, currently ${selectedProfile.shortName}`}
+        onClick={() => setIsOpen((current) => !current)}
+        className="group relative mt-4 block w-full rounded-[1.45rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02))] px-4 py-5 transition hover:border-[rgb(var(--card-accent-rgb)/0.34)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)]"
+      >
+        <div className="pointer-events-none absolute inset-x-8 bottom-7 h-14 rounded-full bg-black/30 blur-2xl" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent)]" />
+        <div className="relative flex items-center justify-center">
+          <div className={`pointer-events-none absolute inset-x-10 bottom-4 h-12 rounded-full opacity-80 blur-[32px] ${selectedVisual.accentGlowClassName}`} />
+          <EntityImage
+            src={selectedVisual.artUrl}
+            alt={selectedProfile.name}
+            label={selectedProfile.shortName}
+            className="relative aspect-[1.62/1] w-full max-w-[18rem] overflow-visible rounded-none border-0 bg-transparent"
+            imgClassName={`bg-transparent p-0 drop-shadow-[0_26px_44px_rgba(0,0,0,0.44)] transition duration-300 group-hover:-translate-y-1 ${selectedVisual.artEffectClassName ?? ''}`}
+            fallbackClassName="bg-black/10"
+            fit={selectedVisual.artFit ?? 'contain'}
+            position={selectedVisual.artPosition}
+            scale={selectedVisual.artScale ?? 1}
           />
-          <div className="relative transition duration-300 ease-out will-change-transform group-hover:-translate-y-2 group-focus-visible:-translate-y-2">
-            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[1.35rem]">
-              <div className="absolute inset-y-4 left-[-38%] w-[38%] rotate-[18deg] bg-[linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,0.06),rgba(255,255,255,0.34),rgba(255,255,255,0.06),rgba(255,255,255,0)) opacity-0 blur-md transition-all duration-700 ease-out group-hover:left-[118%] group-hover:opacity-100 group-focus-visible:left-[118%] group-focus-visible:opacity-100" />
-            </div>
-            <EntityImage
-              src={visual.artUrl}
-              alt={profile.name}
-              label={profile.shortName}
-              className={`aspect-[1.62/1] w-full overflow-visible rounded-none border-0 bg-transparent ${visual.selectorWidthClassName}`}
-              imgClassName={`bg-transparent p-0 transition duration-300 ${
-                selected
-                  ? 'drop-shadow-[0_28px_48px_rgba(0,0,0,0.5)] group-hover:drop-shadow-[0_34px_58px_rgba(0,0,0,0.56)]'
-                  : 'opacity-84 drop-shadow-[0_18px_32px_rgba(0,0,0,0.3)] group-hover:opacity-100 group-hover:drop-shadow-[0_30px_52px_rgba(0,0,0,0.46)]'
-              } ${visual.selectorArtEffectClassName ?? ''}`}
-              fallbackClassName="bg-black/10"
-              fit={visual.selectorArtFit ?? visual.artFit ?? 'contain'}
-              position={visual.selectorArtPosition ?? visual.artPosition}
-              scale={visual.selectorArtScale ?? visual.artScale ?? 1}
-            />
+        </div>
+      </button>
+      <p className="relative mt-3 text-sm leading-6 text-text-secondary">{selectedVisual.selectorSummary}</p>
+
+      {isOpen ? (
+        <div
+          role="listbox"
+          aria-label="Choose a card"
+          className="absolute left-0 right-0 top-[calc(100%+0.75rem)] z-50 max-h-[min(34rem,calc(100vh-8rem))] overflow-y-auto rounded-[1.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)]"
+        >
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
+          <div className="relative space-y-4">
+            {selectorGroups.map((group) => (
+              <div key={group.id}>
+                <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+                  {group.label}
+                </p>
+                <div className="mt-2 space-y-2">
+                  {group.cardIds.map((cardId) => {
+                    const profile = premiumCardProfileById[cardId];
+
+                    return (
+                      <CardSwitcherOption
+                        key={profile.id}
+                        profile={profile}
+                        selected={profile.id === selectedCardId}
+                        onSelect={() => handleSelect(profile.id)}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        <div className="relative mt-3">
-          <p className="text-sm leading-6 text-text-secondary">{visual.selectorSummary}</p>
-          <div className={`mt-4 h-[2px] rounded-full transition-all ${selected ? `w-16 ${visual.accentBarClassName}` : 'w-10 bg-white/10'}`} />
-        </div>
-      </div>
-    </button>
+      ) : null}
+    </div>
   );
 }
 
@@ -907,77 +1027,33 @@ export function PremiumCardCalculator() {
       <div className="pointer-events-none absolute left-[-7rem] top-10 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.08),transparent_70%)] blur-[56px]" />
       <div className="pointer-events-none absolute right-[-10rem] top-40 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.06),transparent_72%)] blur-3xl" />
 
-      <section className="relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,12,20,0.99),rgba(12,18,30,0.97))] px-5 py-6 shadow-[0_28px_90px_rgba(0,0,0,0.3)] md:px-8 md:py-8">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
-        <div className="pointer-events-none absolute -left-14 top-[-3rem] h-44 w-44 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.1),transparent_70%)] blur-[52px]" />
-        <div className="pointer-events-none absolute right-[-3rem] top-1 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.08),transparent_72%)] blur-[56px]" />
+      <section className="relative rounded-[2.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,12,20,0.99),rgba(12,18,30,0.97))] px-5 py-6 shadow-[0_28px_90px_rgba(0,0,0,0.3)] md:px-8 md:py-8">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2.4rem]">
+          <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
+          <div className="absolute -left-14 top-[-3rem] h-44 w-44 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.1),transparent_70%)] blur-[52px]" />
+          <div className="absolute right-[-3rem] top-1 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.08),transparent_72%)] blur-[56px]" />
+        </div>
 
         <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.08fr)_24rem] lg:items-center">
           <div>
             <p className={`text-[11px] font-semibold uppercase tracking-[0.3em] ${selectedVisual.accentClassName}`}>
-              The Stack Lab
+              Premium Card Calculator
             </p>
             <h1 className="mt-4 font-heading text-[clamp(2.6rem,5.2vw,4.8rem)] leading-[0.94] tracking-[-0.04em] text-text-primary">
-              Which Pricey Credit Card Actually Fits?
+              Find the Card That Earns Its Fee
             </h1>
             <p className="mt-4 max-w-[38rem] text-[1.02rem] leading-7 text-text-secondary">
-              Price the real card, not the marketing card. Compare flagship premium cards against lower-fee travel
-              earners, value the points honestly, and see which product actually deserves wallet space.
+              Run the annual-fee math with your real spend, credits, perks, and point values.
             </p>
 
           </div>
 
-          <div className="relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.96),rgba(9,13,22,0.98))] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)]">
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent)]" />
-            <div className={`pointer-events-none absolute -right-6 top-2 h-20 w-20 rounded-full opacity-80 blur-[44px] ${selectedVisual.accentGlowClassName}`} />
-            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">Selected Card</p>
-            <div className="mt-3 flex items-center justify-center">
-              <EntityImage
-                src={selectedVisual.artUrl}
-                alt={selectedProfile.name}
-                label={selectedProfile.shortName}
-                className="aspect-[1.62/1] w-full max-w-[18rem] overflow-visible rounded-none border-0 bg-transparent"
-                imgClassName={`bg-transparent p-0 drop-shadow-[0_26px_44px_rgba(0,0,0,0.44)] ${selectedVisual.artEffectClassName ?? ''}`}
-                fallbackClassName="bg-black/10"
-                fit={selectedVisual.artFit ?? 'contain'}
-                scale={selectedVisual.artScale ?? 1}
-              />
-            </div>
-            <p className="mt-3 text-sm leading-6 text-text-secondary">{selectedVisual.selectorSummary}</p>
-          </div>
-        </div>
-
-        <div className="relative mt-8 space-y-5">
-          {selectorGroups.map((group) => (
-            <div
-              key={group.id}
-              className="rounded-[1.7rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.02))] p-4 md:p-5"
-            >
-              <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">{group.label}</p>
-                  <p className="mt-2 max-w-[42rem] text-sm leading-6 text-text-secondary">{group.description}</p>
-                </div>
-              </div>
-
-              <div className={`mt-4 grid gap-4 ${getSelectorGridClassName(group.cardIds.length)}`}>
-                {group.cardIds.map((cardId) => {
-                  const profile = premiumCardProfileById[cardId];
-
-                  return (
-                    <SelectorCard
-                      key={profile.id}
-                      profile={profile}
-                      selected={profile.id === selectedCardId}
-                      onSelect={() => {
-                        startTransition(() => setSelectedCardId(profile.id));
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+          <CardSwitcher
+            selectedCardId={selectedCardId}
+            onSelect={(cardId) => {
+              startTransition(() => setSelectedCardId(cardId));
+            }}
+          />
         </div>
       </section>
 
