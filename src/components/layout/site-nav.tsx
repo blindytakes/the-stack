@@ -45,10 +45,10 @@ const toolNavItems: SubmenuNavItem[] = [
     activePath: '/cards/compare'
   },
   {
-    href: '/tools/card-vs-card',
+    href: '/tools/personal-finance-tracker',
     label: 'Personal Finance Tracker',
     description: 'Download the spreadsheet tracker.',
-    activePath: '/tools/card-vs-card'
+    activePath: '/tools/personal-finance-tracker'
   },
   {
     href: '/tools/premium-card-calculator',

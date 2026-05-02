@@ -37,6 +37,15 @@ function buildContentSecurityPolicy() {
 }
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/tools/card-vs-card',
+        destination: '/tools/personal-finance-tracker',
+        permanent: true
+      }
+    ];
+  },
   async headers() {
     if (process.env.NODE_ENV !== 'production') {
       return [];

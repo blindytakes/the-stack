@@ -36,3 +36,15 @@ export function getHealthCheckToken(): string | null {
 export function getSupportEmail(): string | null {
   return readTrimmed(process.env.SUPPORT_EMAIL);
 }
+
+export function getPersonalFinanceTrackerGoogleSheetSource(): string | null {
+  return (
+    readTrimmed(process.env.PERSONAL_FINANCE_TRACKER_GOOGLE_SHEET) ??
+    readTrimmed(process.env.PERSONAL_FINANCE_TRACKER_GOOGLE_SHEET_URL) ??
+    readTrimmed(process.env.PERSONAL_FINANCE_TRACKER_GOOGLE_SHEET_ID)
+  );
+}
+
+export function getPersonalFinanceTrackerGoogleSheetGid(): string | null {
+  return readTrimmed(process.env.PERSONAL_FINANCE_TRACKER_GOOGLE_SHEET_GID);
+}

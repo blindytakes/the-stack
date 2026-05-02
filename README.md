@@ -38,6 +38,11 @@ Beehiiv:
 
 - `SUPPORT_EMAIL` (used on the contact page)
 
+Personal finance tracker download:
+
+- `PERSONAL_FINANCE_TRACKER_GOOGLE_SHEET` (Google Sheets share URL or sheet ID for the downloadable template)
+- `PERSONAL_FINANCE_TRACKER_GOOGLE_SHEET_GID` (optional numeric tab id; usually not needed for `.xlsx` exports)
+
 Affiliate tracking:
 
 - `AFFILIATE_ALLOWED_HOSTS` (comma-separated allowlist of outbound domains)
@@ -57,6 +62,23 @@ Supabase Storage import tooling:
 Health checks:
 
 - `HEALTH_CHECK_TOKEN` (required in production for `/api/health`)
+
+### Personal finance tracker download
+
+The tracker download is proxied through `/api/tools/personal-finance-tracker/download` so the public page does not expose an editable sheet link. The route only accepts a Google Sheets URL or sheet ID from env, exports it as `.xlsx`, verifies the response looks like a spreadsheet, applies the shared API rate limiter, and forces a download response.
+
+Setup:
+
+```bash
+PERSONAL_FINANCE_TRACKER_GOOGLE_SHEET="https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID/edit#gid=0"
+```
+
+Google Sheets safety checklist:
+
+- Use a separate template copy, not your working sheet.
+- Remove real personal data, hidden tabs with private data, Apps Script, and external data connections.
+- Share the template as `Anyone with the link` -> `Viewer`, never `Editor`.
+- Test the download endpoint in an incognito browser before publishing.
 
 ### Database
 

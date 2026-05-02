@@ -21,7 +21,7 @@ const toolCards = [
     accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'
   },
   {
-    href: '/tools/card-vs-card',
+    href: '/tools/personal-finance-tracker',
     title: 'Personal Finance Tracker',
     description: 'Download a spreadsheet tracker to log spending, bills, savings goals, and monthly cash flow.',
     accentClassName: 'from-[#5ae0ff]/18 via-[#5ae0ff]/6 to-transparent'

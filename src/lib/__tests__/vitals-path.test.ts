@@ -7,6 +7,9 @@ describe('normalizeVitalPathToRoute', () => {
     expect(normalizeVitalPathToRoute('/tools/premium-card-calculator')).toBe(
       '/tools/premium-card-calculator'
     );
+    expect(normalizeVitalPathToRoute('/tools/personal-finance-tracker')).toBe(
+      '/tools/personal-finance-tracker'
+    );
     expect(normalizeVitalPathToRoute('/plan/results')).toBe('/plan/results');
     expect(normalizeVitalPathToRoute('/blog/')).toBe('/blog');
     expect(normalizeVitalPathToRoute('/cards/')).toBe('/cards');

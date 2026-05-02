@@ -6,12 +6,14 @@ type ToolPageShellProps = {
     | 'card_finder'
     | 'business_plan'
     | 'card_vs_card'
+    | 'personal_finance_tracker'
     | 'premium_card_calculator'
     | 'card_benefit_calendar'
     | 'points_redemption_advisor';
   path:
     | '/tools/card-finder'
     | '/tools/card-vs-card'
+    | '/tools/personal-finance-tracker'
     | '/tools/premium-card-calculator'
     | '/tools/card-benefit-calendar'
     | '/tools/points-advisor';

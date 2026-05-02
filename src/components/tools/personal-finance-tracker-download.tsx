@@ -1,3 +1,5 @@
+import { PERSONAL_FINANCE_TRACKER_DOWNLOAD_PATH } from '@/lib/personal-finance-tracker';
+
 const previewRows = [
   {
     label: 'Housing',
@@ -37,17 +39,19 @@ export function PersonalFinanceTrackerDownload() {
 
           <div className="mt-7 flex flex-col items-start gap-3">
             <a
-              href="/downloads/the-stack-personal-finance-tracker.csv"
+              href={PERSONAL_FINANCE_TRACKER_DOWNLOAD_PATH}
               download
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-teal px-6 py-3 text-sm font-semibold text-black shadow-[0_14px_36px_rgba(45,212,191,0.2)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
             >
-              <span>Download Tracker (.csv)</span>
+              <span>Download Tracker (.xlsx)</span>
               <span className="transition-transform group-hover:translate-y-0.5" aria-hidden>
                 ↓
               </span>
             </a>
           </div>
-          <p className="mt-3 text-sm text-text-secondary">Works in Google Sheets and Excel</p>
+          <p className="mt-3 text-sm text-text-secondary">
+            Downloads a spreadsheet copy for Google Sheets or Excel.
+          </p>
         </div>
 
         <div className="relative mt-8 hidden md:block md:mt-0">

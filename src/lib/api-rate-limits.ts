@@ -77,5 +77,12 @@ export const apiRateLimits = {
     window: '10 m',
     algorithm: 'sliding',
     message: 'Too many calculator email requests. Please try again soon.'
+  },
+  personalFinanceTrackerDownload: {
+    namespace: 'personal_finance_tracker_download',
+    limit: 30,
+    window: '1 m',
+    algorithm: 'sliding',
+    message: 'Too many tracker download requests. Please try again soon.'
   }
 } satisfies Record<string, RateLimitConfig>;
