@@ -4,17 +4,6 @@ import { motion } from 'framer-motion';
 import { formatCategory } from '@/lib/format';
 import type { CardDetail, RewardDetail } from '@/lib/cards';
 
-function winner(a: number, b: number, lowerIsBetter = false): 'a' | 'b' | 'tie' {
-  if (a === b) return 'tie';
-  if (lowerIsBetter) return a < b ? 'a' : 'b';
-  return a > b ? 'a' : 'b';
-}
-
-function winColor(side: 'a' | 'b' | 'tie', which: 'a' | 'b') {
-  if (side === 'tie') return 'text-text-primary';
-  return side === which ? 'text-brand-teal' : 'text-text-secondary';
-}
-
 function formatRate(reward: RewardDetail) {
   return reward.rateType === 'cashback' ? `${reward.rate}%` : `${reward.rate}x`;
 }
@@ -37,15 +26,14 @@ function CardLabels({ a, b }: { a: CardDetail; b: CardDetail }) {
 }
 
 function AnnualFeeRow({ a, b }: { a: CardDetail; b: CardDetail }) {
-  const w = winner(a.annualFee, b.annualFee, true);
   return (
     <div>
       <SectionHeading>Annual Fee</SectionHeading>
       <div className="mt-3 rounded-2xl border border-white/5 bg-bg-surface p-5">
         <CardLabels a={a} b={b} />
         <div className="grid grid-cols-2 gap-4">
-          <p className={`text-xl font-semibold ${winColor(w, 'a')}`}>{formatCurrency(a.annualFee)}</p>
-          <p className={`text-xl font-semibold ${winColor(w, 'b')}`}>{formatCurrency(b.annualFee)}</p>
+          <p className="text-xl font-semibold text-text-primary">{formatCurrency(a.annualFee)}</p>
+          <p className="text-xl font-semibold text-text-primary">{formatCurrency(b.annualFee)}</p>
         </div>
       </div>
     </div>
@@ -77,16 +65,15 @@ function RewardsComparison({ a, b }: { a: CardDetail; b: CardDetail }) {
           {categories.map((category) => {
             const rA = getRate(a.rewards, category);
             const rB = getRate(b.rewards, category);
-            const w = winner(rA?.rate ?? 0, rB?.rate ?? 0);
 
             return (
               <div key={category} className="flex items-center gap-4">
                 <span className="min-w-[100px] text-sm text-text-muted">{formatCategory(category)}</span>
                 <div className="grid flex-1 grid-cols-2 gap-4">
-                  <span className={`text-base font-semibold ${winColor(w, 'a')}`}>
+                  <span className="text-base font-semibold text-text-primary">
                     {rA ? formatRate(rA) : '—'}
                   </span>
-                  <span className={`text-base font-semibold ${winColor(w, 'b')}`}>
+                  <span className="text-base font-semibold text-text-primary">
                     {rB ? formatRate(rB) : '—'}
                   </span>
                 </div>
@@ -103,8 +90,6 @@ function SignUpBonusRow({ a, b }: { a: CardDetail; b: CardDetail }) {
   const bonusA = a.signUpBonuses.find((bonus) => bonus.isCurrentOffer !== false);
   const bonusB = b.signUpBonuses.find((bonus) => bonus.isCurrentOffer !== false);
   if (!bonusA && !bonusB) return null;
-
-  const w = winner(bonusA?.bonusValue ?? 0, bonusB?.bonusValue ?? 0);
 
   function formatBonus(bonus: typeof bonusA) {
     if (!bonus) return '—';
@@ -123,15 +108,15 @@ function SignUpBonusRow({ a, b }: { a: CardDetail; b: CardDetail }) {
   return (
     <div>
       <SectionHeading>Welcome Offer</SectionHeading>
-      <div className="mt-3 rounded-2xl border border-brand-gold/10 bg-brand-gold/5 p-5">
+      <div className="mt-3 rounded-2xl border border-white/5 bg-bg-surface p-5">
         <CardLabels a={a} b={b} />
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className={`text-xl font-semibold ${winColor(w, 'a')}`}>{formatBonus(bonusA)}</p>
+            <p className="text-xl font-semibold text-text-primary">{formatBonus(bonusA)}</p>
             <p className="mt-1 text-sm leading-5 text-text-muted">{formatSpend(bonusA)}</p>
           </div>
           <div>
-            <p className={`text-xl font-semibold ${winColor(w, 'b')}`}>{formatBonus(bonusB)}</p>
+            <p className="text-xl font-semibold text-text-primary">{formatBonus(bonusB)}</p>
             <p className="mt-1 text-sm leading-5 text-text-muted">{formatSpend(bonusB)}</p>
           </div>
         </div>
@@ -145,7 +130,6 @@ function BenefitsRow({ a, b }: { a: CardDetail; b: CardDetail }) {
   const totalB = b.benefits.reduce((sum, benefit) => sum + (benefit.estimatedValue ?? 0), 0);
 
   if (a.benefits.length === 0 && b.benefits.length === 0) return null;
-  const w = winner(totalA, totalB);
   const benefitValue = (card: CardDetail, total: number) => {
     if (total > 0) return `~$${total.toLocaleString()}/yr`;
     if (card.benefits.length > 0) return `${card.benefits.length} listed`;
@@ -166,13 +150,13 @@ function BenefitsRow({ a, b }: { a: CardDetail; b: CardDetail }) {
         <CardLabels a={a} b={b} />
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className={`text-xl font-semibold ${winColor(w, 'a')}`}>
+            <p className="text-xl font-semibold text-text-primary">
               {benefitValue(a, totalA)}
             </p>
             <p className="mt-1 text-sm leading-5 text-text-muted">{benefitDetail(a)}</p>
           </div>
           <div>
-            <p className={`text-xl font-semibold ${winColor(w, 'b')}`}>
+            <p className="text-xl font-semibold text-text-primary">
               {benefitValue(b, totalB)}
             </p>
             <p className="mt-1 text-sm leading-5 text-text-muted">{benefitDetail(b)}</p>
@@ -231,26 +215,22 @@ function QuickFactsRow({ a, b }: { a: CardDetail; b: CardDetail }) {
     {
       label: 'Foreign Tx Fee',
       valA: a.foreignTxFee === 0 ? 'None' : `${a.foreignTxFee}%`,
-      valB: b.foreignTxFee === 0 ? 'None' : `${b.foreignTxFee}%`,
-      w: winner(a.foreignTxFee, b.foreignTxFee, true)
+      valB: b.foreignTxFee === 0 ? 'None' : `${b.foreignTxFee}%`
     },
     {
       label: 'Credit Needed',
       valA: a.creditTierMin,
-      valB: b.creditTierMin,
-      w: 'tie' as const
+      valB: b.creditTierMin
     },
     {
       label: 'Network',
       valA: a.network ?? '—',
-      valB: b.network ?? '—',
-      w: 'tie' as const
+      valB: b.network ?? '—'
     },
     {
       label: 'Reward Type',
       valA: a.rewardType,
-      valB: b.rewardType,
-      w: 'tie' as const
+      valB: b.rewardType
     }
   ];
 
@@ -264,8 +244,8 @@ function QuickFactsRow({ a, b }: { a: CardDetail; b: CardDetail }) {
             <div key={row.label} className="flex items-center gap-4">
               <span className="min-w-[100px] text-sm text-text-muted">{row.label}</span>
               <div className="grid flex-1 grid-cols-2 gap-4">
-                <span className={`text-base capitalize ${winColor(row.w, 'a')}`}>{row.valA}</span>
-                <span className={`text-base capitalize ${winColor(row.w, 'b')}`}>{row.valB}</span>
+                <span className="text-base capitalize text-text-primary">{row.valA}</span>
+                <span className="text-base capitalize text-text-primary">{row.valB}</span>
               </div>
             </div>
           ))}

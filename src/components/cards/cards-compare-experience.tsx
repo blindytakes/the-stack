@@ -614,6 +614,13 @@ function CategoryTable({
   summaryA: CardComparisonCardSummary;
   summaryB: CardComparisonCardSummary;
 }) {
+  const totalRewardWinner =
+    summaryA.annualRewardsValue === summaryB.annualRewardsValue
+      ? 'tie'
+      : summaryA.annualRewardsValue > summaryB.annualRewardsValue
+        ? 'a'
+        : 'b';
+
   return (
     <section className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,18,30,0.98),rgba(10,14,22,0.98))] p-5 md:p-6">
       <div className="w-full">
@@ -660,6 +667,25 @@ function CategoryTable({
             </div>
           );
         })}
+        <div className="grid grid-cols-[1.2fr_0.7fr_1fr_1fr] gap-3 border-t border-white/14 bg-white/[0.045] px-4 py-4 text-sm">
+          <div>
+            <p className="font-semibold text-text-primary">Total annual spend</p>
+            <p className="mt-1 text-xs leading-5 text-text-muted">Across this spend mix</p>
+          </div>
+          <div className="font-semibold text-text-primary">{formatMoney(summaryA.annualSpendTotal)}</div>
+          <div>
+            <p className={`font-semibold ${winnerTone('a', totalRewardWinner)}`}>
+              {formatMoney(summaryA.annualRewardsValue)}
+            </p>
+            <p className="mt-1 text-xs text-text-muted">{summaryA.effectiveReturnPercent.toFixed(2)}%</p>
+          </div>
+          <div>
+            <p className={`font-semibold ${winnerTone('b', totalRewardWinner)}`}>
+              {formatMoney(summaryB.annualRewardsValue)}
+            </p>
+            <p className="mt-1 text-xs text-text-muted">{summaryB.effectiveReturnPercent.toFixed(2)}%</p>
+          </div>
+        </div>
       </div>
     </section>
   );
