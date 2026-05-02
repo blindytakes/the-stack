@@ -217,6 +217,15 @@ const selectorGroups: ReadonlyArray<{
   }
 ];
 
+const workflowSteps = [
+  { id: 'gate-check', label: 'Gate Check', icon: 'gate' },
+  { id: 'money-map', label: 'Money Map', icon: 'route' },
+  { id: 'value-stack', label: 'Value Stack', icon: 'stack' },
+  { id: 'scoreboard', label: 'Results', icon: 'score' }
+] as const satisfies ReadonlyArray<{ id: string; label: string; icon: GlyphName }>;
+
+type WorkflowStepId = (typeof workflowSteps)[number]['id'];
+
 type GlyphName =
   | 'star'
   | 'shield'
@@ -496,7 +505,7 @@ function CardSwitcherOption({
   );
 }
 
-function CardSwitcher({
+function CompactCardSwitcher({
   selectedCardId,
   onSelect
 }: {
@@ -541,62 +550,55 @@ function CardSwitcher({
   return (
     <div
       ref={containerRef}
-      className="relative z-20 overflow-visible rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.96),rgba(9,13,22,0.98))] p-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)]"
+      className="relative min-w-0 flex-1 overflow-visible"
     >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-20 rounded-t-[1.9rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent)]" />
-      <div className={`pointer-events-none absolute -right-6 top-2 h-20 w-20 rounded-full opacity-80 blur-[44px] ${selectedVisual.accentGlowClassName}`} />
-      <div className="relative flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">Selected Card</p>
-          <p className="mt-2 truncate text-[1.1rem] font-semibold leading-tight text-text-primary">
-            {selectedProfile.shortName}
-          </p>
-        </div>
-        <button
-          type="button"
-          aria-haspopup="listbox"
-          aria-expanded={isOpen}
-          aria-label={`Switch selected card, currently ${selectedProfile.shortName}`}
-          onClick={() => setIsOpen((current) => !current)}
-          className="group flex shrink-0 items-center gap-2 rounded-full border border-[rgb(var(--card-accent-rgb)/0.42)] bg-[rgb(var(--card-accent-rgb)/0.12)] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-[rgb(var(--card-accent-rgb))] shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.16)] transition hover:border-[rgb(var(--card-accent-rgb)/0.62)] hover:bg-[rgb(var(--card-accent-rgb)/0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)]"
-        >
-          <span>Switch Card</span>
-          <span className={`transition ${isOpen ? 'rotate-180' : ''}`}>
-            <Glyph name="chevron" className="h-3.5 w-3.5" />
-          </span>
-        </button>
-      </div>
-
       <button
         type="button"
-        aria-label={`Open card selector from card art, currently ${selectedProfile.shortName}`}
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-label={`Switch selected card, currently ${selectedProfile.shortName}`}
         onClick={() => setIsOpen((current) => !current)}
-        className="group relative mt-4 block w-full rounded-[1.45rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02))] px-4 py-5 transition hover:border-[rgb(var(--card-accent-rgb)/0.34)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)]"
+        className="group flex w-full items-center gap-3 rounded-[1rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] px-3 py-2.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] transition hover:border-[rgb(var(--card-accent-rgb)/0.38)] hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)]"
       >
-        <div className="pointer-events-none absolute inset-x-8 bottom-7 h-14 rounded-full bg-black/30 blur-2xl" />
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent)]" />
-        <div className="relative flex items-center justify-center">
-          <div className={`pointer-events-none absolute inset-x-10 bottom-4 h-12 rounded-full opacity-80 blur-[32px] ${selectedVisual.accentGlowClassName}`} />
+        <div className="relative flex h-11 w-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.8rem] bg-black/10">
+          <div
+            className={`pointer-events-none absolute inset-x-2 bottom-2 h-6 rounded-full opacity-70 blur-[18px] ${selectedVisual.accentGlowClassName}`}
+          />
           <EntityImage
             src={selectedVisual.artUrl}
             alt={selectedProfile.name}
             label={selectedProfile.shortName}
-            className="relative aspect-[1.62/1] w-full max-w-[18rem] overflow-visible rounded-none border-0 bg-transparent"
-            imgClassName={`bg-transparent p-0 drop-shadow-[0_26px_44px_rgba(0,0,0,0.44)] transition duration-300 group-hover:-translate-y-1 ${selectedVisual.artEffectClassName ?? ''}`}
+            className="relative aspect-[1.62/1] w-full max-w-[4rem] overflow-visible rounded-none border-0 bg-transparent"
+            imgClassName={`bg-transparent p-0 drop-shadow-[0_10px_18px_rgba(0,0,0,0.34)] ${selectedVisual.selectorArtEffectClassName ?? selectedVisual.artEffectClassName ?? ''}`}
             fallbackClassName="bg-black/10"
-            fit={selectedVisual.artFit ?? 'contain'}
-            position={selectedVisual.artPosition}
-            scale={selectedVisual.artScale ?? 1}
+            fit={selectedVisual.selectorArtFit ?? selectedVisual.artFit ?? 'contain'}
+            position={selectedVisual.selectorArtPosition ?? selectedVisual.artPosition}
+            scale={selectedVisual.selectorArtScale ?? selectedVisual.artScale ?? 1}
           />
         </div>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">
+            Selected Card
+          </span>
+          <span className="mt-1 block truncate text-sm font-semibold leading-5 text-text-primary">
+            {selectedProfile.shortName}
+          </span>
+        </span>
+        <span
+          className={`flex shrink-0 items-center gap-1.5 rounded-full border border-[rgb(var(--card-accent-rgb)/0.34)] bg-[rgb(var(--card-accent-rgb)/0.1)] px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[rgb(var(--card-accent-rgb))] transition group-hover:border-[rgb(var(--card-accent-rgb)/0.54)]`}
+        >
+          Switch
+          <span className={`transition ${isOpen ? 'rotate-180' : ''}`}>
+            <Glyph name="chevron" className="h-3.5 w-3.5" />
+          </span>
+        </span>
       </button>
-      <p className="relative mt-3 text-sm leading-6 text-text-secondary">{selectedVisual.selectorSummary}</p>
 
       {isOpen ? (
         <div
           role="listbox"
           aria-label="Choose a card"
-          className="absolute left-0 right-0 top-[calc(100%+0.75rem)] z-50 max-h-[min(34rem,calc(100vh-8rem))] overflow-y-auto rounded-[1.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)]"
+          className="absolute left-0 right-0 top-[calc(100%+0.65rem)] z-50 max-h-[min(34rem,calc(100vh-8rem))] overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)]"
         >
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
           <div className="relative space-y-4">
@@ -628,13 +630,309 @@ function CardSwitcher({
   );
 }
 
+function HeaderCardSelectorPanel({
+  selectedCardId,
+  onSelectCard
+}: {
+  selectedCardId: PremiumCardId;
+  onSelectCard: (cardId: PremiumCardId) => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const selectedProfile = premiumCardProfileById[selectedCardId];
+  const selectedVisual = cardVisuals[selectedCardId];
+
+  const close = useCallback(() => {
+    setIsOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function onClickOutside(event: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        close();
+      }
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') close();
+    }
+
+    document.addEventListener('mousedown', onClickOutside);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onClickOutside);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [close, isOpen]);
+
+  function handleSelect(cardId: PremiumCardId) {
+    onSelectCard(cardId);
+    close();
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative min-w-0 overflow-visible rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]"
+    >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
+      <div className={`pointer-events-none absolute -right-10 top-8 h-28 w-28 opacity-70 blur-[46px] ${selectedVisual.accentGlowClassName}`} />
+
+      <div className="relative flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0">
+          <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${selectedVisual.accentClassName}`}>
+            Choose a card to model
+          </p>
+          <h2 className="mt-2 text-[1.55rem] font-semibold leading-tight text-text-primary">
+            {selectedProfile.shortName}
+          </h2>
+          <p className="mt-2 overflow-hidden text-ellipsis whitespace-nowrap text-[7px] leading-4 text-text-secondary sm:text-[13px] sm:leading-5 xl:text-sm">
+            {selectedProfile.headline}
+          </p>
+        </div>
+        <button
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={isOpen}
+          aria-label={`Open card selector for ${selectedProfile.shortName}`}
+          onClick={() => setIsOpen((current) => !current)}
+          className={`group flex shrink-0 items-center gap-1.5 self-start rounded-full border border-[rgb(var(--card-accent-rgb)/0.36)] bg-[rgb(var(--card-accent-rgb)/0.1)] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-[rgb(var(--card-accent-rgb))] transition hover:border-[rgb(var(--card-accent-rgb)/0.58)] hover:bg-[rgb(var(--card-accent-rgb)/0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)] sm:self-auto`}
+        >
+          Change Card
+          <span className={`transition ${isOpen ? 'rotate-180' : ''}`}>
+            <Glyph name="chevron" className="h-3.5 w-3.5" />
+          </span>
+        </button>
+      </div>
+
+      <div className="relative mt-5 overflow-hidden rounded-[1.2rem] border border-white/8 bg-[linear-gradient(180deg,rgba(9,13,22,0.62),rgba(255,255,255,0.03))] px-8 py-6">
+        <div className="pointer-events-none absolute inset-x-8 bottom-6 h-12 rounded-full bg-black/30 blur-2xl" />
+        <div className={`pointer-events-none absolute inset-x-8 bottom-6 h-11 rounded-full opacity-80 blur-[30px] ${selectedVisual.accentGlowClassName}`} />
+        <button
+          type="button"
+          aria-label={`Open card selector from ${selectedProfile.shortName} card art`}
+          onClick={() => setIsOpen((current) => !current)}
+          className="group relative flex min-h-[9.75rem] w-full items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)]"
+        >
+          <EntityImage
+            src={selectedVisual.artUrl}
+            alt={selectedProfile.name}
+            label={selectedProfile.shortName}
+            className="relative aspect-[1.62/1] w-full max-w-[17rem] overflow-visible rounded-none border-0 bg-transparent"
+            imgClassName={`bg-transparent p-0 drop-shadow-[0_24px_38px_rgba(0,0,0,0.42)] transition duration-300 group-hover:-translate-y-1 ${selectedVisual.artEffectClassName ?? ''}`}
+            fallbackClassName="bg-black/10"
+            fit={selectedVisual.artFit ?? 'contain'}
+            position={selectedVisual.artPosition}
+            scale={selectedVisual.artScale ?? 1}
+          />
+        </button>
+      </div>
+
+      <div className="relative mt-4 grid gap-2 text-xs sm:grid-cols-3">
+        <div className="rounded-[0.9rem] border border-white/8 bg-black/10 px-3 py-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">Annual Fee</p>
+          <p className="mt-1 font-semibold text-text-primary">{formatCurrency(selectedProfile.annualFee)}</p>
+        </div>
+        <div className="rounded-[0.9rem] border border-white/8 bg-black/10 px-3 py-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">Issuer</p>
+          <p className="mt-1 truncate font-semibold text-text-primary">{selectedProfile.issuer}</p>
+        </div>
+        <div className="rounded-[0.9rem] border border-white/8 bg-black/10 px-3 py-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">Best Fit</p>
+          <p className="mt-1 truncate font-semibold text-text-primary">{selectedVisual.laneLabel}</p>
+        </div>
+      </div>
+
+      {isOpen ? (
+        <div
+          role="listbox"
+          aria-label="Choose a card to model"
+          className="absolute left-4 right-4 top-[calc(100%+0.75rem)] z-50 max-h-[min(34rem,calc(100vh-8rem))] overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)]"
+        >
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
+          <div className="relative space-y-4">
+            {selectorGroups.map((group) => (
+              <div key={group.id}>
+                <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+                  {group.label}
+                </p>
+                <p className="mt-1 px-1 text-[12px] leading-5 text-text-muted">{group.description}</p>
+                <div className="mt-2 space-y-2">
+                  {group.cardIds.map((cardId) => {
+                    const profile = premiumCardProfileById[cardId];
+
+                    return (
+                      <CardSwitcherOption
+                        key={profile.id}
+                        profile={profile}
+                        selected={profile.id === selectedCardId}
+                        onSelect={() => handleSelect(profile.id)}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function WorkflowHeader({
+  selectedCardId,
+  activeStepId,
+  yearOneValue,
+  yearTwoValue,
+  yearOneIsPositive,
+  yearTwoIsPositive,
+  verdictLabel,
+  onSelectCard,
+  onSelectStep
+}: {
+  selectedCardId: PremiumCardId;
+  activeStepId: WorkflowStepId;
+  yearOneValue: number;
+  yearTwoValue: number;
+  yearOneIsPositive: boolean;
+  yearTwoIsPositive: boolean;
+  verdictLabel: string;
+  onSelectCard: (cardId: PremiumCardId) => void;
+  onSelectStep: (stepId: WorkflowStepId) => void;
+}) {
+  const selectedProfile = premiumCardProfileById[selectedCardId];
+  const selectedVisual = cardVisuals[selectedCardId];
+
+  return (
+    <>
+      <section className="relative overflow-visible rounded-[1.55rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,18,30,0.98),rgba(8,12,20,0.99))] px-4 py-5 shadow-[0_18px_70px_rgba(0,0,0,0.24)] md:px-6 md:py-6">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
+        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(25rem,0.82fr)] xl:items-center">
+          <div className="min-w-0">
+            <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${selectedVisual.accentClassName}`}>
+              Premium Card Calculator
+            </p>
+            <h1 className="mt-3 max-w-[42rem] font-heading text-[2.35rem] leading-[0.96] text-text-primary md:text-[3.45rem]">
+              Calculate This Card&apos;s Net Value
+            </h1>
+            <p className="mt-3 max-w-[40rem] text-sm leading-6 text-text-secondary md:text-base md:leading-7">
+              Pick a card, enter your bonus, spend, credits, perks, and point value, then see first-year and ongoing value after the annual fee.
+            </p>
+
+            <div className="mt-5 max-w-[42rem] overflow-hidden rounded-[1rem] border border-white/10 bg-white/[0.035] px-2 py-3 text-[11.5px] leading-none text-text-secondary sm:px-4 sm:text-sm">
+              <div className="flex min-w-0 items-center whitespace-nowrap">
+                <span className="font-semibold text-text-primary">
+                  <span className="sm:hidden">Bonus</span>
+                  <span className="hidden sm:inline">Bonus</span>
+                </span>
+                <span className="px-0.5 text-text-muted sm:px-2">+</span>
+                <span className="font-semibold text-text-primary">
+                  <span className="sm:hidden">rewards</span>
+                  <span className="hidden sm:inline">rewards</span>
+                </span>
+                <span className="px-0.5 text-text-muted sm:px-2">+</span>
+                <span className="font-semibold text-text-primary">
+                  <span className="sm:hidden">credits</span>
+                  <span className="hidden sm:inline">credits</span>
+                </span>
+                <span className="px-0.5 text-text-muted sm:px-2">-</span>
+                <span className="font-semibold text-text-primary">
+                  <span className="sm:hidden">fee</span>
+                  <span className="hidden sm:inline">fee</span>
+                </span>
+                <span className="px-0.5 text-text-muted sm:px-2">=</span>
+                <span className={selectedVisual.accentClassName}>net value</span>
+              </div>
+            </div>
+
+            <div className="mt-5 grid max-w-[42rem] gap-2 sm:grid-cols-2">
+              <div
+                className={`rounded-[1rem] border px-4 py-3 ${
+                  yearOneIsPositive
+                    ? 'border-[rgb(var(--card-accent-rgb)/0.32)] bg-[rgb(var(--card-accent-rgb)/0.08)]'
+                    : 'border-brand-coral/20 bg-brand-coral/10'
+                }`}
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">Year One</p>
+                <p className="mt-2 text-[1.8rem] font-semibold leading-none text-text-primary">
+                  {formatCurrency(yearOneValue)}
+                </p>
+                <p className={`mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] ${yearOneIsPositive ? selectedVisual.accentClassName : 'text-brand-coral'}`}>
+                  {verdictLabel}
+                </p>
+              </div>
+              <div
+                className={`rounded-[1rem] border px-4 py-3 ${
+                  yearTwoIsPositive
+                    ? 'border-white/10 bg-white/[0.035]'
+                    : 'border-brand-coral/20 bg-brand-coral/10'
+                }`}
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">Ongoing</p>
+                <p className="mt-2 text-[1.8rem] font-semibold leading-none text-text-primary">
+                  {formatCurrency(yearTwoValue)}
+                </p>
+                <p className={`mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] ${yearTwoIsPositive ? 'text-text-secondary' : 'text-brand-coral'}`}>
+                  {yearTwoIsPositive ? 'Annual keep value' : 'Annual drag'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <HeaderCardSelectorPanel selectedCardId={selectedProfile.id} onSelectCard={onSelectCard} />
+        </div>
+      </section>
+
+      <div className="sticky top-16 z-30 overflow-visible rounded-[1.25rem] border border-white/10 bg-[linear-gradient(180deg,rgba(13,19,31,0.94),rgba(8,12,20,0.96))] p-2 shadow-[0_16px_50px_rgba(0,0,0,0.26)] backdrop-blur-xl">
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex min-w-0 items-center gap-2 lg:w-[22rem]">
+            <CompactCardSwitcher selectedCardId={selectedProfile.id} onSelect={onSelectCard} />
+          </div>
+          <nav aria-label="Calculator workflow" className="min-w-0 flex-1">
+            <div className="scrollbar-hide flex gap-1 overflow-x-auto rounded-[1rem] border border-white/8 bg-black/15 p-1">
+              {workflowSteps.map((step) => {
+                const active = step.id === activeStepId;
+
+                return (
+                  <button
+                    key={step.id}
+                    type="button"
+                    onClick={() => onSelectStep(step.id)}
+                    aria-current={active ? 'step' : undefined}
+                    className={`inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-[0.85rem] border px-3 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)] md:min-w-[8.5rem] ${
+                      active
+                        ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[rgb(var(--card-accent-rgb)/0.14)] text-text-primary shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.18)]'
+                        : 'border-transparent text-text-secondary hover:border-white/12 hover:bg-white/[0.045] hover:text-text-primary'
+                    }`}
+                  >
+                    <Glyph
+                      name={step.icon}
+                      className={`h-3.5 w-3.5 ${active ? selectedVisual.accentClassName : 'text-text-muted'}`}
+                    />
+                    <span className="whitespace-nowrap">{step.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        </div>
+      </div>
+    </>
+  );
+}
+
 function SectionFrame({
+  id,
   eyebrow,
   title,
   description,
   icon,
   children
 }: {
+  id?: string;
   eyebrow: string;
   title: string;
   description: string;
@@ -642,7 +940,10 @@ function SectionFrame({
   children: React.ReactNode;
 }) {
   return (
-    <section className="relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(11,16,27,0.98),rgba(8,12,20,0.98))] px-5 py-6 shadow-[0_22px_80px_rgba(0,0,0,0.26)] md:px-6 md:py-7">
+    <section
+      id={id}
+      className="relative scroll-mt-36 overflow-hidden rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(11,16,27,0.98),rgba(8,12,20,0.98))] px-5 py-6 shadow-[0_22px_80px_rgba(0,0,0,0.26)] md:scroll-mt-40 md:px-6 md:py-7"
+    >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent)]" />
       <div className="pointer-events-none absolute -right-8 top-0 h-28 w-36 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.16),transparent_70%)] blur-[52px]" />
       <div className="mx-auto max-w-[56rem]">
@@ -921,6 +1222,7 @@ function SpendCategoryCard({
 export function PremiumCardCalculator() {
   const [selectedCardId, setSelectedCardId] = useState<PremiumCardId>('amex-platinum');
   const [showEmailPanel, setShowEmailPanel] = useState(false);
+  const [activeStepId, setActiveStepId] = useState<WorkflowStepId>('gate-check');
   const [scenarios, setScenarios] = useState<Record<PremiumCardId, PremiumCardScenario>>(() =>
     premiumCardProfiles.reduce(
       (accumulator, profile) => {
@@ -940,6 +1242,47 @@ export function PremiumCardCalculator() {
         {} as Record<PremiumCardId, PremiumCardFieldInteractions>
       )
   );
+
+  useEffect(() => {
+    const sections = workflowSteps
+      .map((step) => document.getElementById(step.id))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    if (sections.length === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+
+        if (visibleEntry?.target.id) {
+          setActiveStepId(visibleEntry.target.id as WorkflowStepId);
+        }
+      },
+      {
+        rootMargin: '-32% 0px -58% 0px',
+        threshold: [0, 0.2, 0.5]
+      }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => observer.disconnect();
+  }, []);
+
+  const handleWorkflowStepSelect = useCallback((stepId: WorkflowStepId) => {
+    setActiveStepId(stepId);
+
+    const target = document.getElementById(stepId);
+    if (!target) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    target.scrollIntoView({
+      behavior: prefersReducedMotion ? 'auto' : 'smooth',
+      block: 'start'
+    });
+  }, []);
 
   const selectedProfile = premiumCardProfileById[selectedCardId];
   const selectedScenario = scenarios[selectedCardId];
@@ -1023,39 +1366,20 @@ export function PremiumCardCalculator() {
     : null;
 
   return (
-    <section className="relative mx-auto max-w-6xl space-y-6" style={accentStyle}>
-      <div className="pointer-events-none absolute left-[-7rem] top-10 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.08),transparent_70%)] blur-[56px]" />
-      <div className="pointer-events-none absolute right-[-10rem] top-40 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.06),transparent_72%)] blur-3xl" />
-
-      <section className="relative rounded-[2.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,12,20,0.99),rgba(12,18,30,0.97))] px-5 py-6 shadow-[0_28px_90px_rgba(0,0,0,0.3)] md:px-8 md:py-8">
-        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2.4rem]">
-          <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
-          <div className="absolute -left-14 top-[-3rem] h-44 w-44 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.1),transparent_70%)] blur-[52px]" />
-          <div className="absolute right-[-3rem] top-1 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.08),transparent_72%)] blur-[56px]" />
-        </div>
-
-        <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1.08fr)_24rem] lg:items-center">
-          <div>
-            <p className={`text-[11px] font-semibold uppercase tracking-[0.3em] ${selectedVisual.accentClassName}`}>
-              Premium Card Calculator
-            </p>
-            <h1 className="mt-4 font-heading text-[clamp(2.6rem,5.2vw,4.8rem)] leading-[0.94] tracking-[-0.04em] text-text-primary">
-              Find the Card That Earns Its Fee
-            </h1>
-            <p className="mt-4 max-w-[38rem] text-[1.02rem] leading-7 text-text-secondary">
-              Run the annual-fee math with your real spend, credits, perks, and point values.
-            </p>
-
-          </div>
-
-          <CardSwitcher
-            selectedCardId={selectedCardId}
-            onSelect={(cardId) => {
-              startTransition(() => setSelectedCardId(cardId));
-            }}
-          />
-        </div>
-      </section>
+    <section className="relative mx-auto max-w-6xl space-y-5" style={accentStyle}>
+      <WorkflowHeader
+        selectedCardId={selectedCardId}
+        activeStepId={activeStepId}
+        yearOneValue={selectedResult.expectedValueYear1}
+        yearTwoValue={selectedResult.expectedValueYear2}
+        yearOneIsPositive={yearOneIsPositive}
+        yearTwoIsPositive={yearTwoIsPositive}
+        verdictLabel={yearOneVerdictLabel}
+        onSelectCard={(cardId) => {
+          startTransition(() => setSelectedCardId(cardId));
+        }}
+        onSelectStep={handleWorkflowStepSelect}
+      />
 
       <motion.section
         key={selectedCardId}
@@ -1069,6 +1393,7 @@ export function PremiumCardCalculator() {
         <div className="pointer-events-none absolute right-[-2.5rem] top-[-1.5rem] h-40 w-40 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.1),transparent_72%)] blur-[52px]" />
         <div className="mx-auto max-w-[56rem] space-y-6">
           <SectionFrame
+            id="gate-check"
             eyebrow="Gate Check"
             icon="gate"
             title="Decide what counts on day one"
@@ -1238,6 +1563,7 @@ export function PremiumCardCalculator() {
           </SectionFrame>
 
           <SectionFrame
+            id="money-map"
             eyebrow="Money Map"
             icon="route"
             title="Route the dollars this card would really touch"
@@ -1277,6 +1603,7 @@ export function PremiumCardCalculator() {
           </SectionFrame>
 
           <SectionFrame
+            id="value-stack"
             eyebrow="Value Stack"
             icon="stack"
             title="Keep the perks you will actually cash in"
@@ -1358,7 +1685,10 @@ export function PremiumCardCalculator() {
             </div>
           </SectionFrame>
 
-          <section className="relative overflow-hidden rounded-[1.95rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,16,25,0.98),rgba(18,24,36,0.96))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.24)] md:p-6">
+          <section
+            id="scoreboard"
+            className="relative scroll-mt-36 overflow-hidden rounded-[1.95rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,16,25,0.98),rgba(18,24,36,0.96))] p-5 shadow-[0_24px_80px_rgba(0,0,0,0.24)] md:scroll-mt-40 md:p-6"
+          >
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent)]" />
             <div className="pointer-events-none absolute -right-4 top-2 h-28 w-32 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.12),transparent_72%)] blur-[48px]" />
             <div className="mx-auto max-w-[56rem]">
