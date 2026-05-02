@@ -667,12 +667,12 @@ function CategoryTable({
             </div>
           );
         })}
-        <div className="grid grid-cols-[1.2fr_0.7fr_1fr_1fr] gap-3 border-t border-white/14 bg-white/[0.045] px-4 py-4 text-sm">
+        <div className="grid grid-cols-[1.2fr_0.7fr_1fr_1fr] gap-3 border-t border-brand-gold/25 bg-[linear-gradient(90deg,rgba(212,168,83,0.13),rgba(212,168,83,0.055)_42%,rgba(255,255,255,0.035))] px-4 py-4 text-sm shadow-[inset_0_1px_0_rgba(212,168,83,0.14)]">
           <div>
-            <p className="font-semibold text-text-primary">Total annual spend</p>
-            <p className="mt-1 text-xs leading-5 text-text-muted">Across this spend mix</p>
+            <p className="font-semibold text-brand-gold">Total annual spend</p>
+            <p className="mt-1 text-xs leading-5 text-text-secondary">Across this spend mix</p>
           </div>
-          <div className="font-semibold text-text-primary">{formatMoney(summaryA.annualSpendTotal)}</div>
+          <div className="font-semibold text-brand-gold">{formatMoney(summaryA.annualSpendTotal)}</div>
           <div>
             <p className={`font-semibold ${winnerTone('a', totalRewardWinner)}`}>
               {formatMoney(summaryA.annualRewardsValue)}
