@@ -18,9 +18,9 @@ type CardPickerProps = {
 const pickerToneClassNames = {
   neutral: {
     button:
-      'border-white/10 bg-bg-surface shadow-none hover:border-white/20',
-    issuer: 'text-text-muted',
-    change: 'text-text-muted',
+      'border-2 border-brand-teal/24 bg-[linear-gradient(90deg,rgba(255,255,255,0.05),rgba(255,255,255,0.025))] shadow-[inset_0_1px_0_rgba(255,255,255,0.06),inset_0_0_0_1px_rgba(45,212,191,0.08),0_0_24px_rgba(45,212,191,0.055)] hover:border-brand-teal/42',
+    issuer: 'text-text-secondary',
+    change: 'text-brand-teal',
     input: 'focus:border-brand-teal'
   },
   gold: {

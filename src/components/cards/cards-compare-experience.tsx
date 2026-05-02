@@ -115,6 +115,47 @@ function buildWinnerMetric({
 
 type WinnerMetric = ReturnType<typeof buildWinnerMetric>;
 
+function compactVerdictCardName(name: string) {
+  return name
+    .replace(/\s+Rewards Credit Card$/i, '')
+    .replace(/\s+Credit Card$/i, '')
+    .replace(/\s+Card$/i, '')
+    .trim();
+}
+
+function buildCompactVerdictTitle(comparison: ReturnType<typeof buildCardComparison>) {
+  const firstYearName =
+    comparison.firstYearWinner === 'tie'
+      ? null
+      : compactVerdictCardName(
+          comparison.firstYearWinner === 'a' ? comparison.a.card.name : comparison.b.card.name
+        );
+  const ongoingName =
+    comparison.ongoingWinner === 'tie'
+      ? null
+      : compactVerdictCardName(
+          comparison.ongoingWinner === 'a' ? comparison.a.card.name : comparison.b.card.name
+        );
+
+  if (firstYearName && ongoingName && firstYearName === ongoingName) {
+    return `${firstYearName} wins year 1 and long term.`;
+  }
+
+  if (firstYearName && ongoingName) {
+    return `${firstYearName} wins year 1. ${ongoingName} wins long term.`;
+  }
+
+  if (firstYearName) {
+    return `${firstYearName} wins year 1. Long-term value is close.`;
+  }
+
+  if (ongoingName) {
+    return `Year 1 is close. ${ongoingName} wins long term.`;
+  }
+
+  return comparison.verdictTitle;
+}
+
 function verdictThemeForWinner({
   winner,
   cardA,
@@ -820,12 +861,12 @@ export function CardsCompareExperience({
             <div>
               <p className="mb-2 text-center text-sm font-semibold uppercase tracking-[0.18em] text-text-muted">Card A</p>
               <SelectedCompareCardPreview card={selectedCardA} />
-              <CardPicker cards={cards} selectedSlug={slugA} onSelect={handleSelectA} tone="gold" size="large" />
+              <CardPicker cards={cards} selectedSlug={slugA} onSelect={handleSelectA} size="large" />
             </div>
             <div>
               <p className="mb-2 text-center text-sm font-semibold uppercase tracking-[0.18em] text-text-muted">Card B</p>
               <SelectedCompareCardPreview card={selectedCardB} />
-              <CardPicker cards={cards} selectedSlug={slugB} onSelect={handleSelectB} tone="teal" size="large" />
+              <CardPicker cards={cards} selectedSlug={slugB} onSelect={handleSelectB} size="large" />
             </div>
           </div>
 
@@ -834,10 +875,6 @@ export function CardsCompareExperience({
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-muted">Assumptions</p>
                 <h2 className="mt-2 text-2xl font-semibold text-text-primary">Pressure-test the math</h2>
-                <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
-                  These two sliders can flip the winner, especially for premium cards with transferable points
-                  or credits that only count if you actually use them.
-                </p>
               </div>
             </div>
 
@@ -947,8 +984,8 @@ export function CardsCompareExperience({
           <section className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(135deg,rgba(24,18,20,0.96),rgba(12,12,18,0.94))] px-5 py-6 shadow-[0_20px_80px_rgba(0,0,0,0.32)] md:px-6">
             <div className="w-full">
               <p className="text-[10px] uppercase tracking-[0.22em] text-brand-gold">Verdict</p>
-              <h2 className="mt-2 font-heading text-3xl text-text-primary xl:whitespace-nowrap">
-                {comparison.verdictTitle}
+              <h2 className="mt-2 max-w-5xl font-heading text-2xl leading-tight text-text-primary md:text-3xl lg:text-[2rem]">
+                {buildCompactVerdictTitle(comparison)}
               </h2>
             </div>
 
