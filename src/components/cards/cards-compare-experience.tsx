@@ -38,7 +38,6 @@ const spendLabels: Record<CardComparisonSpendCategory, string> = {
   groceries: 'Groceries',
   travel: 'Travel',
   gas: 'Gas',
-  online_shopping: 'Online Shopping',
   general: 'General'
 };
 
@@ -65,13 +64,9 @@ const spendInputTones: Record<
     labelClassName: 'text-brand-coral',
     prefixClassName: 'text-brand-coral'
   },
-  online_shopping: {
+  general: {
     labelClassName: 'text-[#c4b5fd]',
     prefixClassName: 'text-[#c4b5fd]'
-  },
-  general: {
-    labelClassName: 'text-text-secondary',
-    prefixClassName: 'text-text-secondary'
   }
 };
 
@@ -313,6 +308,20 @@ function AssumptionInput({
         <span className="text-sm font-medium text-text-muted">/mo</span>
       </div>
     </label>
+  );
+}
+
+function AssumptionTotalCard({ value }: { value: number }) {
+  return (
+    <div className="rounded-[1.1rem] border border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.03))] px-4 py-4 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+      <span className="block text-sm font-semibold uppercase tracking-[0.14em] text-text-secondary">
+        Monthly Total
+      </span>
+      <div className="mt-3 flex min-h-[3.55rem] items-center justify-center rounded-full border border-white/12 bg-black/20 px-3">
+        <span className="text-3xl font-semibold text-text-primary">{formatMoney(value)}</span>
+        <span className="ml-2 text-sm font-medium text-text-muted">/mo</span>
+      </div>
+    </div>
   );
 }
 
@@ -694,40 +703,24 @@ export function CardsCompareExperience({
             </div>
           </div>
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:items-center">
+          <div className="mt-8 grid gap-6 lg:grid-cols-2">
             <div>
               <p className="mb-2 text-center text-sm font-semibold uppercase tracking-[0.18em] text-text-muted">Card A</p>
               <SelectedCompareCardPreview card={selectedCardA} />
-              <CardPicker cards={cards} selectedSlug={slugA} onSelect={handleSelectA} />
-            </div>
-            <div className="flex items-center justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setSlugA(slugB);
-                  setSlugB(slugA);
-                }}
-                className="rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary transition hover:border-white/30 hover:text-text-primary"
-              >
-                Swap
-              </button>
+              <CardPicker cards={cards} selectedSlug={slugA} onSelect={handleSelectA} tone="gold" size="large" />
             </div>
             <div>
               <p className="mb-2 text-center text-sm font-semibold uppercase tracking-[0.18em] text-text-muted">Card B</p>
               <SelectedCompareCardPreview card={selectedCardB} />
-              <CardPicker cards={cards} selectedSlug={slugB} onSelect={handleSelectB} />
+              <CardPicker cards={cards} selectedSlug={slugB} onSelect={handleSelectB} tone="teal" size="large" />
             </div>
           </div>
 
           <div className="mt-8 rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-4 md:p-5">
-            <div className="flex flex-col gap-4 text-center md:flex-row md:items-center md:justify-between md:text-left">
+            <div className="text-center md:text-left">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-muted">Assumptions</p>
                 <h2 className="mt-2 text-2xl font-semibold text-text-primary">Pressure-test the math</h2>
-              </div>
-              <div className="rounded-[1rem] border border-white/10 bg-black/15 px-5 py-3 text-center md:min-w-[12rem] md:text-right">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted">Monthly Total</p>
-                <p className="mt-1 text-2xl font-semibold text-text-primary">{formatMoney(monthlySpendTotal)}</p>
               </div>
             </div>
 
@@ -741,17 +734,14 @@ export function CardsCompareExperience({
                   tone={spendInputTones[category]}
                 />
               ))}
+              <AssumptionTotalCard value={monthlySpendTotal} />
             </div>
 
-            <details className="group mt-5 rounded-[1.2rem] border border-white/10 bg-white/[0.025]">
-              <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-text-secondary transition hover:text-text-primary [&::-webkit-details-marker]:hidden">
-                <span>Advanced assumptions</span>
-                <span className="text-base leading-none text-text-muted transition group-open:rotate-45">
-                  +
-                </span>
-              </summary>
-
-              <div className="grid gap-4 border-t border-white/8 p-4 lg:grid-cols-2">
+            <section className="mt-5 rounded-[1.2rem] border border-white/10 bg-white/[0.025] p-4">
+              <p className="mb-4 text-sm font-semibold text-text-secondary">
+                Reward assumptions
+              </p>
+              <div className="grid gap-4 lg:grid-cols-2">
                 <label className="rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-4">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
@@ -812,7 +802,7 @@ export function CardsCompareExperience({
                   </p>
                 </label>
               </div>
-            </details>
+            </section>
           </div>
         </div>
       </section>
@@ -839,9 +829,6 @@ export function CardsCompareExperience({
               <h2 className="mt-2 font-heading text-3xl text-text-primary xl:whitespace-nowrap">
                 {comparison.verdictTitle}
               </h2>
-              <p className="mt-3 text-base leading-7 text-text-secondary xl:whitespace-nowrap">
-                {comparison.verdictSummary}
-              </p>
             </div>
 
             <div className="mx-auto mt-6 grid w-full max-w-4xl gap-3 md:grid-cols-2">

@@ -95,8 +95,9 @@ export function SiteNav() {
   const headerRef = useRef<HTMLElement>(null);
   const pulseTimeoutRef = useRef<number | null>(null);
   const navCloseTimeoutRef = useRef<number | null>(null);
-  const cardsActive = pathname.startsWith('/cards');
-  const toolsActive = pathname.startsWith('/tools');
+  const cardCompareActive = pathname === '/cards/compare' || pathname.startsWith('/cards/compare/');
+  const cardsActive = pathname.startsWith('/cards') && !cardCompareActive;
+  const toolsActive = pathname.startsWith('/tools') || cardCompareActive;
 
   const closeAll = useCallback(() => {
     setOpen(false);

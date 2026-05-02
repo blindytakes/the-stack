@@ -55,6 +55,16 @@ function createCard(overrides: Partial<CardDetail> = {}): CardDetail {
 }
 
 describe('card-compare', () => {
+  it('keeps default spend focused on the four core categories plus general', () => {
+    expect(defaultCardComparisonAssumptions.monthlySpend).toEqual({
+      dining: 450,
+      groceries: 650,
+      travel: 250,
+      gas: 160,
+      general: 920
+    });
+  });
+
   it('builds first-year and ongoing value using rewards, credits, fees, and the welcome offer', () => {
     const cardA = createCard({
       rewardType: 'cashback',
@@ -80,7 +90,6 @@ describe('card-compare', () => {
         groceries: 0,
         travel: 0,
         gas: 0,
-        online_shopping: 0,
         general: 1000
       },
       creditUsagePercent: 50,
@@ -127,7 +136,6 @@ describe('card-compare', () => {
         groceries: 1000,
         travel: 0,
         gas: 0,
-        online_shopping: 0,
         general: 0
       }
     });
@@ -170,7 +178,6 @@ describe('card-compare', () => {
         groceries: 0,
         travel: 1000,
         gas: 0,
-        online_shopping: 0,
         general: 0
       }
     });
@@ -209,7 +216,6 @@ describe('card-compare', () => {
         groceries: 0,
         travel: 0,
         gas: 0,
-        online_shopping: 0,
         general: 2000
       },
       creditUsagePercent: 100
@@ -238,7 +244,6 @@ describe('card-compare', () => {
         groceries: 0,
         travel: 0,
         gas: 0,
-        online_shopping: 0,
         general: 1000
       },
       creditUsagePercent: 50

@@ -5,7 +5,6 @@ export const cardComparisonSpendCategories = [
   'groceries',
   'travel',
   'gas',
-  'online_shopping',
   'general'
 ] as const;
 
@@ -67,8 +66,7 @@ const monthlySpendDefaults: Record<CardComparisonSpendCategory, number> = {
   groceries: 650,
   travel: 250,
   gas: 160,
-  online_shopping: 220,
-  general: 700
+  general: 920
 };
 
 export const defaultCardComparisonAssumptions: CardComparisonAssumptions = {
@@ -85,7 +83,6 @@ const spendCategoryToRewardCategory: Record<
   groceries: 'groceries',
   travel: 'travel',
   gas: 'gas',
-  online_shopping: 'online_shopping',
   general: 'all'
 };
 
