@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import {
   startTransition,
+  type CSSProperties,
   type MouseEvent,
   useEffect,
   useMemo,
@@ -15,6 +16,10 @@ import { EntityImage } from '@/components/ui/entity-image';
 import { fetchCardDetail } from '@/lib/cards-client';
 import type { CardDetail, CardRecord } from '@/lib/cards';
 import { getCardImageDisplay } from '@/lib/card-image-presentation';
+import {
+  getCardVisualTheme,
+  type CardVisualTheme
+} from '@/lib/card-visual-theme';
 import {
   buildCardComparison,
   cardComparisonSpendCategories,
@@ -76,12 +81,14 @@ function formatMoney(value: number) {
 
 function buildWinnerMetric({
   winner,
+  periodLabel,
   aName,
   bName,
   aValue,
   bValue
 }: {
   winner: 'a' | 'b' | 'tie';
+  periodLabel: string;
   aName: string;
   bName: string;
   aValue: number;
@@ -101,54 +108,132 @@ function buildWinnerMetric({
 
   return {
     title: winnerName,
-    delta: `Wins by ${formatMoney(Math.abs(winnerValue - loserValue))}`,
+    delta: `${formatMoney(Math.abs(winnerValue - loserValue))} ${periodLabel} edge`,
     detail: `${formatMoney(winnerValue)} vs ${formatMoney(loserValue)}`
   };
 }
 
 type WinnerMetric = ReturnType<typeof buildWinnerMetric>;
 
+function verdictThemeForWinner({
+  winner,
+  cardA,
+  cardB
+}: {
+  winner: 'a' | 'b' | 'tie';
+  cardA: CardDetail;
+  cardB: CardDetail;
+}): CardVisualTheme | null {
+  if (winner === 'tie') return null;
+  return getCardVisualTheme(winner === 'a' ? cardA : cardB);
+}
+
+function verdictCardForWinner({
+  winner,
+  cardA,
+  cardB
+}: {
+  winner: 'a' | 'b' | 'tie';
+  cardA: CardDetail;
+  cardB: CardDetail;
+}) {
+  if (winner === 'tie') return null;
+  return winner === 'a' ? cardA : cardB;
+}
+
+function toCssRgbTuple(rgb: string) {
+  return rgb.trim().split(/\s+/).join(', ');
+}
+
 function VerdictOutcomeCard({
   eyebrow,
   label,
   metric,
-  tone
+  theme,
+  winnerCard
 }: {
   eyebrow: string;
   label: string;
   metric: WinnerMetric | null;
-  tone: 'gold' | 'teal';
+  theme: CardVisualTheme | null;
+  winnerCard: CardDetail | null;
 }) {
-  const toneClassNames =
-    tone === 'gold'
-      ? {
-          panel:
-            'border-brand-gold/25 bg-[linear-gradient(180deg,rgba(250,204,21,0.13),rgba(0,0,0,0.16))]',
-          badge: 'border-brand-gold/25 bg-brand-gold/10 text-brand-gold',
-          value: 'text-brand-gold'
-        }
-      : {
-          panel:
-            'border-brand-teal/25 bg-[linear-gradient(180deg,rgba(45,212,191,0.13),rgba(0,0,0,0.16))]',
-          badge: 'border-brand-teal/25 bg-brand-teal/10 text-brand-teal',
-          value: 'text-brand-teal'
-        };
+  const cardImage = winnerCard
+    ? getCardImageDisplay({
+        slug: winnerCard.slug,
+        name: winnerCard.name,
+        issuer: winnerCard.issuer,
+        imageUrl: winnerCard.imageUrl,
+        imageAssetType: winnerCard.imageAssetType
+      })
+    : null;
+  const imageClassName =
+    cardImage?.imageAssetType === 'brand_logo'
+      ? 'bg-black/10 px-2 py-1'
+      : cardImage?.presentation.imgClassName;
+  const accentRgb = theme ? toCssRgbTuple(theme.accentRgb) : null;
+  const accentTextRgb = theme ? toCssRgbTuple(theme.accentTextRgb) : null;
+  const themedPanelStyle: CSSProperties | undefined = theme
+    ? {
+        borderColor: `rgba(${accentRgb}, 0.34)`,
+        background: `linear-gradient(180deg, rgba(255,255,255,0.045), rgba(${accentRgb}, 0.075) 58%, rgba(0,0,0,0.16))`,
+        boxShadow: `inset 0 1px 0 rgba(${accentTextRgb}, 0.08), 0 0 0 1px rgba(${accentRgb}, 0.08)`
+      }
+    : undefined;
+  const themedBadgeStyle: CSSProperties | undefined = theme
+    ? {
+        borderColor: `rgba(${accentRgb}, 0.4)`,
+        background: `rgba(${accentRgb}, 0.09)`,
+        color: `rgb(${accentTextRgb})`
+      }
+    : undefined;
+  const themedValueStyle: CSSProperties | undefined = theme
+    ? {
+        color: `rgb(${accentTextRgb})`
+      }
+    : undefined;
 
   return (
     <article
-      className={`flex min-h-[12rem] flex-col items-center justify-center rounded-[1.35rem] border px-5 py-5 text-center ${toneClassNames.panel}`}
+      className={`flex min-h-[21rem] flex-col items-center justify-center rounded-[1.35rem] border px-5 py-6 text-center sm:px-6 ${
+        theme ? '' : 'border-white/15 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(0,0,0,0.16))]'
+      }`}
+      style={themedPanelStyle}
     >
       <div className="flex flex-wrap items-center justify-center gap-2">
-        <span className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase ${toneClassNames.badge}`}>
+        <span
+          className={`rounded-full border px-4 py-2 text-sm font-semibold uppercase sm:text-base ${
+            theme ? '' : 'border-white/15 bg-white/8 text-text-secondary'
+          }`}
+          style={themedBadgeStyle}
+        >
           {eyebrow}
         </span>
-        <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">{label}</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.12em] text-text-muted sm:text-base">{label}</p>
       </div>
-      <h3 className="mt-4 max-w-[18rem] break-words font-heading text-2xl leading-[1.05] text-text-primary">
+      {cardImage ? (
+        <div className="mt-5 w-full max-w-[30rem] rounded-[1.2rem] border border-white/10 bg-black/20 p-1.5 shadow-[0_16px_42px_rgba(0,0,0,0.28)]">
+          <EntityImage
+            src={cardImage.src}
+            alt={cardImage.alt}
+            label={cardImage.label}
+            className="aspect-[1.586/1] w-full rounded-[0.95rem]"
+            imgClassName={imageClassName}
+            fallbackClassName="bg-black/10"
+            fallbackVariant={cardImage.fallbackVariant}
+            fit={cardImage.presentation.fit}
+            position={cardImage.presentation.position}
+            scale={cardImage.presentation.scale}
+          />
+        </div>
+      ) : null}
+      <h3 className="mt-4 w-full max-w-full truncate whitespace-nowrap px-2 font-heading text-xl leading-[1.05] text-text-primary sm:text-2xl">
         {metric?.title}
       </h3>
-      <p className={`mt-3 text-xl font-semibold ${toneClassNames.value}`}>{metric?.delta}</p>
-      <p className="mt-1 text-xs text-text-muted">{metric?.detail}</p>
+      <p className="mt-4 text-2xl font-semibold text-text-primary sm:text-3xl" style={themedValueStyle}>
+        {metric?.delta}
+      </p>
+      <p className="mt-1.5 text-sm font-medium text-text-muted sm:text-base">{metric?.detail}</p>
     </article>
   );
 }
@@ -497,7 +582,7 @@ function ComparisonCardHero({
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-3">
+      <div className="mt-5 flex flex-wrap justify-center gap-3">
         <Link
           href={buildSelectedOfferIntentHref({
             lane: 'cards',
@@ -660,6 +745,7 @@ export function CardsCompareExperience({
   const yearOneMetric = comparison
     ? buildWinnerMetric({
         winner: comparison.firstYearWinner,
+        periodLabel: 'Year 1',
         aName: comparison.a.card.name,
         bName: comparison.b.card.name,
         aValue: comparison.a.firstYearValue,
@@ -669,6 +755,7 @@ export function CardsCompareExperience({
   const keeperMetric = comparison
     ? buildWinnerMetric({
         winner: comparison.ongoingWinner,
+        periodLabel: 'ongoing',
         aName: comparison.a.card.name,
         bName: comparison.b.card.name,
         aValue: comparison.a.ongoingValue,
@@ -721,6 +808,10 @@ export function CardsCompareExperience({
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-muted">Assumptions</p>
                 <h2 className="mt-2 text-2xl font-semibold text-text-primary">Pressure-test the math</h2>
+                <p className="mt-2 max-w-3xl text-sm leading-6 text-text-muted">
+                  These two sliders can flip the winner, especially for premium cards with transferable points
+                  or credits that only count if you actually use them.
+                </p>
               </div>
             </div>
 
@@ -737,7 +828,7 @@ export function CardsCompareExperience({
               <AssumptionTotalCard value={monthlySpendTotal} />
             </div>
 
-            <section className="mt-5 rounded-[1.2rem] border border-white/10 bg-white/[0.025] p-4">
+            <section className="mt-5">
               <p className="mb-4 text-sm font-semibold text-text-secondary">
                 Reward assumptions
               </p>
@@ -768,7 +859,9 @@ export function CardsCompareExperience({
                     className="mt-4 w-full accent-brand-teal"
                   />
                   <p className="mt-2 text-xs leading-5 text-text-muted">
-                    Used for points and miles cards. Cash-back cards stay fixed.
+                    Sets how much you value points or miles. 1.0 cpp means 10,000 points count as
+                    $100. Raise it if you usually transfer points for higher-value travel; lower it
+                    if you redeem mostly for cash, statement credits, or simple portal bookings.
                   </p>
                 </label>
 
@@ -798,7 +891,9 @@ export function CardsCompareExperience({
                     className="mt-4 w-full accent-brand-gold"
                   />
                   <p className="mt-2 text-xs leading-5 text-text-muted">
-                    This discounts recurring credits so the page does not assume perfect usage.
+                    Sets how much of each card&apos;s recurring credits you realistically expect to use.
+                    At 70%, a $300 annual credit counts as $210 of value. Lower it if credits require
+                    merchants, timing, or habits you may not naturally use.
                   </p>
                 </label>
               </div>
@@ -831,38 +926,37 @@ export function CardsCompareExperience({
               </h2>
             </div>
 
-            <div className="mx-auto mt-6 grid w-full max-w-4xl gap-3 md:grid-cols-2">
+            <div className="mx-auto mt-6 grid w-full max-w-6xl gap-4 md:grid-cols-2">
               <VerdictOutcomeCard
                 eyebrow="Year 1"
-                label="Best opener"
+                label="Year 1 winner"
                 metric={yearOneMetric}
-                tone="gold"
+                theme={verdictThemeForWinner({
+                  winner: comparison.firstYearWinner,
+                  cardA: comparison.a.card,
+                  cardB: comparison.b.card
+                })}
+                winnerCard={verdictCardForWinner({
+                  winner: comparison.firstYearWinner,
+                  cardA: comparison.a.card,
+                  cardB: comparison.b.card
+                })}
               />
               <VerdictOutcomeCard
                 eyebrow="After Year 1"
-                label="Best keeper"
+                label="Ongoing winner"
                 metric={keeperMetric}
-                tone="teal"
+                theme={verdictThemeForWinner({
+                  winner: comparison.ongoingWinner,
+                  cardA: comparison.a.card,
+                  cardB: comparison.b.card
+                })}
+                winnerCard={verdictCardForWinner({
+                  winner: comparison.ongoingWinner,
+                  cardA: comparison.a.card,
+                  cardB: comparison.b.card
+                })}
               />
-            </div>
-
-            <div className="mt-6 grid gap-4 xl:grid-cols-2">
-              <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">{comparison.a.card.name}</p>
-                <ul className="mt-3 space-y-2 text-sm leading-6 text-text-secondary">
-                  {comparison.reasonsForA.map((item) => (
-                    <li key={item}>• {item}</li>
-                  ))}
-                </ul>
-              </div>
-              <div className="rounded-[1.2rem] border border-white/10 bg-black/15 p-4">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">{comparison.b.card.name}</p>
-                <ul className="mt-3 space-y-2 text-sm leading-6 text-text-secondary">
-                  {comparison.reasonsForB.map((item) => (
-                    <li key={item}>• {item}</li>
-                  ))}
-                </ul>
-              </div>
             </div>
 
             {comparison.breakevenAnnualSpend != null ? (
