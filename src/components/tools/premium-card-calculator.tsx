@@ -217,15 +217,6 @@ const selectorGroups: ReadonlyArray<{
   }
 ];
 
-const workflowSteps = [
-  { id: 'gate-check', label: 'Gate Check', icon: 'gate' },
-  { id: 'money-map', label: 'Money Map', icon: 'route' },
-  { id: 'value-stack', label: 'Value Stack', icon: 'stack' },
-  { id: 'scoreboard', label: 'Results', icon: 'score' }
-] as const satisfies ReadonlyArray<{ id: string; label: string; icon: GlyphName }>;
-
-type WorkflowStepId = (typeof workflowSteps)[number]['id'];
-
 type GlyphName =
   | 'star'
   | 'shield'
@@ -505,131 +496,6 @@ function CardSwitcherOption({
   );
 }
 
-function CompactCardSwitcher({
-  selectedCardId,
-  onSelect
-}: {
-  selectedCardId: PremiumCardId;
-  onSelect: (cardId: PremiumCardId) => void;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const selectedProfile = premiumCardProfileById[selectedCardId];
-  const selectedVisual = cardVisuals[selectedCardId];
-
-  const close = useCallback(() => {
-    setIsOpen(false);
-  }, []);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    function onClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        close();
-      }
-    }
-
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') close();
-    }
-
-    document.addEventListener('mousedown', onClickOutside);
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', onClickOutside);
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [close, isOpen]);
-
-  function handleSelect(cardId: PremiumCardId) {
-    onSelect(cardId);
-    close();
-  }
-
-  return (
-    <div
-      ref={containerRef}
-      className="relative min-w-0 flex-1 overflow-visible"
-    >
-      <button
-        type="button"
-        aria-haspopup="listbox"
-        aria-expanded={isOpen}
-        aria-label={`Switch selected card, currently ${selectedProfile.shortName}`}
-        onClick={() => setIsOpen((current) => !current)}
-        className="group flex w-full items-center gap-3 rounded-[1rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] px-3 py-2.5 text-left shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] transition hover:border-[rgb(var(--card-accent-rgb)/0.38)] hover:bg-white/[0.06] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)]"
-      >
-        <div className="relative flex h-11 w-[4.5rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.8rem] bg-black/10">
-          <div
-            className={`pointer-events-none absolute inset-x-2 bottom-2 h-6 rounded-full opacity-70 blur-[18px] ${selectedVisual.accentGlowClassName}`}
-          />
-          <EntityImage
-            src={selectedVisual.artUrl}
-            alt={selectedProfile.name}
-            label={selectedProfile.shortName}
-            className="relative aspect-[1.62/1] w-full max-w-[4rem] overflow-visible rounded-none border-0 bg-transparent"
-            imgClassName={`bg-transparent p-0 drop-shadow-[0_10px_18px_rgba(0,0,0,0.34)] ${selectedVisual.selectorArtEffectClassName ?? selectedVisual.artEffectClassName ?? ''}`}
-            fallbackClassName="bg-black/10"
-            fit={selectedVisual.selectorArtFit ?? selectedVisual.artFit ?? 'contain'}
-            position={selectedVisual.selectorArtPosition ?? selectedVisual.artPosition}
-            scale={selectedVisual.selectorArtScale ?? selectedVisual.artScale ?? 1}
-          />
-        </div>
-        <span className="min-w-0 flex-1">
-          <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">
-            Selected Card
-          </span>
-          <span className="mt-1 block truncate text-sm font-semibold leading-5 text-text-primary">
-            {selectedProfile.shortName}
-          </span>
-        </span>
-        <span
-          className={`flex shrink-0 items-center gap-1.5 rounded-full border border-[rgb(var(--card-accent-rgb)/0.34)] bg-[rgb(var(--card-accent-rgb)/0.1)] px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-[rgb(var(--card-accent-rgb))] transition group-hover:border-[rgb(var(--card-accent-rgb)/0.54)]`}
-        >
-          Switch
-          <span className={`transition ${isOpen ? 'rotate-180' : ''}`}>
-            <Glyph name="chevron" className="h-3.5 w-3.5" />
-          </span>
-        </span>
-      </button>
-
-      {isOpen ? (
-        <div
-          role="listbox"
-          aria-label="Choose a card"
-          className="absolute left-0 right-0 top-[calc(100%+0.65rem)] z-50 max-h-[min(34rem,calc(100vh-8rem))] overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)]"
-        >
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
-          <div className="relative space-y-4">
-            {selectorGroups.map((group) => (
-              <div key={group.id}>
-                <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
-                  {group.label}
-                </p>
-                <div className="mt-2 space-y-2">
-                  {group.cardIds.map((cardId) => {
-                    const profile = premiumCardProfileById[cardId];
-
-                    return (
-                      <CardSwitcherOption
-                        key={profile.id}
-                        profile={profile}
-                        selected={profile.id === selectedCardId}
-                        onSelect={() => handleSelect(profile.id)}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
 function HeaderCardSelectorPanel({
   selectedCardId,
   onSelectCard
@@ -675,52 +541,46 @@ function HeaderCardSelectorPanel({
   return (
     <div
       ref={containerRef}
-      className="relative min-w-0 overflow-visible rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)]"
+      className="relative flex h-full min-w-0 flex-col overflow-visible rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-5"
     >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
       <div className={`pointer-events-none absolute -right-10 top-8 h-28 w-28 opacity-70 blur-[46px] ${selectedVisual.accentGlowClassName}`} />
 
       <div className="relative flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
         <div className="min-w-0">
-          <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${selectedVisual.accentClassName}`}>
-            Choose a card to model
-          </p>
-          <h2 className="mt-2 text-[1.55rem] font-semibold leading-tight text-text-primary">
+          <h2 className="text-[1.55rem] font-semibold leading-tight text-text-primary">
             {selectedProfile.shortName}
           </h2>
-          <p className="mt-2 overflow-hidden text-ellipsis whitespace-nowrap text-[7px] leading-4 text-text-secondary sm:text-[13px] sm:leading-5 xl:text-sm">
-            {selectedProfile.headline}
-          </p>
         </div>
         <button
           type="button"
           aria-haspopup="listbox"
           aria-expanded={isOpen}
-          aria-label={`Open card selector for ${selectedProfile.shortName}`}
+          aria-label={`Browse cards, currently ${selectedProfile.shortName}`}
           onClick={() => setIsOpen((current) => !current)}
           className={`group flex shrink-0 items-center gap-1.5 self-start rounded-full border border-[rgb(var(--card-accent-rgb)/0.36)] bg-[rgb(var(--card-accent-rgb)/0.1)] px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-[rgb(var(--card-accent-rgb))] transition hover:border-[rgb(var(--card-accent-rgb)/0.58)] hover:bg-[rgb(var(--card-accent-rgb)/0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)] sm:self-auto`}
         >
-          Change Card
+          Browse Cards
           <span className={`transition ${isOpen ? 'rotate-180' : ''}`}>
             <Glyph name="chevron" className="h-3.5 w-3.5" />
           </span>
         </button>
       </div>
 
-      <div className="relative mt-5 overflow-hidden rounded-[1.2rem] border border-white/8 bg-[linear-gradient(180deg,rgba(9,13,22,0.62),rgba(255,255,255,0.03))] px-8 py-6">
-        <div className="pointer-events-none absolute inset-x-8 bottom-6 h-12 rounded-full bg-black/30 blur-2xl" />
-        <div className={`pointer-events-none absolute inset-x-8 bottom-6 h-11 rounded-full opacity-80 blur-[30px] ${selectedVisual.accentGlowClassName}`} />
+      <div className="relative mt-5 flex flex-1 overflow-hidden rounded-[1.2rem] border border-white/8 bg-[linear-gradient(180deg,rgba(9,13,22,0.62),rgba(255,255,255,0.03))] px-7 py-8 md:py-10">
+        <div className="pointer-events-none absolute inset-x-8 bottom-8 h-12 rounded-full bg-black/30 blur-2xl" />
+        <div className={`pointer-events-none absolute inset-x-8 bottom-8 h-11 rounded-full opacity-80 blur-[30px] ${selectedVisual.accentGlowClassName}`} />
         <button
           type="button"
           aria-label={`Open card selector from ${selectedProfile.shortName} card art`}
           onClick={() => setIsOpen((current) => !current)}
-          className="group relative flex min-h-[9.75rem] w-full items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)]"
+          className="group relative flex min-h-[12.5rem] w-full items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)]"
         >
           <EntityImage
             src={selectedVisual.artUrl}
             alt={selectedProfile.name}
             label={selectedProfile.shortName}
-            className="relative aspect-[1.62/1] w-full max-w-[17rem] overflow-visible rounded-none border-0 bg-transparent"
+            className="relative aspect-[1.62/1] w-full max-w-[24rem] overflow-visible rounded-none border-0 bg-transparent"
             imgClassName={`bg-transparent p-0 drop-shadow-[0_24px_38px_rgba(0,0,0,0.42)] transition duration-300 group-hover:-translate-y-1 ${selectedVisual.artEffectClassName ?? ''}`}
             fallbackClassName="bg-black/10"
             fit={selectedVisual.artFit ?? 'contain'}
@@ -730,26 +590,11 @@ function HeaderCardSelectorPanel({
         </button>
       </div>
 
-      <div className="relative mt-4 grid gap-2 text-xs sm:grid-cols-3">
-        <div className="rounded-[0.9rem] border border-white/8 bg-black/10 px-3 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">Annual Fee</p>
-          <p className="mt-1 font-semibold text-text-primary">{formatCurrency(selectedProfile.annualFee)}</p>
-        </div>
-        <div className="rounded-[0.9rem] border border-white/8 bg-black/10 px-3 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">Issuer</p>
-          <p className="mt-1 truncate font-semibold text-text-primary">{selectedProfile.issuer}</p>
-        </div>
-        <div className="rounded-[0.9rem] border border-white/8 bg-black/10 px-3 py-2">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">Best Fit</p>
-          <p className="mt-1 truncate font-semibold text-text-primary">{selectedVisual.laneLabel}</p>
-        </div>
-      </div>
-
       {isOpen ? (
         <div
           role="listbox"
-          aria-label="Choose a card to model"
-          className="absolute left-4 right-4 top-[calc(100%+0.75rem)] z-50 max-h-[min(34rem,calc(100vh-8rem))] overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)]"
+          aria-label="Browse cards"
+          className="absolute left-4 right-4 top-[4.75rem] z-50 max-h-[min(34rem,calc(100vh-8rem))] overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)] md:left-5 md:right-5 md:top-[5rem]"
         >
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
           <div className="relative space-y-4">
@@ -782,26 +627,65 @@ function HeaderCardSelectorPanel({
   );
 }
 
+function ValueEquation() {
+  const terms = [
+    { label: 'Bonus' },
+    { operator: '+', label: 'Rewards' },
+    { operator: '+', label: 'Credits' },
+    { operator: '-', label: 'Fee' },
+    { operator: '=', label: 'Net Value', result: true }
+  ];
+
+  return (
+    <div
+      aria-label="Bonus plus rewards plus credits minus fee equals net value"
+      className="mt-6 overflow-hidden rounded-[1.2rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] shadow-[0_16px_42px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.04)]"
+    >
+      <div className="flex flex-col gap-2 p-2.5 sm:flex-row sm:items-center sm:gap-2.5">
+        {terms.map((term) => (
+          <div
+            key={term.label}
+            className="flex min-w-0 items-center gap-2 sm:flex-1"
+          >
+            {term.operator ? (
+              <span
+                className="shrink-0 font-mono text-sm font-semibold text-text-muted"
+              >
+                {term.operator}
+              </span>
+            ) : null}
+            <span
+              className={`relative flex min-h-11 min-w-0 flex-1 items-center justify-center overflow-hidden rounded-[0.9rem] border px-3 text-center text-sm font-semibold leading-none shadow-[inset_0_1px_0_rgba(255,255,255,0.045)] ${
+                term.result
+                  ? 'border-brand-teal/55 bg-black/15 text-text-primary'
+                  : 'border-brand-teal/35 bg-black/15 text-text-primary'
+              }`}
+            >
+              <span className="relative">{term.label}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function WorkflowHeader({
   selectedCardId,
-  activeStepId,
   yearOneValue,
   yearTwoValue,
   yearOneIsPositive,
   yearTwoIsPositive,
   verdictLabel,
-  onSelectCard,
-  onSelectStep
+  onSelectCard
 }: {
   selectedCardId: PremiumCardId;
-  activeStepId: WorkflowStepId;
   yearOneValue: number;
   yearTwoValue: number;
   yearOneIsPositive: boolean;
   yearTwoIsPositive: boolean;
   verdictLabel: string;
   onSelectCard: (cardId: PremiumCardId) => void;
-  onSelectStep: (stepId: WorkflowStepId) => void;
 }) {
   const selectedProfile = premiumCardProfileById[selectedCardId];
   const selectedVisual = cardVisuals[selectedCardId];
@@ -810,45 +694,21 @@ function WorkflowHeader({
     <>
       <section className="relative overflow-visible rounded-[1.55rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,18,30,0.98),rgba(8,12,20,0.99))] px-4 py-5 shadow-[0_18px_70px_rgba(0,0,0,0.24)] md:px-6 md:py-6">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
-        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(25rem,0.82fr)] xl:items-center">
+        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(28rem,0.88fr)] xl:items-stretch">
           <div className="min-w-0">
             <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${selectedVisual.accentClassName}`}>
               Premium Card Calculator
             </p>
-            <h1 className="mt-3 max-w-[42rem] font-heading text-[2.35rem] leading-[0.96] text-text-primary md:text-[3.45rem]">
-              Calculate This Card&apos;s Net Value
+            <h1 className="mt-3 max-w-[54rem] font-heading text-[2.35rem] leading-[0.96] text-text-primary md:text-[3.45rem]">
+              Premium Card Net Value Calculator
             </h1>
-            <p className="mt-3 max-w-[40rem] text-sm leading-6 text-text-secondary md:text-base md:leading-7">
-              Pick a card, enter your bonus, spend, credits, perks, and point value, then see first-year and ongoing value after the annual fee.
+            <p className="mt-3 max-w-[47rem] text-sm leading-6 text-text-secondary md:text-base md:leading-7">
+              Model the welcome bonus, everyday rewards, usable credits, and annual fee against your own year-one and renewal assumptions.
             </p>
 
-            <div className="mt-5 max-w-[42rem] overflow-hidden rounded-[1rem] border border-white/10 bg-white/[0.035] px-2 py-3 text-[11.5px] leading-none text-text-secondary sm:px-4 sm:text-sm">
-              <div className="flex min-w-0 items-center whitespace-nowrap">
-                <span className="font-semibold text-text-primary">
-                  <span className="sm:hidden">Bonus</span>
-                  <span className="hidden sm:inline">Bonus</span>
-                </span>
-                <span className="px-0.5 text-text-muted sm:px-2">+</span>
-                <span className="font-semibold text-text-primary">
-                  <span className="sm:hidden">rewards</span>
-                  <span className="hidden sm:inline">rewards</span>
-                </span>
-                <span className="px-0.5 text-text-muted sm:px-2">+</span>
-                <span className="font-semibold text-text-primary">
-                  <span className="sm:hidden">credits</span>
-                  <span className="hidden sm:inline">credits</span>
-                </span>
-                <span className="px-0.5 text-text-muted sm:px-2">-</span>
-                <span className="font-semibold text-text-primary">
-                  <span className="sm:hidden">fee</span>
-                  <span className="hidden sm:inline">fee</span>
-                </span>
-                <span className="px-0.5 text-text-muted sm:px-2">=</span>
-                <span className={selectedVisual.accentClassName}>net value</span>
-              </div>
-            </div>
+            <ValueEquation />
 
-            <div className="mt-5 grid max-w-[42rem] gap-2 sm:grid-cols-2">
+            <div className="mt-5 grid gap-2 sm:grid-cols-2">
               <div
                 className={`rounded-[1rem] border px-4 py-3 ${
                   yearOneIsPositive
@@ -885,57 +745,20 @@ function WorkflowHeader({
           <HeaderCardSelectorPanel selectedCardId={selectedProfile.id} onSelectCard={onSelectCard} />
         </div>
       </section>
-
-      <div className="sticky top-16 z-30 overflow-visible rounded-[1.25rem] border border-white/10 bg-[linear-gradient(180deg,rgba(13,19,31,0.94),rgba(8,12,20,0.96))] p-2 shadow-[0_16px_50px_rgba(0,0,0,0.26)] backdrop-blur-xl">
-        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex min-w-0 items-center gap-2 lg:w-[22rem]">
-            <CompactCardSwitcher selectedCardId={selectedProfile.id} onSelect={onSelectCard} />
-          </div>
-          <nav aria-label="Calculator workflow" className="min-w-0 flex-1">
-            <div className="scrollbar-hide flex gap-1 overflow-x-auto rounded-[1rem] border border-white/8 bg-black/15 p-1">
-              {workflowSteps.map((step) => {
-                const active = step.id === activeStepId;
-
-                return (
-                  <button
-                    key={step.id}
-                    type="button"
-                    onClick={() => onSelectStep(step.id)}
-                    aria-current={active ? 'step' : undefined}
-                    className={`inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-[0.85rem] border px-3 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--card-accent-rgb)/0.55)] md:min-w-[8.5rem] ${
-                      active
-                        ? 'border-[rgb(var(--card-accent-rgb)/0.42)] bg-[rgb(var(--card-accent-rgb)/0.14)] text-text-primary shadow-[inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.18)]'
-                        : 'border-transparent text-text-secondary hover:border-white/12 hover:bg-white/[0.045] hover:text-text-primary'
-                    }`}
-                  >
-                    <Glyph
-                      name={step.icon}
-                      className={`h-3.5 w-3.5 ${active ? selectedVisual.accentClassName : 'text-text-muted'}`}
-                    />
-                    <span className="whitespace-nowrap">{step.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </nav>
-        </div>
-      </div>
     </>
   );
 }
 
 function SectionFrame({
   id,
-  eyebrow,
   title,
   description,
   icon,
   children
 }: {
   id?: string;
-  eyebrow: string;
   title: string;
-  description: string;
+  description?: string;
   icon: GlyphName;
   children: React.ReactNode;
 }) {
@@ -949,9 +772,10 @@ function SectionFrame({
       <div className="mx-auto max-w-[56rem]">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-text-muted">{eyebrow}</p>
-            <h2 className="mt-3 font-heading text-[1.9rem] leading-[1.02] tracking-[-0.02em] text-text-primary">{title}</h2>
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary">{description}</p>
+            <h2 className="font-heading text-[1.9rem] leading-[1.02] tracking-[-0.02em] text-text-primary">{title}</h2>
+            {description ? (
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary">{description}</p>
+            ) : null}
           </div>
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[1.15rem] border border-[rgb(var(--card-accent-rgb)/0.52)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.14),rgb(var(--card-accent-rgb)_/_0.26)_40%,rgb(var(--card-accent-rgb)_/_0.12))] text-[rgb(var(--card-accent-rgb))] shadow-[0_10px_24px_rgba(0,0,0,0.16),inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.28)]">
             <Glyph name={icon} className="h-4 w-4" />
@@ -1222,7 +1046,6 @@ function SpendCategoryCard({
 export function PremiumCardCalculator() {
   const [selectedCardId, setSelectedCardId] = useState<PremiumCardId>('amex-platinum');
   const [showEmailPanel, setShowEmailPanel] = useState(false);
-  const [activeStepId, setActiveStepId] = useState<WorkflowStepId>('gate-check');
   const [scenarios, setScenarios] = useState<Record<PremiumCardId, PremiumCardScenario>>(() =>
     premiumCardProfiles.reduce(
       (accumulator, profile) => {
@@ -1242,47 +1065,6 @@ export function PremiumCardCalculator() {
         {} as Record<PremiumCardId, PremiumCardFieldInteractions>
       )
   );
-
-  useEffect(() => {
-    const sections = workflowSteps
-      .map((step) => document.getElementById(step.id))
-      .filter((section): section is HTMLElement => Boolean(section));
-
-    if (sections.length === 0) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visibleEntry = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
-
-        if (visibleEntry?.target.id) {
-          setActiveStepId(visibleEntry.target.id as WorkflowStepId);
-        }
-      },
-      {
-        rootMargin: '-32% 0px -58% 0px',
-        threshold: [0, 0.2, 0.5]
-      }
-    );
-
-    sections.forEach((section) => observer.observe(section));
-
-    return () => observer.disconnect();
-  }, []);
-
-  const handleWorkflowStepSelect = useCallback((stepId: WorkflowStepId) => {
-    setActiveStepId(stepId);
-
-    const target = document.getElementById(stepId);
-    if (!target) return;
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    target.scrollIntoView({
-      behavior: prefersReducedMotion ? 'auto' : 'smooth',
-      block: 'start'
-    });
-  }, []);
 
   const selectedProfile = premiumCardProfileById[selectedCardId];
   const selectedScenario = scenarios[selectedCardId];
@@ -1369,7 +1151,6 @@ export function PremiumCardCalculator() {
     <section className="relative mx-auto max-w-6xl space-y-5" style={accentStyle}>
       <WorkflowHeader
         selectedCardId={selectedCardId}
-        activeStepId={activeStepId}
         yearOneValue={selectedResult.expectedValueYear1}
         yearTwoValue={selectedResult.expectedValueYear2}
         yearOneIsPositive={yearOneIsPositive}
@@ -1378,7 +1159,6 @@ export function PremiumCardCalculator() {
         onSelectCard={(cardId) => {
           startTransition(() => setSelectedCardId(cardId));
         }}
-        onSelectStep={handleWorkflowStepSelect}
       />
 
       <motion.section
@@ -1394,10 +1174,8 @@ export function PremiumCardCalculator() {
         <div className="mx-auto max-w-[56rem] space-y-6">
           <SectionFrame
             id="gate-check"
-            eyebrow="Gate Check"
             icon="gate"
             title="Decide what counts on day one"
-            description=""
           >
             <div className="space-y-4">
               <BinaryChoice
@@ -1564,7 +1342,6 @@ export function PremiumCardCalculator() {
 
           <SectionFrame
             id="money-map"
-            eyebrow="Money Map"
             icon="route"
             title="Route the dollars this card would really touch"
             description="Feed the card only the spend it would actually win in your wallet. That keeps the model honest."
@@ -1604,7 +1381,6 @@ export function PremiumCardCalculator() {
 
           <SectionFrame
             id="value-stack"
-            eyebrow="Value Stack"
             icon="stack"
             title="Keep the perks you will actually cash in"
             description="This is where inflated premium-card math usually falls apart. Keep the value you believe you can really unlock."
@@ -1692,24 +1468,14 @@ export function PremiumCardCalculator() {
             <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent)]" />
             <div className="pointer-events-none absolute -right-4 top-2 h-28 w-32 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.12),transparent_72%)] blur-[48px]" />
             <div className="mx-auto max-w-[56rem]">
-              <div className="flex flex-col gap-4 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center">
-                <div className="sm:justify-self-start">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-[rgb(var(--card-accent-rgb)/0.58)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.14),rgb(var(--card-accent-rgb)_/_0.24)_40%,rgb(var(--card-accent-rgb)_/_0.1))] text-[rgb(var(--card-accent-rgb))] shadow-[0_10px_24px_rgba(0,0,0,0.16),inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.3)]">
-                      <Glyph name="score" className="h-4 w-4" />
-                    </div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-text-muted">Scoreboard</p>
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-[1.15rem] border border-[rgb(var(--card-accent-rgb)/0.58)] bg-[linear-gradient(180deg,rgb(var(--card-highlight-rgb)_/_0.14),rgb(var(--card-accent-rgb)_/_0.24)_40%,rgb(var(--card-accent-rgb)_/_0.1))] text-[rgb(var(--card-accent-rgb))] shadow-[0_10px_24px_rgba(0,0,0,0.16),inset_0_1px_0_rgb(var(--card-highlight-rgb)_/_0.3)]">
+                    <Glyph name="score" className="h-4 w-4" />
                   </div>
+                  <h2 className="font-heading text-[1.9rem] leading-[1.02] tracking-[-0.02em] text-text-primary">Read the verdict</h2>
                 </div>
-                <div className="flex flex-wrap items-center justify-center gap-4 sm:justify-self-center">
-                  {pointsAdvisorHref ? (
-                    <Link
-                      href={pointsAdvisorHref}
-                      className="inline-flex min-w-[13.75rem] items-center justify-center rounded-full border border-white/10 px-7 py-3 text-center text-base font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
-                    >
-                      Go To Points Calculator
-                    </Link>
-                  ) : null}
+                <div className="flex flex-wrap items-center gap-3 sm:justify-end">
                   <Button
                     type="button"
                     variant={showEmailPanel ? 'ghost' : 'primary'}
@@ -1720,25 +1486,7 @@ export function PremiumCardCalculator() {
                   >
                     {showEmailPanel ? 'Hide email form' : 'Email my results'}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    type="button"
-                    className="min-w-[13.75rem] px-7 py-3 text-base"
-                    onClick={() => {
-                      setScenarios((current) => ({
-                        ...current,
-                        [selectedCardId]: buildInitialPremiumCardScenario(selectedProfile)
-                      }));
-                      setFieldInteractions((current) => ({
-                        ...current,
-                        [selectedCardId]: {}
-                      }));
-                    }}
-                    >
-                    Reset {selectedProfile.shortName}
-                  </Button>
                 </div>
-                <div className="hidden sm:block" />
               </div>
 
               {showEmailPanel ? (
@@ -1856,6 +1604,17 @@ export function PremiumCardCalculator() {
                   </div>
                 </div>
               </div>
+
+              {pointsAdvisorHref ? (
+                <div className="mt-4 flex justify-center">
+                  <Link
+                    href={pointsAdvisorHref}
+                    className="inline-flex items-center justify-center rounded-full border border-white/10 px-5 py-2.5 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
+                  >
+                    Check these points in the Points Calculator
+                  </Link>
+                </div>
+              ) : null}
 
               <div className="mt-5 rounded-[1.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.03))] px-4 py-4">
                 <div className="flex flex-col gap-2 border-b border-white/8 pb-3 sm:flex-row sm:items-center sm:justify-between">
