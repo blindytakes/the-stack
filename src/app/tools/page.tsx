@@ -42,7 +42,7 @@ const toolCards = [
     href: '/tools/points-advisor',
     title: 'Points Redemption Tool',
     description:
-      'Enter your balance and get ranked redemption ideas for Sapphire Reserve, Amex Membership Rewards, and Venture X.',
+      'Enter your balance, compare ranked redemption paths, and price a real trip before you transfer points.',
     accentClassName: 'from-[#d6e5ff]/18 via-[#d6e5ff]/6 to-transparent'
   }
 ] as const;

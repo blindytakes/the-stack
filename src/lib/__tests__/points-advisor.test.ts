@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildPointsAdvisorHref,
   buildPointsAdvisorResult,
+  calculateTripRedemption,
   getPointsAdvisorProgramFromCardSlug
 } from '@/lib/points-advisor';
 
@@ -18,6 +19,8 @@ describe('points advisor', () => {
     expect(result.topRecommendations[0]?.shortLabel).toBe('Points Boost');
     expect(result.topRecommendations[0]?.minimumValue).toBe(1750);
     expect(result.topRecommendations[0]?.maximumValue).toBe(2000);
+    expect(result.topRecommendations[0]?.primaryReasons[0]).toContain('Goal fit');
+    expect(result.topRecommendations[0]?.scoreBreakdown.length).toBeGreaterThan(0);
     expect(result.easiestGoodOption.shortLabel).toBe('Points Boost');
     expect(result.highestUpsideOption.shortLabel).toBe('Airline transfer');
   });
@@ -68,13 +71,25 @@ describe('points advisor', () => {
     expect(getPointsAdvisorProgramFromCardSlug('amex-platinum-card')).toBe(
       'amex-membership-rewards'
     );
+    expect(getPointsAdvisorProgramFromCardSlug('amex-gold-card')).toBe(
+      'amex-membership-rewards'
+    );
     expect(getPointsAdvisorProgramFromCardSlug('chase-sapphire-reserve')).toBe(
       'chase-sapphire-reserve'
+    );
+    expect(getPointsAdvisorProgramFromCardSlug('chase-sapphire-preferred')).toBe(
+      'chase-sapphire-preferred'
     );
     expect(getPointsAdvisorProgramFromCardSlug('capital-one-venture-x')).toBe(
       'capital-one-venture-x'
     );
-    expect(getPointsAdvisorProgramFromCardSlug('chase-sapphire-preferred')).toBeNull();
+    expect(getPointsAdvisorProgramFromCardSlug('capital-one-venture-rewards')).toBe(
+      'capital-one-venture-rewards'
+    );
+    expect(getPointsAdvisorProgramFromCardSlug('citi-strata-elite-card')).toBe(
+      'citi-thankyou'
+    );
+    expect(getPointsAdvisorProgramFromCardSlug('bilt-mastercard')).toBeNull();
   });
 
   it('builds advisor links with program and optional points prefill', () => {
@@ -90,5 +105,52 @@ describe('points advisor', () => {
         programId: 'amex-membership-rewards'
       })
     ).toBe('/tools/points-advisor?program=amex-membership-rewards');
+  });
+
+  it('includes optional assumption params in advisor links', () => {
+    expect(
+      buildPointsAdvisorHref({
+        programId: 'chase-sapphire-preferred',
+        pointsBalance: 64200,
+        goal: 'best_value',
+        timeHorizon: 'later',
+        effortTolerance: 'high'
+      })
+    ).toBe(
+      '/tools/points-advisor?program=chase-sapphire-preferred&points=64200&goal=best_value&time=later&effort=high'
+    );
+  });
+
+  it('calculates real trip redemption value after fees and transfer bonuses', () => {
+    const result = calculateTripRedemption({
+      pointsBalance: 100000,
+      cashPrice: 2400,
+      pointsRequired: 90000,
+      taxesAndFees: 150,
+      transferRatio: 1,
+      transferBonusPercent: 20,
+      baselineCpp: 1
+    });
+
+    expect(result.status).toBe('strong_value');
+    expect(result.effectivePointsCost).toBe(75000);
+    expect(result.cashValueAfterFees).toBe(2250);
+    expect(result.effectiveCpp).toBe(3);
+    expect(result.incrementalValue).toBe(1500);
+  });
+
+  it('flags trip redemptions that need more points', () => {
+    const result = calculateTripRedemption({
+      pointsBalance: 50000,
+      cashPrice: 1200,
+      pointsRequired: 80000,
+      taxesAndFees: 80,
+      transferRatio: 1,
+      transferBonusPercent: 0,
+      baselineCpp: 1
+    });
+
+    expect(result.status).toBe('not_enough_points');
+    expect(result.pointsShortfall).toBe(30000);
   });
 });

@@ -10,6 +10,7 @@ export type FunnelEventName =
   | 'plan_results_view'
   | 'card_detail_view'
   | 'banking_detail_view'
+  | 'points_advisor_recommendation_view'
   | 'newsletter_subscribed'
   | 'affiliate_click';
 
@@ -19,6 +20,9 @@ export type FunnelEventProperties = {
   card_slug?: string;
   bank_slug?: string;
   tool?: string;
+  program?: string;
+  goal?: string;
+  recommendation?: string;
 };
 
 export function trackFunnelEvent(

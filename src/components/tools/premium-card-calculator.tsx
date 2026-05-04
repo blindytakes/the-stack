@@ -1140,10 +1140,21 @@ export function PremiumCardCalculator() {
     '--card-highlight-rgb': selectedVisual.highlightRgb ?? selectedVisual.accentRgb
   } as CSSProperties;
   const pointsAdvisorProgramId = getPointsAdvisorProgramFromCardSlug(selectedProfile.slug);
+  const pointsAdvisorGoal =
+    selectedScenario.selectedRedemptionId === 'transfer-partners'
+      ? 'best_value'
+      : selectedScenario.selectedRedemptionId.includes('travel')
+        ? 'simple_travel'
+        : 'cash_now';
+  const pointsAdvisorEffort =
+    selectedScenario.selectedRedemptionId === 'transfer-partners' ? 'high' : 'low';
   const pointsAdvisorHref = pointsAdvisorProgramId
     ? buildPointsAdvisorHref({
         programId: pointsAdvisorProgramId,
-        pointsBalance: selectedResult.totalPointsYear1
+        pointsBalance: selectedResult.totalPointsYear1,
+        goal: pointsAdvisorGoal,
+        timeHorizon: 'soon',
+        effortTolerance: pointsAdvisorEffort
       })
     : null;
 

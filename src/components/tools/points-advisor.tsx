@@ -1,17 +1,20 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import {
   startTransition,
   useEffect,
+  useRef,
   useState,
   type ChangeEvent,
   type CSSProperties
 } from 'react';
+import { trackFunnelEvent } from '@/components/analytics/funnel-events';
 import { EntityImage } from '@/components/ui/entity-image';
 import {
   buildPointsAdvisorResult,
+  calculateTripRedemption,
   pointsEffortOptions,
   pointsGoalOptions,
   pointsProgramProfiles,
@@ -20,6 +23,9 @@ import {
   type PointsEffortId,
   type PointsGoalId,
   type PointsProgramId,
+  type PointsProgramProfile,
+  type PointsSourceNote,
+  type PointsTripRedemptionInput,
   type PointsTimeHorizonId,
   type RankedPointsRecommendation
 } from '@/lib/points-advisor';
@@ -42,12 +48,23 @@ const defaultInput: PointsAdvisorInput = {
   effortTolerance: 'medium'
 };
 
+type TripRedemptionFormInput = Omit<
+  PointsTripRedemptionInput,
+  'pointsBalance' | 'baselineCpp'
+>;
+
+const defaultTripRedemptionInput: TripRedemptionFormInput = {
+  cashPrice: 1200,
+  pointsRequired: 70000,
+  taxesAndFees: 85,
+  transferRatio: 1,
+  transferBonusPercent: 0
+};
+
 const panelClassName =
-  'relative overflow-hidden rounded-[2.4rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,12,20,0.99),rgba(12,18,30,0.97))] shadow-[0_28px_90px_rgba(0,0,0,0.3)]';
+  'relative overflow-visible rounded-[1.55rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,18,30,0.98),rgba(8,12,20,0.99))] shadow-[0_18px_70px_rgba(0,0,0,0.24)]';
 const sectionCardClassName =
   'relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(11,16,27,0.98),rgba(8,12,20,0.98))] shadow-[0_22px_80px_rgba(0,0,0,0.26)]';
-const insetPanelClassName =
-  'rounded-[1.7rem] border border-white/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.02))]';
 const activeSurfaceClassName =
   'border-[rgb(var(--points-accent-rgb)/0.42)] bg-[linear-gradient(180deg,rgba(16,22,35,0.98),rgba(11,15,24,0.98),rgb(var(--points-accent-rgb)/0.12))] shadow-[0_24px_80px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.06)]';
 const inactiveSurfaceClassName =
@@ -81,6 +98,18 @@ const programVisuals: Record<PointsProgramId, ProgramVisual> = {
     artScale: 1.08,
     artPosition: 'center 53%'
   },
+  'chase-sapphire-preferred': {
+    accentRgb: '90 224 255',
+    highlightRgb: '212 168 83',
+    accentClassName: 'text-[#5ae0ff]',
+    accentBarClassName: 'bg-[#5ae0ff]',
+    laneLabel: 'Lower-fee',
+    selectorSummary: 'Best when you want Chase transfer partners and lower-fee travel flexibility.',
+    artUrl:
+      'https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/sapphire_preferred_card.png',
+    artScale: 1.08,
+    artPosition: 'center 53%'
+  },
   'amex-membership-rewards': {
     accentRgb: '214 229 255',
     accentClassName: 'text-[#d6e5ff]',
@@ -99,11 +128,36 @@ const programVisuals: Record<PointsProgramId, ProgramVisual> = {
     selectorSummary: 'Best when you want a simple travel floor first and transfer upside only when it is clearly worth it.',
     artUrl: 'https://ecm.capitalone.com/WCM/card/products/venture-x-card-art.png',
     artScale: 1.04
+  },
+  'capital-one-venture-rewards': {
+    accentRgb: '255 75 58',
+    accentClassName: 'text-[#ff4b3a]',
+    accentBarClassName: 'bg-[#ff4b3a]',
+    laneLabel: 'Simple miles',
+    selectorSummary: 'Best when you want a 1 cent travel floor with optional partner upside.',
+    artUrl: 'https://ecm.capitalone.com/WCM/card/products/venture-card-art.png',
+    artScale: 1.04
+  },
+  'citi-thankyou': {
+    accentRgb: '64 170 255',
+    highlightRgb: '255 255 255',
+    accentClassName: 'text-[#40aaff]',
+    accentBarClassName: 'bg-[#40aaff]',
+    laneLabel: 'Transferable',
+    selectorSummary: 'Best when you want a 1 cent floor and targeted transfer upside.',
+    artUrl: '/card-logos/citi.svg',
+    artScale: 0.82
   }
 };
 
 function formatCurrency(value: number) {
   return currencyFormatter.format(value);
+}
+
+function formatSignedCurrency(value: number) {
+  if (value > 0) return `+${formatCurrency(value)}`;
+  if (value < 0) return `-${formatCurrency(Math.abs(value))}`;
+  return formatCurrency(0);
 }
 
 function formatPoints(value: number) {
@@ -145,6 +199,18 @@ function isPointsProgramId(value: string | null): value is PointsProgramId {
   return Boolean(value && value in programVisuals);
 }
 
+function isPointsGoalId(value: string | null): value is PointsGoalId {
+  return Boolean(value && pointsGoalOptions.some((option) => option.id === value));
+}
+
+function isPointsTimeHorizonId(value: string | null): value is PointsTimeHorizonId {
+  return Boolean(value && pointsTimeHorizonOptions.some((option) => option.id === value));
+}
+
+function isPointsEffortId(value: string | null): value is PointsEffortId {
+  return Boolean(value && pointsEffortOptions.some((option) => option.id === value));
+}
+
 function parsePointsSearchValue(value: string | null) {
   if (!value) return null;
 
@@ -153,6 +219,12 @@ function parsePointsSearchValue(value: string | null) {
 
   const nextValue = Number(digitsOnly);
   return Number.isFinite(nextValue) && nextValue >= 0 ? Math.round(nextValue) : null;
+}
+
+function parseTripNumber(value: string) {
+  const normalized = value.replace(/[^\d.]/g, '');
+  const nextValue = Number(normalized);
+  return Number.isFinite(nextValue) ? nextValue : 0;
 }
 
 function getRecommendationGuidance(
@@ -194,6 +266,41 @@ function getRecommendationGuidance(
     };
   }
 
+  if (programId === 'chase-sapphire-preferred') {
+    if (recommendation.strategy === 'portal') {
+      return {
+        example: 'A Chase Travel flight or hotel that is marked with a Preferred Points Boost rate.',
+        nextStep: 'Check the portal price and confirm the booking is actually boosted before redeeming.'
+      };
+    }
+
+    if (recommendation.strategy === 'airline_transfer') {
+      return {
+        example: 'An international itinerary where partner pricing is clearly lower than the cash fare.',
+        nextStep: 'Find the award first, then transfer only the points needed for that booking.'
+      };
+    }
+
+    if (recommendation.strategy === 'hotel_transfer') {
+      return {
+        example: 'A specific hotel stay where the award price beats both cash and Chase Travel.',
+        nextStep: 'Compare award cost, taxes, and cancellation rules before moving points.'
+      };
+    }
+
+    if (recommendation.strategy === 'hold') {
+      return {
+        example: 'You do not have a trip lined up and do not want to settle for the 1 cent floor.',
+        nextStep: 'Hold until you can test a real boosted booking or transfer redemption.'
+      };
+    }
+
+    return {
+      example: 'An immediate cash-like redemption when certainty matters more than upside.',
+      nextStep: 'Use this as the fallback after checking for a boosted booking or transfer win.'
+    };
+  }
+
   if (programId === 'amex-membership-rewards') {
     if (recommendation.id === 'amex-airline-transfer') {
       return {
@@ -226,6 +333,62 @@ function getRecommendationGuidance(
     return {
       example: 'An immediate cash-like exit when convenience matters more than redemption quality.',
       nextStep: 'Treat this as the emergency floor, not the normal way you want to use MR points.'
+    };
+  }
+
+  if (programId === 'citi-thankyou') {
+    if (recommendation.strategy === 'airline_transfer') {
+      return {
+        example: 'A flight where the Citi transfer partner award price beats the cash fare.',
+        nextStep: 'Confirm award availability before transferring because reversals usually are not available.'
+      };
+    }
+
+    if (recommendation.strategy === 'hotel_transfer') {
+      return {
+        example: 'A hotel stay where the partner award price clears the 1 cent floor by enough to matter.',
+        nextStep: 'Compare against cash and Citi Travel before giving up flexible points.'
+      };
+    }
+
+    if (recommendation.strategy === 'hold') {
+      return {
+        example: 'No trip is ready, so you preserve the option to use transfer partners later.',
+        nextStep: 'Wait until you have a specific redemption to price.'
+      };
+    }
+
+    return {
+      example: 'A simple cash-like or Citi Travel redemption when immediate certainty matters.',
+      nextStep: 'Treat this as the floor and test a transfer only if you want more upside.'
+    };
+  }
+
+  if (programId === 'capital-one-venture-rewards') {
+    if (recommendation.strategy === 'airline_transfer') {
+      return {
+        example: 'An award flight where partner pricing clearly beats the fixed 1 cent floor.',
+        nextStep: 'Verify the award can actually be booked before you transfer miles out.'
+      };
+    }
+
+    if (recommendation.strategy === 'hotel_transfer') {
+      return {
+        example: 'A hotel stay where the partner booking clearly beats one cent per mile.',
+        nextStep: 'Only transfer if the gap over the easy fixed-value floor is big enough to matter.'
+      };
+    }
+
+    if (recommendation.strategy === 'hold') {
+      return {
+        example: 'You do not need the miles today and would rather keep the flexible travel floor.',
+        nextStep: 'Wait until you either have a travel purchase to erase or a clear partner redemption lined up.'
+      };
+    }
+
+    return {
+      example: 'A recent travel charge you can wipe off without needing to book through a portal.',
+      nextStep: 'Use this as the easy floor, then compare transfer value only if you want more upside.'
     };
   }
 
@@ -263,74 +426,135 @@ function getRecommendationGuidance(
   };
 }
 
-function ProgramSelectorCard({
-  programId,
-  active,
-  onClick
+function ProgramArtPanel({
+  activeProgramId,
+  open,
+  onToggle,
+  onSelect
 }: {
-  programId: PointsProgramId;
-  active: boolean;
-  onClick: () => void;
+  activeProgramId: PointsProgramId;
+  open: boolean;
+  onToggle: () => void;
+  onSelect: (programId: PointsProgramId) => void;
 }) {
-  const profile = pointsProgramProfiles.find((item) => item.id === programId);
-  const visual = programVisuals[programId];
+  const activeProfile = pointsProgramProfiles.find((item) => item.id === activeProgramId);
+  const activeVisual = programVisuals[activeProgramId];
+  const mainArtScale = Math.min(activeVisual.artScale ?? 1, 1);
 
-  if (!profile) return null;
+  if (!activeProfile) return null;
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group relative h-full w-full text-left transition focus-visible:outline-none"
-    >
-      <div
-        className={`relative h-full overflow-hidden rounded-[1.7rem] border p-4 transition duration-300 ${
-          active ? activeSurfaceClassName : inactiveSurfaceClassName
-        }`}
-      >
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),transparent)]" />
-        <div className="pointer-events-none absolute -right-6 top-1 h-20 w-20 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.18),transparent_70%)] blur-[44px]" />
+    <div className="relative flex h-full min-w-0 flex-col overflow-visible rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-5">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
+      <div className="pointer-events-none absolute -right-10 top-8 h-28 w-28 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.18),transparent_70%)] blur-[46px]" />
 
-        <div className="relative flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${active ? visual.accentClassName : 'text-text-muted'}`}>
-              {profile.currencyName}
-            </p>
-            <p className="mt-2 text-[1.08rem] font-semibold leading-tight text-text-primary">{profile.title}</p>
-            <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-text-muted">{visual.laneLabel}</p>
-          </div>
-          <span
-            className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${
-              active
-                ? `${activeChipClassName} ${visual.accentClassName}`
-                : 'border-white/10 bg-white/[0.04] text-text-muted'
-            }`}
-          >
-            {active ? 'Active' : 'Pick'}
+      <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden rounded-[1.2rem] bg-[radial-gradient(circle_at_50%_38%,rgb(var(--points-accent-rgb)/0.14),transparent_58%),linear-gradient(180deg,rgba(255,255,255,0.035),rgba(0,0,0,0.08))] px-6 pb-5 pt-16 md:px-8 md:pb-6 md:pt-[4.75rem]">
+        <button
+          type="button"
+          aria-haspopup="listbox"
+          onClick={onToggle}
+          aria-expanded={open}
+          className="absolute right-4 top-4 z-30 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3.5 py-2 text-sm font-semibold text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur transition hover:border-[rgb(var(--points-accent-rgb)/0.5)] hover:bg-black/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--points-accent-rgb)/0.5)]"
+        >
+          <span>{open ? 'Close selector' : 'Change card'}</span>
+          <span className={`rounded-full border border-white/10 bg-white/[0.035] px-2 py-0.5 text-[9px] uppercase tracking-[0.18em] ${activeVisual.accentClassName}`}>
+            {open ? 'Close' : 'Browse'}
           </span>
-        </div>
+        </button>
 
-        <div className="relative mx-auto mt-4 flex h-[8.9rem] items-center justify-center">
-          <div className="absolute inset-x-10 bottom-4 h-10 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.2),transparent_72%)] blur-[30px]" />
+        {open ? (
+          <div
+            role="listbox"
+            aria-label="Points program"
+            className="absolute left-4 right-4 top-[4.7rem] z-40 grid max-h-[min(26rem,calc(100vh-8rem))] gap-2 overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)] sm:left-auto sm:w-[min(31rem,calc(100%-2rem))] sm:grid-cols-2 md:right-5"
+          >
+            {pointsProgramProfiles.map((profile) => {
+              const optionVisual = programVisuals[profile.id];
+              const active = profile.id === activeProgramId;
+
+              return (
+                <button
+                  key={profile.id}
+                  type="button"
+                  role="option"
+                  aria-selected={active}
+                  onClick={() => onSelect(profile.id)}
+                  className={`flex items-center gap-3 rounded-[1.05rem] border p-3 text-left transition ${
+                    active ? activeSurfaceClassName : inactiveSurfaceClassName
+                  }`}
+                >
+                  <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-[0.85rem] border border-white/10 bg-black/15">
+                    <EntityImage
+                      src={optionVisual.artUrl}
+                      alt={profile.title}
+                      label={profile.title}
+                      className="aspect-[1.62/1] w-full max-w-[4.8rem] overflow-visible rounded-none border-0 bg-transparent"
+                      imgClassName="bg-transparent p-0"
+                      fallbackClassName="bg-black/10"
+                      fit="contain"
+                      position={optionVisual.artPosition}
+                      scale={optionVisual.artScale ?? 1}
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold leading-tight text-text-primary">
+                      {profile.title}
+                    </p>
+                    <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                      {optionVisual.laneLabel}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        ) : null}
+
+        <div className="pointer-events-none absolute inset-x-12 bottom-8 h-14 rounded-full bg-black/35 blur-2xl" />
+        <div className="pointer-events-none absolute inset-x-12 bottom-8 h-12 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.16),transparent_70%)] blur-[32px]" />
+        <div className="relative flex min-h-[12rem] w-full items-center justify-center sm:min-h-[14rem] md:min-h-[16.25rem]">
           <EntityImage
-            src={visual.artUrl}
-            alt={profile.title}
-            label={profile.title}
-            className="relative aspect-[1.62/1] w-full max-w-[13.75rem] overflow-visible rounded-none border-0 bg-transparent"
-            imgClassName="bg-transparent p-0 drop-shadow-[0_24px_40px_rgba(0,0,0,0.42)]"
+            src={activeVisual.artUrl}
+            alt={activeProfile.title}
+            label={activeProfile.title}
+            className="relative aspect-[1.62/1] w-full max-w-[24.75rem] overflow-visible rounded-none border-0 bg-transparent"
+            imgClassName="bg-transparent p-0 drop-shadow-[0_28px_44px_rgba(0,0,0,0.5)]"
             fallbackClassName="bg-black/10"
             fit="contain"
-            position={visual.artPosition}
-            scale={visual.artScale ?? 1}
+            position={activeVisual.artPosition}
+            scale={mainArtScale}
           />
         </div>
-
-        <div className="relative mt-3">
-          <p className="text-sm leading-6 text-text-secondary">{visual.selectorSummary}</p>
-          <div className={`mt-4 h-[2px] rounded-full transition-all ${active ? `w-16 ${visual.accentBarClassName}` : 'w-10 bg-white/10'}`} />
+        <div className="relative z-10 mt-5 w-full border-t border-white/8 pt-4 text-center">
+          <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${activeVisual.accentClassName}`}>
+            Program
+          </p>
+          <p className="mt-2 truncate text-[1.2rem] font-semibold leading-tight text-text-primary">
+            {activeProfile.title}
+          </p>
+          <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+            {activeProfile.currencyName}
+          </p>
         </div>
       </div>
-    </button>
+    </div>
+  );
+}
+
+function RedemptionEquation() {
+  return (
+    <div
+      aria-label="Program plus balance plus goal equals best move"
+      className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted"
+    >
+      <span>Program</span>
+      <span className="text-[rgb(var(--points-accent-rgb))]">+</span>
+      <span>Balance</span>
+      <span className="text-[rgb(var(--points-accent-rgb))]">+</span>
+      <span>Goal</span>
+      <span className="text-text-secondary">=</span>
+      <span className="text-text-primary">Best move</span>
+    </div>
   );
 }
 
@@ -407,6 +631,247 @@ function InsightCard({
   );
 }
 
+function ScoreBreakdown({
+  recommendation,
+  accentClassName
+}: {
+  recommendation: RankedPointsRecommendation;
+  accentClassName: string;
+}) {
+  const visibleItems = recommendation.scoreBreakdown
+    .filter((item) => item.impact !== 0)
+    .sort((a, b) => Math.abs(b.impact) - Math.abs(a.impact))
+    .slice(0, 5);
+
+  return (
+    <div className="mt-5 rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+          Why this ranked first
+        </p>
+        <p className={`text-xs font-semibold ${accentClassName}`}>Score {recommendation.score}</p>
+      </div>
+      <div className="mt-3 grid gap-2 md:grid-cols-2">
+        {visibleItems.map((item) => (
+          <div
+            key={`${recommendation.id}-${item.label}-${item.value}`}
+            className="flex items-center justify-between gap-3 rounded-[0.95rem] border border-white/8 bg-black/10 px-3 py-2 text-sm"
+          >
+            <div>
+              <p className="font-semibold text-text-primary">{item.label}</p>
+              <p className="mt-0.5 text-xs text-text-muted">{item.value}</p>
+            </div>
+            <span className={item.impact >= 0 ? accentClassName : 'text-brand-coral'}>
+              {item.impact > 0 ? '+' : ''}
+              {item.impact.toFixed(1)}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function TripInputField({
+  label,
+  value,
+  suffix,
+  onChange
+}: {
+  label: string;
+  value: number;
+  suffix?: string;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <label className="block rounded-[1.2rem] border border-white/10 bg-white/[0.035] px-4 py-3">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+        {label}
+      </span>
+      <div className="mt-2 flex items-center gap-2">
+        <input
+          type="text"
+          inputMode="decimal"
+          value={value === 0 ? '' : String(value)}
+          onChange={(event) => onChange(parseTripNumber(event.target.value))}
+          className="min-w-0 flex-1 bg-transparent text-lg font-semibold text-text-primary placeholder:text-text-muted focus:outline-none"
+          placeholder="0"
+        />
+        {suffix ? <span className="text-sm text-text-muted">{suffix}</span> : null}
+      </div>
+    </label>
+  );
+}
+
+function TripRedemptionCalculator({
+  input,
+  onChange,
+  result,
+  baselineCpp,
+  accentClassName
+}: {
+  input: TripRedemptionFormInput;
+  onChange: (field: keyof TripRedemptionFormInput, value: number) => void;
+  result: ReturnType<typeof calculateTripRedemption>;
+  baselineCpp: number;
+  accentClassName: string;
+}) {
+  const statusClassName =
+    result.status === 'strong_value'
+      ? accentClassName
+      : result.status === 'weak_value' || result.status === 'not_enough_points'
+        ? 'text-brand-coral'
+        : 'text-text-primary';
+
+  return (
+    <section className={`${sectionCardClassName} p-5 md:p-6`}>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
+      <div className="relative grid gap-5 lg:grid-cols-[minmax(0,1.1fr)_minmax(18rem,0.9fr)]">
+        <div>
+          <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${accentClassName}`}>
+            Real redemption check
+          </p>
+          <h2 className="mt-3 max-w-3xl font-heading text-[clamp(2rem,4vw,2.8rem)] leading-[0.98] text-text-primary">
+            Price the trip before you transfer
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-text-secondary">
+            Enter a cash price and award cost to calculate the actual cents per point after taxes,
+            transfer ratios, and transfer bonuses.
+          </p>
+
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
+            <TripInputField
+              label="Cash price"
+              value={input.cashPrice}
+              onChange={(value) => onChange('cashPrice', value)}
+            />
+            <TripInputField
+              label="Points required"
+              value={input.pointsRequired}
+              suffix="pts"
+              onChange={(value) => onChange('pointsRequired', value)}
+            />
+            <TripInputField
+              label="Taxes and fees"
+              value={input.taxesAndFees}
+              onChange={(value) => onChange('taxesAndFees', value)}
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <TripInputField
+                label="Transfer ratio"
+                value={input.transferRatio}
+                suffix=":1"
+                onChange={(value) => onChange('transferRatio', value)}
+              />
+              <TripInputField
+                label="Transfer bonus"
+                value={input.transferBonusPercent}
+                suffix="%"
+                onChange={(value) => onChange('transferBonusPercent', value)}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-[1.45rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-5">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+            Trip verdict
+          </p>
+          <p className={`mt-3 text-2xl font-semibold ${statusClassName}`}>
+            {result.statusLabel}
+          </p>
+          <p className="mt-2 text-sm leading-6 text-text-secondary">{result.summary}</p>
+
+          <div className="mt-5 grid gap-2">
+            <div className="flex items-center justify-between rounded-[1rem] border border-white/8 bg-black/10 px-3.5 py-3 text-sm">
+              <span className="text-text-secondary">Effective value</span>
+              <span className={`font-semibold ${accentClassName}`}>
+                {result.effectiveCpp.toFixed(2)} cpp
+              </span>
+            </div>
+            <div className="flex items-center justify-between rounded-[1rem] border border-white/8 bg-black/10 px-3.5 py-3 text-sm">
+              <span className="text-text-secondary">Bank points needed</span>
+              <span className="font-semibold text-text-primary">
+                {formatPoints(result.effectivePointsCost)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between rounded-[1rem] border border-white/8 bg-black/10 px-3.5 py-3 text-sm">
+              <span className="text-text-secondary">Value after fees</span>
+              <span className="font-semibold text-text-primary">
+                {formatCurrency(result.cashValueAfterFees)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between rounded-[1rem] border border-white/8 bg-black/10 px-3.5 py-3 text-sm">
+              <span className="text-text-secondary">Vs easy floor</span>
+              <span className={`font-semibold ${result.incrementalValue >= 0 ? accentClassName : 'text-brand-coral'}`}>
+                {formatSignedCurrency(result.incrementalValue)}
+              </span>
+            </div>
+          </div>
+
+          <p className="mt-4 text-xs leading-5 text-text-muted">
+            Easy floor baseline: {baselineCpp.toFixed(2)} cpp from the current low-effort option.
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function SourceDisclosure({
+  sources,
+  assumptionNotes
+}: {
+  sources: PointsSourceNote[];
+  assumptionNotes: PointsProgramProfile['assumptionNotes'];
+}) {
+  return (
+    <details className="rounded-[1.35rem] border border-white/10 bg-white/[0.025] p-4">
+      <summary className="cursor-pointer list-none text-sm font-semibold text-text-primary">
+        Sources and assumptions
+      </summary>
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+            Current sources
+          </p>
+          <div className="mt-3 space-y-2">
+            {sources.map((source) => (
+              <a
+                key={`${source.label}-${source.url}`}
+                href={source.url}
+                target="_blank"
+                rel="noreferrer"
+                className="block rounded-[1rem] border border-white/8 bg-black/10 px-3.5 py-3 text-sm text-text-secondary transition hover:border-white/18 hover:text-text-primary"
+              >
+                <span className="font-semibold text-text-primary">{source.label}</span>
+                <span className="mt-1 block text-xs text-text-muted">
+                  Verified {source.lastVerifiedAt}
+                </span>
+              </a>
+            ))}
+          </div>
+        </div>
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+            Modeling notes
+          </p>
+          <div className="mt-3 space-y-2">
+            {assumptionNotes.map((note) => (
+              <p
+                key={note}
+                className="rounded-[1rem] border border-white/8 bg-black/10 px-3.5 py-3 text-sm leading-6 text-text-secondary"
+              >
+                {note}
+              </p>
+            ))}
+          </div>
+        </div>
+      </div>
+    </details>
+  );
+}
+
 function ResultHighlightCard({
   recommendation,
   accentClassName,
@@ -465,6 +930,8 @@ function ResultHighlightCard({
           </div>
 
           <p className="mt-4 max-w-2xl text-sm leading-6 text-text-secondary">{recommendation.summary}</p>
+
+          <ScoreBreakdown recommendation={recommendation} accentClassName={accentClassName} />
 
           <div className="mt-5 grid gap-3 md:grid-cols-3">
             <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
@@ -556,15 +1023,36 @@ function ResultOptionCard({
 
 export function PointsAdvisor() {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const [input, setInput] = useState<PointsAdvisorInput>(defaultInput);
-  const [showAdvancedControls, setShowAdvancedControls] = useState(false);
+  const [tripInput, setTripInput] = useState<TripRedemptionFormInput>(defaultTripRedemptionInput);
+  const [hasAppliedSearchParams, setHasAppliedSearchParams] = useState(false);
+  const [programPickerOpen, setProgramPickerOpen] = useState(false);
+  const lastTrackedRecommendationRef = useRef<string | null>(null);
 
   useEffect(() => {
     const queryProgram = searchParams.get('program');
+    const queryGoal = searchParams.get('goal');
+    const queryTimeHorizon = searchParams.get('time');
+    const queryEffortTolerance = searchParams.get('effort');
     const nextProgramId = isPointsProgramId(queryProgram) ? queryProgram : null;
     const nextPointsBalance = parsePointsSearchValue(searchParams.get('points'));
+    const nextGoal = isPointsGoalId(queryGoal) ? queryGoal : null;
+    const nextTimeHorizon = isPointsTimeHorizonId(queryTimeHorizon)
+      ? queryTimeHorizon
+      : null;
+    const nextEffortTolerance = isPointsEffortId(queryEffortTolerance)
+      ? queryEffortTolerance
+      : null;
 
-    if (!nextProgramId && nextPointsBalance === null) {
+    if (
+      !nextProgramId &&
+      nextPointsBalance === null &&
+      !nextGoal &&
+      !nextTimeHorizon &&
+      !nextEffortTolerance
+    ) {
+      setHasAppliedSearchParams(true);
       return;
     }
 
@@ -572,17 +1060,32 @@ export function PointsAdvisor() {
       const shouldUpdateProgram = nextProgramId && nextProgramId !== current.programId;
       const shouldUpdatePoints =
         nextPointsBalance !== null && nextPointsBalance !== current.pointsBalance;
+      const shouldUpdateGoal = nextGoal && nextGoal !== current.goal;
+      const shouldUpdateTimeHorizon =
+        nextTimeHorizon && nextTimeHorizon !== current.timeHorizon;
+      const shouldUpdateEffortTolerance =
+        nextEffortTolerance && nextEffortTolerance !== current.effortTolerance;
 
-      if (!shouldUpdateProgram && !shouldUpdatePoints) {
+      if (
+        !shouldUpdateProgram &&
+        !shouldUpdatePoints &&
+        !shouldUpdateGoal &&
+        !shouldUpdateTimeHorizon &&
+        !shouldUpdateEffortTolerance
+      ) {
         return current;
       }
 
       return {
         ...current,
         programId: nextProgramId ?? current.programId,
-        pointsBalance: nextPointsBalance ?? current.pointsBalance
+        pointsBalance: nextPointsBalance ?? current.pointsBalance,
+        goal: nextGoal ?? current.goal,
+        timeHorizon: nextTimeHorizon ?? current.timeHorizon,
+        effortTolerance: nextEffortTolerance ?? current.effortTolerance
       };
     });
+    setHasAppliedSearchParams(true);
   }, [searchParams]);
 
   const result = buildPointsAdvisorResult(input);
@@ -622,10 +1125,68 @@ export function PointsAdvisor() {
   const topRecommendationGuidance = topRecommendation
     ? getRecommendationGuidance(result.profile.id, topRecommendation)
     : null;
+  const tripResult = calculateTripRedemption({
+    ...tripInput,
+    pointsBalance: result.input.pointsBalance,
+    baselineCpp: result.easiestGoodOption.likelyCpp
+  });
+
+  useEffect(() => {
+    if (!hasAppliedSearchParams) return;
+
+    const params = new URLSearchParams();
+    params.set('program', input.programId);
+
+    if (input.pointsBalance > 0) {
+      params.set('points', String(input.pointsBalance));
+    }
+
+    params.set('goal', input.goal);
+    params.set('time', input.timeHorizon);
+    params.set('effort', input.effortTolerance);
+
+    const query = params.toString();
+    const nextUrl = query ? `${pathname}?${query}` : pathname;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+
+    if (nextUrl !== currentUrl) {
+      window.history.replaceState(null, '', nextUrl);
+    }
+  }, [hasAppliedSearchParams, input, pathname]);
+
+  useEffect(() => {
+    if (!hasAppliedSearchParams || !topRecommendation) return;
+
+    const trackingKey = [
+      result.profile.id,
+      input.goal,
+      input.timeHorizon,
+      input.effortTolerance,
+      topRecommendation.id
+    ].join(':');
+
+    if (lastTrackedRecommendationRef.current === trackingKey) return;
+    lastTrackedRecommendationRef.current = trackingKey;
+
+    trackFunnelEvent('points_advisor_recommendation_view', {
+      tool: 'points_redemption_advisor',
+      program: result.profile.id,
+      goal: input.goal,
+      recommendation: topRecommendation.id
+    });
+  }, [
+    hasAppliedSearchParams,
+    input.goal,
+    input.timeHorizon,
+    input.effortTolerance,
+    result.profile.id,
+    topRecommendation
+  ]);
 
   function updateProgram(programId: PointsProgramId) {
     startTransition(() => {
       setInput((current) => ({ ...current, programId }));
+      setProgramPickerOpen(false);
     });
   }
 
@@ -649,69 +1210,87 @@ export function PointsAdvisor() {
     }));
   }
 
+  function updateTripInput(field: keyof TripRedemptionFormInput, value: number) {
+    setTripInput((current) => ({
+      ...current,
+      [field]: value
+    }));
+  }
+
   return (
     <section className="relative mx-auto max-w-6xl space-y-6" style={accentStyle}>
       <div className="pointer-events-none absolute left-[-7rem] top-10 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.08),transparent_70%)] blur-[56px]" />
       <div className="pointer-events-none absolute right-[-10rem] top-40 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.06),transparent_72%)] blur-3xl" />
 
-      <section className={`${panelClassName} px-5 py-5 md:px-8 md:py-6`}>
+      <section className={`${panelClassName} px-4 py-5 md:px-6 md:py-6`}>
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
         <div className="pointer-events-none absolute -left-14 top-[-3rem] h-44 w-44 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.1),transparent_70%)] blur-[52px]" />
         <div className="pointer-events-none absolute right-[-3rem] top-1 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.08),transparent_72%)] blur-[56px]" />
 
-        <div className="relative">
-          <div className={`${insetPanelClassName} p-4 md:p-5`}>
-            <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-              <div>
-                <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${visual.accentClassName}`}>Step 1</p>
-                <h2 className="mt-2 font-heading text-[1.9rem] leading-[0.98] tracking-[-0.03em] text-text-primary">
-                  Choose the points program
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-text-secondary">
-                  Start with the ecosystem. That is the biggest thing driving the recommendation.
+        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(28rem,0.88fr)] xl:items-stretch">
+          <div className="min-w-0">
+            <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${visual.accentClassName}`}>
+              Points Redemption Tool
+            </p>
+            <h1 className="mt-3 max-w-[54rem] font-heading text-[2.35rem] leading-[0.96] text-text-primary md:text-[3.45rem]">
+              Points Redemption Calculator
+            </h1>
+            <p className="mt-3 max-w-[47rem] text-sm leading-6 text-text-secondary md:text-base md:leading-7">
+              Compare easy exits, transfer plays, and trip-specific redemption math before you spend flexible points.
+            </p>
+
+            <label className="mt-5 block rounded-[1.15rem] border border-white/10 bg-white/[0.035] px-4 py-3 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+                Points balance
+              </span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={input.pointsBalance === 0 ? '' : formatPoints(input.pointsBalance)}
+                onChange={handlePointsChange}
+                placeholder="100,000"
+                aria-label="Points balance"
+                className="mt-2 w-full bg-transparent text-center font-heading text-[clamp(2.15rem,4.7vw,3.15rem)] leading-none tracking-[-0.06em] text-text-primary placeholder:text-text-muted focus:outline-none"
+              />
+              <span className="mt-2 block text-[10px] font-semibold uppercase tracking-[0.28em] text-text-muted">
+                points
+              </span>
+            </label>
+
+            <RedemptionEquation />
+
+            <div className="mt-4 grid gap-2 sm:grid-cols-2">
+              <div className="rounded-[1rem] border border-[rgb(var(--points-accent-rgb)/0.32)] bg-[rgb(var(--points-accent-rgb)/0.08)] px-4 py-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">Best move</p>
+                <p className="mt-2 text-[1.8rem] font-semibold leading-none text-text-primary">
+                  {topRecommendation?.shortLabel ?? 'Run advisor'}
+                </p>
+                <p className={`mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] ${visual.accentClassName}`}>
+                  {topRecommendation
+                    ? `${topRecommendation.likelyCpp.toFixed(1)} cpp modeled`
+                    : 'Recommendation pending'}
                 </p>
               </div>
-              <div className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-sm text-text-secondary">
-                Best fit: {topRecommendation?.shortLabel ?? 'No recommendation yet'}
-              </div>
-            </div>
-
-            <div className="mt-4 grid gap-4 md:grid-cols-3">
-              {pointsProgramProfiles.map((profile) => (
-                <ProgramSelectorCard
-                  key={profile.id}
-                  programId={profile.id}
-                  active={input.programId === profile.id}
-                  onClick={() => updateProgram(profile.id)}
-                />
-              ))}
-            </div>
-            <div className="mt-5 border-t border-white/10 pt-5 md:pt-6">
-              <div className="mx-auto grid max-w-4xl gap-5 md:grid-cols-[minmax(0,1fr)_minmax(18rem,24rem)] md:items-center md:gap-8">
-                <div className="text-center md:self-center md:text-left">
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">Step 2</p>
-                  <h2 className="mt-2 font-heading text-[1.9rem] leading-[0.98] tracking-[-0.03em] text-text-primary">
-                    Enter your points
-                  </h2>
-                </div>
-
-                <div className="border-b border-white/10 px-3 pb-5 md:self-center md:pb-4">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={input.pointsBalance === 0 ? '' : formatPoints(input.pointsBalance)}
-                    onChange={handlePointsChange}
-                    placeholder="100,000"
-                    aria-label="Points balance"
-                    className="w-full bg-transparent text-center font-heading text-[clamp(3.1rem,8vw,5.4rem)] leading-none tracking-[-0.06em] text-text-primary placeholder:text-text-muted focus:outline-none md:text-right"
-                  />
-                  <p className="mt-4 text-center text-[10px] font-semibold uppercase tracking-[0.28em] text-text-muted md:text-right">
-                    points
-                  </p>
-                </div>
+              <div className="rounded-[1rem] border border-white/10 bg-white/[0.035] px-4 py-3">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">Estimated value</p>
+                <p className="mt-2 text-[1.8rem] font-semibold leading-none text-text-primary">
+                  {topRecommendation ? formatCurrency(topRecommendation.estimatedValue) : '$0'}
+                </p>
+                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-text-secondary">
+                  {topRecommendation
+                    ? formatCppRange(topRecommendation.minCpp, topRecommendation.maxCpp)
+                    : 'Enter points'}
+                </p>
               </div>
             </div>
           </div>
+
+          <ProgramArtPanel
+            activeProgramId={input.programId}
+            open={programPickerOpen}
+            onToggle={() => setProgramPickerOpen((current) => !current)}
+            onSelect={updateProgram}
+          />
         </div>
       </section>
 
@@ -723,30 +1302,41 @@ export function PointsAdvisor() {
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
               <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${visual.accentClassName}`}>
-                Step 3
+                Current recommendation
               </p>
-              <h2 className="mt-3 max-w-3xl font-heading text-[clamp(2.1rem,4vw,3rem)] leading-[0.94] tracking-[-0.04em] text-text-primary">
-                Best move for {formatPoints(result.input.pointsBalance)} {result.profile.currencyName.toLowerCase()}
+              <h2 className="mt-3 max-w-3xl font-heading text-[clamp(2.2rem,4vw,3rem)] leading-[0.94] tracking-[-0.04em] text-text-primary">
+                Best move now
               </h2>
+              <p className="mt-2 text-sm leading-6 text-text-secondary">
+                For {formatPoints(result.input.pointsBalance)} {result.profile.currencyName.toLowerCase()}
+              </p>
             </div>
             <div className="flex flex-col items-start gap-2 md:items-end">
-              <button
-                type="button"
-                onClick={() => setShowAdvancedControls((current) => !current)}
-                className={`text-sm font-semibold transition ${
-                  showAdvancedControls ? 'text-text-primary' : visual.accentClassName
-                }`}
-              >
-                {showAdvancedControls ? 'Hide assumptions' : 'Refine assumptions'}
-              </button>
+              <p className={`text-sm font-semibold ${visual.accentClassName}`}>Current assumptions</p>
               <p className="max-w-sm text-sm leading-6 text-text-secondary md:text-right">
                 {assumptionSummary}
               </p>
             </div>
           </div>
 
-          {showAdvancedControls ? (
-            <div className="mt-5 grid gap-5 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4">
+          {topRecommendation && topRecommendationGuidance ? (
+            <div className="mt-5">
+              <ResultHighlightCard
+                recommendation={topRecommendation}
+                accentClassName={visual.accentClassName}
+                guidance={topRecommendationGuidance}
+              />
+            </div>
+          ) : null}
+
+          <div className="mt-5 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4">
+            <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
+              <p className="text-sm font-semibold text-text-primary">Refine assumptions</p>
+              <p className="text-xs leading-5 text-text-muted">
+                Adjust these when the recommendation does not match the trip you are pricing.
+              </p>
+            </div>
+            <div className="mt-4 grid gap-5 lg:grid-cols-3">
               <FilterGroup
                 label="Goal"
                 options={pointsGoalOptions}
@@ -766,17 +1356,7 @@ export function PointsAdvisor() {
                 onSelect={updateEffortTolerance}
               />
             </div>
-          ) : null}
-
-          {topRecommendation && topRecommendationGuidance ? (
-            <div className="mt-6">
-              <ResultHighlightCard
-                recommendation={topRecommendation}
-                accentClassName={visual.accentClassName}
-                guidance={topRecommendationGuidance}
-              />
-            </div>
-          ) : null}
+          </div>
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <InsightCard
@@ -849,6 +1429,19 @@ export function PointsAdvisor() {
           </details>
         </div>
       </section>
+
+      <TripRedemptionCalculator
+        input={tripInput}
+        onChange={updateTripInput}
+        result={tripResult}
+        baselineCpp={result.easiestGoodOption.likelyCpp}
+        accentClassName={visual.accentClassName}
+      />
+
+      <SourceDisclosure
+        sources={result.profile.sources}
+        assumptionNotes={result.profile.assumptionNotes}
+      />
     </section>
   );
 }

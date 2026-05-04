@@ -1,7 +1,10 @@
 export type PointsProgramId =
   | 'chase-sapphire-reserve'
+  | 'chase-sapphire-preferred'
   | 'amex-membership-rewards'
-  | 'capital-one-venture-x';
+  | 'capital-one-venture-x'
+  | 'capital-one-venture-rewards'
+  | 'citi-thankyou';
 
 export type PointsGoalId =
   | 'cash_now'
@@ -23,6 +26,12 @@ type RecommendationStrategy =
   | 'hold';
 
 type GoalFitMap = Record<PointsGoalId, number>;
+
+export type PointsSourceNote = {
+  label: string;
+  url: string;
+  lastVerifiedAt: string;
+};
 
 export type PointsAdvisorInput = {
   programId: PointsProgramId;
@@ -54,7 +63,15 @@ export type PointsProgramProfile = {
   title: string;
   headline: string;
   description: string;
+  sources: PointsSourceNote[];
+  assumptionNotes: string[];
   choices: PointsAdvisorChoice[];
+};
+
+export type PointsScoreBreakdown = {
+  label: string;
+  value: string;
+  impact: number;
 };
 
 export type RankedPointsRecommendation = PointsAdvisorChoice & {
@@ -66,6 +83,8 @@ export type RankedPointsRecommendation = PointsAdvisorChoice & {
   maximumValue: number;
   recommendationLabel: string;
   fitSummary: string;
+  scoreBreakdown: PointsScoreBreakdown[];
+  primaryReasons: string[];
 };
 
 export type PointsAdvisorResult = {
@@ -75,6 +94,35 @@ export type PointsAdvisorResult = {
   allRecommendations: RankedPointsRecommendation[];
   easiestGoodOption: RankedPointsRecommendation;
   highestUpsideOption: RankedPointsRecommendation;
+};
+
+export type PointsTripRedemptionInput = {
+  pointsBalance: number;
+  cashPrice: number;
+  pointsRequired: number;
+  taxesAndFees: number;
+  transferRatio: number;
+  transferBonusPercent: number;
+  baselineCpp: number;
+};
+
+export type PointsTripRedemptionStatus =
+  | 'invalid'
+  | 'not_enough_points'
+  | 'strong_value'
+  | 'fair_value'
+  | 'weak_value';
+
+export type PointsTripRedemptionResult = {
+  status: PointsTripRedemptionStatus;
+  statusLabel: string;
+  summary: string;
+  effectivePointsCost: number;
+  pointsShortfall: number;
+  cashValueAfterFees: number;
+  effectiveCpp: number;
+  baselineValue: number;
+  incrementalValue: number;
 };
 
 export const pointsGoalOptions: ReadonlyArray<{
@@ -173,6 +221,22 @@ export const pointsProgramProfiles: ReadonlyArray<PointsProgramProfile> = [
     headline: 'Best when you want flexible points with a 1 cent floor and occasional portal boosts that can compete with transfers.',
     description:
       'Reserve points now have a simple 1 cent floor through cash out or ordinary Chase Travel bookings, but select Chase Travel bookings can carry a higher Points Boost rate that changes the math.',
+    sources: [
+      {
+        label: 'Chase Sapphire Reserve benefits',
+        url: 'https://www.chase.com/sapphire-cards/personal/reserve',
+        lastVerifiedAt: '2026-05-03'
+      },
+      {
+        label: 'Chase Points Boost guide',
+        url: 'https://www.chase.com/travel/guide/trips/chase-sapphire-points-boost-benefits-guide',
+        lastVerifiedAt: '2026-05-03'
+      }
+    ],
+    assumptionNotes: [
+      'Standard cash-like and ordinary Chase Travel redemptions are modeled at 1 cent per point.',
+      'Points Boost is modeled as an availability-dependent range, not a guaranteed rate on every booking.'
+    ],
     choices: [
       {
         id: 'csr-cash-back',
@@ -282,6 +346,138 @@ export const pointsProgramProfiles: ReadonlyArray<PointsProgramProfile> = [
     ]
   },
   {
+    id: 'chase-sapphire-preferred',
+    name: 'Chase Sapphire Preferred',
+    currencyName: 'Ultimate Rewards',
+    title: 'Chase Sapphire Preferred',
+    headline: 'Best when you want the Chase transfer ecosystem with a lower annual-fee commitment.',
+    description:
+      'Preferred points keep the same simple 1 cent floor and transfer optionality, while Points Boost can help select Chase Travel bookings clear the floor without partner work.',
+    sources: [
+      {
+        label: 'Chase Points Boost guide',
+        url: 'https://www.chase.com/travel/guide/trips/chase-sapphire-points-boost-benefits-guide',
+        lastVerifiedAt: '2026-05-03'
+      },
+      {
+        label: 'Chase Sapphire Preferred card',
+        url: 'https://creditcards.chase.com/rewards-credit-cards/sapphire/preferred',
+        lastVerifiedAt: '2026-05-03'
+      }
+    ],
+    assumptionNotes: [
+      'Standard cash-like and ordinary Chase Travel redemptions are modeled at 1 cent per point.',
+      'Preferred Points Boost is modeled below Reserve because the highest advertised boost is lower.'
+    ],
+    choices: [
+      {
+        id: 'csp-cash-back',
+        label: 'Cash back or standard Chase Travel at 1 cent per point',
+        shortLabel: '1 cpp floor',
+        summary: 'This is the easy floor when no boosted booking or transfer target is available.',
+        bestFor: 'Anyone who wants certainty and does not want to shop transfer partners.',
+        watchOut: 'This is usable, but it is rarely the reason to collect flexible Chase points.',
+        strategy: 'cash',
+        minCpp: 1,
+        maxCpp: 1,
+        effort: 'low',
+        timeToValue: 'now',
+        goalFit: goalFit([
+          ['cash_now', 5],
+          ['simple_travel', 1],
+          ['best_value', 1],
+          ['hotel_stay', 0],
+          ['premium_flight', 0],
+          ['not_sure', 2]
+        ])
+      },
+      {
+        id: 'csp-points-boost',
+        label: 'Book a Chase Travel option with Points Boost',
+        shortLabel: 'Points Boost',
+        summary: 'A clean middle path when a marked booking prices better than the 1 cent floor.',
+        bestFor: 'Simple travel bookings where the Chase Travel result is clearly boosted.',
+        watchOut: 'Boosted inventory rotates and is not guaranteed for every route, hotel, or date.',
+        strategy: 'portal',
+        minCpp: 1.25,
+        maxCpp: 1.5,
+        effort: 'low',
+        timeToValue: 'now',
+        goalFit: goalFit([
+          ['cash_now', 1],
+          ['simple_travel', 5],
+          ['best_value', 3],
+          ['hotel_stay', 3],
+          ['premium_flight', 2],
+          ['not_sure', 4]
+        ])
+      },
+      {
+        id: 'csp-airline-transfer',
+        label: 'Transfer to airline partners for a high-value flight redemption',
+        shortLabel: 'Airline transfer',
+        summary: 'This is where Preferred points can still beat the easy fixed-value paths.',
+        bestFor: 'International or premium-cabin awards where partner pricing is materially better.',
+        watchOut: 'Transfers are generally one-way, so check the award before moving points.',
+        strategy: 'airline_transfer',
+        minCpp: 1.7,
+        maxCpp: 2.3,
+        effort: 'high',
+        timeToValue: 'soon',
+        goalFit: goalFit([
+          ['cash_now', 0],
+          ['simple_travel', 2],
+          ['best_value', 5],
+          ['hotel_stay', 1],
+          ['premium_flight', 5],
+          ['not_sure', 2]
+        ])
+      },
+      {
+        id: 'csp-hotel-transfer',
+        label: 'Transfer to a hotel partner when the stay clearly beats the portal rate',
+        shortLabel: 'Hotel transfer',
+        summary: 'A targeted hotel stay can justify a transfer when the cash price is high relative to award cost.',
+        bestFor: 'Specific hotel stays where the math beats both Chase Travel and cash.',
+        watchOut: 'Do not transfer for a marginal gain; the flexibility loss matters.',
+        strategy: 'hotel_transfer',
+        minCpp: 1.5,
+        maxCpp: 2.1,
+        effort: 'medium',
+        timeToValue: 'soon',
+        goalFit: goalFit([
+          ['cash_now', 0],
+          ['simple_travel', 2],
+          ['best_value', 4],
+          ['hotel_stay', 5],
+          ['premium_flight', 1],
+          ['not_sure', 2]
+        ])
+      },
+      {
+        id: 'csp-hold',
+        label: 'Hold the points until a real boosted booking or transfer target appears',
+        shortLabel: 'Hold for later',
+        summary: 'Waiting is reasonable when you do not have a specific trip that clears the floor.',
+        bestFor: 'Anyone who wants to preserve optionality instead of forcing a low-value use.',
+        watchOut: 'Holding only works if you will come back and actually compare the next trip.',
+        strategy: 'hold',
+        minCpp: 1,
+        maxCpp: 2,
+        effort: 'low',
+        timeToValue: 'later',
+        goalFit: goalFit([
+          ['cash_now', 0],
+          ['simple_travel', 1],
+          ['best_value', 3],
+          ['hotel_stay', 2],
+          ['premium_flight', 3],
+          ['not_sure', 5]
+        ])
+      }
+    ]
+  },
+  {
     id: 'amex-membership-rewards',
     name: 'Amex Membership Rewards',
     currencyName: 'Membership Rewards',
@@ -289,6 +485,22 @@ export const pointsProgramProfiles: ReadonlyArray<PointsProgramProfile> = [
     headline: 'Best when you can hold out for airline transfers instead of cashing out cheaply.',
     description:
       'MR points have a weak cash floor and a much better ceiling on the right flight transfer, which means bad redemptions are easier to make by accident.',
+    sources: [
+      {
+        label: 'American Express Membership Rewards',
+        url: 'https://www.americanexpress.com/en-us/benefits/rewards/membership-rewards/',
+        lastVerifiedAt: '2026-05-03'
+      },
+      {
+        label: 'American Express points value guide',
+        url: 'https://www.americanexpress.com/en-us/credit-cards/credit-intel/american-express-points-value/',
+        lastVerifiedAt: '2026-05-03'
+      }
+    ],
+    assumptionNotes: [
+      'Statement credit, gift card, checkout, and travel values can vary by product and offer.',
+      'Transfer values are modeled as targeted travel redemptions after checking award space.'
+    ],
     choices: [
       {
         id: 'amex-statement-credit',
@@ -405,6 +617,22 @@ export const pointsProgramProfiles: ReadonlyArray<PointsProgramProfile> = [
     headline: 'Best when you want a simple 1 cent floor but still have the option to transfer up.',
     description:
       'Venture X miles are easy to use at a predictable rate, which makes them forgiving, but transfers still matter if you want the ceiling.',
+    sources: [
+      {
+        label: 'Capital One miles redemption guide',
+        url: 'https://www.capitalone.com/learn-grow/money-management/ways-to-redeem-venture-miles/',
+        lastVerifiedAt: '2026-05-03'
+      },
+      {
+        label: 'Capital One transfer partners guide',
+        url: 'https://www.capitalone.com/learn-grow/money-management/venture-miles-transfer-partnerships/',
+        lastVerifiedAt: '2026-05-03'
+      }
+    ],
+    assumptionNotes: [
+      'Travel purchase erase and Capital One Travel are modeled as the easy 1 cent floor.',
+      'Transfer values assume a specific award is available before moving miles out.'
+    ],
     choices: [
       {
         id: 'vx-travel-erase',
@@ -512,6 +740,265 @@ export const pointsProgramProfiles: ReadonlyArray<PointsProgramProfile> = [
         ])
       }
     ]
+  },
+  {
+    id: 'capital-one-venture-rewards',
+    name: 'Capital One Venture Rewards',
+    currencyName: 'Capital One Miles',
+    title: 'Capital One Venture Rewards',
+    headline: 'Best when you want a simple travel floor and occasional transfer upside.',
+    description:
+      'Venture miles are forgiving because travel erase and Capital One Travel create a simple floor, while transfer partners still matter for higher-value trips.',
+    sources: [
+      {
+        label: 'Capital One miles redemption guide',
+        url: 'https://www.capitalone.com/learn-grow/money-management/ways-to-redeem-venture-miles/',
+        lastVerifiedAt: '2026-05-03'
+      },
+      {
+        label: 'Capital One transfer partners guide',
+        url: 'https://www.capitalone.com/learn-grow/money-management/venture-miles-transfer-partnerships/',
+        lastVerifiedAt: '2026-05-03'
+      }
+    ],
+    assumptionNotes: [
+      'Travel purchase erase and Capital One Travel are modeled as the easy 1 cent floor.',
+      'Transfer values assume a specific award is available before moving miles out.'
+    ],
+    choices: [
+      {
+        id: 'venture-travel-erase',
+        label: 'Use miles to erase travel purchases at 1 cent each',
+        shortLabel: 'Travel erase',
+        summary: 'The cleanest low-friction use if you already have an eligible travel charge.',
+        bestFor: 'Straightforward travel value without having to book through an award program.',
+        watchOut: 'This is reliable, not exceptional. A good transfer can still beat it.',
+        strategy: 'portal',
+        minCpp: 1,
+        maxCpp: 1,
+        effort: 'low',
+        timeToValue: 'now',
+        goalFit: goalFit([
+          ['cash_now', 2],
+          ['simple_travel', 5],
+          ['best_value', 2],
+          ['hotel_stay', 3],
+          ['premium_flight', 2],
+          ['not_sure', 4]
+        ])
+      },
+      {
+        id: 'venture-capital-one-travel',
+        label: 'Book through Capital One Travel at about 1 cent each',
+        shortLabel: 'Capital One Travel',
+        summary: 'Useful when the portal price is competitive and you want one checkout flow.',
+        bestFor: 'Portal-first travelers who value simplicity more than transfer maximization.',
+        watchOut: 'The value ceiling is still the same 1 cent floor.',
+        strategy: 'portal',
+        minCpp: 1,
+        maxCpp: 1,
+        effort: 'low',
+        timeToValue: 'now',
+        goalFit: goalFit([
+          ['cash_now', 1],
+          ['simple_travel', 4],
+          ['best_value', 2],
+          ['hotel_stay', 3],
+          ['premium_flight', 2],
+          ['not_sure', 3]
+        ])
+      },
+      {
+        id: 'venture-airline-transfer',
+        label: 'Transfer to airline partners for the highest-upside flight value',
+        shortLabel: 'Airline transfer',
+        summary: 'The path that can make Venture miles worth more than a simple 1 cent currency.',
+        bestFor: 'Flights where partner pricing creates a clear spread over the fixed-value route.',
+        watchOut: 'Confirm the award can be booked before you move the miles.',
+        strategy: 'airline_transfer',
+        minCpp: 1.6,
+        maxCpp: 2.2,
+        effort: 'high',
+        timeToValue: 'soon',
+        goalFit: goalFit([
+          ['cash_now', 0],
+          ['simple_travel', 2],
+          ['best_value', 5],
+          ['hotel_stay', 1],
+          ['premium_flight', 5],
+          ['not_sure', 2]
+        ])
+      },
+      {
+        id: 'venture-hotel-transfer',
+        label: 'Transfer to a hotel partner only when the stay clearly beats 1 cent',
+        shortLabel: 'Hotel transfer',
+        summary: 'Possible, but the value needs to clear the easy travel floor by enough to matter.',
+        bestFor: 'Targeted hotel redemptions where the partner math is already proven.',
+        watchOut: 'If the win is marginal, the simple travel erase is usually the better user experience.',
+        strategy: 'hotel_transfer',
+        minCpp: 1.3,
+        maxCpp: 1.8,
+        effort: 'medium',
+        timeToValue: 'soon',
+        goalFit: goalFit([
+          ['cash_now', 0],
+          ['simple_travel', 2],
+          ['best_value', 3],
+          ['hotel_stay', 5],
+          ['premium_flight', 1],
+          ['not_sure', 2]
+        ])
+      },
+      {
+        id: 'venture-hold',
+        label: 'Hold the miles until a travel erase use or transfer target is obvious',
+        shortLabel: 'Hold for later',
+        summary: 'A rational move when you do not need to burn a flexible 1 cent floor today.',
+        bestFor: 'People who know the miles are more useful on an upcoming trip.',
+        watchOut: 'Waiting only wins if you actually redeem later instead of forgetting about the balance.',
+        strategy: 'hold',
+        minCpp: 1.5,
+        maxCpp: 2,
+        effort: 'low',
+        timeToValue: 'later',
+        goalFit: goalFit([
+          ['cash_now', 0],
+          ['simple_travel', 1],
+          ['best_value', 4],
+          ['hotel_stay', 2],
+          ['premium_flight', 4],
+          ['not_sure', 5]
+        ])
+      }
+    ]
+  },
+  {
+    id: 'citi-thankyou',
+    name: 'Citi ThankYou Points',
+    currencyName: 'ThankYou Points',
+    title: 'Citi ThankYou Points',
+    headline: 'Best when you want a 1 cent floor with transfer upside on the right flight.',
+    description:
+      'ThankYou points can be simple at the floor, but the stronger case comes from a specific transfer redemption where partner pricing clearly beats cash-like uses.',
+    sources: [
+      {
+        label: 'Citi Strata Elite Card',
+        url: 'https://www.citi.com/credit-cards/citi-strata-elite-credit-card',
+        lastVerifiedAt: '2026-05-03'
+      }
+    ],
+    assumptionNotes: [
+      'Cash-like and Citi Travel uses are modeled at 1 cent per point for the cards currently covered by The Stack.',
+      'Transfer values are modeled as targeted travel redemptions after checking partner availability.'
+    ],
+    choices: [
+      {
+        id: 'citi-cash-back',
+        label: 'Use points for cash back or statement credit around 1 cent each',
+        shortLabel: '1 cpp floor',
+        summary: 'The easiest route when certainty matters more than squeezing extra travel value.',
+        bestFor: 'Users who want immediate, low-friction value.',
+        watchOut: 'This gives up the main upside of a transferable points currency.',
+        strategy: 'cash',
+        minCpp: 1,
+        maxCpp: 1,
+        effort: 'low',
+        timeToValue: 'now',
+        goalFit: goalFit([
+          ['cash_now', 5],
+          ['simple_travel', 1],
+          ['best_value', 1],
+          ['hotel_stay', 0],
+          ['premium_flight', 0],
+          ['not_sure', 2]
+        ])
+      },
+      {
+        id: 'citi-travel',
+        label: 'Book through Citi Travel around 1 cent per point',
+        shortLabel: 'Citi Travel',
+        summary: 'A straightforward travel exit when the portal price is competitive.',
+        bestFor: 'Simple travel bookings where you do not want partner research.',
+        watchOut: 'The portal route is convenient, but it is still a fixed-value use.',
+        strategy: 'portal',
+        minCpp: 1,
+        maxCpp: 1,
+        effort: 'low',
+        timeToValue: 'now',
+        goalFit: goalFit([
+          ['cash_now', 1],
+          ['simple_travel', 5],
+          ['best_value', 2],
+          ['hotel_stay', 3],
+          ['premium_flight', 2],
+          ['not_sure', 3]
+        ])
+      },
+      {
+        id: 'citi-airline-transfer',
+        label: 'Transfer to airline partners for a higher-value flight redemption',
+        shortLabel: 'Airline transfer',
+        summary: 'The highest-upside Citi path when an award seat prices well against cash.',
+        bestFor: 'International or premium-cabin flights where the transfer partner price is compelling.',
+        watchOut: 'Award availability and transfer timing are the constraint.',
+        strategy: 'airline_transfer',
+        minCpp: 1.6,
+        maxCpp: 2.2,
+        effort: 'high',
+        timeToValue: 'soon',
+        goalFit: goalFit([
+          ['cash_now', 0],
+          ['simple_travel', 2],
+          ['best_value', 5],
+          ['hotel_stay', 1],
+          ['premium_flight', 5],
+          ['not_sure', 2]
+        ])
+      },
+      {
+        id: 'citi-hotel-transfer',
+        label: 'Transfer to a hotel partner only when the stay clearly beats the floor',
+        shortLabel: 'Hotel transfer',
+        summary: 'Worth checking for specific stays, but it needs to beat the easy 1 cent path.',
+        bestFor: 'Hotel bookings where the partner award math is obvious.',
+        watchOut: 'If the value is close, keep the points flexible.',
+        strategy: 'hotel_transfer',
+        minCpp: 1.2,
+        maxCpp: 1.7,
+        effort: 'medium',
+        timeToValue: 'soon',
+        goalFit: goalFit([
+          ['cash_now', 0],
+          ['simple_travel', 2],
+          ['best_value', 3],
+          ['hotel_stay', 5],
+          ['premium_flight', 1],
+          ['not_sure', 2]
+        ])
+      },
+      {
+        id: 'citi-hold',
+        label: 'Hold the points until a stronger transfer or travel use appears',
+        shortLabel: 'Hold for later',
+        summary: 'Waiting can be better than forcing a fixed-value redemption without a real trip.',
+        bestFor: 'Users who do not need cash now and expect a better travel use soon.',
+        watchOut: 'Holding has value only if you come back with a specific redemption to test.',
+        strategy: 'hold',
+        minCpp: 1,
+        maxCpp: 2,
+        effort: 'low',
+        timeToValue: 'later',
+        goalFit: goalFit([
+          ['cash_now', 0],
+          ['simple_travel', 1],
+          ['best_value', 4],
+          ['hotel_stay', 2],
+          ['premium_flight', 4],
+          ['not_sure', 5]
+        ])
+      }
+    ]
   }
 ] as const;
 
@@ -521,8 +1008,13 @@ export const pointsProgramById = Object.fromEntries(
 
 const pointsAdvisorProgramByCardSlug = {
   'amex-platinum-card': 'amex-membership-rewards',
+  'amex-gold-card': 'amex-membership-rewards',
+  'amex-green-card': 'amex-membership-rewards',
   'chase-sapphire-reserve': 'chase-sapphire-reserve',
-  'capital-one-venture-x': 'capital-one-venture-x'
+  'chase-sapphire-preferred': 'chase-sapphire-preferred',
+  'capital-one-venture-x': 'capital-one-venture-x',
+  'capital-one-venture-rewards': 'capital-one-venture-rewards',
+  'citi-strata-elite-card': 'citi-thankyou'
 } as const satisfies Record<string, PointsProgramId>;
 
 export function getPointsAdvisorProgramFromCardSlug(
@@ -553,11 +1045,17 @@ function normalizePointsBalance(value: number) {
 export function buildPointsAdvisorHref({
   cardSlug,
   programId,
-  pointsBalance
+  pointsBalance,
+  goal,
+  timeHorizon,
+  effortTolerance
 }: {
   cardSlug?: string;
   programId?: PointsProgramId;
   pointsBalance?: number | null;
+  goal?: PointsGoalId;
+  timeHorizon?: PointsTimeHorizonId;
+  effortTolerance?: PointsEffortId;
 }) {
   const resolvedProgramId =
     programId ?? (cardSlug ? getPointsAdvisorProgramFromCardSlug(cardSlug) : null);
@@ -570,6 +1068,18 @@ export function buildPointsAdvisorHref({
 
   if (normalizedPointsBalance > 0) {
     params.set('points', String(normalizedPointsBalance));
+  }
+
+  if (goal) {
+    params.set('goal', goal);
+  }
+
+  if (timeHorizon) {
+    params.set('time', timeHorizon);
+  }
+
+  if (effortTolerance) {
+    params.set('effort', effortTolerance);
   }
 
   const query = params.toString();
@@ -620,44 +1130,116 @@ function getLikelyCpp(choice: PointsAdvisorChoice, input: PointsAdvisorInput) {
   return Number((choice.minCpp + (choice.maxCpp - choice.minCpp) * clamp(factor, 0.15, 0.9)).toFixed(2));
 }
 
-function getScore(choice: PointsAdvisorChoice, input: PointsAdvisorInput, likelyCpp: number) {
-  let score = choice.goalFit[input.goal] * 18 + likelyCpp * 18;
+function formatImpact(value: number) {
+  return value > 0 ? `+${Number(value.toFixed(1))}` : Number(value.toFixed(1)).toString();
+}
+
+function getScoreBreakdown(
+  choice: PointsAdvisorChoice,
+  input: PointsAdvisorInput,
+  likelyCpp: number
+): PointsScoreBreakdown[] {
+  const scoreBreakdown: PointsScoreBreakdown[] = [
+    {
+      label: 'Goal fit',
+      value: `${choice.goalFit[input.goal]}/5`,
+      impact: choice.goalFit[input.goal] * 18
+    },
+    {
+      label: 'Likely value',
+      value: `${likelyCpp.toFixed(2)} cpp`,
+      impact: likelyCpp * 18
+    }
+  ];
 
   const effortDiff = effortRank[choice.effort] - effortRank[input.effortTolerance];
   if (effortDiff <= 0) {
-    score += 12;
+    scoreBreakdown.push({
+      label: 'Effort fit',
+      value: `${choice.effort} effort fits ${input.effortTolerance}`,
+      impact: 12
+    });
   } else {
-    score -= effortDiff * 12;
+    scoreBreakdown.push({
+      label: 'Effort gap',
+      value: `${choice.effort} effort vs ${input.effortTolerance}`,
+      impact: -effortDiff * 12
+    });
   }
 
   const timingDiff = horizonRank[choice.timeToValue] - horizonRank[input.timeHorizon];
   if (timingDiff <= 0) {
-    score += 4;
+    scoreBreakdown.push({
+      label: 'Timing fit',
+      value: `${choice.timeToValue} fits ${input.timeHorizon}`,
+      impact: 4
+    });
   } else {
-    score -= timingDiff * 10;
+    scoreBreakdown.push({
+      label: 'Timing gap',
+      value: `${choice.timeToValue} vs ${input.timeHorizon}`,
+      impact: -timingDiff * 10
+    });
   }
 
   if (choice.strategy === 'hold' && input.timeHorizon === 'later') {
-    score += 8;
+    scoreBreakdown.push({
+      label: 'Wait fit',
+      value: 'User can wait',
+      impact: 8
+    });
   }
 
   if (choice.strategy === 'cash' && input.goal === 'cash_now') {
-    score += 6;
+    scoreBreakdown.push({
+      label: 'Cash certainty',
+      value: 'Matches cash-now goal',
+      impact: 6
+    });
   }
 
   if (choice.strategy === 'portal' && input.goal === 'simple_travel') {
-    score += 6;
+    scoreBreakdown.push({
+      label: 'Simple booking',
+      value: 'Matches simple-travel goal',
+      impact: 6
+    });
   }
 
   if (isTransferStrategy(choice.strategy) && input.goal === 'best_value') {
-    score += 8;
+    scoreBreakdown.push({
+      label: 'Transfer upside',
+      value: 'Matches best-value goal',
+      impact: 8
+    });
   }
 
   if (isTransferStrategy(choice.strategy) && input.goal === 'premium_flight') {
-    score += 8;
+    scoreBreakdown.push({
+      label: 'Premium-flight fit',
+      value: 'Transfer route fits the trip',
+      impact: 8
+    });
   }
 
-  return Number(score.toFixed(1));
+  return scoreBreakdown.map((item) => ({
+    ...item,
+    impact: Number(item.impact.toFixed(1))
+  }));
+}
+
+function getScore(scoreBreakdown: PointsScoreBreakdown[]) {
+  return Number(
+    scoreBreakdown.reduce((total, item) => total + item.impact, 0).toFixed(1)
+  );
+}
+
+function buildPrimaryReasons(scoreBreakdown: PointsScoreBreakdown[]) {
+  return scoreBreakdown
+    .filter((item) => item.impact > 0)
+    .sort((a, b) => b.impact - a.impact)
+    .slice(0, 3)
+    .map((item) => `${item.label}: ${item.value} (${formatImpact(item.impact)})`);
 }
 
 function buildRecommendationLabel(
@@ -718,7 +1300,8 @@ export function buildPointsAdvisorResult(input: PointsAdvisorInput): PointsAdvis
   const allRecommendations = profile.choices
     .map((choice) => {
       const likelyCpp = getLikelyCpp(choice, normalizedInput);
-      const score = getScore(choice, normalizedInput, likelyCpp);
+      const scoreBreakdown = getScoreBreakdown(choice, normalizedInput, likelyCpp);
+      const score = getScore(scoreBreakdown);
 
       return {
         ...choice,
@@ -729,7 +1312,9 @@ export function buildPointsAdvisorResult(input: PointsAdvisorInput): PointsAdvis
         minimumValue: pointsToDollars(normalizedInput.pointsBalance, choice.minCpp),
         maximumValue: pointsToDollars(normalizedInput.pointsBalance, choice.maxCpp),
         recommendationLabel: '',
-        fitSummary: ''
+        fitSummary: '',
+        scoreBreakdown,
+        primaryReasons: buildPrimaryReasons(scoreBreakdown)
       };
     })
     .sort(
@@ -772,5 +1357,108 @@ export function buildPointsAdvisorResult(input: PointsAdvisorInput): PointsAdvis
     allRecommendations,
     easiestGoodOption,
     highestUpsideOption
+  };
+}
+
+function normalizeMoneyInput(value: number) {
+  if (!Number.isFinite(value) || value < 0) return 0;
+  return Math.round(value);
+}
+
+function normalizeRatio(value: number) {
+  if (!Number.isFinite(value) || value <= 0) return 1;
+  return Number(value.toFixed(2));
+}
+
+function normalizePercent(value: number) {
+  if (!Number.isFinite(value) || value < 0) return 0;
+  return clamp(Number(value.toFixed(2)), 0, 100);
+}
+
+export function calculateTripRedemption(
+  input: PointsTripRedemptionInput
+): PointsTripRedemptionResult {
+  const pointsBalance = normalizePointsBalance(input.pointsBalance);
+  const cashPrice = normalizeMoneyInput(input.cashPrice);
+  const pointsRequired = normalizePointsBalance(input.pointsRequired);
+  const taxesAndFees = normalizeMoneyInput(input.taxesAndFees);
+  const transferRatio = normalizeRatio(input.transferRatio);
+  const transferBonusPercent = normalizePercent(input.transferBonusPercent);
+  const baselineCpp = clamp(input.baselineCpp || 1, 0.1, 5);
+
+  if (cashPrice <= 0 || pointsRequired <= 0) {
+    return {
+      status: 'invalid',
+      statusLabel: 'Add trip numbers',
+      summary: 'Enter a cash price and points cost to compare this redemption against the easy floor.',
+      effectivePointsCost: 0,
+      pointsShortfall: 0,
+      cashValueAfterFees: 0,
+      effectiveCpp: 0,
+      baselineValue: 0,
+      incrementalValue: 0
+    };
+  }
+
+  const transferMultiplier = transferRatio * (1 + transferBonusPercent / 100);
+  const effectivePointsCost = Math.ceil(pointsRequired / transferMultiplier);
+  const cashValueAfterFees = Math.max(0, cashPrice - taxesAndFees);
+  const effectiveCpp = Number(((cashValueAfterFees * 100) / effectivePointsCost).toFixed(2));
+  const baselineValue = pointsToDollars(effectivePointsCost, baselineCpp);
+  const incrementalValue = Math.round(cashValueAfterFees - baselineValue);
+  const pointsShortfall = Math.max(0, effectivePointsCost - pointsBalance);
+
+  if (pointsShortfall > 0) {
+    return {
+      status: 'not_enough_points',
+      statusLabel: 'Need more points',
+      summary: `You are short ${pointsShortfall.toLocaleString()} points after transfer-ratio and bonus math.`,
+      effectivePointsCost,
+      pointsShortfall,
+      cashValueAfterFees,
+      effectiveCpp,
+      baselineValue,
+      incrementalValue
+    };
+  }
+
+  if (effectiveCpp >= baselineCpp + 0.5 && effectiveCpp >= 1.5) {
+    return {
+      status: 'strong_value',
+      statusLabel: 'Strong redemption',
+      summary: 'This clears the easy floor by enough to justify the extra redemption work.',
+      effectivePointsCost,
+      pointsShortfall,
+      cashValueAfterFees,
+      effectiveCpp,
+      baselineValue,
+      incrementalValue
+    };
+  }
+
+  if (effectiveCpp >= baselineCpp) {
+    return {
+      status: 'fair_value',
+      statusLabel: 'Fair redemption',
+      summary: 'This beats or matches the easy floor, but the margin is not huge.',
+      effectivePointsCost,
+      pointsShortfall,
+      cashValueAfterFees,
+      effectiveCpp,
+      baselineValue,
+      incrementalValue
+    };
+  }
+
+  return {
+    status: 'weak_value',
+    statusLabel: 'Weak redemption',
+    summary: 'The easy cash-like or portal floor is probably better unless convenience is the point.',
+    effectivePointsCost,
+    pointsShortfall,
+    cashValueAfterFees,
+    effectiveCpp,
+    baselineValue,
+    incrementalValue
   };
 }

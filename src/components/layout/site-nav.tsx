@@ -65,7 +65,7 @@ const toolNavItems: SubmenuNavItem[] = [
   {
     href: '/tools/points-advisor',
     label: 'Points Redemption Tool',
-    description: 'See the best next move for your points balance.',
+    description: 'Rank redemption paths and price a real trip.',
     activePath: '/tools/points-advisor'
   }
 ];
