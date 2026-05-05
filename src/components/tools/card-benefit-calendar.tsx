@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type RefObject } from 'react';
 import { EntityImage } from '@/components/ui/entity-image';
 import {
   benefitCalendarCards,
   buildBenefitCalendarEvents,
   buildBenefitCalendarIcs,
+  type BenefitCalendarCard,
   type BenefitCalendarCardId,
   type BenefitCalendarEvent,
   type BenefitCalendarSettings
@@ -174,6 +175,30 @@ const cardThemeStyles: Record<
   }
 };
 
+type CardCalendarTheme = (typeof cardThemeStyles)[BenefitCalendarCardId];
+
+const calendarSelectorGroups: ReadonlyArray<{
+  id: string;
+  label: string;
+  description: string;
+  cardIds: BenefitCalendarCardId[];
+}> = [
+  {
+    id: 'premium',
+    label: 'Premium travel cards',
+    description: 'Higher annual fees, richer credit stacks, and more dates worth tracking.',
+    cardIds: ['amex-platinum', 'chase-sapphire-reserve', 'capital-one-venture-x', 'citi-strata-elite']
+  },
+  {
+    id: 'core',
+    label: 'Lower-fee keepers',
+    description: 'Cards with lighter fees but still enough renewal or credit timing to calendar.',
+    cardIds: ['amex-gold', 'chase-sapphire-preferred']
+  }
+];
+
+const calendarWeekdayLabels = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
 function todayInputValue() {
   const today = new Date();
   return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(
@@ -187,6 +212,60 @@ function addMonthsInputValue(months: number) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
     date.getDate()
   ).padStart(2, '0')}`;
+}
+
+function parseInputDateValue(value: string) {
+  const [yearText, monthText, dayText] = value.split('-');
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+
+  if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day)) {
+    return null;
+  }
+
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+    return null;
+  }
+
+  return date;
+}
+
+function formatInputDateValue(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+    date.getDate()
+  ).padStart(2, '0')}`;
+}
+
+function getMonthStart(date: Date) {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function addCalendarMonths(date: Date, months: number) {
+  return new Date(date.getFullYear(), date.getMonth() + months, 1);
+}
+
+function isSameCalendarDay(first: Date, second: Date) {
+  return (
+    first.getFullYear() === second.getFullYear() &&
+    first.getMonth() === second.getMonth() &&
+    first.getDate() === second.getDate()
+  );
+}
+
+function getCalendarMonthDays(monthDate: Date) {
+  const firstDay = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+  const startOffset = firstDay.getDay();
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(firstDay.getFullYear(), firstDay.getMonth(), index - startOffset + 1);
+    return {
+      date,
+      inputValue: formatInputDateValue(date),
+      isCurrentMonth: date.getMonth() === firstDay.getMonth()
+    };
+  });
 }
 
 function groupEventsByMonth(events: BenefitCalendarEvent[]) {
@@ -216,11 +295,472 @@ function slugifyFilePart(value: string) {
     .replace(/^-|-$/g, '');
 }
 
+function ChevronDownIcon({ className = 'h-3.5 w-3.5' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        d="M6 9l6 6 6-6"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function ChevronLeftIcon({ className = 'h-4 w-4' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        d="M15 6l-6 6 6 6"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function ChevronRightIcon({ className = 'h-4 w-4' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        d="M9 6l6 6-6 6"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.8"
+      />
+    </svg>
+  );
+}
+
+function CalendarIcon({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden="true">
+      <path
+        d="M7 3v4M17 3v4M4.5 9.25h15M6.5 5h11A2.5 2.5 0 0 1 20 7.5v10A2.5 2.5 0 0 1 17.5 20h-11A2.5 2.5 0 0 1 4 17.5v-10A2.5 2.5 0 0 1 6.5 5Z"
+        fill="none"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth="1.7"
+      />
+    </svg>
+  );
+}
+
+function CalendarCardSwitcherOption({
+  card,
+  selected,
+  tracked,
+  onSelect
+}: {
+  card: BenefitCalendarCard;
+  selected: boolean;
+  tracked: boolean;
+  onSelect: () => void;
+}) {
+  const theme = cardThemeStyles[card.id];
+
+  return (
+    <button
+      type="button"
+      role="option"
+      aria-selected={selected}
+      onClick={onSelect}
+      className={`group flex w-full items-center gap-3 rounded-[1.05rem] border px-3 py-3 text-left transition focus-visible:outline-none ${
+        selected
+          ? 'shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]'
+          : 'border-white/8 bg-white/[0.025] hover:border-white/16 hover:bg-white/[0.055]'
+      }`}
+      style={
+        selected
+          ? {
+              borderColor: theme.accentBorder,
+              background: `linear-gradient(180deg, ${theme.accentSoft}, rgba(255,255,255,0.035))`
+            }
+          : undefined
+      }
+    >
+      <div className="relative flex h-14 w-[4.6rem] shrink-0 items-center justify-center overflow-hidden rounded-[0.9rem] bg-black/10 sm:h-16 sm:w-[5.8rem]">
+        <div
+          className="absolute inset-x-3 bottom-2 h-7 rounded-full opacity-80 blur-[20px]"
+          style={{ background: theme.accentSoft }}
+        />
+        <EntityImage
+          src={card.artUrl}
+          alt={`${card.name} card art`}
+          label={card.shortName}
+          className="relative aspect-[1.62/1] w-full max-w-[4.25rem] overflow-visible rounded-none border-0 bg-transparent sm:max-w-[5.35rem]"
+          imgClassName="bg-transparent p-0 drop-shadow-[0_12px_22px_rgba(0,0,0,0.36)]"
+          fallbackClassName="bg-black/10"
+          fit="contain"
+        />
+      </div>
+      <span className="min-w-0 flex-1">
+        <span className="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <span className="min-w-0 break-words text-[15px] font-semibold leading-5 text-text-primary sm:truncate">
+            {card.shortName}
+          </span>
+          <span className="shrink-0 text-[12px] font-semibold text-text-secondary">
+            {currencyFormatter.format(card.annualFee)}
+          </span>
+        </span>
+        <span className="mt-1 flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <span
+            className={`truncate text-[10px] font-semibold uppercase tracking-[0.18em] ${
+              selected ? theme.eyebrowClassName : 'text-text-muted'
+            }`}
+          >
+            {card.issuer}
+          </span>
+          {selected || tracked ? (
+            <span
+              className={`flex shrink-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] ${
+                selected ? theme.eyebrowClassName : 'text-text-muted'
+              }`}
+            >
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: theme.accentColor }} />
+              {selected ? 'Active' : 'Tracked'}
+            </span>
+          ) : null}
+        </span>
+      </span>
+    </button>
+  );
+}
+
+function HeaderCardSelectorPanel({
+  activeCard,
+  activeCardSettings,
+  activeTheme,
+  selectedCardIds,
+  selectorOpen,
+  selectorRef,
+  onAnniversaryDateChange,
+  onSelectCard,
+  onToggleSelector
+}: {
+  activeCard: BenefitCalendarCard | null;
+  activeCardSettings: BenefitCalendarSettings | null;
+  activeTheme: CardCalendarTheme;
+  selectedCardIds: BenefitCalendarCardId[];
+  selectorOpen: boolean;
+  selectorRef: RefObject<HTMLDivElement | null>;
+  onAnniversaryDateChange: (cardId: BenefitCalendarCardId, value: string) => void;
+  onSelectCard: (cardId: BenefitCalendarCardId) => void;
+  onToggleSelector: () => void;
+}) {
+  const datePickerRef = useRef<HTMLDivElement>(null);
+  const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const selectedDate = parseInputDateValue(activeCardSettings?.anniversaryDate ?? '') ?? new Date();
+  const [visibleMonth, setVisibleMonth] = useState(() => getMonthStart(selectedDate));
+  const calendarDays = useMemo(() => getCalendarMonthDays(visibleMonth), [visibleMonth]);
+  const todayDate = new Date();
+  const annualFeeDateLabelId = activeCard ? `annual-fee-date-${activeCard.id}` : 'annual-fee-date';
+
+  useEffect(() => {
+    setDatePickerOpen(false);
+  }, [activeCard?.id]);
+
+  useEffect(() => {
+    if (!datePickerOpen) return;
+
+    function handlePointerDown(event: MouseEvent) {
+      if (datePickerRef.current && !datePickerRef.current.contains(event.target as Node)) {
+        setDatePickerOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setDatePickerOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [datePickerOpen]);
+
+  const handleSelectorToggle = () => {
+    setDatePickerOpen(false);
+    onToggleSelector();
+  };
+
+  const toggleDatePicker = () => {
+    if (!datePickerOpen) {
+      setVisibleMonth(getMonthStart(selectedDate));
+      if (selectorOpen) {
+        onToggleSelector();
+      }
+    }
+
+    setDatePickerOpen((open) => !open);
+  };
+
+  const selectDate = (date: Date) => {
+    if (!activeCard) return;
+
+    onAnniversaryDateChange(activeCard.id, formatInputDateValue(date));
+    setVisibleMonth(getMonthStart(date));
+    setDatePickerOpen(false);
+  };
+
+  return (
+    <div
+      ref={selectorRef}
+      className="relative z-20 flex h-full min-w-0 flex-col overflow-visible rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-5"
+    >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
+      <div
+        className="pointer-events-none absolute -right-10 top-8 h-28 w-28 opacity-70 blur-[46px]"
+        style={{ background: activeTheme.accentSoft }}
+      />
+
+      <div className="relative flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <div className="min-w-0">
+          <h2 className="text-[1.55rem] font-semibold leading-tight text-text-primary">
+            {activeCard?.shortName ?? 'Choose a card'}
+          </h2>
+          {activeCard ? (
+            <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+              {activeCard.issuer} - {currencyFormatter.format(activeCard.annualFee)}
+            </p>
+          ) : null}
+        </div>
+        <button
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={selectorOpen}
+          aria-label={
+            activeCard
+              ? `Browse supported cards, currently ${activeCard.shortName}`
+              : 'Browse supported cards'
+          }
+          onClick={handleSelectorToggle}
+          className="group flex shrink-0 items-center gap-1.5 self-start rounded-full border px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.15em] transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30 sm:self-auto"
+          style={{
+            borderColor: activeTheme.accentBorder,
+            background: activeTheme.accentSoft,
+            color: activeTheme.accentText
+          }}
+        >
+          Browse cards
+          <span className={`transition ${selectorOpen ? 'rotate-180' : ''}`}>
+            <ChevronDownIcon />
+          </span>
+        </button>
+      </div>
+
+      <div className="relative mt-5 flex flex-1 overflow-hidden rounded-[1.2rem] border border-white/8 bg-[linear-gradient(180deg,rgba(9,13,22,0.62),rgba(255,255,255,0.03))] px-7 py-8 md:py-10">
+        <div className="pointer-events-none absolute inset-x-8 bottom-8 h-12 rounded-full bg-black/30 blur-2xl" />
+        <div
+          className="pointer-events-none absolute inset-x-8 bottom-8 h-11 rounded-full opacity-80 blur-[30px]"
+          style={{ background: activeTheme.accentSoft }}
+        />
+        <button
+          type="button"
+          aria-label={
+            activeCard
+              ? `Open supported card selector from ${activeCard.shortName} card art`
+              : 'Open supported card selector'
+          }
+          onClick={handleSelectorToggle}
+          className="group relative flex min-h-[12.5rem] w-full items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/30"
+        >
+          {activeCard ? (
+            <EntityImage
+              src={activeCard.artUrl}
+              alt={`${activeCard.name} card art`}
+              label={activeCard.shortName}
+              className="relative aspect-[1.62/1] w-full max-w-[24rem] overflow-visible rounded-none border-0 bg-transparent"
+              imgClassName="bg-transparent p-0 drop-shadow-[0_24px_38px_rgba(0,0,0,0.42)] transition duration-300 group-hover:-translate-y-1"
+              fallbackClassName="bg-black/10"
+              fit="contain"
+            />
+          ) : (
+            <span className="text-sm font-semibold text-text-secondary">Choose a supported card</span>
+          )}
+        </button>
+      </div>
+
+      {activeCard && activeCardSettings ? (
+        <div className="mt-3 rounded-[1rem] border p-4" style={activeTheme.cardStyle}>
+          <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_15.5rem] sm:items-center">
+            <span>
+              <span
+                id={annualFeeDateLabelId}
+                className="block text-[13px] font-semibold uppercase tracking-[0.18em] text-text-muted"
+              >
+                Annual fee date
+              </span>
+            </span>
+            <div ref={datePickerRef} className="relative">
+              <button
+                type="button"
+                aria-labelledby={annualFeeDateLabelId}
+                aria-haspopup="dialog"
+                aria-expanded={datePickerOpen}
+                onClick={toggleDatePicker}
+                className="flex min-h-14 w-full items-center justify-between gap-3 rounded-[0.95rem] border bg-black/25 px-5 py-3 text-left text-lg font-semibold text-text-primary outline-none transition hover:bg-black/30 focus:border-white focus-visible:ring-2 focus-visible:ring-white/25"
+                style={activeTheme.inputStyle}
+              >
+                <span>{dateFormatter.format(selectedDate)}</span>
+                <CalendarIcon className="h-5 w-5 shrink-0 text-text-secondary" />
+              </button>
+
+              {datePickerOpen ? (
+                <div
+                  role="dialog"
+                  aria-label="Choose annual fee date"
+                  className="absolute left-1/2 top-[calc(100%+0.65rem)] z-50 w-[min(22rem,calc(100vw-2rem))] -translate-x-1/2 rounded-[1.2rem] border border-white/12 bg-[linear-gradient(180deg,rgba(18,24,36,0.99),rgba(8,12,20,0.995))] p-4 shadow-[0_28px_80px_rgba(0,0,0,0.5)] sm:left-auto sm:right-0 sm:translate-x-0"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <button
+                      type="button"
+                      aria-label="Previous month"
+                      onClick={() => setVisibleMonth((month) => addCalendarMonths(month, -1))}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.035] text-text-primary transition hover:border-white/20"
+                    >
+                      <ChevronLeftIcon />
+                    </button>
+                    <p className="text-base font-semibold text-text-primary">
+                      {monthFormatter.format(visibleMonth)}
+                    </p>
+                    <button
+                      type="button"
+                      aria-label="Next month"
+                      onClick={() => setVisibleMonth((month) => addCalendarMonths(month, 1))}
+                      className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.035] text-text-primary transition hover:border-white/20"
+                    >
+                      <ChevronRightIcon />
+                    </button>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-7 gap-1.5">
+                    {calendarWeekdayLabels.map((label) => (
+                      <p
+                        key={label}
+                        className="text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted"
+                      >
+                        {label}
+                      </p>
+                    ))}
+                    {calendarDays.map(({ date, inputValue, isCurrentMonth }) => {
+                      const selected = isSameCalendarDay(date, selectedDate);
+                      const today = isSameCalendarDay(date, todayDate);
+
+                      return (
+                        <button
+                          key={inputValue}
+                          type="button"
+                          aria-pressed={selected}
+                          onClick={() => selectDate(date)}
+                          className={`flex h-11 items-center justify-center rounded-xl border text-sm font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25 ${
+                            selected
+                              ? 'border-transparent'
+                              : today
+                                ? 'bg-white/[0.035]'
+                                : 'border-transparent bg-transparent hover:border-white/10 hover:bg-white/[0.04]'
+                          } ${isCurrentMonth ? 'text-text-primary' : 'text-text-muted/55'}`}
+                          style={
+                            selected
+                              ? {
+                                  ...activeTheme.exportButtonStyle,
+                                  boxShadow: `0 0 22px ${activeTheme.accentSoft}`
+                                }
+                              : today
+                                ? {
+                                    borderColor: activeTheme.accentBorder,
+                                    color: activeTheme.accentText
+                                  }
+                                : undefined
+                          }
+                        >
+                          {date.getDate()}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => selectDate(new Date())}
+                      className="rounded-full border border-white/12 px-3 py-2 text-xs font-semibold text-text-primary transition hover:border-white/24"
+                    >
+                      Today
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDatePickerOpen(false)}
+                      className="rounded-full px-3 py-2 text-xs font-semibold transition hover:opacity-90"
+                      style={activeTheme.exportButtonStyle}
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {selectorOpen ? (
+        <div
+          role="listbox"
+          aria-label="Browse supported cards"
+          className="absolute left-4 right-4 top-[4.75rem] z-50 max-h-[min(34rem,calc(100vh-8rem))] overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)] md:left-5 md:right-5 md:top-[5rem]"
+        >
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
+          <div className="relative space-y-4">
+            {calendarSelectorGroups.map((group) => (
+              <div key={group.id}>
+                <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+                  {group.label}
+                </p>
+                <p className="mt-1 px-1 text-[12px] leading-5 text-text-muted">{group.description}</p>
+                <div className="mt-2 space-y-2">
+                  {group.cardIds.map((cardId) => {
+                    const card = benefitCalendarCards.find((candidate) => candidate.id === cardId);
+
+                    if (!card) return null;
+
+                    return (
+                      <CalendarCardSwitcherOption
+                        key={card.id}
+                        card={card}
+                        selected={card.id === activeCard?.id}
+                        tracked={selectedCardIds.includes(card.id)}
+                        onSelect={() => onSelectCard(card.id)}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 export function CardBenefitCalendar() {
   const defaultDate = todayInputValue();
   const selectorRef = useRef<HTMLDivElement>(null);
   const [selectorOpen, setSelectorOpen] = useState(false);
-  const [cardQuery, setCardQuery] = useState('');
   const [selectedCardIds, setSelectedCardIds] = useState<BenefitCalendarCardId[]>([
     'amex-platinum',
     'chase-sapphire-reserve',
@@ -252,10 +792,6 @@ export function CardBenefitCalendar() {
   );
 
   const selectedCards = benefitCalendarCards.filter((card) => selectedCardIds.includes(card.id));
-  const availableCards = benefitCalendarCards.filter((card) => card.id !== activeCardId);
-  const filteredAvailableCards = availableCards.filter((card) =>
-    `${card.name} ${card.shortName} ${card.issuer}`.toLowerCase().includes(cardQuery.trim().toLowerCase())
-  );
   const activeCard =
     selectedCards.find((card) => card.id === activeCardId) ?? selectedCards[0] ?? null;
   const activeCardSettings = activeCard
@@ -276,14 +812,12 @@ export function CardBenefitCalendar() {
     function handlePointerDown(event: MouseEvent) {
       if (selectorRef.current && !selectorRef.current.contains(event.target as Node)) {
         setSelectorOpen(false);
-        setCardQuery('');
       }
     }
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         setSelectorOpen(false);
-        setCardQuery('');
       }
     }
 
@@ -302,11 +836,10 @@ export function CardBenefitCalendar() {
     }
   }, [activeCardId, selectedCardIds]);
 
-  const addCard = (cardId: BenefitCalendarCardId) => {
+  const selectCard = (cardId: BenefitCalendarCardId) => {
     setSelectedCardIds((current) => (current.includes(cardId) ? current : [...current, cardId]));
     setActiveCardId(cardId);
     setSelectorOpen(false);
-    setCardQuery('');
   };
 
   const updateCardSettings = (
@@ -346,180 +879,96 @@ export function CardBenefitCalendar() {
         style={activeTheme.pageStyle}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.24),transparent)]" />
-        <div className="grid gap-5 lg:grid-cols-[1fr_0.72fr]">
-          <div
-            ref={selectorRef}
-            className="relative z-20 rounded-[1.15rem] border p-4 backdrop-blur md:p-5"
-            style={activeTheme.panelStyle}
-          >
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div>
-                <p className={`text-[11px] font-semibold uppercase tracking-[0.28em] ${activeTheme.eyebrowClassName}`}>
-                  Card Benefit Calendar
-                </p>
-                <h1 className="mt-3 font-heading text-[clamp(1.9rem,3.2vw,3.1rem)] leading-[0.96] text-text-primary lg:whitespace-nowrap">
-                  Pick the cards you carry.
-                </h1>
-                <p className="mt-3 max-w-2xl text-base leading-7 text-text-secondary">
-                  Then export a calendar for credits, annual fees, and renewal decisions.
+        <div className="relative grid gap-6 xl:grid-cols-2 xl:items-stretch">
+          <div className="relative flex h-full min-w-0 flex-col rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-5">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
+            <div>
+              <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${activeTheme.eyebrowClassName}`}>
+                Premium Card Reminder Calendar
+              </p>
+              <h1 className="mt-3 max-w-[54rem] font-heading text-[2.35rem] leading-[0.96] text-text-primary md:text-[3.2rem] 2xl:text-[3.45rem]">
+                Keep every card benefit on schedule
+              </h1>
+              <p className="mt-3 max-w-[47rem] text-sm leading-6 text-text-secondary md:text-base md:leading-7">
+                Track credits, activation windows, annual fees, and renewal decisions for the cards you carry. Export the next 12 months to your calendar.
+              </p>
+            </div>
+
+            <div
+              className="mt-4 overflow-hidden rounded-[1.2rem] border p-2.5 shadow-[0_16px_42px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.04)]"
+              style={activeTheme.exportStyle}
+            >
+              <div className="px-2 pt-2">
+                <p className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${activeTheme.exportEyebrowClassName}`}>
+                  Calendar export
                 </p>
               </div>
-            </div>
-
-            <div className="mt-5">
-              {activeCard && activeCardSettings ? (
-                <article
-                  className="relative overflow-hidden rounded-xl border p-3"
-                  style={activeTheme.cardStyle}
-                >
-                  <div className="grid items-center gap-5 md:grid-cols-[13.5rem_1fr]">
-                    <div className="relative flex items-center justify-center py-3">
-                      {/* Product art is issuer-hosted card imagery from curated card metadata. */}
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={activeCard.artUrl}
-                        alt={`${activeCard.shortName} card art`}
-                        className="w-full max-w-[14rem] object-contain drop-shadow-[0_18px_38px_rgba(0,0,0,0.42)] md:max-w-[13.5rem]"
-                      />
-                    </div>
-                    <div>
-                      <p className="whitespace-nowrap text-[clamp(1.35rem,6.2vw,1.875rem)] font-semibold text-text-primary">
-                        {activeCard.shortName}
-                      </p>
-                      <p className="mt-2 text-sm font-semibold uppercase tracking-[0.16em] text-text-muted md:text-base">
-                        {activeCard.issuer} - {currencyFormatter.format(activeCard.annualFee)}
-                      </p>
-                      <div className="mt-5">
-                        <label className="block">
-                          <span className="text-xs font-semibold uppercase tracking-[0.18em] text-text-muted md:text-sm">
-                            Card anniversary / annual fee date
-                          </span>
-                          <input
-                            type="date"
-                            value={activeCardSettings.anniversaryDate}
-                            onChange={(event) =>
-                              updateCardSettings(activeCard.id, 'anniversaryDate', event.currentTarget.value)
-                            }
-                            className="mt-2 w-full rounded-xl border bg-black/25 px-4 py-3 text-base text-text-primary outline-none focus:border-white md:text-lg"
-                            style={activeTheme.inputStyle}
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => setSelectorOpen(true)}
-                  className="min-h-48 w-full rounded-xl border border-dashed border-brand-teal/35 bg-brand-teal/[0.06] p-5 text-left transition hover:bg-brand-teal/[0.1]"
-                >
-                  <span className="text-lg font-semibold text-text-primary">Choose your first card</span>
-                  <span className="mt-2 block text-sm leading-6 text-text-secondary">
-                    Add a card to build the reminder schedule.
-                  </span>
-                </button>
-              )}
-            </div>
-
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              {availableCards.length > 0 ? (
-                <button
-                  type="button"
-                  onClick={() => setSelectorOpen((open) => !open)}
-                  className="rounded-full border px-4 py-2 text-sm font-semibold text-text-primary transition hover:opacity-90"
-                  style={activeTheme.browseStyle}
-                >
-                  Browse supported cards
-                </button>
-              ) : null}
-            </div>
-
-            {selectorOpen ? (
-              <div className="absolute left-4 right-4 top-[calc(100%-0.75rem)] z-40 rounded-xl border border-white/14 bg-[linear-gradient(180deg,rgba(22,28,42,0.99),rgba(11,15,25,0.99))] p-3 shadow-[0_24px_80px_rgba(0,0,0,0.48)] md:left-5 md:right-5">
-                <input
-                  type="text"
-                  value={cardQuery}
-                  onChange={(event) => setCardQuery(event.currentTarget.value)}
-                  placeholder="Search by card or issuer"
-                  autoFocus
-                  className="w-full rounded-lg border bg-bg px-3 py-2.5 text-sm text-text-primary outline-none placeholder:text-text-muted focus:border-white"
-                  style={activeTheme.inputStyle}
-                />
-                <div role="listbox" className="mt-3 grid max-h-80 gap-2 overflow-y-auto pr-1 md:grid-cols-2">
-                  {filteredAvailableCards.map((card) => (
-                    <button
-                      key={card.id}
-                      type="button"
-                      role="option"
-                      onClick={() => addCard(card.id)}
-                      className="grid grid-cols-[5.2rem_1fr] items-center gap-3 rounded-lg border border-white/10 bg-white/[0.035] p-3 text-left transition hover:border-brand-teal/35 hover:bg-brand-teal/[0.07]"
-                    >
-                      <EntityImage
-                        src={card.artUrl}
-                        alt={`${card.shortName} card art`}
-                        label={card.shortName}
-                        className="h-14 rounded-md bg-black/18"
-                        imgClassName="p-1.5"
-                        fit="contain"
-                      />
-                      <span>
-                        <span className="block text-sm font-semibold text-text-primary">{card.shortName}</span>
-                        <span className="mt-1 block text-xs uppercase tracking-[0.16em] text-text-muted">
-                          {card.issuer} - {currencyFormatter.format(card.annualFee)}
-                        </span>
-                      </span>
-                    </button>
-                  ))}
-                  {filteredAvailableCards.length === 0 ? (
-                    <p className="rounded-lg border border-dashed border-white/10 px-3 py-3 text-sm text-text-muted">
-                      No supported cards matched that search.
-                    </p>
-                  ) : null}
+              <div className="mt-3 grid gap-2">
+                <div className="rounded-[0.9rem] border border-white/10 bg-black/16 px-4 py-4 text-center">
+                  <p className="text-[2rem] font-semibold leading-none text-text-primary">{visibleEvents.length}</p>
+                  <p className="mt-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+                    Reminders
+                  </p>
+                </div>
+                <div className="rounded-[0.9rem] border border-white/10 bg-black/16 px-4 py-4 text-center">
+                  <p className="text-[2rem] font-semibold leading-none text-text-primary">
+                    {currencyFormatter.format(totalTrackedValue)}
+                  </p>
+                  <p className="mt-2.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+                    Value
+                  </p>
                 </div>
               </div>
+              <div className="mt-3 flex flex-col items-center justify-center gap-2 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={downloadIcs}
+                  disabled={visibleEvents.length === 0}
+                  className="rounded-full px-4 py-2.5 text-sm font-semibold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                  style={activeTheme.exportButtonStyle}
+                >
+                  Download .ics
+                </button>
+                <a
+                  href="https://calendar.google.com/calendar/u/0/r/settings/export"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-full border border-white/14 px-4 py-2.5 text-center text-sm font-semibold text-text-primary transition hover:border-white/28"
+                >
+                  Google import
+                </a>
+              </div>
+            </div>
+
+            {!activeCard ? (
+              <button
+                type="button"
+                onClick={() => setSelectorOpen(true)}
+                className="mt-4 min-h-28 w-full rounded-xl border border-dashed border-brand-teal/35 bg-brand-teal/[0.06] p-5 text-left transition hover:bg-brand-teal/[0.1]"
+              >
+                <span className="text-lg font-semibold text-text-primary">Choose your first card</span>
+                <span className="mt-2 block text-sm leading-6 text-text-secondary">
+                  Add a card to build the reminder schedule.
+                </span>
+              </button>
             ) : null}
           </div>
 
-          <aside className="flex h-full flex-col gap-4 rounded-[1.15rem] border border-white/12 bg-white/[0.055] p-4 backdrop-blur md:p-5">
-            <div className="flex flex-1 flex-col rounded-xl border p-4" style={activeTheme.exportStyle}>
-              <p className={`text-[11px] font-semibold uppercase tracking-[0.22em] ${activeTheme.exportEyebrowClassName}`}>
-                Calendar export
-              </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                <div className="rounded-lg border border-white/10 bg-black/16 p-4 text-center">
-                  <p className="text-3xl font-semibold text-text-primary">{visibleEvents.length}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-text-muted">Benefit reminders</p>
-                </div>
-                <div className="rounded-lg border border-white/10 bg-black/16 p-4 text-center">
-                  <p className="text-3xl font-semibold text-text-primary">{currencyFormatter.format(totalTrackedValue)}</p>
-                  <p className="mt-1 text-xs uppercase tracking-[0.16em] text-text-muted">Tracked value</p>
-                </div>
-              </div>
-              <p className="mt-4 text-sm leading-6 text-text-secondary">
-                Download one file for Apple Calendar, Outlook, or Google Calendar import.
-              </p>
-              <div className="flex-1" />
-              <button
-                type="button"
-                onClick={downloadIcs}
-                disabled={visibleEvents.length === 0}
-                className="mt-4 w-full rounded-full px-5 py-2.5 text-sm font-semibold transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
-                style={activeTheme.exportButtonStyle}
-              >
-                Download .ics
-              </button>
-              <a
-                href="https://calendar.google.com/calendar/u/0/r/settings/export"
-                target="_blank"
-                rel="noreferrer"
-                className="mt-3 block rounded-full border border-white/14 px-5 py-2.5 text-center text-sm font-semibold text-text-primary transition hover:border-white/28"
-              >
-                Open Google Calendar import
-              </a>
-            </div>
-          </aside>
+          <HeaderCardSelectorPanel
+            activeCard={activeCard}
+            activeCardSettings={activeCardSettings}
+            activeTheme={activeTheme}
+            selectedCardIds={selectedCardIds}
+            selectorOpen={selectorOpen}
+            selectorRef={selectorRef}
+            onAnniversaryDateChange={(cardId, value) =>
+              updateCardSettings(cardId, 'anniversaryDate', value)
+            }
+            onSelectCard={selectCard}
+            onToggleSelector={() => setSelectorOpen((open) => !open)}
+          />
         </div>
+
       </section>
 
       <section>
