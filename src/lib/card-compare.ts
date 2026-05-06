@@ -623,11 +623,13 @@ function computeBreakevenAnnualSpend(
     return null;
   }
 
-  if (fixedDelta >= 0) {
+  const fixedAdvantageForHigherRewardCard =
+    fixedDelta * Math.sign(rewardDeltaPerDollar);
+  if (fixedAdvantageForHigherRewardCard >= 0) {
     return 0;
   }
 
-  const annualSpend = -fixedDelta / rewardDeltaPerDollar;
+  const annualSpend = Math.abs(fixedDelta) / Math.abs(rewardDeltaPerDollar);
   if (!Number.isFinite(annualSpend) || annualSpend <= 0) {
     return null;
   }

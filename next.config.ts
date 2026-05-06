@@ -41,7 +41,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/tools/card-vs-card',
-        destination: '/tools/personal-finance-tracker',
+        destination: '/cards/compare',
         permanent: true
       }
     ];

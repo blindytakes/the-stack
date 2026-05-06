@@ -26,6 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/tools/card-finder', changeFrequency: 'monthly' as const, priority: 0.9 },
     { path: '/tools/personal-finance-tracker', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/tools/premium-card-calculator', changeFrequency: 'monthly' as const, priority: 0.7 },
+    { path: '/tools/card-benefit-calendar', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/tools/points-advisor', changeFrequency: 'monthly' as const, priority: 0.7 },
     { path: '/about', changeFrequency: 'monthly' as const, priority: 0.4 },
     { path: '/contact', changeFrequency: 'yearly' as const, priority: 0.3 },

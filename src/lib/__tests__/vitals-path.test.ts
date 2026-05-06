@@ -3,13 +3,19 @@ import { normalizeVitalPathToRoute } from '../vitals-path';
 
 describe('normalizeVitalPathToRoute', () => {
   it('normalizes known static routes', () => {
+    expect(normalizeVitalPathToRoute('/tools')).toBe('/tools');
     expect(normalizeVitalPathToRoute('/tools/card-finder')).toBe('/tools/card-finder');
+    expect(normalizeVitalPathToRoute('/cards/compare')).toBe('/cards/compare');
     expect(normalizeVitalPathToRoute('/tools/premium-card-calculator')).toBe(
       '/tools/premium-card-calculator'
     );
     expect(normalizeVitalPathToRoute('/tools/personal-finance-tracker')).toBe(
       '/tools/personal-finance-tracker'
     );
+    expect(normalizeVitalPathToRoute('/tools/card-benefit-calendar')).toBe(
+      '/tools/card-benefit-calendar'
+    );
+    expect(normalizeVitalPathToRoute('/tools/points-advisor')).toBe('/tools/points-advisor');
     expect(normalizeVitalPathToRoute('/plan/results')).toBe('/plan/results');
     expect(normalizeVitalPathToRoute('/blog/')).toBe('/blog');
     expect(normalizeVitalPathToRoute('/cards/')).toBe('/cards');

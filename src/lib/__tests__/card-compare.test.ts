@@ -228,6 +228,40 @@ describe('card-compare', () => {
     expect(comparison.verdictTitle).toContain('better keeper');
   });
 
+  it('computes breakeven from the higher-reward side even when card B has the richer earn rate', () => {
+    const lowerFeeCard = createCard({
+      slug: 'lower-fee-card',
+      name: 'Lower Fee Card',
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [{ category: 'all', rate: 1, rateType: 'cashback' }],
+      signUpBonuses: []
+    });
+    const higherRewardCard = createCard({
+      slug: 'higher-reward-card',
+      name: 'Higher Reward Card',
+      rewardType: 'cashback',
+      annualFee: 95,
+      bestSignUpBonusValue: 0,
+      rewards: [{ category: 'all', rate: 3, rateType: 'cashback' }],
+      signUpBonuses: []
+    });
+
+    const comparison = buildCardComparison(lowerFeeCard, higherRewardCard, {
+      monthlySpend: {
+        ...defaultCardComparisonAssumptions.monthlySpend,
+        dining: 0,
+        groceries: 0,
+        travel: 0,
+        gas: 0,
+        general: 1000
+      }
+    });
+
+    expect(comparison.breakevenAnnualSpend).toBe(4750);
+  });
+
   it('exposes the single-card summary used by detail pages', () => {
     const card = createCard({
       rewardType: 'cashback',

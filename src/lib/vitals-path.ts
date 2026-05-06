@@ -9,10 +9,13 @@ const allowedStaticPaths = new Set([
   '/learn',
   '/privacy',
   '/terms',
+  '/tools',
+  '/cards/compare',
   '/tools/card-finder',
-  '/tools/card-vs-card',
   '/tools/personal-finance-tracker',
-  '/tools/premium-card-calculator'
+  '/tools/premium-card-calculator',
+  '/tools/card-benefit-calendar',
+  '/tools/points-advisor'
 ]);
 
 function normalizeRawPathname(rawPath: string): string | null {
@@ -36,11 +39,11 @@ export function normalizeVitalPathToRoute(rawPath: string): string {
   const normalized =
     pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 
+  if (allowedStaticPaths.has(normalized)) return normalized;
   if (/^\/cards\/[^/]+$/.test(normalized)) return '/cards/[slug]';
   if (/^\/banking\/[^/]+$/.test(normalized)) return '/banking/[slug]';
   if (/^\/blog\/[^/]+$/.test(normalized)) return '/blog/[slug]';
   if (/^\/learn\/[^/]+$/.test(normalized)) return '/learn/[slug]';
-  if (allowedStaticPaths.has(normalized)) return normalized;
 
   return '/other';
 }

@@ -1124,9 +1124,11 @@ export function PremiumCardCalculator() {
       )} ${selectedProfile.offerCurrencyShortLabel} worth about ${formatCurrency(
         welcomeOfferValue
       )} at your chosen redemption value.`
-    : selectedScenario.eligibleForBonus
+    : !selectedScenario.eligibleForBonus
+      ? 'This first-year number does not include a signup bonus because this run assumes you are not eligible for the offer.'
+      : !selectedScenario.canMeetSpend
       ? 'This first-year number does not include a signup bonus because this run assumes you will not hit the required spend.'
-      : 'This first-year number does not include a signup bonus because this run assumes you are not eligible for the offer.';
+      : 'Select an offer preset or enter a welcome offer amount to include the signup bonus in year-one math.';
   const yearTwoIsPositive = selectedResult.expectedValueYear2 >= 0;
   const yearTwoSummaryDetail = yearTwoIsPositive
     ? selectedProfile.annualPointsBonus
