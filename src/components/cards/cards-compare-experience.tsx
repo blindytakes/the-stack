@@ -187,13 +187,11 @@ function toCssRgbTuple(rgb: string) {
 }
 
 function VerdictOutcomeCard({
-  eyebrow,
   label,
   metric,
   theme,
   winnerCard
 }: {
-  eyebrow: string;
   label: string;
   metric: WinnerMetric | null;
   theme: CardVisualTheme | null;
@@ -221,11 +219,10 @@ function VerdictOutcomeCard({
         boxShadow: `inset 0 1px 0 rgba(${accentTextRgb}, 0.08), 0 0 0 1px rgba(${accentRgb}, 0.08)`
       }
     : undefined;
-  const themedBadgeStyle: CSSProperties | undefined = theme
+  const themedLabelStyle: CSSProperties | undefined = theme
     ? {
-        borderColor: `rgba(${accentRgb}, 0.4)`,
-        background: `rgba(${accentRgb}, 0.09)`,
-        color: `rgb(${accentTextRgb})`
+        color: `rgb(${accentTextRgb})`,
+        textShadow: `0 0 18px rgba(${accentRgb}, 0.28)`
       }
     : undefined;
   const themedValueStyle: CSSProperties | undefined = theme
@@ -241,16 +238,13 @@ function VerdictOutcomeCard({
       }`}
       style={themedPanelStyle}
     >
-      <div className="flex flex-wrap items-center justify-center gap-2">
-        <span
-          className={`rounded-full border px-4 py-2 text-sm font-semibold uppercase sm:text-base ${
-            theme ? '' : 'border-white/15 bg-white/8 text-text-secondary'
-          }`}
-          style={themedBadgeStyle}
+      <div className="flex items-center justify-center">
+        <p
+          className="text-sm font-bold uppercase tracking-[0.16em] text-white sm:text-base"
+          style={themedLabelStyle}
         >
-          {eyebrow}
-        </span>
-        <p className="text-sm font-semibold uppercase tracking-[0.12em] text-text-muted sm:text-base">{label}</p>
+          {label}
+        </p>
       </div>
       {cardImage ? (
         <div className="mt-5 w-full max-w-[30rem] rounded-[1.2rem] border border-white/10 bg-black/20 p-1.5 shadow-[0_16px_42px_rgba(0,0,0,0.28)]">
@@ -991,8 +985,7 @@ export function CardsCompareExperience({
 
             <div className="mx-auto mt-6 grid w-full max-w-6xl gap-4 md:grid-cols-2">
               <VerdictOutcomeCard
-                eyebrow="Year 1"
-                label="Year 1 winner"
+                label="First-year winner"
                 metric={yearOneMetric}
                 theme={verdictThemeForWinner({
                   winner: comparison.firstYearWinner,
@@ -1006,8 +999,7 @@ export function CardsCompareExperience({
                 })}
               />
               <VerdictOutcomeCard
-                eyebrow="After Year 1"
-                label="Ongoing winner"
+                label="Winner after year 1"
                 metric={keeperMetric}
                 theme={verdictThemeForWinner({
                   winner: comparison.ongoingWinner,
