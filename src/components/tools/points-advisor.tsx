@@ -62,7 +62,7 @@ const defaultTripRedemptionInput: TripRedemptionFormInput = {
 };
 
 const panelClassName =
-  'relative overflow-visible rounded-[1.55rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,18,30,0.98),rgba(8,12,20,0.99))] shadow-[0_18px_70px_rgba(0,0,0,0.24)]';
+  'relative overflow-visible rounded-[1.5rem] border border-[rgb(var(--points-accent-rgb)/0.2)] bg-[radial-gradient(circle_at_18%_0%,rgb(var(--points-accent-rgb)/0.22),transparent_36%),radial-gradient(circle_at_86%_18%,rgba(255,255,255,0.12),transparent_34%),linear-gradient(135deg,rgba(31,37,48,0.99),rgba(9,12,21,0.99)_62%,rgba(30,33,40,0.98))] shadow-[0_28px_90px_rgba(0,0,0,0.32)]';
 const sectionCardClassName =
   'relative overflow-hidden rounded-[1.9rem] border border-white/10 bg-[linear-gradient(180deg,rgba(11,16,27,0.98),rgba(8,12,20,0.98))] shadow-[0_22px_80px_rgba(0,0,0,0.26)]';
 const activeSurfaceClassName =
@@ -439,34 +439,53 @@ function ProgramArtPanel({
 }) {
   const activeProfile = pointsProgramProfiles.find((item) => item.id === activeProgramId);
   const activeVisual = programVisuals[activeProgramId];
-  const mainArtScale = Math.min(activeVisual.artScale ?? 1, 1);
+  const mainArtScale = Math.min((activeVisual.artScale ?? 1) * 1.06, 1.12);
 
   if (!activeProfile) return null;
+
+  const modeledFloorCpp = Math.min(...activeProfile.choices.map((choice) => choice.minCpp));
+  const modeledCeilingCpp = Math.max(...activeProfile.choices.map((choice) => choice.maxCpp));
 
   return (
     <div className="relative flex h-full min-w-0 flex-col overflow-visible rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-5">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
       <div className="pointer-events-none absolute -right-10 top-8 h-28 w-28 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.18),transparent_70%)] blur-[46px]" />
 
-      <div className="relative flex flex-1 flex-col items-center justify-center overflow-hidden rounded-[1.2rem] bg-[radial-gradient(circle_at_50%_38%,rgb(var(--points-accent-rgb)/0.14),transparent_58%),linear-gradient(180deg,rgba(255,255,255,0.035),rgba(0,0,0,0.08))] px-6 pb-5 pt-16 md:px-8 md:pb-6 md:pt-[4.75rem]">
-        <button
-          type="button"
-          aria-haspopup="listbox"
-          onClick={onToggle}
-          aria-expanded={open}
-          className="absolute right-4 top-4 z-30 inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/25 px-3.5 py-2 text-sm font-semibold text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur transition hover:border-[rgb(var(--points-accent-rgb)/0.5)] hover:bg-black/35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--points-accent-rgb)/0.5)]"
-        >
-          <span>{open ? 'Close selector' : 'Change card'}</span>
-          <span className={`rounded-full border border-white/10 bg-white/[0.035] px-2 py-0.5 text-[9px] uppercase tracking-[0.18em] ${activeVisual.accentClassName}`}>
-            {open ? 'Close' : 'Browse'}
-          </span>
-        </button>
+      <div className="relative flex flex-col items-center overflow-hidden rounded-[1.2rem] bg-[radial-gradient(circle_at_50%_38%,rgb(var(--points-accent-rgb)/0.14),transparent_58%),linear-gradient(180deg,rgba(255,255,255,0.035),rgba(0,0,0,0.08))] p-4 md:p-5">
+        <div className="relative z-30 flex w-full items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${activeVisual.accentClassName}`}>
+              Selected program
+            </p>
+            <p className="mt-2 text-[1.15rem] font-semibold leading-tight text-text-primary sm:truncate">
+              {activeProfile.title}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            aria-haspopup="listbox"
+            aria-label={
+              open
+                ? 'Close card browser'
+                : `Browse cards, currently ${activeProfile.title}`
+            }
+            onClick={onToggle}
+            aria-expanded={open}
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgb(var(--points-accent-rgb)/0.26)] bg-[rgb(var(--points-accent-rgb)/0.1)] text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur transition hover:border-[rgb(var(--points-accent-rgb)/0.5)] hover:bg-[rgb(var(--points-accent-rgb)/0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--points-accent-rgb)/0.5)] sm:h-auto sm:w-auto sm:px-3.5 sm:py-2 sm:text-[10px] sm:font-semibold sm:uppercase sm:tracking-[0.15em]"
+          >
+            <span className="text-base leading-none sm:hidden" aria-hidden="true">
+              {open ? 'x' : '...'}
+            </span>
+            <span className="hidden sm:inline">{open ? 'Close' : 'Browse cards'}</span>
+          </button>
+        </div>
 
         {open ? (
           <div
             role="listbox"
             aria-label="Points program"
-            className="absolute left-4 right-4 top-[4.7rem] z-40 grid max-h-[min(26rem,calc(100vh-8rem))] gap-2 overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)] sm:left-auto sm:w-[min(31rem,calc(100%-2rem))] sm:grid-cols-2 md:right-5"
+            className="absolute left-4 right-4 top-[7.5rem] z-40 grid max-h-[min(26rem,calc(100vh-8rem))] gap-2 overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)] sm:left-auto sm:top-[4.8rem] sm:w-[min(31rem,calc(100%-2rem))] sm:grid-cols-2 md:right-5"
           >
             {pointsProgramProfiles.map((profile) => {
               const optionVisual = programVisuals[profile.id];
@@ -512,30 +531,49 @@ function ProgramArtPanel({
 
         <div className="pointer-events-none absolute inset-x-12 bottom-8 h-14 rounded-full bg-black/35 blur-2xl" />
         <div className="pointer-events-none absolute inset-x-12 bottom-8 h-12 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.16),transparent_70%)] blur-[32px]" />
-        <div className="relative flex min-h-[12rem] w-full items-center justify-center sm:min-h-[14rem] md:min-h-[16.25rem]">
+        <div className="relative mt-10 flex w-full items-center justify-center rounded-[1.05rem] border border-[rgb(var(--points-accent-rgb)/0.18)] bg-black/18 p-4 shadow-[0_18px_42px_rgba(0,0,0,0.18)]">
           <EntityImage
             src={activeVisual.artUrl}
             alt={activeProfile.title}
             label={activeProfile.title}
-            className="relative aspect-[1.62/1] w-full max-w-[24.75rem] overflow-visible rounded-none border-0 bg-transparent"
-            imgClassName="bg-transparent p-0 drop-shadow-[0_28px_44px_rgba(0,0,0,0.5)]"
+            className="relative aspect-[1.62/1] w-full max-w-[32rem] rounded-[0.8rem] border-0 bg-transparent"
+            imgClassName="bg-transparent p-0 drop-shadow-[0_18px_34px_rgba(0,0,0,0.42)]"
             fallbackClassName="bg-black/10"
             fit="contain"
             position={activeVisual.artPosition}
             scale={mainArtScale}
           />
         </div>
-        <div className="relative z-10 mt-5 w-full border-t border-white/8 pt-4 text-center">
-          <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${activeVisual.accentClassName}`}>
-            Program
-          </p>
-          <p className="mt-2 truncate text-[1.2rem] font-semibold leading-tight text-text-primary">
-            {activeProfile.title}
-          </p>
-          <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+        <RedemptionEquation />
+        <div className="relative z-10 mt-3 flex w-full flex-wrap justify-center gap-2">
+          <span className="rounded-full border border-white/10 bg-black/16 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-text-secondary">
             {activeProfile.currencyName}
-          </p>
+          </span>
+          <span
+            className={`rounded-full border border-[rgb(var(--points-accent-rgb)/0.28)] bg-[rgb(var(--points-accent-rgb)/0.09)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${activeVisual.accentClassName}`}
+          >
+            {activeVisual.laneLabel}
+          </span>
         </div>
+        <div className="relative z-10 mt-4 grid w-full gap-2 border-t border-white/8 pt-4 sm:grid-cols-3">
+          <div className="rounded-[0.85rem] border border-white/10 bg-black/16 px-3 py-3 text-center">
+            <p className="text-base font-semibold leading-none text-text-primary">{modeledFloorCpp.toFixed(1)} cpp</p>
+            <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-text-muted">floor</p>
+          </div>
+          <div className="rounded-[0.85rem] border border-[rgb(var(--points-accent-rgb)/0.28)] bg-[rgb(var(--points-accent-rgb)/0.08)] px-3 py-3 text-center">
+            <p className={`text-base font-semibold leading-none ${activeVisual.accentClassName}`}>
+              {modeledCeilingCpp.toFixed(1)} cpp
+            </p>
+            <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-text-muted">upside</p>
+          </div>
+          <div className="rounded-[0.85rem] border border-white/10 bg-black/16 px-3 py-3 text-center">
+            <p className="text-base font-semibold leading-none text-text-primary">{activeProfile.choices.length}</p>
+            <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-text-muted">paths</p>
+          </div>
+        </div>
+        <p className="relative z-10 mt-3 max-w-md text-center text-xs leading-5 text-text-secondary">
+          {activeVisual.selectorSummary}
+        </p>
       </div>
     </div>
   );
@@ -545,7 +583,7 @@ function RedemptionEquation() {
   return (
     <div
       aria-label="Program plus balance plus goal equals best move"
-      className="mt-3 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted"
+      className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted"
     >
       <span>Program</span>
       <span className="text-[rgb(var(--points-accent-rgb))]">+</span>
@@ -1222,13 +1260,12 @@ export function PointsAdvisor() {
       <div className="pointer-events-none absolute left-[-7rem] top-10 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.08),transparent_70%)] blur-[56px]" />
       <div className="pointer-events-none absolute right-[-10rem] top-40 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.06),transparent_72%)] blur-3xl" />
 
-      <section className={`${panelClassName} px-4 py-5 md:px-6 md:py-6`}>
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
-        <div className="pointer-events-none absolute -left-14 top-[-3rem] h-44 w-44 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.1),transparent_70%)] blur-[52px]" />
-        <div className="pointer-events-none absolute right-[-3rem] top-1 h-48 w-48 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.08),transparent_72%)] blur-[56px]" />
+      <section className={`${panelClassName} p-4 md:p-6`}>
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.24),transparent)]" />
 
-        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(28rem,0.88fr)] xl:items-stretch">
-          <div className="min-w-0">
+        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(28rem,0.88fr)] xl:items-start">
+          <div className="relative flex h-full min-w-0 flex-col rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-5">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
             <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${visual.accentClassName}`}>
               Points Redemption Tool
             </p>
@@ -1239,48 +1276,58 @@ export function PointsAdvisor() {
               Compare easy exits, transfer plays, and trip-specific redemption math before you spend flexible points.
             </p>
 
-            <label className="mt-5 block rounded-[1.15rem] border border-white/10 bg-white/[0.035] px-4 py-3 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-              <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
-                Points balance
-              </span>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={input.pointsBalance === 0 ? '' : formatPoints(input.pointsBalance)}
-                onChange={handlePointsChange}
-                placeholder="100,000"
-                aria-label="Points balance"
-                className="mt-2 w-full bg-transparent text-center font-heading text-[clamp(2.15rem,4.7vw,3.15rem)] leading-none tracking-[-0.06em] text-text-primary placeholder:text-text-muted focus:outline-none"
-              />
-              <span className="mt-2 block text-[10px] font-semibold uppercase tracking-[0.28em] text-text-muted">
-                points
-              </span>
-            </label>
-
-            <RedemptionEquation />
-
-            <div className="mt-4 grid gap-2 sm:grid-cols-2">
-              <div className="rounded-[1rem] border border-[rgb(var(--points-accent-rgb)/0.32)] bg-[rgb(var(--points-accent-rgb)/0.08)] px-4 py-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">Best move</p>
-                <p className="mt-2 text-[1.8rem] font-semibold leading-none text-text-primary">
-                  {topRecommendation?.shortLabel ?? 'Run advisor'}
-                </p>
-                <p className={`mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] ${visual.accentClassName}`}>
-                  {topRecommendation
-                    ? `${topRecommendation.likelyCpp.toFixed(1)} cpp modeled`
-                    : 'Recommendation pending'}
+            <div className="mt-4 overflow-hidden rounded-[1.2rem] border border-[rgb(var(--points-accent-rgb)/0.3)] bg-[rgb(var(--points-accent-rgb)/0.08)] p-2.5 shadow-[0_16px_42px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.04)]">
+              <div className="px-2 pt-2">
+                <p className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${visual.accentClassName}`}>
+                  Redemption model
                 </p>
               </div>
-              <div className="rounded-[1rem] border border-white/10 bg-white/[0.035] px-4 py-3">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">Estimated value</p>
-                <p className="mt-2 text-[1.8rem] font-semibold leading-none text-text-primary">
-                  {topRecommendation ? formatCurrency(topRecommendation.estimatedValue) : '$0'}
-                </p>
-                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-text-secondary">
-                  {topRecommendation
-                    ? formatCppRange(topRecommendation.minCpp, topRecommendation.maxCpp)
-                    : 'Enter points'}
-                </p>
+
+              <div className="mt-3 grid gap-2">
+                <label className="block rounded-[0.9rem] border border-white/10 bg-black/16 px-4 py-4 text-center">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+                    Points balance
+                  </span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={input.pointsBalance === 0 ? '' : formatPoints(input.pointsBalance)}
+                    onChange={handlePointsChange}
+                    placeholder="100,000"
+                    aria-label="Points balance"
+                    className="mt-2 w-full bg-transparent text-center font-heading text-[clamp(2.15rem,4.7vw,3.15rem)] leading-none tracking-[-0.04em] text-text-primary placeholder:text-text-muted focus:outline-none"
+                  />
+                  <span className="mt-2 block text-[10px] font-semibold uppercase tracking-[0.28em] text-text-muted">
+                    Points
+                  </span>
+                </label>
+
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="rounded-[0.9rem] border border-white/10 bg-black/16 px-4 py-4 text-center">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">Best move</p>
+                    <p className="mt-2 text-[clamp(1.5rem,4.5vw,1.9rem)] font-semibold leading-tight text-text-primary">
+                      {topRecommendation?.shortLabel ?? 'Run advisor'}
+                    </p>
+                    <p className={`mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] ${visual.accentClassName}`}>
+                      {topRecommendation
+                        ? `${topRecommendation.likelyCpp.toFixed(1)} cpp modeled`
+                        : 'Recommendation pending'}
+                    </p>
+                  </div>
+                  <div className="rounded-[0.9rem] border border-white/10 bg-black/16 px-4 py-4 text-center">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">
+                      Estimated value
+                    </p>
+                    <p className="mt-2 text-[clamp(1.5rem,4.5vw,1.9rem)] font-semibold leading-tight text-text-primary">
+                      {topRecommendation ? formatCurrency(topRecommendation.estimatedValue) : '$0'}
+                    </p>
+                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-text-secondary">
+                      {topRecommendation
+                        ? formatCppRange(topRecommendation.minCpp, topRecommendation.maxCpp)
+                        : 'Enter points'}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
