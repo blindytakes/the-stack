@@ -270,7 +270,7 @@
     "bonusAmount": 400,
     "estimatedFees": 25,
     "apyDisplay": "Interest-bearing; APY varies by market and product mix",
-    "apySourceUrl": "https://www.pnc.com/en/personal-banking/banking/checking/features-and-fees/virtual-wallet-performance-select.html",
+    "apySourceUrl": "https://www.pnc.com/content/dam/pnc-com/pdf/personal/Checking/fees-vw-performance-select-A.pdf",
     "apyAsOf": "2026-02-22",
     "directDeposit": {
       "required": true,
@@ -514,7 +514,7 @@
     "estimatedFees": 25,
     "apyPercent": 0.05,
     "apyDisplay": "0.05% APY",
-    "apySourceUrl": "https://www.key.com/content/kco/us/en/personal/checking/key-select-checking-account.html",
+    "apySourceUrl": "https://www.key.com/personal/checking/key-select-checking-account.html",
     "directDeposit": {
       "required": true,
       "minimumAmount": 5000

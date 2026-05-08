@@ -8,6 +8,7 @@ import {
   resolveCardImage,
   resolveCardFallbackBenefits
 } from '@/lib/cards/fallback-enrichment';
+import { resolveCardApplyUrl } from '@/lib/cards/source-shared';
 import type {
   CardDetail,
   CardRecord,
@@ -189,7 +190,7 @@ export function toCardDetailFromDb(row: DbCardDetailRow): CardDetail {
     regularAprMin: row.regularAprMin != null ? Number(row.regularAprMin) : undefined,
     regularAprMax: row.regularAprMax != null ? Number(row.regularAprMax) : undefined,
     foreignTxFee: Number(row.foreignTxFee),
-    applyUrl: row.applyUrl ?? undefined,
+    applyUrl: resolveCardApplyUrl(row.slug, row.applyUrl),
     affiliateUrl: row.affiliateUrl ?? undefined,
     rewards: row.rewards.map((reward) => ({
       category: spendingCategoryFromDb[reward.category] ?? 'other',

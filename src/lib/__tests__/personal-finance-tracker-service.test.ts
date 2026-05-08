@@ -1,4 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+const metricsMock = vi.hoisted(() => ({
+  recordPersonalFinanceTrackerDownloadFallback: vi.fn()
+}));
+
+vi.mock('@/lib/metrics', () => ({
+  recordPersonalFinanceTrackerDownloadFallback:
+    metricsMock.recordPersonalFinanceTrackerDownloadFallback
+}));
+
 import {
   buildGoogleSheetsXlsxExportUrl,
   getPersonalFinanceTrackerDownload,
@@ -22,6 +32,7 @@ function xlsxBody() {
 describe('personal finance tracker download service', () => {
   beforeEach(() => {
     clearTrackerEnv();
+    metricsMock.recordPersonalFinanceTrackerDownloadFallback.mockClear();
   });
 
   afterEach(() => {
@@ -60,6 +71,29 @@ describe('personal finance tracker download service', () => {
       status: 503,
       error: 'Personal finance tracker download is not configured.'
     });
+  });
+
+  it('serves the fallback csv download when no sheet source is configured', async () => {
+    const fetcher = vi.fn() as unknown as typeof fetch;
+
+    const result = await getPersonalFinanceTrackerDownload(fetcher);
+
+    expect(fetcher).not.toHaveBeenCalled();
+    expect(metricsMock.recordPersonalFinanceTrackerDownloadFallback).toHaveBeenCalledWith(
+      'missing_config'
+    );
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.headers).toMatchObject({
+        'Content-Disposition':
+          'attachment; filename="the-stack-personal-finance-tracker.csv"',
+        'Content-Type': 'text/csv; charset=utf-8',
+        'X-Content-Type-Options': 'nosniff'
+      });
+      expect(new TextDecoder().decode(result.body)).toContain(
+        'Date,Month,Category,Subcategory'
+      );
+    }
   });
 
   it('uses the env gid when it is configured separately', () => {
@@ -109,7 +143,7 @@ describe('personal finance tracker download service', () => {
     }
   });
 
-  it('rejects a Google response that is not an xlsx export', async () => {
+  it('falls back to the csv download when Google does not return an xlsx export', async () => {
     vi.stubEnv('PERSONAL_FINANCE_TRACKER_GOOGLE_SHEET', sheetId);
     const fetcher = vi.fn().mockResolvedValue(
       new Response('<html>sign in</html>', {
@@ -117,11 +151,18 @@ describe('personal finance tracker download service', () => {
       })
     ) as unknown as typeof fetch;
 
-    await expect(getPersonalFinanceTrackerDownload(fetcher)).resolves.toEqual({
-      ok: false,
-      status: 502,
-      error:
-        'Personal finance tracker download is not a valid spreadsheet export. Confirm the Google Sheet is shared as view-only.'
-    });
+    const result = await getPersonalFinanceTrackerDownload(fetcher);
+
+    expect(metricsMock.recordPersonalFinanceTrackerDownloadFallback).toHaveBeenCalledWith(
+      'invalid_xlsx'
+    );
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.headers).toMatchObject({
+        'Content-Disposition':
+          'attachment; filename="the-stack-personal-finance-tracker.csv"',
+        'Content-Type': 'text/csv; charset=utf-8'
+      });
+    }
   });
 });

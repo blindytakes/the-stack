@@ -112,6 +112,39 @@ function isAllowedTargetHost(target: string, allowedHosts: string[]) {
   return allowedHosts.some((host) => hostname === host || hostname.endsWith(`.${host}`));
 }
 
+function getSetCookieHeaders(headers: Headers) {
+  const headersWithCookieList = headers as Headers & {
+    getSetCookie?: () => string[];
+  };
+  const setCookieHeaders = headersWithCookieList.getSetCookie?.();
+  if (setCookieHeaders?.length) return setCookieHeaders;
+
+  const setCookieHeader = headers.get('set-cookie');
+  return setCookieHeader ? [setCookieHeader] : [];
+}
+
+function updateCookieJar(cookieJar: Map<string, string>, headers: Headers) {
+  for (const setCookieHeader of getSetCookieHeaders(headers)) {
+    const [cookiePair] = setCookieHeader.split(';');
+    const separatorIndex = cookiePair.indexOf('=');
+    if (separatorIndex <= 0) continue;
+
+    const name = cookiePair.slice(0, separatorIndex).trim();
+    const value = cookiePair.slice(separatorIndex + 1).trim();
+    if (!name) continue;
+
+    cookieJar.set(name, value);
+  }
+}
+
+function buildCookieHeader(cookieJar: Map<string, string>) {
+  if (cookieJar.size === 0) return undefined;
+
+  return [...cookieJar.entries()]
+    .map(([name, value]) => `${name}=${value}`)
+    .join('; ');
+}
+
 async function readResponsePreview(res: Response): Promise<Pick<UrlInspection, 'title' | 'sample'>> {
   const decoder = new TextDecoder();
   const contentType = res.headers.get('content-type') ?? '';
@@ -153,15 +186,20 @@ async function readResponsePreview(res: Response): Promise<Pick<UrlInspection, '
 async function inspectUrl(target: string): Promise<UrlInspection> {
   try {
     let currentUrl = target;
+    const cookieJar = new Map<string, string>();
 
     for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
+      const cookieHeader = buildCookieHeader(cookieJar);
       const res = await fetch(currentUrl, {
         redirect: 'manual',
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
         headers: {
+          ...(cookieHeader ? { cookie: cookieHeader } : {}),
           'user-agent': 'Mozilla/5.0 (compatible; TheStackCatalogAudit/1.0)'
         }
       });
+
+      updateCookieJar(cookieJar, res.headers);
 
       if (isRedirectStatus(res.status)) {
         const location = res.headers.get('location');

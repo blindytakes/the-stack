@@ -1,4 +1,8 @@
+import { readFile } from 'node:fs/promises';
+import path from 'node:path';
 import {
+  PERSONAL_FINANCE_TRACKER_CSV_MIME,
+  PERSONAL_FINANCE_TRACKER_FALLBACK_DOWNLOAD_FILENAME,
   PERSONAL_FINANCE_TRACKER_DOWNLOAD_FILENAME,
   PERSONAL_FINANCE_TRACKER_XLSX_MIME
 } from '@/lib/personal-finance-tracker';
@@ -6,11 +10,18 @@ import {
   getPersonalFinanceTrackerGoogleSheetGid,
   getPersonalFinanceTrackerGoogleSheetSource
 } from '@/lib/config/server';
+import { recordPersonalFinanceTrackerDownloadFallback } from '@/lib/metrics';
 
 const GOOGLE_SHEETS_HOST = 'docs.google.com';
 const GOOGLE_SHEET_ID_PATTERN = /^[A-Za-z0-9_-]{20,}$/;
 const GOOGLE_SHEET_GID_PATTERN = /^\d+$/;
 const MAX_DOWNLOAD_BYTES = 10 * 1024 * 1024;
+const FALLBACK_DOWNLOAD_FILE_PATH = path.join(
+  process.cwd(),
+  'public',
+  'downloads',
+  PERSONAL_FINANCE_TRACKER_FALLBACK_DOWNLOAD_FILENAME
+);
 
 type GoogleSheetConfig = {
   sheetId: string;
@@ -20,6 +31,15 @@ type GoogleSheetConfig = {
 type ConfigResolution =
   | { ok: true; config: GoogleSheetConfig }
   | { ok: false; status: number; error: string };
+
+type FallbackReason =
+  | 'missing_config'
+  | 'invalid_config'
+  | 'fetch_error'
+  | 'non_ok_response'
+  | 'oversized_declared_length'
+  | 'invalid_body_size'
+  | 'invalid_xlsx';
 
 export type PersonalFinanceTrackerDownloadResult =
   | { ok: true; body: ArrayBuffer; headers: HeadersInit }
@@ -135,11 +155,65 @@ function buildDownloadHeaders(byteLength: number): HeadersInit {
   };
 }
 
+function buildFallbackDownloadHeaders(byteLength: number): HeadersInit {
+  return {
+    'Cache-Control': 'public, max-age=3600',
+    'Content-Disposition': `attachment; filename="${PERSONAL_FINANCE_TRACKER_FALLBACK_DOWNLOAD_FILENAME}"`,
+    'Content-Length': String(byteLength),
+    'Content-Type': PERSONAL_FINANCE_TRACKER_CSV_MIME,
+    'X-Content-Type-Options': 'nosniff'
+  };
+}
+
+function bufferToArrayBuffer(buffer: Buffer): ArrayBuffer {
+  return buffer.buffer.slice(
+    buffer.byteOffset,
+    buffer.byteOffset + buffer.byteLength
+  ) as ArrayBuffer;
+}
+
+async function getFallbackTrackerDownload(): Promise<PersonalFinanceTrackerDownloadResult> {
+  try {
+    const body = await readFile(FALLBACK_DOWNLOAD_FILE_PATH);
+    return {
+      ok: true,
+      body: bufferToArrayBuffer(body),
+      headers: buildFallbackDownloadHeaders(body.byteLength)
+    };
+  } catch (error) {
+    console.error('[personal-finance-tracker] fallback download failed', {
+      error: error instanceof Error ? error.message : String(error)
+    });
+
+    return {
+      ok: false,
+      status: 503,
+      error: 'Personal finance tracker download is temporarily unavailable.'
+    };
+  }
+}
+
+function getFallbackReasonFromConfigError(error: string): FallbackReason {
+  return error.includes('not configured') ? 'missing_config' : 'invalid_config';
+}
+
+function fallbackTrackerDownload(
+  reason: FallbackReason
+): Promise<PersonalFinanceTrackerDownloadResult> {
+  recordPersonalFinanceTrackerDownloadFallback(reason);
+  return getFallbackTrackerDownload();
+}
+
 export async function getPersonalFinanceTrackerDownload(
   fetcher: typeof fetch = fetch
 ): Promise<PersonalFinanceTrackerDownloadResult> {
   const config = resolvePersonalFinanceTrackerGoogleSheetConfig();
-  if (!config.ok) return config;
+  if (!config.ok) {
+    console.warn('[personal-finance-tracker] Google Sheets source unavailable; using fallback CSV', {
+      error: config.error
+    });
+    return fallbackTrackerDownload(getFallbackReasonFromConfigError(config.error));
+  }
 
   const exportUrl = buildGoogleSheetsXlsxExportUrl(config.config);
 
@@ -153,47 +227,35 @@ export async function getPersonalFinanceTrackerDownload(
     console.error('[personal-finance-tracker] Google Sheets export failed', {
       error: error instanceof Error ? error.message : String(error)
     });
-    return {
-      ok: false,
-      status: 502,
-      error: 'Personal finance tracker download is temporarily unavailable.'
-    };
+    return fallbackTrackerDownload('fetch_error');
   }
 
   if (!response.ok) {
-    return {
-      ok: false,
-      status: 502,
-      error:
-        'Personal finance tracker download is unavailable. Confirm the Google Sheet is shared as view-only.'
-    };
+    console.warn('[personal-finance-tracker] Google Sheets export returned a non-OK response; using fallback CSV', {
+      status: response.status
+    });
+    return fallbackTrackerDownload('non_ok_response');
   }
 
   const declaredLength = parseContentLength(response.headers.get('content-length'));
   if (declaredLength !== null && declaredLength > MAX_DOWNLOAD_BYTES) {
-    return {
-      ok: false,
-      status: 502,
-      error: 'Personal finance tracker download is larger than expected.'
-    };
+    console.warn('[personal-finance-tracker] Google Sheets export is larger than expected; using fallback CSV', {
+      declaredLength
+    });
+    return fallbackTrackerDownload('oversized_declared_length');
   }
 
   const body = await response.arrayBuffer();
   if (body.byteLength === 0 || body.byteLength > MAX_DOWNLOAD_BYTES) {
-    return {
-      ok: false,
-      status: 502,
-      error: 'Personal finance tracker download is larger than expected.'
-    };
+    console.warn('[personal-finance-tracker] Google Sheets export body is invalid size; using fallback CSV', {
+      byteLength: body.byteLength
+    });
+    return fallbackTrackerDownload('invalid_body_size');
   }
 
   if (!hasXlsxMagicBytes(body)) {
-    return {
-      ok: false,
-      status: 502,
-      error:
-        'Personal finance tracker download is not a valid spreadsheet export. Confirm the Google Sheet is shared as view-only.'
-    };
+    console.warn('[personal-finance-tracker] Google Sheets export is not a valid xlsx; using fallback CSV');
+    return fallbackTrackerDownload('invalid_xlsx');
   }
 
   return {

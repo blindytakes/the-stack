@@ -15,6 +15,7 @@ import {
   getPointsAdvisorProgramFromCardSlug
 } from '@/lib/points-advisor';
 import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
+import type { TrackedSource } from '@/lib/tracking';
 
 type CardDetailPageProps = {
   card: CardDetail;
@@ -28,13 +29,15 @@ type CompareCandidate = {
   score: number;
 };
 
+const CARD_DETAIL_AFFILIATE_SOURCE = 'card_detail' satisfies TrackedSource;
+
 function buildApplyHref(card: CardDetail) {
   const outboundApplyUrl = card.affiliateUrl ?? card.applyUrl;
   if (!outboundApplyUrl) return null;
 
   return `/api/affiliate/click?${new URLSearchParams({
     card_slug: card.slug,
-    source: 'card_detail_page',
+    source: CARD_DETAIL_AFFILIATE_SOURCE,
     target: outboundApplyUrl
   }).toString()}`;
 }
@@ -223,7 +226,7 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
     <div className="container-page pt-5 pb-16 md:pt-8">
       <TrackFunnelEventOnView
         event="card_detail_view"
-        properties={{ source: 'card_detail_page', card_slug: card.slug, path: `/cards/${card.slug}` }}
+        properties={{ source: CARD_DETAIL_AFFILIATE_SOURCE, card_slug: card.slug, path: `/cards/${card.slug}` }}
       />
 
       <section className="relative overflow-hidden rounded-[2.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(8,12,20,0.99),rgba(12,18,30,0.97))] px-5 py-5 shadow-[0_28px_90px_rgba(0,0,0,0.3)] md:px-8 md:py-8">
@@ -305,7 +308,7 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
                           <AffiliateLink
                             href={applyHref}
                             cardSlug={card.slug}
-                            source="card_detail_page"
+                            source={CARD_DETAIL_AFFILIATE_SOURCE}
                             className="rounded-[0.9rem] px-3 py-2 text-sm font-medium text-text-secondary transition hover:bg-white/[0.04] hover:text-brand-teal"
                           >
                             Go to issuer offer
@@ -545,7 +548,7 @@ export function CardDetailPage({ card, cards }: CardDetailPageProps) {
               <AffiliateLink
                 href={applyHref}
                 cardSlug={card.slug}
-                source="card_detail_page"
+                source={CARD_DETAIL_AFFILIATE_SOURCE}
                 className="mt-4 inline-flex items-center justify-center rounded-full border border-brand-gold/25 px-4 py-2.5 text-sm font-semibold text-brand-gold transition hover:border-brand-gold/50 hover:text-brand-gold/80"
               >
                 Go to issuer offer

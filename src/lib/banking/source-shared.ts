@@ -6,6 +6,13 @@ const curatedOfferUrlBySlug: Record<string, string> = {
     'https://promo.alliantcreditunion.org/ultimate-opportunity-savings'
 };
 
+const curatedApySourceUrlBySlug: Record<string, string> = {
+  'key-select-checking-500':
+    'https://www.key.com/personal/checking/key-select-checking-account.html',
+  'pnc-virtual-wallet-performance-select-400':
+    'https://www.pnc.com/content/dam/pnc-com/pdf/personal/Checking/fees-vw-performance-select-A.pdf'
+};
+
 export function sortByBonusAmountDesc<T extends BankingBonusListItem>(bonuses: T[]): T[] {
   return [...bonuses].sort(
     (a, b) => b.bonusAmount - a.bonusAmount || b.estimatedNetValue - a.estimatedNetValue
@@ -21,10 +28,15 @@ export function resolveBankingOfferUrl(slug: string, offerUrl?: string) {
   return curatedOfferUrlBySlug[slug] ?? offerUrl;
 }
 
+export function resolveBankingApySourceUrl(slug: string, apySourceUrl?: string) {
+  return curatedApySourceUrlBySlug[slug] ?? apySourceUrl;
+}
+
 export function toBankingBonusListItem(record: BankingBonusRecord): BankingBonusListItem {
   return {
     ...record,
     imageUrl: resolveBankingBrandImageUrl(record.bankName, record.imageUrl),
+    apySourceUrl: resolveBankingApySourceUrl(record.slug, record.apySourceUrl),
     offerUrl: resolveBankingOfferUrl(record.slug, record.offerUrl),
     estimatedNetValue: Number((record.bonusAmount - record.estimatedFees).toFixed(2))
   };

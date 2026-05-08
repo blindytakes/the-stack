@@ -8,6 +8,7 @@ type AppMetrics = {
   newsletterSyncAttempts: Counter;
   newsletterSyncResults: Counter;
   affiliateClicks: Counter;
+  personalFinanceTrackerFallbacks: Counter;
   webVitalHistograms: Record<WebVitalName, Histogram>;
 };
 
@@ -35,6 +36,12 @@ function getAppMetrics() {
     affiliateClicks: meter.createCounter('thestack.affiliate.clicks', {
       description: 'Outbound affiliate/apply clicks'
     }),
+    personalFinanceTrackerFallbacks: meter.createCounter(
+      'thestack.personal_finance_tracker.download_fallbacks',
+      {
+        description: 'Personal finance tracker downloads served from the CSV fallback'
+      }
+    ),
     webVitalHistograms: {
       LCP: meter.createHistogram('thestack.web.lcp', {
         unit: 'ms',
@@ -95,6 +102,12 @@ export function recordAffiliateClick(cardSlug: string, source: string) {
   getAppMetrics().affiliateClicks.add(1, {
     card_slug: cardSlug,
     source
+  });
+}
+
+export function recordPersonalFinanceTrackerDownloadFallback(reason: string) {
+  getAppMetrics().personalFinanceTrackerFallbacks.add(1, {
+    reason
   });
 }
 

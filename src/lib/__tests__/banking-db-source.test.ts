@@ -154,6 +154,23 @@ describe('banking db source', () => {
     });
   });
 
+  it('uses curated APY source URLs for banking offers with issuer redirects', async () => {
+    const now = new Date('2026-04-10T00:00:00.000Z');
+    findFirstMock.mockResolvedValue(
+      createDbBankingBonusRow({
+        slug: 'key-select-checking-500',
+        apySourceUrl:
+          'https://www.key.com/content/kco/us/en/personal/checking/key-select-checking-account.html'
+      })
+    );
+
+    const offer = await getDbBankingBonusBySlug('key-select-checking-500', now);
+
+    expect(offer?.apySourceUrl).toBe(
+      'https://www.key.com/personal/checking/key-select-checking-account.html'
+    );
+  });
+
   it('loads active DB slugs using the same production query filter', async () => {
     const now = new Date('2026-04-10T00:00:00.000Z');
     findManyMock.mockResolvedValue([{ slug: 'offer-a' }, { slug: 'offer-b' }]);

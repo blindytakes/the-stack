@@ -10,6 +10,11 @@ describe('trackedSourceSchema', () => {
     expect(trackedSourceSchema.safeParse('newsletter_page').success).toBe(true);
   });
 
+  it('accepts affiliate redirect sources used across the site', () => {
+    expect(trackedSourceSchema.safeParse('card_detail').success).toBe(true);
+    expect(trackedSourceSchema.safeParse('cards_directory').success).toBe(true);
+  });
+
   it('rejects unknown source values', () => {
     expect(trackedSourceSchema.safeParse('unknown_source').success).toBe(false);
   });

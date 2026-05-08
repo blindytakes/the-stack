@@ -43,14 +43,14 @@ export function PersonalFinanceTrackerDownload() {
               download
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-brand-teal px-6 py-3 text-sm font-semibold text-black shadow-[0_14px_36px_rgba(45,212,191,0.2)] transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
             >
-              <span>Download Tracker (.xlsx)</span>
+              <span>Download Tracker</span>
               <span className="transition-transform group-hover:translate-y-0.5" aria-hidden>
                 ↓
               </span>
             </a>
           </div>
           <p className="mt-3 text-sm text-text-secondary">
-            Downloads a spreadsheet copy for Google Sheets or Excel.
+            Downloads as an Excel workbook when available, with a CSV fallback.
           </p>
         </div>
 

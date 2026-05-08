@@ -1144,7 +1144,7 @@
       "description": "Simple and beginner-friendly if you want flat-rate earning without managing transfer partners or a fee.",
       "network": "discover",
       "foreignTxFee": 0,
-      "applyUrl": "https://www.discover.com/credit-cards/travel/it-miles/",
+      "applyUrl": "https://www.discover.com/credit-cards/travel/",
       "isActive": true,
       "lastVerified": "2026-03-25T00:00:00.000Z",
       "rewards": [

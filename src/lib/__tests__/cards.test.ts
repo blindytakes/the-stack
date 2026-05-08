@@ -632,6 +632,17 @@ describe('toCardRecordFromDb', () => {
 /* ── toCardDetailFromDb (DB mapper regression) ──────────────── */
 
 describe('toCardDetailFromDb', () => {
+  it('uses curated destination URLs for card pages with issuer redirects', () => {
+    const row = makeDbCardDetailRow({
+      slug: 'discover-it-miles',
+      applyUrl: 'https://www.discover.com/credit-cards/travel/it-miles/'
+    });
+
+    const result = toCardDetailFromDb(row);
+
+    expect(result.applyUrl).toBe('https://www.discover.com/credit-cards/travel/');
+  });
+
   it('preserves regularAprMin of 0 (not coerced to undefined)', () => {
     const row = makeDbCardDetailRow({
       regularAprMin: new Prisma.Decimal(0),
