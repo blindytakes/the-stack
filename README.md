@@ -45,7 +45,7 @@ Personal finance tracker download:
 
 Affiliate tracking:
 
-- `AFFILIATE_ALLOWED_HOSTS` (comma-separated allowlist of outbound domains)
+- `AFFILIATE_ALLOWED_HOSTS` (optional comma-separated override for outbound domains; defaults to the curated issuer allowlist in `src/lib/env.ts`)
 
 Analytics:
 

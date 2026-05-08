@@ -62,17 +62,43 @@ const newsletterEnvSchema = z
 
 export type NewsletterEnv = z.infer<typeof newsletterEnvSchema>;
 
-const affiliateEnvSchema = z.object({
-  AFFILIATE_ALLOWED_HOSTS: z
+export const DEFAULT_AFFILIATE_ALLOWED_HOSTS = [
+  'americanexpress.com',
+  'apple.com',
+  'bankofamerica.com',
+  'barclaycardus.com',
+  'bilt.com',
+  'capitalone.com',
+  'chase.com',
+  'citi.com',
+  'discover.com',
+  'fidelity.com',
+  'paypal.com',
+  'robinhood.com',
+  'sofi.com',
+  'usbank.com',
+  'venmo.com',
+  'wellsfargo.com',
+  'wyndhamrewardscreditcard.com'
+] as const;
+
+const affiliateAllowedHostsSchema = z.preprocess(
+  (value) => (typeof value === 'string' && value.trim().length === 0 ? undefined : value),
+  z
     .string()
     .trim()
-    .min(1)
+    .optional()
+    .default(DEFAULT_AFFILIATE_ALLOWED_HOSTS.join(','))
     .transform((value) =>
       value
         .split(',')
         .map((host) => host.trim().toLowerCase())
         .filter(Boolean)
     )
+);
+
+const affiliateEnvSchema = z.object({
+  AFFILIATE_ALLOWED_HOSTS: affiliateAllowedHostsSchema
 });
 
 export type AffiliateEnv = z.infer<typeof affiliateEnvSchema>;

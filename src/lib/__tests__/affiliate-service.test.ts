@@ -86,10 +86,10 @@ describe('resolveAffiliateClickRedirect', () => {
     );
   });
 
-  it('fails closed outside development when the allowlist env is missing', () => {
+  it('fails closed outside development when the allowlist config is invalid', () => {
     getAffiliateEnvMock.mockReturnValue({
       ok: false,
-      errors: ['Required']
+      errors: ['AFFILIATE_ALLOWED_HOSTS must include at least one host']
     });
 
     const result = resolveAffiliateClickRedirect(
