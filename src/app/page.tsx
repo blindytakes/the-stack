@@ -400,8 +400,8 @@ export default async function HomePage() {
             Build your credit card + bank bonus plan in 2 minutes
           </h1>
           <p className="max-w-[48ch] text-lg font-medium leading-relaxed text-text-secondary md:text-xl lg:max-w-[58ch]">
-            The Stack tells you what to open first, when to apply, and how to sequence cards and
-            bank bonuses around 5/24, spend, and deposit requirements.
+            Most sites show you offers. The Stack turns your answers into a step-by-step plan:
+            which bonuses to pursue first, when to apply, and how to earn them.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
