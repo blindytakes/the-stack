@@ -4,6 +4,8 @@ import { isLowValueCardImageUrl } from '../entity-image-source';
 
 const AMEX_GREEN_CARD_ART_URL =
   'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/green-card.png';
+const CHASE_UNITED_QUEST_CARD_ART_URL =
+  'https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/united_quest_card_tilted.png';
 
 describe('resolveCardBrandImageUrl', () => {
   it('uses curated local issuer assets for previously weak fallback issuers', () => {
@@ -70,6 +72,9 @@ describe('resolveCardBrandImageUrl', () => {
     expect(resolveCardBrandImageUrl('barclays-aadvantage-aviator-red', 'Barclays')).toBe(
       '/card-logos/aviator-red.svg'
     );
+    expect(resolveCardBrandImageUrl('chase-united-quest', 'Chase')).toBe(
+      CHASE_UNITED_QUEST_CARD_ART_URL
+    );
   });
 
   it('replaces Chase header/footer logo URLs with the curated card logo', () => {
@@ -96,6 +101,9 @@ describe('resolveCardBrandImageUrl', () => {
     ).toBe(
       'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
     );
+  });
+
+  it('replaces the Chase logo with United Quest card art', () => {
     expect(
       resolveCardBrandImageUrl(
         'chase-united-quest',
@@ -103,9 +111,7 @@ describe('resolveCardBrandImageUrl', () => {
         'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg',
         'United Quest Card'
       )
-    ).toBe(
-      'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg'
-    );
+    ).toBe(CHASE_UNITED_QUEST_CARD_ART_URL);
   });
 });
 
@@ -124,6 +130,10 @@ describe('resolveCardImage', () => {
     });
     expect(resolveCardImage('alaska-airlines-visa-signature', 'Bank of America')).toMatchObject({
       imageUrl: '/card-logos/alaska-airlines.svg',
+      imageAssetType: 'card_art'
+    });
+    expect(resolveCardImage('chase-united-quest', 'Chase')).toMatchObject({
+      imageUrl: CHASE_UNITED_QUEST_CARD_ART_URL,
       imageAssetType: 'card_art'
     });
     expect(resolveCardImage('discover-it-cash-back', 'Discover')).toMatchObject({

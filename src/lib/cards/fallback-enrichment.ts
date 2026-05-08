@@ -36,6 +36,8 @@ export const CHASE_CARD_LOGO_URL =
   'https://www.chase.com/content/dam/unified-assets/logo/chase/chase-logo/additional-file-formats/logo_chase_headerfooter.svg';
 const AMEX_GREEN_CARD_ART_URL =
   'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/green-card.png';
+const CHASE_UNITED_QUEST_CARD_ART_URL =
+  'https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/united_quest_card_tilted.png';
 const LEGACY_WELLS_FARGO_LOGO_URL =
   'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png';
 
@@ -65,7 +67,8 @@ const cardBrandImageUrlBySlug: Record<string, string> = {
   'barclays-aadvantage-aviator-red': '/card-logos/aviator-red.svg',
   'barclays-jetblue-card': '/card-logos/jetblue.svg',
   'barclays-jetblue-plus': '/card-logos/jetblue.svg',
-  'barclays-wyndham-earner-plus': '/bank-logos/barclays.svg'
+  'barclays-wyndham-earner-plus': '/bank-logos/barclays.svg',
+  'chase-united-quest': CHASE_UNITED_QUEST_CARD_ART_URL
 };
 
 function normalizeKey(value: string) {
