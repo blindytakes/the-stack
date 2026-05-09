@@ -132,6 +132,85 @@ function dedupeBenefits(benefits: FallbackBenefit[]) {
   });
 }
 
+function unitedAnnualCreditBenefits(source: CardFallbackSource): FallbackBenefit[] {
+  if (includesToken(source, 'gateway')) return [];
+
+  if (includesToken(source, 'club-business')) {
+    return [
+      benefit(
+        'TRAVEL_CREDITS',
+        'United Club Business Annual Partner Credits',
+        'Published annual partner credits include eligible hotel, rideshare, Avis or Budget, Instacart, JSX, and FareLock credits.',
+        { estimatedValue: 940 }
+      )
+    ];
+  }
+
+  if (includesToken(source, 'united-business')) {
+    return [
+      benefit(
+        'TRAVEL_CREDITS',
+        'United Business Annual Partner Credits',
+        'Published annual partner credits include eligible United flight, hotel, rideshare, Avis or Budget, Instacart, JSX, and FareLock credits.',
+        { estimatedValue: 620 }
+      )
+    ];
+  }
+
+  if (includesToken(source, 'club')) {
+    return [
+      benefit(
+        'TRAVEL_CREDITS',
+        'United Club Annual Partner Credits',
+        'Published annual partner credits include eligible hotel, rideshare, Avis or Budget, Instacart, and JSX credits.',
+        { estimatedValue: 890 }
+      ),
+      benefit(
+        'TSA_GLOBAL_ENTRY',
+        'Global Entry, TSA PreCheck, or NEXUS Fee Credit',
+        'Receive a statement credit of up to $120 every four years for a qualifying application fee.',
+        { estimatedValue: 30 }
+      )
+    ];
+  }
+
+  if (includesToken(source, 'quest')) {
+    return [
+      benefit(
+        'TRAVEL_CREDITS',
+        'United Quest Annual Partner Credits',
+        'Published annual partner credits include the United TravelBank credit plus eligible hotel, rideshare, Avis or Budget, Instacart, and JSX credits.',
+        { estimatedValue: 860 }
+      ),
+      benefit(
+        'TSA_GLOBAL_ENTRY',
+        'Global Entry, TSA PreCheck, or NEXUS Fee Credit',
+        'Receive a statement credit of up to $120 every four years for a qualifying application fee.',
+        { estimatedValue: 30 }
+      )
+    ];
+  }
+
+  if (includesToken(source, 'explorer')) {
+    return [
+      benefit(
+        'TRAVEL_CREDITS',
+        'United Explorer Annual Partner Credits',
+        'Published annual partner credits include eligible United flight, hotel, rideshare, Avis or Budget, Instacart, and JSX credits.',
+        { estimatedValue: 530 }
+      ),
+      benefit(
+        'TSA_GLOBAL_ENTRY',
+        'Global Entry, TSA PreCheck, or NEXUS Fee Credit',
+        'Receive a statement credit of up to $120 every four years for a qualifying application fee.',
+        { estimatedValue: 30 }
+      )
+    ];
+  }
+
+  return [];
+}
+
 function genericBenefits(source: CardFallbackSource): FallbackBenefit[] {
   const benefits: FallbackBenefit[] = [];
 
@@ -272,6 +351,8 @@ function chaseBenefits(source: CardFallbackSource): FallbackBenefit[] {
   const benefits: FallbackBenefit[] = [];
 
   if (includesToken(source, 'united')) {
+    benefits.push(...unitedAnnualCreditBenefits(source));
+
     if (!includesToken(source, 'gateway')) {
       benefits.push(
         benefit(

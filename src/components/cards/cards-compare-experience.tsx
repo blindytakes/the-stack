@@ -25,6 +25,7 @@ import {
   cardComparisonSpendCategories,
   defaultCardComparisonAssumptions,
   normalizeCardComparisonAssumptions,
+  type CardComparisonBenefitBreakdown,
   type CardComparisonCardSummary,
   type CardComparisonSpendCategory
 } from '@/lib/card-compare';
@@ -465,6 +466,203 @@ function SummaryMetric({
   );
 }
 
+function formatBenefitCategoryLabel(category: string) {
+  return category
+    .replace(/_/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function BenefitValuationRow({
+  benefit,
+  onIncludedChange,
+  onAnnualValueChange
+}: {
+  benefit: CardComparisonBenefitBreakdown;
+  onIncludedChange: (key: string, included: boolean) => void;
+  onAnnualValueChange: (key: string, value: number) => void;
+}) {
+  const listedValue =
+    benefit.estimatedValue != null ? `Listed ${formatMoney(benefit.estimatedValue)}/yr` : 'No listed cash value';
+
+  return (
+    <div
+      data-testid="compare-benefit-row"
+      data-benefit-key={benefit.key}
+      className={`rounded-[1rem] border px-3 py-3 transition sm:px-3.5 ${
+        benefit.included
+          ? 'border-brand-teal/30 bg-brand-teal/8'
+          : 'border-white/8 bg-black/12'
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${
+                benefit.isCredit
+                  ? 'border-brand-gold/30 bg-brand-gold/10 text-brand-gold'
+                  : 'border-white/12 bg-white/[0.04] text-text-muted'
+              }`}
+            >
+              {benefit.isCredit ? 'Credit' : 'Perk'}
+            </span>
+            {benefit.hasCustomValue ? (
+              <span className="rounded-full border border-brand-teal/25 bg-brand-teal/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-brand-teal">
+                Custom
+              </span>
+            ) : null}
+          </div>
+          <p className="mt-2 text-sm font-semibold leading-5 text-text-primary">{benefit.name}</p>
+          <p className="mt-1 text-xs leading-5 text-text-muted">
+            {formatBenefitCategoryLabel(benefit.category)} · {listedValue}
+          </p>
+          <p className="mt-1 line-clamp-2 text-xs leading-5 text-text-secondary">{benefit.description}</p>
+        </div>
+
+        <button
+          type="button"
+          role="switch"
+          aria-checked={benefit.included}
+          onClick={() => onIncludedChange(benefit.key, !benefit.included)}
+          className={`relative mt-1 h-7 w-12 shrink-0 rounded-full border transition ${
+            benefit.included
+              ? 'border-brand-teal/70 bg-brand-teal/30'
+              : 'border-white/15 bg-white/[0.06]'
+          }`}
+        >
+          <span
+            className={`absolute top-1 h-5 w-5 rounded-full bg-text-primary shadow transition ${
+              benefit.included ? 'left-6' : 'left-1'
+            }`}
+          />
+          <span className="sr-only">
+            {benefit.included ? `Exclude ${benefit.name}` : `Include ${benefit.name}`}
+          </span>
+        </button>
+      </div>
+
+      <label className="mt-3 grid grid-cols-[1fr_auto] items-center gap-2 rounded-[0.9rem] border border-white/8 bg-black/20 px-3 py-2 sm:gap-3">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-text-muted sm:text-[11px] sm:tracking-[0.16em]">
+          Counted value
+        </span>
+        <div className="flex w-24 items-center rounded-full border border-white/10 bg-black/20 px-2 transition focus-within:border-white/30 sm:w-28">
+          <span className="text-sm font-semibold text-text-muted">$</span>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={Math.round(benefit.annualValue)}
+            disabled={!benefit.included}
+            onChange={(event) =>
+              onAnnualValueChange(benefit.key, Number(event.target.value.replace(/[^\d]/g, '')) || 0)
+            }
+            className="min-w-0 flex-1 bg-transparent px-1 py-1.5 text-right text-sm font-semibold text-text-primary outline-none disabled:text-text-muted"
+          />
+        </div>
+      </label>
+    </div>
+  );
+}
+
+function BenefitValuationCard({
+  label,
+  summary,
+  onIncludedChange,
+  onAnnualValueChange
+}: {
+  label: string;
+  summary: CardComparisonCardSummary;
+  onIncludedChange: (key: string, included: boolean) => void;
+  onAnnualValueChange: (key: string, value: number) => void;
+}) {
+  return (
+    <div className="rounded-[1.15rem] border border-white/10 bg-black/15 p-3 sm:p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-white/8 pb-3">
+        <div>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">{label}</p>
+          <h3 className="mt-1 text-lg font-semibold leading-tight text-text-primary">{summary.card.name}</h3>
+        </div>
+        <div className="text-right">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+            Counted benefits
+          </p>
+          <p className="mt-1 text-xl font-semibold text-brand-teal">{formatMoney(summary.usedBenefitsValue)}</p>
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+        <SummaryMetric
+          label="Credits"
+          value={summary.usedCreditsValue > 0 ? formatMoney(summary.usedCreditsValue) : 'None'}
+          detail="Cash-like credits counted in the model"
+        />
+        <SummaryMetric
+          label="Perks"
+          value={summary.usedPerksValue > 0 ? formatMoney(summary.usedPerksValue) : 'None'}
+          detail="Optional user-valued benefits"
+        />
+      </div>
+
+      <div className="mt-3 space-y-2.5">
+        {summary.benefitBreakdown.length > 0 ? (
+          summary.benefitBreakdown.map((benefit) => (
+            <BenefitValuationRow
+              key={benefit.key}
+              benefit={benefit}
+              onIncludedChange={onIncludedChange}
+              onAnnualValueChange={onAnnualValueChange}
+            />
+          ))
+        ) : (
+          <div className="rounded-[1rem] border border-white/8 bg-black/12 px-3.5 py-4 text-sm text-text-muted">
+            No listed credits or benefits in the current card data.
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function BenefitValuationSection({
+  summaryA,
+  summaryB,
+  onIncludedChange,
+  onAnnualValueChange
+}: {
+  summaryA: CardComparisonCardSummary;
+  summaryB: CardComparisonCardSummary;
+  onIncludedChange: (key: string, included: boolean) => void;
+  onAnnualValueChange: (key: string, value: number) => void;
+}) {
+  return (
+    <section className="mt-5 rounded-[1.25rem] border border-white/10 bg-white/[0.025] p-3 sm:p-4">
+      <div className="max-w-3xl">
+        <p className="text-sm font-semibold text-text-secondary">Credits &amp; benefits</p>
+        <p className="mt-1 text-xs leading-5 text-text-muted">
+          Count the credits and perks you actually expect to use. Credit rows start at listed annual value;
+          edit them down for merchant, timing, or travel friction.
+        </p>
+      </div>
+
+      <div className="mt-4 grid gap-4 xl:grid-cols-2">
+        <BenefitValuationCard
+          label="Card A"
+          summary={summaryA}
+          onIncludedChange={onIncludedChange}
+          onAnnualValueChange={onAnnualValueChange}
+        />
+        <BenefitValuationCard
+          label="Card B"
+          summary={summaryB}
+          onIncludedChange={onIncludedChange}
+          onAnnualValueChange={onAnnualValueChange}
+        />
+      </div>
+    </section>
+  );
+}
+
 function SelectedCompareCardPreview({ card }: { card: CardRecord | null }) {
   if (!card) {
     return (
@@ -559,13 +757,13 @@ function ComparisonCardHero({
         <SummaryMetric
           label="Year One"
           value={formatMoney(summary.firstYearValue)}
-          detail="Welcome offer + annual rewards + usable credits - fee"
+          detail="Welcome offer + annual rewards + counted benefits - fee"
           tone={winnerTone(side, firstYearWinner)}
         />
         <SummaryMetric
           label="After Year 1"
           value={formatMoney(summary.ongoingValue)}
-          detail="Annual rewards + usable credits - fee"
+          detail="Annual rewards + counted benefits - fee"
           tone={winnerTone(side, ongoingWinner)}
         />
       </div>
@@ -582,9 +780,9 @@ function ComparisonCardHero({
           detail="Current listed first-year bonus value"
         />
         <SummaryMetric
-          label="Usable Credits"
-          value={summary.usedCreditsValue > 0 ? formatMoney(summary.usedCreditsValue) : 'None'}
-          detail="Discounted by your credit-usage assumption"
+          label="Credits + Perks"
+          value={summary.usedBenefitsValue > 0 ? formatMoney(summary.usedBenefitsValue) : 'None'}
+          detail={`${formatMoney(summary.usedCreditsValue)} credits + ${formatMoney(summary.usedPerksValue)} perks`}
         />
         <SummaryMetric
           label="Bonus Spend"
@@ -660,16 +858,90 @@ function CategoryTable({
     <section className="rounded-[1.8rem] border border-white/10 bg-[linear-gradient(180deg,rgba(12,18,30,0.98),rgba(10,14,22,0.98))] p-5 md:p-6">
       <div className="w-full">
         <p className="text-[10px] uppercase tracking-[0.22em] text-brand-gold">Spend Mix Math</p>
-        <h3 className="mt-2 font-heading text-4xl leading-[0.98] text-text-primary md:text-5xl xl:whitespace-nowrap">
+        <h3 className="mt-2 font-heading text-3xl leading-[0.98] text-text-primary md:text-5xl xl:whitespace-nowrap">
           Where the value actually comes from
         </h3>
         <p className="mt-3 text-base leading-7 text-text-secondary xl:whitespace-nowrap">
           Category returns are based on the spend mix you entered, your point-value assumption, and
-          a discounted view of recurring credits.
+          the benefits you chose to count.
         </p>
       </div>
 
-      <div className="mt-5 overflow-hidden rounded-[1.2rem] border border-white/8 bg-black/15">
+      <div className="mt-5 space-y-3 md:hidden">
+        {summaryA.categoryBreakdown.map((rowA) => {
+          const rowB = summaryB.categoryBreakdown.find((item) => item.category === rowA.category);
+          const winner =
+            rowB == null
+              ? 'tie'
+              : rowA.annualValue === rowB.annualValue
+                ? 'tie'
+                : rowA.annualValue > rowB.annualValue
+                  ? 'a'
+                  : 'b';
+
+          return (
+            <div key={rowA.category} className="rounded-[1.05rem] border border-white/8 bg-black/15 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-text-primary">{spendLabels[rowA.category]}</p>
+                  <p className="mt-1 text-xs leading-5 text-text-muted">{rowA.rewardLabel}</p>
+                </div>
+                <p className="shrink-0 text-sm font-semibold text-text-secondary">
+                  {formatMoney(rowA.annualSpend)}
+                </p>
+              </div>
+
+              <div className="mt-3 grid gap-2">
+                <div className="rounded-[0.9rem] border border-white/8 bg-white/[0.025] px-3 py-2.5">
+                  <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+                    {compactVerdictCardName(summaryA.card.name)}
+                  </p>
+                  <p className={`mt-1 text-base font-semibold ${winnerTone('a', winner)}`}>
+                    {formatMoney(rowA.annualValue)}
+                  </p>
+                  <p className="mt-0.5 text-xs text-text-muted">{rowA.effectiveReturnPercent.toFixed(2)}%</p>
+                </div>
+                <div className="rounded-[0.9rem] border border-white/8 bg-white/[0.025] px-3 py-2.5">
+                  <p className="truncate text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+                    {compactVerdictCardName(summaryB.card.name)}
+                  </p>
+                  <p className={`mt-1 text-base font-semibold ${winnerTone('b', winner)}`}>
+                    {formatMoney(rowB?.annualValue ?? 0)}
+                  </p>
+                  <p className="mt-0.5 text-xs text-text-muted">
+                    {(rowB?.effectiveReturnPercent ?? 0).toFixed(2)}%
+                  </p>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        <div className="rounded-[1.05rem] border border-brand-gold/25 bg-[linear-gradient(90deg,rgba(212,168,83,0.13),rgba(212,168,83,0.055)_42%,rgba(255,255,255,0.035))] p-4 shadow-[inset_0_1px_0_rgba(212,168,83,0.14)]">
+          <p className="font-semibold text-brand-gold">Total annual spend</p>
+          <p className="mt-1 text-sm text-text-secondary">{formatMoney(summaryA.annualSpendTotal)} across this mix</p>
+          <div className="mt-3 grid gap-2">
+            <div className="flex items-center justify-between gap-3 rounded-[0.9rem] border border-white/8 bg-black/15 px-3 py-2.5">
+              <span className="truncate text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+                {compactVerdictCardName(summaryA.card.name)}
+              </span>
+              <span className={`font-semibold ${winnerTone('a', totalRewardWinner)}`}>
+                {formatMoney(summaryA.annualRewardsValue)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-3 rounded-[0.9rem] border border-white/8 bg-black/15 px-3 py-2.5">
+              <span className="truncate text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">
+                {compactVerdictCardName(summaryB.card.name)}
+              </span>
+              <span className={`font-semibold ${winnerTone('b', totalRewardWinner)}`}>
+                {formatMoney(summaryB.annualRewardsValue)}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 hidden overflow-hidden rounded-[1.2rem] border border-white/8 bg-black/15 md:block">
         <div className="grid grid-cols-[1.2fr_0.7fr_1fr_1fr] gap-3 border-b border-white/8 px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
           <span>Category</span>
           <span>Annual Spend</span>
@@ -790,6 +1062,37 @@ export function CardsCompareExperience({
     });
   }
 
+  function handleBenefitIncludedChange(key: string, included: boolean) {
+    setAssumptions((current) =>
+      normalizeCardComparisonAssumptions({
+        ...current,
+        benefitValuations: {
+          ...current.benefitValuations,
+          [key]: {
+            ...current.benefitValuations[key],
+            included
+          }
+        }
+      })
+    );
+  }
+
+  function handleBenefitAnnualValueChange(key: string, value: number) {
+    setAssumptions((current) =>
+      normalizeCardComparisonAssumptions({
+        ...current,
+        benefitValuations: {
+          ...current.benefitValuations,
+          [key]: {
+            ...current.benefitValuations[key],
+            included: true,
+            annualValue: value
+          }
+        }
+      })
+    );
+  }
+
   const loading = detailA.loading || detailB.loading;
   const error = detailA.error || detailB.error;
   const compareSourcePath = slugA && slugB ? buildComparisonHref(slugA, slugB) : null;
@@ -867,8 +1170,8 @@ export function CardsCompareExperience({
           <div className="mt-8 rounded-[1.5rem] border border-white/10 bg-white/[0.03] p-4 md:p-5">
             <div className="text-center md:text-left">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-muted">Assumptions</p>
-                <h2 className="mt-2 text-2xl font-semibold text-text-primary">Pressure-test the math</h2>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-muted">Monthly spend</p>
+                <h2 className="mt-2 text-2xl font-semibold text-text-primary">Start with spending categories</h2>
               </div>
             </div>
 
@@ -889,7 +1192,7 @@ export function CardsCompareExperience({
               <p className="mb-4 text-sm font-semibold text-text-secondary">
                 Reward assumptions
               </p>
-              <div className="grid gap-4 lg:grid-cols-2">
+              <div className="grid gap-4">
                 <label className="rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-4">
                   <div className="flex items-center justify-between gap-3">
                     <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
@@ -921,40 +1224,17 @@ export function CardsCompareExperience({
                     if you redeem mostly for cash, statement credits, or simple portal bookings.
                   </p>
                 </label>
-
-                <label className="rounded-[1.1rem] border border-white/10 bg-white/[0.03] px-4 py-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                      Credit Usage
-                    </span>
-                    <span className="text-sm font-semibold text-text-primary">
-                      {assumptions.creditUsagePercent}%
-                    </span>
-                  </div>
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    step={5}
-                    value={assumptions.creditUsagePercent}
-                    onChange={(event) =>
-                      setAssumptions((current) =>
-                        normalizeCardComparisonAssumptions({
-                          ...current,
-                          creditUsagePercent: Number(event.target.value)
-                        })
-                      )
-                    }
-                    className="mt-4 w-full accent-brand-gold"
-                  />
-                  <p className="mt-2 text-xs leading-5 text-text-muted">
-                    Sets how much of each card&apos;s recurring credits you realistically expect to use.
-                    At 70%, a $300 annual credit counts as $210 of value. Lower it if credits require
-                    merchants, timing, or habits you may not naturally use.
-                  </p>
-                </label>
               </div>
             </section>
+
+            {comparison ? (
+              <BenefitValuationSection
+                summaryA={comparison.a}
+                summaryB={comparison.b}
+                onIncludedChange={handleBenefitIncludedChange}
+                onAnnualValueChange={handleBenefitAnnualValueChange}
+              />
+            ) : null}
           </div>
         </div>
       </section>
@@ -1020,7 +1300,7 @@ export function CardsCompareExperience({
                 <span className="font-semibold text-text-primary">
                   {formatMoney(comparison.breakevenAnnualSpend)}
                 </span>{' '}
-                per year in this spend mix to overcome the fee and credit gap.
+                per year in this spend mix to overcome the fee and benefit gap.
               </p>
             ) : null}
           </section>

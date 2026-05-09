@@ -998,12 +998,13 @@
       "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/united_explorer_card_tilted.png",
       "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/united-explorer",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-05-08T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
-          "rate": 2,
-          "rateType": "miles"
+          "rate": 3,
+          "rateType": "miles",
+          "notes": "3X miles on eligible United purchases; 2X on hotel stays booked with the hotel."
         },
         {
           "category": "dining",
@@ -1018,10 +1019,11 @@
       ],
       "signUpBonuses": [
         {
-          "bonusValue": 600,
+          "bonusValue": 800,
           "bonusType": "miles",
-          "displayHeadline": "60,000 bonus miles",
-          "bonusPoints": 60000,
+          "displayHeadline": "Earn up to 80,000 bonus miles",
+          "displayDescription": "Earn 70,000 bonus miles after spending $3,000 in the first 3 months, plus 10,000 bonus miles after adding an authorized user in the first 3 months.",
+          "bonusPoints": 80000,
           "spendRequired": 3000,
           "spendPeriodDays": 90,
           "isCurrentOffer": true

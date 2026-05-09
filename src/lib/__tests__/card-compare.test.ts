@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { CardDetail } from '../cards';
 import {
+  buildCardBenefitValuationKey,
   buildCardComparison,
   buildCardComparisonCardSummary,
   defaultCardComparisonAssumptions
@@ -63,6 +64,7 @@ describe('card-compare', () => {
       gas: 160,
       general: 920
     });
+    expect(defaultCardComparisonAssumptions.benefitValuations).toEqual({});
   });
 
   it('builds first-year and ongoing value using rewards, credits, fees, and the welcome offer', () => {
@@ -92,19 +94,119 @@ describe('card-compare', () => {
         gas: 0,
         general: 1000
       },
-      creditUsagePercent: 50,
       pointValueCents: 1.5
     });
 
     expect(comparison.a.annualRewardsValue).toBe(240);
-    expect(comparison.a.usedCreditsValue).toBe(100);
-    expect(comparison.a.firstYearValue).toBe(1045);
-    expect(comparison.a.ongoingValue).toBe(245);
+    expect(comparison.a.usedCreditsValue).toBe(200);
+    expect(comparison.a.firstYearValue).toBe(1145);
+    expect(comparison.a.ongoingValue).toBe(345);
 
     expect(comparison.b.annualRewardsValue).toBe(180);
     expect(comparison.b.firstYearValue).toBe(380);
     expect(comparison.b.ongoingValue).toBe(180);
     expect(comparison.overallWinner).toBe('a');
+  });
+
+  it('uses line-item benefit valuations for credits and optional perks', () => {
+    const cardA = createCard({
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [{ category: 'all', rate: 0, rateType: 'cashback' }],
+      signUpBonuses: [],
+      benefits: [
+        {
+          category: 'travel credits',
+          name: '$200 United TravelBank Credit',
+          description: 'Annual United TravelBank credit.',
+          estimatedValue: 200
+        },
+        {
+          category: 'airline perks',
+          name: 'Free checked bags',
+          description: 'Checked-bag benefit on eligible itineraries.'
+        }
+      ]
+    });
+    const cardB = createCard({
+      slug: 'card-b',
+      name: 'Card B',
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [{ category: 'all', rate: 0, rateType: 'cashback' }],
+      signUpBonuses: []
+    });
+    const checkedBagKey = buildCardBenefitValuationKey(cardA, cardA.benefits[1]);
+
+    const comparison = buildCardComparison(cardA, cardB, {
+      monthlySpend: {
+        dining: 0,
+        groceries: 0,
+        travel: 0,
+        gas: 0,
+        general: 0
+      },
+      benefitValuations: {
+        [checkedBagKey]: {
+          included: true,
+          annualValue: 120
+        }
+      }
+    });
+
+    expect(comparison.a.usedCreditsValue).toBe(200);
+    expect(comparison.a.usedPerksValue).toBe(120);
+    expect(comparison.a.usedBenefitsValue).toBe(320);
+    expect(comparison.a.ongoingValue).toBe(320);
+  });
+
+  it('lets users exclude or override individual credit values', () => {
+    const cardA = createCard({
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [{ category: 'all', rate: 0, rateType: 'cashback' }],
+      signUpBonuses: [],
+      benefits: [
+        {
+          category: 'travel credits',
+          name: '$200 United TravelBank Credit',
+          description: 'Annual United TravelBank credit.',
+          estimatedValue: 200
+        }
+      ]
+    });
+    const cardB = createCard({
+      slug: 'card-b',
+      name: 'Card B',
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [{ category: 'all', rate: 0, rateType: 'cashback' }],
+      signUpBonuses: []
+    });
+    const creditKey = buildCardBenefitValuationKey(cardA, cardA.benefits[0]);
+
+    const excludedComparison = buildCardComparison(cardA, cardB, {
+      benefitValuations: {
+        [creditKey]: {
+          included: false
+        }
+      }
+    });
+    const customComparison = buildCardComparison(cardA, cardB, {
+      benefitValuations: {
+        [creditKey]: {
+          included: true,
+          annualValue: 180
+        }
+      }
+    });
+
+    expect(excludedComparison.a.usedCreditsValue).toBe(0);
+    expect(customComparison.a.usedCreditsValue).toBe(180);
   });
 
   it('handles capped category rewards by falling back to the base earn rate after the cap', () => {
@@ -217,8 +319,7 @@ describe('card-compare', () => {
         travel: 0,
         gas: 0,
         general: 2000
-      },
-      creditUsagePercent: 100
+      }
     });
 
     expect(comparison.firstYearWinner).toBe('a');
@@ -279,13 +380,12 @@ describe('card-compare', () => {
         travel: 0,
         gas: 0,
         general: 1000
-      },
-      creditUsagePercent: 50
+      }
     });
 
     expect(summary.annualRewardsValue).toBe(240);
-    expect(summary.usedCreditsValue).toBe(90);
-    expect(summary.firstYearValue).toBe(835);
-    expect(summary.ongoingValue).toBe(235);
+    expect(summary.usedCreditsValue).toBe(180);
+    expect(summary.firstYearValue).toBe(925);
+    expect(summary.ongoingValue).toBe(325);
   });
 });

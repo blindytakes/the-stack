@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { resolveCardBrandImageUrl, resolveCardImage } from '../cards/fallback-enrichment';
+import {
+  resolveCardBrandImageUrl,
+  resolveCardFallbackBenefits,
+  resolveCardImage
+} from '../cards/fallback-enrichment';
 import { isLowValueCardImageUrl } from '../entity-image-source';
 
 const AMEX_GREEN_CARD_ART_URL =
@@ -199,5 +203,59 @@ describe('resolveCardImage', () => {
     ).toEqual({
       imageAssetType: 'text_fallback'
     });
+  });
+});
+
+describe('resolveCardFallbackBenefits', () => {
+  it('prices United Quest recurring credits for comparison fallback math', () => {
+    const benefits = resolveCardFallbackBenefits({
+      slug: 'chase-united-quest',
+      issuer: 'Chase',
+      name: 'United Quest Card',
+      cardType: 'personal',
+      annualFee: 350,
+      foreignTxFee: 0,
+      rewardType: 'miles',
+      topCategories: ['travel', 'dining', 'all']
+    });
+
+    expect(benefits).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          category: 'TRAVEL_CREDITS',
+          name: 'United Quest Annual Partner Credits',
+          estimatedValue: 860
+        }),
+        expect.objectContaining({
+          category: 'TSA_GLOBAL_ENTRY',
+          name: 'Global Entry, TSA PreCheck, or NEXUS Fee Credit',
+          estimatedValue: 30
+        })
+      ])
+    );
+  });
+
+  it('prices United business-card partner credits without trusted traveler value', () => {
+    const benefits = resolveCardFallbackBenefits({
+      slug: 'chase-united-business',
+      issuer: 'Chase',
+      name: 'United Business Card',
+      cardType: 'business',
+      annualFee: 150,
+      foreignTxFee: 0,
+      rewardType: 'miles',
+      topCategories: ['travel', 'all']
+    });
+
+    expect(benefits).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          category: 'TRAVEL_CREDITS',
+          name: 'United Business Annual Partner Credits',
+          estimatedValue: 620
+        })
+      ])
+    );
+    expect(benefits.some((benefit) => benefit.category === 'TSA_GLOBAL_ENTRY')).toBe(false);
   });
 });

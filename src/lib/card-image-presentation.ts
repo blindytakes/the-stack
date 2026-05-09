@@ -50,6 +50,11 @@ const presentationBySlug: Record<string, CardImagePresentation> = {
     scale: 1.02,
     imgClassName: 'bg-transparent p-0'
   },
+  'chase-united-quest': {
+    fit: 'contain',
+    scale: 0.98,
+    imgClassName: 'bg-transparent p-0'
+  },
   'discover-it-cash-back': {
     scale: 1.02,
     imgClassName: 'bg-transparent p-0'

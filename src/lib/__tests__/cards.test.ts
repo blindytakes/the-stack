@@ -567,6 +567,22 @@ describe('toCardRecordFromDb', () => {
     expect(result.plannerBenefitsValue).toBe(396);
   });
 
+  it('derives United recurring credits from fallback benefits when DB benefits are empty', () => {
+    const row = makeDbCardRow({
+      slug: 'chase-united-quest',
+      issuer: 'Chase',
+      name: 'United Quest Card',
+      annualFee: new Prisma.Decimal(350),
+      foreignTxFee: new Prisma.Decimal(0),
+      benefits: []
+    });
+
+    const result = toCardRecordFromDb(row);
+
+    expect(result.offsettingCreditsValue).toBe(890);
+    expect(result.totalBenefitsValue).toBe(890);
+  });
+
   it('applies realization haircuts to restrictive planner benefits', () => {
     const row = makeDbCardRow({
       benefits: [

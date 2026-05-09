@@ -15,7 +15,7 @@
       "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/united_gateway_card_tilted.png",
       "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/united-gateway",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-05-08T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on United purchases." },
         { "category": "gas", "rate": 2, "rateType": "miles", "notes": "2X miles at gas stations." },
@@ -23,11 +23,11 @@
       ],
       "signUpBonuses": [
         {
-          "bonusValue": 300,
+          "bonusValue": 400,
           "bonusType": "miles",
-          "displayHeadline": "30,000 bonus miles",
-          "displayDescription": "Plus an additional 10,000 bonus miles after adding an authorized user in the first 3 months.",
-          "bonusPoints": 30000,
+          "displayHeadline": "Earn up to 40,000 bonus miles",
+          "displayDescription": "Earn 30,000 bonus miles after spending $1,000 in the first 3 months, plus 10,000 bonus miles after adding an authorized user in the first 3 months.",
+          "bonusPoints": 40000,
           "spendRequired": 1000,
           "spendPeriodDays": 90,
           "isCurrentOffer": true
@@ -49,11 +49,24 @@
       "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/united_quest_card_tilted.png",
       "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/united-quest",
       "isActive": true,
-      "lastVerified": "2026-04-03T00:00:00.000Z",
+      "lastVerified": "2026-05-08T00:00:00.000Z",
       "rewards": [
-        { "category": "travel", "rate": 3, "rateType": "miles", "notes": "3X miles on eligible United purchases." },
+        { "category": "travel", "rate": 4, "rateType": "miles", "notes": "4X miles on eligible United purchases; 2X on other travel; 5X on eligible Renowned Hotels and Resorts stays." },
         { "category": "dining", "rate": 2, "rateType": "miles" },
+        { "category": "streaming", "rate": 2, "rateType": "miles", "notes": "2X miles on select streaming services." },
         { "category": "all", "rate": 1, "rateType": "miles" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1000,
+          "bonusType": "miles",
+          "displayHeadline": "Earn up to 100,000 bonus miles + 3,000 Premier qualifying points",
+          "displayDescription": "Earn 90,000 bonus miles + 3,000 PQP after spending $4,000 in the first 3 months, plus 10,000 bonus miles after adding an authorized user in the first 3 months.",
+          "bonusPoints": 100000,
+          "spendRequired": 4000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -71,18 +84,20 @@
       "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/united_club_infinite_card_tilted.png",
       "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/club-infinite",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-05-08T00:00:00.000Z",
       "rewards": [
-        { "category": "travel", "rate": 4, "rateType": "miles", "notes": "4X miles on United purchases." },
+        { "category": "travel", "rate": 5, "rateType": "miles", "notes": "5X miles on eligible United purchases; 2X on other travel; 5X on eligible Renowned Hotels and Resorts stays." },
+        { "category": "dining", "rate": 2, "rateType": "miles" },
         { "category": "other", "rate": 2, "rateType": "miles", "notes": "2X miles on travel purchases outside United." },
         { "category": "all", "rate": 1, "rateType": "miles" }
       ],
       "signUpBonuses": [
         {
-          "bonusValue": 900,
+          "bonusValue": 1100,
           "bonusType": "miles",
-          "displayHeadline": "90,000 bonus miles",
-          "bonusPoints": 90000,
+          "displayHeadline": "Earn up to 110,000 bonus miles + 3,000 Premier qualifying points",
+          "displayDescription": "Earn 100,000 bonus miles + 3,000 PQP after spending $5,000 in the first 3 months, plus 10,000 bonus miles after adding an authorized user in the first 3 months.",
+          "bonusPoints": 110000,
           "spendRequired": 5000,
           "spendPeriodDays": 90,
           "isCurrentOffer": true
@@ -134,10 +149,25 @@
       "foreignTxFee": 0,
       "applyUrl": "https://creditcards.chase.com/business-credit-cards/united/united-business-card",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-08T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible United purchases." },
+        { "category": "gas", "rate": 2, "rateType": "miles" },
+        { "category": "dining", "rate": 2, "rateType": "miles" },
+        { "category": "other", "rate": 2, "rateType": "miles", "notes": "2X miles at office supply stores and on local transit." },
         { "category": "all", "rate": 1, "rateType": "miles" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1100,
+          "bonusType": "miles",
+          "displayHeadline": "Earn up to 110,000 bonus miles + 2,000 Premier qualifying points",
+          "displayDescription": "Earn 100,000 bonus miles + 2,000 PQP after spending $5,000 in the first 3 months, plus 10,000 bonus miles after adding an employee card in the first 3 months.",
+          "bonusPoints": 110000,
+          "spendRequired": 5000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -154,10 +184,22 @@
       "foreignTxFee": 0,
       "applyUrl": "https://creditcards.chase.com/business-credit-cards/united/united-club-business",
       "isActive": true,
-      "lastVerified": "2026-04-03T00:00:00.000Z",
+      "lastVerified": "2026-05-08T00:00:00.000Z",
       "rewards": [
-        { "category": "travel", "rate": 2, "rateType": "miles", "notes": "Base card earnings plus enhanced airline benefits on United purchases." },
-        { "category": "all", "rate": 1, "rateType": "miles" }
+        { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible United purchases; 5X on eligible Renowned Hotels and Resorts stays." },
+        { "category": "all", "rate": 1.5, "rateType": "miles" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1100,
+          "bonusType": "miles",
+          "displayHeadline": "Earn up to 110,000 bonus miles + 2,000 Premier qualifying points",
+          "displayDescription": "Earn 100,000 bonus miles + 2,000 PQP after spending $5,000 in the first 3 months, plus 10,000 bonus miles after adding an employee card in the first 3 months.",
+          "bonusPoints": 110000,
+          "spendRequired": 5000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {

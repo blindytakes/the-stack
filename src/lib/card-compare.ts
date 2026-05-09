@@ -1,4 +1,5 @@
 import type { CardDetail, RewardDetail } from '@/lib/cards';
+import { isOffsettingCreditBenefit } from '@/lib/cards/presentation-metrics';
 
 export const cardComparisonSpendCategories = [
   'dining',
@@ -14,7 +15,7 @@ export type CardComparisonSpendCategory =
 export type CardComparisonAssumptions = {
   monthlySpend: Record<CardComparisonSpendCategory, number>;
   pointValueCents: number;
-  creditUsagePercent: number;
+  benefitValuations: Record<string, CardComparisonBenefitValuation>;
 };
 
 export type CardComparisonCategoryBreakdown = {
@@ -25,12 +26,32 @@ export type CardComparisonCategoryBreakdown = {
   rewardLabel: string;
 };
 
+export type CardComparisonBenefitValuation = {
+  included?: boolean;
+  annualValue?: number;
+};
+
+export type CardComparisonBenefitBreakdown = {
+  key: string;
+  category: string;
+  name: string;
+  description: string;
+  isCredit: boolean;
+  included: boolean;
+  estimatedValue: number | null;
+  defaultAnnualValue: number;
+  annualValue: number;
+  hasCustomValue: boolean;
+};
+
 export type CardComparisonCardSummary = {
   card: CardDetail;
   annualSpendTotal: number;
   annualRewardsValue: number;
   effectiveReturnPercent: number;
   usedCreditsValue: number;
+  usedPerksValue: number;
+  usedBenefitsValue: number;
   welcomeOfferValue: number;
   firstYearValue: number;
   ongoingValue: number;
@@ -45,6 +66,7 @@ export type CardComparisonCardSummary = {
   strengths: string[];
   cautions: string[];
   categoryBreakdown: CardComparisonCategoryBreakdown[];
+  benefitBreakdown: CardComparisonBenefitBreakdown[];
 };
 
 export type CardComparisonResult = {
@@ -72,7 +94,7 @@ const monthlySpendDefaults: Record<CardComparisonSpendCategory, number> = {
 export const defaultCardComparisonAssumptions: CardComparisonAssumptions = {
   monthlySpend: monthlySpendDefaults,
   pointValueCents: 1,
-  creditUsagePercent: 70
+  benefitValuations: {}
 };
 
 const spendCategoryToRewardCategory: Record<
@@ -101,6 +123,20 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value));
 }
 
+function normalizeBenefitKeyPart(value: string) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+export function buildCardBenefitValuationKey(
+  card: Pick<CardDetail, 'slug'>,
+  benefit: Pick<CardComparisonBenefitBreakdown, 'category' | 'name'>
+) {
+  return `${card.slug}:${normalizeBenefitKeyPart(benefit.category)}:${normalizeBenefitKeyPart(benefit.name)}`;
+}
+
 export function normalizeCardComparisonAssumptions(
   input?: Partial<CardComparisonAssumptions>
 ): CardComparisonAssumptions {
@@ -116,17 +152,30 @@ export function normalizeCardComparisonAssumptions(
     }
   }
 
+  const benefitValuations: Record<string, CardComparisonBenefitValuation> = {};
+  for (const [key, value] of Object.entries(input?.benefitValuations ?? {})) {
+    if (!value || typeof value !== 'object') continue;
+
+    const normalizedValue: CardComparisonBenefitValuation = {};
+    if (typeof value.included === 'boolean') {
+      normalizedValue.included = value.included;
+    }
+    if (typeof value.annualValue === 'number' && Number.isFinite(value.annualValue)) {
+      normalizedValue.annualValue = clamp(Math.round(value.annualValue), 0, 50000);
+    }
+
+    if (Object.keys(normalizedValue).length > 0) {
+      benefitValuations[key] = normalizedValue;
+    }
+  }
+
   return {
     monthlySpend: nextMonthlySpend,
     pointValueCents:
       typeof input?.pointValueCents === 'number' && Number.isFinite(input.pointValueCents)
         ? clamp(Number(input.pointValueCents.toFixed(2)), 0.5, 3)
         : defaultCardComparisonAssumptions.pointValueCents,
-    creditUsagePercent:
-      typeof input?.creditUsagePercent === 'number' &&
-      Number.isFinite(input.creditUsagePercent)
-        ? clamp(Math.round(input.creditUsagePercent), 0, 100)
-        : defaultCardComparisonAssumptions.creditUsagePercent
+    benefitValuations
   };
 }
 
@@ -405,13 +454,13 @@ function buildAbsoluteCautions(
   card: CardDetail,
   summary: Pick<
     CardComparisonCardSummary,
-    'welcomeOfferValue' | 'usedCreditsValue' | 'bonusEffort' | 'transferPartnersCount'
+    'welcomeOfferValue' | 'usedCreditsValue' | 'usedBenefitsValue' | 'bonusEffort' | 'transferPartnersCount'
   >
 ) {
   const cautions: string[] = [];
 
-  if (card.annualFee > 0 && summary.usedCreditsValue < card.annualFee * 0.45) {
-    cautions.push('The annual fee is harder to justify if you do not use the credits consistently.');
+  if (card.annualFee > 0 && summary.usedBenefitsValue < card.annualFee * 0.45) {
+    cautions.push('The annual fee is harder to justify if you do not use the credits and perks consistently.');
   }
 
   if (summary.bonusEffort === 'stretch') {
@@ -433,6 +482,59 @@ function buildAbsoluteCautions(
   return cautions.slice(0, 3);
 }
 
+function getFallbackOffsettingCreditsBenefit(card: CardDetail) {
+  const estimatedValue = card.offsettingCreditsValue ?? 0;
+  if (estimatedValue <= 0) return [];
+
+  return [
+    {
+      category: 'travel credits',
+      name: 'Recurring credits',
+      description: 'Estimated annual credit value from this card.',
+      estimatedValue
+    }
+  ];
+}
+
+function buildBenefitBreakdown(
+  card: CardDetail,
+  assumptions: CardComparisonAssumptions
+): CardComparisonBenefitBreakdown[] {
+  const benefits =
+    card.benefits.length > 0 ? card.benefits : getFallbackOffsettingCreditsBenefit(card);
+
+  return benefits.map((benefit) => {
+    const key = buildCardBenefitValuationKey(card, benefit);
+    const isCredit = isOffsettingCreditBenefit(benefit);
+    const estimatedValue =
+      typeof benefit.estimatedValue === 'number' && Number.isFinite(benefit.estimatedValue)
+        ? benefit.estimatedValue
+        : null;
+    const defaultIncluded = isCredit && estimatedValue != null && estimatedValue > 0;
+    const defaultAnnualValue =
+      estimatedValue == null ? 0 : roundCurrency(estimatedValue);
+    const valuation = assumptions.benefitValuations[key];
+    const included = valuation?.included ?? defaultIncluded;
+    const hasCustomValue = typeof valuation?.annualValue === 'number';
+    const annualValue = included
+      ? roundCurrency(hasCustomValue ? valuation?.annualValue ?? 0 : defaultAnnualValue)
+      : 0;
+
+    return {
+      key,
+      category: benefit.category,
+      name: benefit.name,
+      description: benefit.description,
+      isCredit,
+      included,
+      estimatedValue,
+      defaultAnnualValue,
+      annualValue,
+      hasCustomValue
+    };
+  });
+}
+
 function summarizeCard(
   card: CardDetail,
   assumptions: CardComparisonAssumptions
@@ -447,15 +549,26 @@ function summarizeCard(
   const annualRewardsValue = roundCurrency(
     categoryBreakdown.reduce((sum, item) => sum + item.annualValue, 0)
   );
+  const benefitBreakdown = buildBenefitBreakdown(card, assumptions);
   const usedCreditsValue = roundCurrency(
-    (card.offsettingCreditsValue ?? 0) * (assumptions.creditUsagePercent / 100)
+    benefitBreakdown
+      .filter((benefit) => benefit.isCredit)
+      .reduce((sum, benefit) => sum + benefit.annualValue, 0)
+  );
+  const usedPerksValue = roundCurrency(
+    benefitBreakdown
+      .filter((benefit) => !benefit.isCredit)
+      .reduce((sum, benefit) => sum + benefit.annualValue, 0)
+  );
+  const usedBenefitsValue = roundCurrency(
+    usedCreditsValue + usedPerksValue
   );
   const welcomeOfferValue = roundCurrency(getWelcomeOfferValue(card));
   const firstYearValue = roundCurrency(
-    annualRewardsValue + usedCreditsValue + welcomeOfferValue - card.annualFee
+    annualRewardsValue + usedBenefitsValue + welcomeOfferValue - card.annualFee
   );
   const ongoingValue = roundCurrency(
-    annualRewardsValue + usedCreditsValue - card.annualFee
+    annualRewardsValue + usedBenefitsValue - card.annualFee
   );
   const monthlySpendCapacity = Object.values(assumptions.monthlySpend).reduce(
     (sum, value) => sum + value,
@@ -492,6 +605,8 @@ function summarizeCard(
     annualRewardsValue,
     effectiveReturnPercent,
     usedCreditsValue,
+    usedPerksValue,
+    usedBenefitsValue,
     welcomeOfferValue,
     firstYearValue,
     ongoingValue,
@@ -505,7 +620,8 @@ function summarizeCard(
     fitLabel,
     strengths: [],
     cautions: [],
-    categoryBreakdown
+    categoryBreakdown,
+    benefitBreakdown
   };
 
   summary.strengths = buildAbsoluteStrengths(card, summary);
@@ -551,12 +667,12 @@ function buildRelativeDrivers(
     });
   }
 
-  const creditsDiff = a.usedCreditsValue - b.usedCreditsValue;
-  if (Math.abs(creditsDiff) >= 75) {
+  const benefitsDiff = a.usedBenefitsValue - b.usedBenefitsValue;
+  if (Math.abs(benefitsDiff) >= 75) {
     drivers.push({
-      winner: creditsDiff > 0 ? 'a' : 'b',
-      message: `Lets you realize about $${Math.abs(Math.round(creditsDiff)).toLocaleString()} more in usable recurring credits.`,
-      magnitude: Math.abs(creditsDiff)
+      winner: benefitsDiff > 0 ? 'a' : 'b',
+      message: `Lets you realize about $${Math.abs(Math.round(benefitsDiff)).toLocaleString()} more in usable credits and perks.`,
+      magnitude: Math.abs(benefitsDiff)
     });
   }
 
@@ -617,7 +733,7 @@ function computeBreakevenAnnualSpend(
       ? (a.annualRewardsValue - b.annualRewardsValue) / a.annualSpendTotal
       : 0;
   const fixedDelta =
-    (a.usedCreditsValue - a.card.annualFee) - (b.usedCreditsValue - b.card.annualFee);
+    (a.usedBenefitsValue - a.card.annualFee) - (b.usedBenefitsValue - b.card.annualFee);
 
   if (rewardDeltaPerDollar === 0) {
     return null;

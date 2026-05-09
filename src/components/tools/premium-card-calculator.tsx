@@ -1159,6 +1159,24 @@ export function PremiumCardCalculator() {
         effortTolerance: pointsAdvisorEffort
       })
     : null;
+  const annualSpendTotal = selectedResult.spendBreakdown.reduce(
+    (total, category) => total + category.spend,
+    0
+  );
+  const activeSpendCategoryCount = selectedResult.spendBreakdown.filter(
+    (category) => category.spend > 0
+  ).length;
+  const spendSummaryItems = [
+    { label: 'Annual spend routed', value: formatCurrency(annualSpendTotal) },
+    {
+      label: 'Points from spend',
+      value: `${formatPoints(selectedResult.spendPoints)} ${selectedProfile.offerCurrencyShortLabel}`
+    },
+    {
+      label: 'Active categories',
+      value: `${activeSpendCategoryCount} of ${selectedResult.spendBreakdown.length}`
+    }
+  ];
 
   return (
     <section className="relative mx-auto max-w-6xl space-y-5" style={accentStyle}>
@@ -1185,6 +1203,59 @@ export function PremiumCardCalculator() {
         <div className="pointer-events-none absolute left-[-2rem] top-20 h-32 w-32 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.08),transparent_70%)] blur-[46px]" />
         <div className="pointer-events-none absolute right-[-2.5rem] top-[-1.5rem] h-40 w-40 rounded-full bg-[radial-gradient(circle,rgb(var(--card-accent-rgb)/0.1),transparent_72%)] blur-[52px]" />
         <div className="mx-auto max-w-[56rem] space-y-6">
+          <SectionFrame
+            id="money-map"
+            icon="route"
+            title="Start with spending categories"
+            description="Route only the spend this card would actually win before valuing the offer, credits, and fee."
+          >
+            <div className="mb-4 grid gap-2 sm:grid-cols-3">
+              {spendSummaryItems.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-[1.05rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.045),rgba(255,255,255,0.02))] px-3.5 py-3"
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                    {item.label}
+                  </p>
+                  <p className="mt-1 text-lg font-semibold leading-tight text-text-primary">{item.value}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="space-y-3">
+              {selectedResult.spendBreakdown.map((category) => (
+                <SpendCategoryCard
+                  key={category.id}
+                  categoryId={category.id}
+                  label={category.label}
+                  note={category.note}
+                  multiplier={category.multiplier}
+                  value={selectedScenario.spend[category.id] ?? 0}
+                  isExplicitlySet={Boolean(
+                    selectedFieldInteractions[buildFieldInteractionKey('spend', category.id)]
+                  )}
+                  pointsEarned={category.pointsEarned}
+                  onChange={(next) => {
+                    updateSelectedScenario((current) => ({
+                      ...current,
+                      spend: {
+                        ...current.spend,
+                        [category.id]: next
+                      }
+                    }));
+                  }}
+                  onExplicitChange={(isExplicitlySet) => {
+                    updateSelectedFieldInteraction(
+                      buildFieldInteractionKey('spend', category.id),
+                      isExplicitlySet
+                    );
+                  }}
+                />
+              ))}
+            </div>
+          </SectionFrame>
+
           <SectionFrame
             id="gate-check"
             icon="gate"
@@ -1350,45 +1421,6 @@ export function PremiumCardCalculator() {
                   ))}
                 </div>
               </div>
-            </div>
-          </SectionFrame>
-
-          <SectionFrame
-            id="money-map"
-            icon="route"
-            title="Route the dollars this card would really touch"
-            description="Feed the card only the spend it would actually win in your wallet. That keeps the model honest."
-          >
-            <div className="space-y-3">
-              {selectedResult.spendBreakdown.map((category) => (
-                <SpendCategoryCard
-                  key={category.id}
-                  categoryId={category.id}
-                  label={category.label}
-                  note={category.note}
-                  multiplier={category.multiplier}
-                  value={selectedScenario.spend[category.id] ?? 0}
-                  isExplicitlySet={Boolean(
-                    selectedFieldInteractions[buildFieldInteractionKey('spend', category.id)]
-                  )}
-                  pointsEarned={category.pointsEarned}
-                  onChange={(next) => {
-                    updateSelectedScenario((current) => ({
-                      ...current,
-                      spend: {
-                        ...current.spend,
-                        [category.id]: next
-                      }
-                    }));
-                  }}
-                  onExplicitChange={(isExplicitlySet) => {
-                    updateSelectedFieldInteraction(
-                      buildFieldInteractionKey('spend', category.id),
-                      isExplicitlySet
-                    );
-                  }}
-                />
-              ))}
             </div>
           </SectionFrame>
 
