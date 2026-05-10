@@ -103,6 +103,19 @@ function isSuspiciousDestination(entry: UrlAuditEntry) {
   );
 }
 
+function isBotChallengeDestination(entry: UrlAuditEntry) {
+  if (entry.status !== 403 && entry.status !== 429) return false;
+
+  const haystacks = [entry.title ?? '', entry.sample ?? ''].map((value) => value.toLowerCase());
+  return haystacks.some(
+    (value) =>
+      value.includes('just a moment') ||
+      value.includes('cloudflare') ||
+      value.includes('attention required') ||
+      value.includes('checking if the site connection is secure')
+  );
+}
+
 function isRedirectStatus(status: number) {
   return status === 301 || status === 302 || status === 303 || status === 307 || status === 308;
 }
@@ -361,8 +374,14 @@ async function main() {
     }));
 
     const fetchFailures = auditedUrls.filter((entry) => Boolean(entry.error));
+    const botChallengeUrls = auditedUrls.filter(
+      (entry) => !entry.error && isBotChallengeDestination(entry)
+    );
     const deadUrls = auditedUrls.filter(
-      (entry) => !entry.error && (!entry.ok || (entry.status != null && entry.status >= 400))
+      (entry) =>
+        !entry.error &&
+        !isBotChallengeDestination(entry) &&
+        (!entry.ok || (entry.status != null && entry.status >= 400))
     );
     const suspiciousUrls = auditedUrls.filter((entry) => !entry.error && isSuspiciousDestination(entry));
     const duplicateUrls = auditedUrls.filter((entry) => entry.offerCount > 1);
@@ -384,6 +403,9 @@ async function main() {
       entry.offers.map((offer) => `${offer.slug} (${entry.error ?? 'fetch failed'})`)
     );
     const deadDestinationDetails = deadUrls.flatMap((entry) =>
+      entry.offers.map((offer) => `${offer.slug} (${entry.status ?? 'unknown status'})`)
+    );
+    const botChallengeDetails = botChallengeUrls.flatMap((entry) =>
       entry.offers.map((offer) => `${offer.slug} (${entry.status ?? 'unknown status'})`)
     );
     const suspiciousDestinationDetails = suspiciousUrls.flatMap((entry) =>
@@ -412,6 +434,7 @@ async function main() {
       `- Missing outbound URLs: ${missingUrls.length}`,
       `- Fetch failures: ${fetchFailures.length}`,
       `- Dead HTTP destinations: ${deadUrls.length}`,
+      `- Bot-protected destinations: ${botChallengeUrls.length}`,
       `- Suspicious destinations: ${suspiciousUrls.length}`,
       `- Shared duplicate URLs: ${duplicateUrls.length}`,
       `- Missing URL slugs: ${renderList(missingUrls.map((offer) => offer.slug))}`,
@@ -419,6 +442,8 @@ async function main() {
       `- Fetch-failure details: ${renderList(fetchFailureDetails, 8)}`,
       `- Dead-destination slugs: ${renderList(deadUrls.flatMap((entry) => entry.offers.map((offer) => offer.slug)))}`,
       `- Dead-destination details: ${renderList(deadDestinationDetails, 8)}`,
+      `- Bot-protected slugs: ${renderList(botChallengeUrls.flatMap((entry) => entry.offers.map((offer) => offer.slug)))}`,
+      `- Bot-protected details: ${renderList(botChallengeDetails, 8)}`,
       `- Suspicious-destination slugs: ${renderList(
         suspiciousUrls.flatMap((entry) => entry.offers.map((offer) => offer.slug))
       )}`,

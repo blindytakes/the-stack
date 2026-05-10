@@ -107,11 +107,11 @@
       "Receive qualifying direct deposits totaling at least $4,000 within 90 days.",
       "Keep the account in good standing through payout."
     ],
-    "notes": "BMO's official personal checking promo page advertised the $400 offer through May 4, 2026 when re-verified on March 29, 2026.",
+    "notes": "BMO's official personal checking promo page advertised the $400 offer through September 8, 2026 when re-verified on May 10, 2026.",
     "offerUrl": "https://www.bmo.com/en-us/main/personal/checking-accounts/digital-offer/",
     "isActive": true,
-    "expiresAt": "2026-05-04T23:59:59.999-04:00",
-    "lastVerified": "2026-03-29T00:00:00.000Z"
+    "expiresAt": "2026-09-08T23:59:59.999-04:00",
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "capital-one-360-checking-250",
@@ -133,10 +133,10 @@
       "Open a new 360 Checking account using promo code CHECKING250.",
       "Receive at least two direct deposits of at least $500 each within 75 days of opening."
     ],
-    "notes": "Offer listed as ongoing as of March 1, 2026.",
+    "notes": "Capital One's official offer page advertised the $250 offer with promo code CHECKING250 and no posted expiration date when re-verified on May 10, 2026.",
     "offerUrl": "https://www.capitalone.com/bank/checking250/",
     "isActive": true,
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "chime-checking-350",
@@ -203,10 +203,11 @@
       "Open a new Chase Secure Banking account with an eligible coupon.",
       "Complete 10 qualifying transactions within 60 days of coupon enrollment (for example debit purchases, ACH credits, QuickDeposit, online bill pay, or Zelle)."
     ],
+    "notes": "Chase's official Secure Banking offer page advertised the $125 offer through July 15, 2026 when re-verified on May 10, 2026.",
     "offerUrl": "https://account.chase.com/consumer/banking/secure",
     "isActive": true,
     "expiresAt": "2026-07-15T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "etrade-premium-savings-2000",
@@ -255,11 +256,11 @@
       "Receive qualifying direct deposits totaling at least $2,000 within 90 days for the first bonus tier.",
       "Hit higher direct deposit tiers ($5,000 and $10,000) for larger payouts."
     ],
-    "notes": "Bank of America's Advantage Banking flow still appeared to be the official public path on March 29, 2026, but the bonus terms remain partially gated behind ZIP or application state and should be re-confirmed in a full browser before the next refresh.",
+    "notes": "Bank of America's Advantage Banking page remains the official public path but the bonus terms are partially gated behind ZIP or application state in crawlable HTML. Current Bankrate and Forbes Advisor references still list the up-to-$500 offer through May 31, 2026 when re-verified on May 10, 2026.",
     "offerUrl": "https://www.bankofamerica.com/deposits/checking/advantage-banking/?view_page=compare",
     "isActive": true,
     "expiresAt": "2026-05-31T23:59:59.999-04:00",
-    "lastVerified": "2026-03-29T00:00:00.000Z"
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "pnc-virtual-wallet-performance-select-400",
@@ -282,11 +283,11 @@
       "Receive qualifying direct deposits within 60 days ($500+ for Virtual Wallet, $5,000+ for Virtual Wallet with Performance Select).",
       "Keep the account open through reward posting."
     ],
-    "notes": "Current public offer window runs through May 28, 2026.",
+    "notes": "PNC's official personal checking bonus page advertised the up-to-$400 offer through May 28, 2026 when re-verified on May 10, 2026.",
     "offerUrl": "https://www.pnc.com/en/personal-banking/banking/checking/bonus-offer.html",
     "isActive": true,
     "expiresAt": "2026-05-28T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "etrade-max-rate-checking-300",
@@ -347,13 +348,13 @@
     "bankName": "SoFi",
     "offerName": "Checking and Savings Direct Deposit Bonus",
     "accountType": "bundle",
-    "headline": "Earn up to $300 after receiving qualifying direct deposits in a new SoFi Checking and Savings account.",
-    "bonusAmount": 300,
+    "headline": "Earn up to $400 after receiving qualifying direct deposits in a new SoFi Checking and Savings account.",
+    "bonusAmount": 400,
     "estimatedFees": 0,
     "apyPercent": 3.3,
     "apyDisplay": "3.30% savings APY + 0.50% checking APY",
     "apySourceUrl": "https://support.sofi.com/hc/en-us/articles/4421758127245-What-s-the-interest-rate-for-SoFi-Checking-and-Savings",
-    "apyAsOf": "2025-12-23",
+    "apyAsOf": "2026-03-31",
     "directDeposit": {
       "required": true,
       "minimumAmount": 1000
@@ -362,12 +363,13 @@
     "requiredActions": [
       "Open a new SoFi Checking and Savings account.",
       "Receive at least one eligible direct deposit.",
-      "Accumulate at least $1,000 in eligible direct deposits during the first 25-day direct deposit bonus period for a payout (or $5,000+ for the top tier)."
+      "Accumulate at least $1,000 in eligible direct deposits during the first 25-day direct deposit bonus period for a $50 payout, or $5,000+ for the $400 top tier."
     ],
+    "notes": "SoFi's official checking offer page advertised the up-to-$400 direct deposit bonus through December 31, 2026 when re-verified on May 10, 2026. The slug is retained from the prior $300 offer amount.",
     "offerUrl": "https://www.sofi.com/banking/checking-offer/",
     "isActive": true,
     "expiresAt": "2026-12-31T23:59:59.999-05:00",
-    "lastVerified": "2026-04-03T00:00:00.000Z"
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "citi-regular-checking-325",
@@ -422,7 +424,7 @@
     "offerUrl": "https://promo.alliantcreditunion.org/ultimate-opportunity-savings",
     "isActive": true,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-04-03T00:00:00.000Z"
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "td-complete-checking-200",
@@ -444,11 +446,11 @@
       "Open a new TD Complete Checking account through the promotional page.",
       "Receive at least $500 in qualifying direct deposits within 60 days of account opening."
     ],
-    "notes": "TD published this offer with an end date of April 30, 2026.",
+    "notes": "TD's official checking and savings bonus page advertised the $200 Complete Checking offer through July 30, 2026 when re-verified on May 10, 2026.",
     "offerUrl": "https://www.td.com/us/en/personal-banking/checking-and-saving-bonus",
     "isActive": true,
-    "expiresAt": "2026-04-30T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "expiresAt": "2026-07-30T23:59:59.999-04:00",
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "td-beyond-checking-300",
@@ -470,11 +472,11 @@
       "Open a new TD Beyond Checking account through the promotional page.",
       "Receive at least $2,500 in qualifying direct deposits within 60 days of account opening."
     ],
-    "notes": "TD published this offer with an end date of April 30, 2026.",
+    "notes": "TD's official checking and savings bonus page advertised the $300 Beyond Checking offer through July 30, 2026 when re-verified on May 10, 2026.",
     "offerUrl": "https://www.td.com/us/en/personal-banking/checking-and-saving-bonus",
     "isActive": true,
-    "expiresAt": "2026-04-30T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "expiresAt": "2026-07-30T23:59:59.999-04:00",
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "key-smart-checking-300",
@@ -498,11 +500,11 @@
       "Make the $10 minimum opening deposit.",
       "Receive at least $2,000 in eligible direct deposits within 90 days of account opening."
     ],
-    "notes": "KeyBank lists this promotional window through May 22, 2026 and payout within 60 days after qualification.",
+    "notes": "KeyBank's official checking bonus page advertised this promotional window through May 22, 2026 and payout within 60 days after qualification when re-verified on May 10, 2026.",
     "offerUrl": "https://www.key.com/personal/checking/checking-account-bonus-offers.html",
     "isActive": true,
     "expiresAt": "2026-05-22T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "key-select-checking-500",
@@ -526,11 +528,11 @@
       "Make the $50 minimum opening deposit.",
       "Receive at least $5,000 in eligible direct deposits within 90 days of account opening."
     ],
-    "notes": "KeyBank lists this promotional window through May 22, 2026 and payout within 60 days after qualification.",
+    "notes": "KeyBank's official checking bonus page advertised this promotional window through May 22, 2026 and payout within 60 days after qualification when re-verified on May 10, 2026.",
     "offerUrl": "https://www.key.com/personal/checking/checking-account-bonus-offers.html",
     "isActive": true,
     "expiresAt": "2026-05-22T23:59:59.999-04:00",
-    "lastVerified": "2026-03-04T00:00:00.000Z"
+    "lastVerified": "2026-05-10T00:00:00.000Z"
   },
   {
     "slug": "truist-one-checking-400",
