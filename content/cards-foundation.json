@@ -274,7 +274,18 @@
           "rateType": "points"
         }
       ],
-      "signUpBonuses": [],
+      "signUpBonuses": [
+        {
+          "bonusValue": 1000,
+          "bonusType": "points",
+          "displayHeadline": "Up to 100,000 Membership Rewards points",
+          "displayDescription": "Welcome offers vary. You may be eligible for as high as 100,000 Membership Rewards points after spending $8,000 on eligible purchases on the Card in the first 6 months of Card Membership.",
+          "bonusPoints": 100000,
+          "spendRequired": 8000,
+          "spendPeriodDays": 180,
+          "isCurrentOffer": true
+        }
+      ],
       "benefits": [
         {
           "category": "DINING_CREDITS",
