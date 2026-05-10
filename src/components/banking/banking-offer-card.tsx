@@ -56,13 +56,13 @@ export function BankingOfferCard({
 
   return (
     <article
-      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-bg-surface p-5 shadow-[0_0_16px_rgba(45,212,191,0.04)] transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01] hover:border-brand-teal/50 hover:bg-bg-elevated/90 hover:shadow-[0_12px_44px_rgba(45,212,191,0.24)] ${
+      className={`group relative flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-bg-surface p-5 shadow-[0_0_16px_rgba(45,212,191,0.04)] transition-[transform,border-color,background-color,box-shadow] duration-300 ease-out motion-reduce:transition-none hover:z-10 focus-within:z-10 motion-safe:hover:-translate-y-2 motion-safe:hover:scale-[1.02] motion-safe:focus-within:-translate-y-2 motion-safe:focus-within:scale-[1.02] hover:border-brand-teal/55 hover:bg-bg-elevated/90 hover:shadow-[0_24px_60px_rgba(4,10,18,0.6),0_0_44px_rgba(45,212,191,0.2)] focus-within:border-brand-teal/55 focus-within:bg-bg-elevated/90 focus-within:shadow-[0_24px_60px_rgba(4,10,18,0.6),0_0_44px_rgba(45,212,191,0.2)] ${
         isCompact ? 'p-4' : ''
       }`}
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.2),transparent_58%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 rounded-2xl bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.28),transparent_58%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100"
       />
 
       {/* Badges — top corners */}
@@ -78,7 +78,7 @@ export function BankingOfferCard({
       )}
 
       {/* Bank logo */}
-      <div className="relative z-10 mb-4 overflow-hidden rounded-xl transition-transform duration-300 group-hover:scale-[1.035]">
+      <div className="relative z-10 mb-4 overflow-hidden rounded-xl transition-transform duration-300 ease-out motion-reduce:transition-none motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:scale-[1.05] motion-safe:group-focus-within:-translate-y-0.5 motion-safe:group-focus-within:scale-[1.05]">
         <EntityImage
           src={offer.imageUrl}
           alt={`${offer.bankName} logo`}
@@ -97,7 +97,11 @@ export function BankingOfferCard({
       <div className={`relative z-10 mt-1 ${isCompact ? 'min-h-[7.6rem]' : 'min-h-[8.35rem]'}`}>
         {/* Bonus — the hero */}
         <div className="flex flex-col items-center text-center">
-          <p className={`font-bold text-brand-teal ${isCompact ? 'text-xl' : 'text-2xl'}`}>
+          <p
+            className={`inline-flex min-h-11 items-center justify-center rounded-full border border-brand-teal/10 bg-brand-teal/[0.045] px-4 py-2 font-bold text-brand-teal shadow-[0_0_18px_rgba(45,212,191,0.06)] transition-[transform,border-color,background-color,box-shadow] duration-300 ease-out motion-reduce:transition-none motion-safe:group-hover:scale-[1.025] motion-safe:group-focus-within:scale-[1.025] group-hover:border-brand-teal/35 group-hover:bg-brand-teal/[0.12] group-hover:shadow-[0_0_32px_rgba(45,212,191,0.22)] group-focus-within:border-brand-teal/35 group-focus-within:bg-brand-teal/[0.12] group-focus-within:shadow-[0_0_32px_rgba(45,212,191,0.22)] ${
+              isCompact ? 'text-xl' : 'text-2xl'
+            }`}
+          >
             +{formatBankingCurrency(offer.bonusAmount)} bonus
           </p>
         </div>

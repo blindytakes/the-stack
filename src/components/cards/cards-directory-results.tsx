@@ -94,20 +94,20 @@ export function CardsDirectoryResults({
             <article
               key={card.slug}
               data-reveal-index={index}
-              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-bg-surface p-5 transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out will-change-transform ${
+              className={`group relative flex h-full flex-col overflow-hidden rounded-2xl border bg-bg-surface p-5 transition-[transform,border-color,background-color,box-shadow] duration-300 ease-out motion-reduce:transition-none ${
                 shouldReveal && !isVisible
                   ? 'translate-y-6 scale-[0.985] opacity-0'
                   : 'translate-y-0 scale-100 opacity-100'
               } ${
                 selectedForCompare
-                  ? 'border-brand-teal/45 shadow-[0_0_24px_rgba(45,212,191,0.14)] hover:z-10 hover:-translate-y-2 hover:scale-[1.012] hover:border-brand-teal/70 hover:bg-bg-elevated hover:shadow-[0_22px_54px_rgba(4,10,18,0.6),0_0_42px_rgba(45,212,191,0.2)]'
-                  : 'border-white/10 shadow-[0_0_16px_rgba(45,212,191,0.04)] hover:z-10 hover:-translate-y-2 hover:scale-[1.012] hover:border-brand-teal/45 hover:bg-bg-elevated hover:shadow-[0_22px_54px_rgba(4,10,18,0.58),0_0_36px_rgba(45,212,191,0.16)]'
+                  ? 'border-brand-teal/45 shadow-[0_0_24px_rgba(45,212,191,0.14)] hover:z-10 focus-within:z-10 motion-safe:hover:-translate-y-2 motion-safe:hover:scale-[1.02] motion-safe:focus-within:-translate-y-2 motion-safe:focus-within:scale-[1.02] hover:border-brand-teal/75 hover:bg-bg-elevated focus-within:border-brand-teal/75 focus-within:bg-bg-elevated hover:shadow-[0_24px_60px_rgba(4,10,18,0.62),0_0_52px_rgba(45,212,191,0.24)] focus-within:shadow-[0_24px_60px_rgba(4,10,18,0.62),0_0_52px_rgba(45,212,191,0.24)]'
+                  : 'border-white/10 shadow-[0_0_16px_rgba(45,212,191,0.04)] hover:z-10 focus-within:z-10 motion-safe:hover:-translate-y-2 motion-safe:hover:scale-[1.02] motion-safe:focus-within:-translate-y-2 motion-safe:focus-within:scale-[1.02] hover:border-brand-teal/55 hover:bg-bg-elevated focus-within:border-brand-teal/55 focus-within:bg-bg-elevated hover:shadow-[0_24px_60px_rgba(4,10,18,0.6),0_0_44px_rgba(45,212,191,0.2)] focus-within:shadow-[0_24px_60px_rgba(4,10,18,0.6),0_0_44px_rgba(45,212,191,0.2)]'
               }`}
               style={{ transitionDelay: `${transitionDelay}ms` }}
             >
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.24),transparent_58%)] opacity-0 transition-opacity duration-200 ease-out group-hover:opacity-100"
+                className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(45,212,191,0.28),transparent_58%)] opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 group-focus-within:opacity-100"
               />
 
               {card.cardType === 'business' && (
@@ -121,7 +121,7 @@ export function CardsDirectoryResults({
                 </div>
               )}
 
-              <div className="relative z-10 mb-4 overflow-hidden rounded-xl transition-transform duration-200 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.035]">
+              <div className="relative z-10 mb-4 overflow-hidden rounded-xl transition-transform duration-300 ease-out motion-reduce:transition-none motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:scale-[1.05] motion-safe:group-focus-within:-translate-y-0.5 motion-safe:group-focus-within:scale-[1.05]">
                 <EntityImage
                   src={cardImage.src}
                   alt={cardImage.alt}
@@ -138,7 +138,7 @@ export function CardsDirectoryResults({
               </div>
 
               <div className="relative z-10 mt-1 text-center">
-                <p className="text-2xl font-bold text-brand-teal">
+                <p className="inline-flex min-h-11 items-center justify-center rounded-full border border-brand-teal/10 bg-brand-teal/[0.045] px-4 py-2 text-2xl font-bold text-brand-teal shadow-[0_0_18px_rgba(45,212,191,0.06)] transition-[transform,border-color,background-color,box-shadow] duration-300 ease-out motion-reduce:transition-none motion-safe:group-hover:scale-[1.025] motion-safe:group-focus-within:scale-[1.025] group-hover:border-brand-teal/35 group-hover:bg-brand-teal/[0.12] group-hover:shadow-[0_0_32px_rgba(45,212,191,0.22)] group-focus-within:border-brand-teal/35 group-focus-within:bg-brand-teal/[0.12] group-focus-within:shadow-[0_0_32px_rgba(45,212,191,0.22)]">
                   {formatBonusValue(card.bestSignUpBonusValue)}
                 </p>
               </div>
