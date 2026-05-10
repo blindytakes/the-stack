@@ -577,7 +577,7 @@
       "imageUrl": "https://static.biltrewards.com/assets/seo/bilt_card2_coming_soon_seo.jpg",
       "applyUrl": "https://www.bilt.com/card",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         {
           "category": "other",
@@ -592,7 +592,17 @@
           "notes": "1x Bilt Points on other eligible purchases."
         }
       ],
-      "signUpBonuses": [],
+      "signUpBonuses": [
+        {
+          "bonusValue": 100,
+          "bonusType": "bilt_cash",
+          "displayHeadline": "$100 Bilt Cash",
+          "displayDescription": "Earn $100 of Bilt Cash when you apply and get approved.",
+          "spendRequired": 0,
+          "spendPeriodDays": 1,
+          "isCurrentOffer": true
+        }
+      ],
       "benefits": [
         {
           "category": "OTHER",

@@ -287,7 +287,7 @@
       "imageUrl": "https://www.bankofamerica.com/content/images/ContextualSiteGraphics/CreditCardArt/en_US/Approved_PCM/1bbt_sigcm_v_atmos_ascent_250.png",
       "applyUrl": "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -766,6 +766,18 @@
           "rate": 1,
           "rateType": "points"
         }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 100,
+          "bonusType": "points",
+          "displayHeadline": "10,000 bonus points",
+          "displayDescription": "Earn 10,000 bonus points after spending $1,000 on purchases in the first 90 days.",
+          "bonusPoints": 10000,
+          "spendRequired": 1000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -1148,12 +1160,23 @@
       "foreignTxFee": 0,
       "applyUrl": "https://www.discover.com/credit-cards/travel/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         {
           "category": "all",
           "rate": 1.5,
           "rateType": "miles"
+        }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 0,
+          "bonusType": "miles_match",
+          "displayHeadline": "Unlimited Discover Match",
+          "displayDescription": "Discover automatically matches all miles earned at the end of your first year, with no minimum spending or maximum rewards.",
+          "spendRequired": 0,
+          "spendPeriodDays": 365,
+          "isCurrentOffer": true
         }
       ]
     }

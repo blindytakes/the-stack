@@ -216,11 +216,23 @@
       "foreignTxFee": 0,
       "applyUrl": "https://creditcards.chase.com/travel-credit-cards/ihg-rewards-club/traveler",
       "isActive": true,
-      "lastVerified": "2026-04-03T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 5, "rateType": "points", "notes": "5X points on eligible IHG hotel purchases with the card." },
         { "category": "dining", "rate": 3, "rateType": "points" },
         { "category": "gas", "rate": 3, "rateType": "points" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 625,
+          "bonusType": "points",
+          "displayHeadline": "Earn up to 125,000 bonus points",
+          "displayDescription": "Earn 90,000 bonus points after spending $2,000 in the first 3 months, plus 35,000 bonus points after spending $4,000 total in the first 6 months.",
+          "bonusPoints": 125000,
+          "spendRequired": 4000,
+          "spendPeriodDays": 180,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -401,10 +413,22 @@
       "imageUrl": "https://ecm.capitalone.com/WCM/card/products/ventureone_cardart_prim_323x203.png",
       "applyUrl": "https://www.capitalone.com/credit-cards/ventureone/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "all", "rate": 1.25, "rateType": "miles" },
         { "category": "travel", "rate": 5, "rateType": "miles", "notes": "5X miles on hotels and rental cars booked through Capital One Travel." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "miles",
+          "displayHeadline": "20,000 bonus miles",
+          "displayDescription": "Earn 20,000 bonus miles after spending $500 on purchases within the first 3 months from account opening.",
+          "bonusPoints": 20000,
+          "spendRequired": 500,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -578,10 +602,22 @@
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/business-platinum.png",
       "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-platinum-credit-card-amex/",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 5, "rateType": "points", "notes": "5X Membership Rewards points on flights and prepaid hotels booked through AmexTravel.com." },
         { "category": "all", "rate": 1, "rateType": "points" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 3000,
+          "bonusType": "points",
+          "displayHeadline": "Up to 300,000 Membership Rewards points",
+          "displayDescription": "Personalized welcome offers vary. You may be eligible for as high as 300,000 Membership Rewards points after spending $20,000 in eligible purchases in the first 3 months of Card Membership.",
+          "bonusPoints": 300000,
+          "spendRequired": 20000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -600,9 +636,20 @@
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/blue-business-cash.png",
       "applyUrl": "https://www.americanexpress.com/en-us/business/credit-cards/blue-business-cash/",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "all", "rate": 2, "rateType": "cashback", "notes": "2% cash back on the first $50,000 in eligible purchases each calendar year, then 1%." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 250,
+          "bonusType": "statement_credit",
+          "displayHeadline": "$250 statement credit",
+          "displayDescription": "Earn a $250 statement credit after making $3,000 in purchases on the Card in the first 3 months.",
+          "spendRequired": 3000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -621,10 +668,22 @@
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/business-green-rewards.png",
       "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-green-card-amex/",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "points", "notes": "2X points on AmexTravel.com purchases." },
         { "category": "all", "rate": 1, "rateType": "points" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 150,
+          "bonusType": "points",
+          "displayHeadline": "15,000 Membership Rewards points",
+          "displayDescription": "Earn 15,000 Membership Rewards points after spending $3,000 on eligible purchases within the first 3 months of Card Membership.",
+          "bonusPoints": 15000,
+          "spendRequired": 3000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -643,7 +702,7 @@
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/hilton-honors.png",
       "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/hilton-honors/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 12, "rateType": "points", "notes": "12X Hilton Honors points on eligible Hilton purchases." },
         { "category": "all", "rate": 5, "rateType": "points", "notes": "5X points on other eligible purchases on the first $100,000 per year, then 3X thereafter." }
@@ -664,12 +723,23 @@
       "imageUrl": "https://www.usbank.com/content/dam/usbank/en/images/illustrations/illustrations-business-triple-cash-back.png",
       "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-triple-cash-back-credit-card.html",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "gas", "rate": 3, "rateType": "cashback", "notes": "3% cash back at gas and EV charging stations on transactions of $200 or less." },
         { "category": "dining", "rate": 3, "rateType": "cashback" },
         { "category": "utilities", "rate": 3, "rateType": "cashback", "notes": "3% cash back with cell phone service providers." },
         { "category": "all", "rate": 1, "rateType": "cashback" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 750,
+          "bonusType": "cashback",
+          "displayHeadline": "$750 cash back",
+          "displayDescription": "Earn $750 cash back after spending $6,000 on the Account Owner's card within 180 days from account opening.",
+          "spendRequired": 6000,
+          "spendPeriodDays": 180,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -687,11 +757,23 @@
       "imageUrl": "https://www.usbank.com/content/dam/usbank/en/images/illustrations/card-art/credit-cards/business-altitude-power.png",
       "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-altitude-power-credit-card.html",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "all", "rate": 2, "rateType": "points" },
         { "category": "other", "rate": 2.5, "rateType": "points", "notes": "2.5X points on up to $5,000 in combined mobile wallet and virtual card purchases each quarter." },
         { "category": "travel", "rate": 6, "rateType": "points", "notes": "6X points on prepaid hotels and car rentals booked directly in the Travel Center." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 750,
+          "bonusType": "points",
+          "displayHeadline": "75,000 bonus points",
+          "displayDescription": "Earn 75,000 bonus points, worth up to $750, after spending $10,000 on the Account Owner's card in the first 120 days.",
+          "bonusPoints": 75000,
+          "spendRequired": 10000,
+          "spendPeriodDays": 120,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -709,11 +791,22 @@
       "imageUrl": "https://www.usbank.com/content/dam/usbank/en/images/illustrations/card-art/credit-cards/business-leverage.png",
       "applyUrl": "https://www.usbank.com/business-banking/business-credit-cards/business-leverage-rewards-credit-card.html",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "other", "rate": 2, "rateType": "points", "notes": "2X points in the top two categories where you spend the most each month automatically." },
         { "category": "travel", "rate": 5, "rateType": "points", "notes": "5X points on prepaid hotels and car rentals booked directly in the Travel Center." },
         { "category": "all", "rate": 1, "rateType": "points" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 600,
+          "bonusType": "points",
+          "displayHeadline": "$600 bonus offer",
+          "displayDescription": "Earn up to $600 in rewards after spending $6,000 in eligible purchases on the Account Owner's card within the first 120 days.",
+          "spendRequired": 6000,
+          "spendPeriodDays": 120,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -751,11 +844,22 @@
       "foreignTxFee": 3,
       "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/products/cash-rewards-business-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "gas", "rate": 3, "rateType": "cashback", "notes": "3% cash back in the cardholder's selected category; gas and EV charging is the default category." },
         { "category": "dining", "rate": 2, "rateType": "cashback" },
         { "category": "all", "rate": 1, "rateType": "cashback" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 500,
+          "bonusType": "cashback",
+          "displayHeadline": "$500 online cash rewards bonus",
+          "displayDescription": "Earn a $500 online cash rewards bonus after making at least $5,000 in purchases in the first 90 days of account opening.",
+          "spendRequired": 5000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -772,9 +876,20 @@
       "foreignTxFee": 3,
       "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/products/unlimited-cash-rewards-business-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "all", "rate": 1.5, "rateType": "cashback" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 500,
+          "bonusType": "cashback",
+          "displayHeadline": "$500 online cash rewards bonus",
+          "displayDescription": "Earn a $500 online cash rewards bonus after making at least $5,000 in purchases within 90 days of account opening.",
+          "spendRequired": 5000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -791,9 +906,21 @@
       "foreignTxFee": 0,
       "applyUrl": "https://www.bankofamerica.com/smallbusiness/credit-cards/products/travel-rewards-business-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "all", "rate": 1.5, "rateType": "points" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 500,
+          "bonusType": "points",
+          "displayHeadline": "50,000 online bonus points",
+          "displayDescription": "Earn 50,000 online bonus points after making at least $5,000 in purchases in the first 90 days of account opening.",
+          "bonusPoints": 50000,
+          "spendRequired": 5000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -810,12 +937,24 @@
       "foreignTxFee": 0,
       "applyUrl": "https://www.citi.com/credit-cards/citi-aadvantage-platinum-select-world-elite-mastercard",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible American Airlines purchases." },
         { "category": "gas", "rate": 2, "rateType": "miles" },
         { "category": "dining", "rate": 2, "rateType": "miles" },
         { "category": "all", "rate": 1, "rateType": "miles" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 500,
+          "bonusType": "miles",
+          "displayHeadline": "50,000 AAdvantage bonus miles",
+          "displayDescription": "Earn 50,000 AAdvantage bonus miles after spending $2,500 in purchases within the first 3 months of account opening.",
+          "bonusPoints": 50000,
+          "spendRequired": 2500,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -832,10 +971,22 @@
       "foreignTxFee": 0,
       "applyUrl": "https://www.citi.com/credit-cards/citi-aadvantage-executive-world-elite-mastercard",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 4, "rateType": "miles", "notes": "4X miles on eligible American Airlines purchases." },
         { "category": "all", "rate": 1, "rateType": "miles" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 700,
+          "bonusType": "miles",
+          "displayHeadline": "70,000 AAdvantage bonus miles",
+          "displayDescription": "Earn 70,000 AAdvantage bonus miles after spending $7,000 in purchases within the first 3 months of account opening.",
+          "bonusPoints": 70000,
+          "spendRequired": 7000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -852,11 +1003,23 @@
       "foreignTxFee": 0,
       "applyUrl": "https://www.citi.com/credit-cards/citi-aadvantage-business-credit-card",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "miles", "notes": "2X miles on eligible American Airlines business purchases." },
         { "category": "gas", "rate": 2, "rateType": "miles" },
         { "category": "all", "rate": 1, "rateType": "miles" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 650,
+          "bonusType": "miles",
+          "displayHeadline": "65,000 AAdvantage bonus miles",
+          "displayDescription": "Earn 65,000 AAdvantage bonus miles after you or your employees spend $4,000 in purchases within the first 4 months of account opening.",
+          "bonusPoints": 65000,
+          "spendRequired": 4000,
+          "spendPeriodDays": 120,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
@@ -873,12 +1036,24 @@
       "foreignTxFee": 3,
       "applyUrl": "https://www.citi.com/credit-cards/citi-strata-all-cards",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "groceries", "rate": 3, "rateType": "points" },
         { "category": "gas", "rate": 3, "rateType": "points" },
         { "category": "dining", "rate": 3, "rateType": "points" },
         { "category": "all", "rate": 1, "rateType": "points" }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 200,
+          "bonusType": "points",
+          "displayHeadline": "20,000 bonus points",
+          "displayDescription": "Earn 20,000 bonus points after spending $1,000 in the first 3 months of account opening.",
+          "bonusPoints": 20000,
+          "spendRequired": 1000,
+          "spendPeriodDays": 90,
+          "isCurrentOffer": true
+        }
       ]
     },
     {

@@ -37,6 +37,17 @@ const OFFICIAL_BANKING_HOST_SUFFIXES = [
 
 const LOW_FIDELITY_BANK_IMAGE_TOKENS = ['favicon', 'apple-touch-icon', 'logo-personal.svg'] as const;
 const STALE_THRESHOLD_DAYS = 21;
+const KNOWN_NO_PUBLIC_WELCOME_OFFER_CARD_SLUGS = new Set([
+  'apple-card',
+  'robinhood-gold-card',
+  'us-bank-smartly-visa-signature',
+  'amex-hilton-honors-business',
+  'us-bank-business-shield',
+  'sofi-unlimited-2-credit-card',
+  'paypal-cashback-mastercard',
+  'fidelity-rewards-visa-signature',
+  'venmo-credit-card'
+]);
 
 async function readJson<T>(filePath: string): Promise<T> {
   const resolvedPath = path.join(process.cwd(), filePath);
@@ -124,6 +135,12 @@ async function main() {
   const cardsWithoutCurrentBonus = contentCards.filter(
     (record) => !(record.signUpBonuses ?? []).some((bonus) => bonus.isCurrentOffer !== false)
   );
+  const cardsWithKnownNoPublicWelcomeOffer = cardsWithoutCurrentBonus.filter((record) =>
+    KNOWN_NO_PUBLIC_WELCOME_OFFER_CARD_SLUGS.has(record.slug)
+  );
+  const cardsWithoutExpectedCurrentBonus = cardsWithoutCurrentBonus.filter(
+    (record) => !KNOWN_NO_PUBLIC_WELCOME_OFFER_CARD_SLUGS.has(record.slug)
+  );
   const cardsUsingWeakFallbackArtwork = contentCards.filter((record) => {
     if (record.imageUrl) return false;
     return isLowValueCardImageUrl(resolveCardBrandImageUrl(record.slug, record.issuer));
@@ -158,10 +175,14 @@ async function main() {
     `- Entity-asset-only slugs not represented in content card files: ${entityAssetOnlySlugs.length}`,
     `- Content cards missing explicit imageUrl: ${cardsMissingExplicitImage.length}`,
     `- Content cards without a current sign-up bonus record: ${cardsWithoutCurrentBonus.length}`,
+    `- Known no-public-welcome-offer card records: ${cardsWithKnownNoPublicWelcomeOffer.length}`,
+    `- Unexpected no-current-bonus card records: ${cardsWithoutExpectedCurrentBonus.length}`,
     `- Content cards that degrade to low-value fallback artwork: ${cardsUsingWeakFallbackArtwork.length}`,
     `- Content cards with stale lastVerified (> ${STALE_THRESHOLD_DAYS} days): ${staleContentCards.length}`,
     `- Entity-asset-only slugs: ${renderList(entityAssetOnlySlugs)}`,
     `- No-current-bonus slugs: ${renderList(cardsWithoutCurrentBonus.map((record) => record.slug))}`,
+    `- Known no-public-welcome-offer slugs: ${renderList(cardsWithKnownNoPublicWelcomeOffer.map((record) => record.slug))}`,
+    `- Unexpected no-current-bonus slugs: ${renderList(cardsWithoutExpectedCurrentBonus.map((record) => record.slug))}`,
     `- Weak-fallback-art slugs: ${renderList(cardsUsingWeakFallbackArtwork.map((record) => record.slug))}`
   ];
 
