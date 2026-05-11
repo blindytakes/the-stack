@@ -868,7 +868,7 @@
       "issuer": "American Express",
       "cardType": "business",
       "rewardType": "points",
-      "topCategories": ["other", "all"],
+      "topCategories": ["other", "travel", "all"],
       "annualFee": 375,
       "creditTierMin": "good",
       "headline": "Business Membership Rewards card that adapts to your biggest spend categories.",
@@ -878,13 +878,19 @@
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/business-gold.png",
       "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-gold-card-amex/",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-05-11T00:00:00.000Z",
       "rewards": [
         {
           "category": "other",
           "rate": 4,
           "rateType": "points",
           "notes": "4x Membership Rewards points in the two eligible categories where your business spends the most each billing cycle."
+        },
+        {
+          "category": "travel",
+          "rate": 3,
+          "rateType": "points",
+          "notes": "3x Membership Rewards points on flights and prepaid hotels booked through Amex Travel."
         },
         {
           "category": "all",
@@ -894,11 +900,12 @@
       ],
       "signUpBonuses": [
         {
-          "bonusValue": 700,
+          "bonusValue": 2000,
           "bonusType": "points",
-          "displayHeadline": "70,000 Membership Rewards points",
-          "bonusPoints": 70000,
-          "spendRequired": 10000,
+          "displayHeadline": "Up to 200,000 Membership Rewards points",
+          "displayDescription": "Personalized welcome offers vary. You may be eligible for as high as 200,000 Membership Rewards points after spending $15,000 in eligible purchases in the first 3 months of Card Membership.",
+          "bonusPoints": 200000,
+          "spendRequired": 15000,
           "spendPeriodDays": 90,
           "isCurrentOffer": true
         }

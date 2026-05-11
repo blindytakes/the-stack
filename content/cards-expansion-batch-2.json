@@ -592,7 +592,7 @@
       "issuer": "American Express",
       "cardType": "business",
       "rewardType": "points",
-      "topCategories": ["travel", "all"],
+      "topCategories": ["travel", "other", "all"],
       "annualFee": 895,
       "creditTierMin": "excellent",
       "headline": "Premium Amex business travel card with heavy credits and airport-lounge focus.",
@@ -602,9 +602,10 @@
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/business-platinum.png",
       "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-platinum-credit-card-amex/",
       "isActive": true,
-      "lastVerified": "2026-05-10T00:00:00.000Z",
+      "lastVerified": "2026-05-11T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 5, "rateType": "points", "notes": "5X Membership Rewards points on flights and prepaid hotels booked through AmexTravel.com." },
+        { "category": "other", "rate": 2, "rateType": "points", "notes": "2X points on eligible key business-category purchases and eligible purchases of $5,000 or more, up to the yearly cap." },
         { "category": "all", "rate": 1, "rateType": "points" }
       ],
       "signUpBonuses": [
@@ -702,10 +703,22 @@
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/hilton-honors.png",
       "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/hilton-honors/",
       "isActive": true,
-      "lastVerified": "2026-05-10T00:00:00.000Z",
+      "lastVerified": "2026-05-11T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 12, "rateType": "points", "notes": "12X Hilton Honors points on eligible Hilton purchases." },
         { "category": "all", "rate": 5, "rateType": "points", "notes": "5X points on other eligible purchases on the first $100,000 per year, then 3X thereafter." }
+      ],
+      "signUpBonuses": [
+        {
+          "bonusValue": 520,
+          "bonusType": "points",
+          "displayHeadline": "130,000 Hilton Honors Bonus Points",
+          "displayDescription": "Earn 130,000 Hilton Honors Bonus Points after you spend $6,000 in eligible purchases on your Card in the first 6 months of Card Membership.",
+          "bonusPoints": 130000,
+          "spendRequired": 6000,
+          "spendPeriodDays": 180,
+          "isCurrentOffer": true
+        }
       ]
     },
     {
