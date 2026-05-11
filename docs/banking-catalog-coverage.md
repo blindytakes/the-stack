@@ -1,6 +1,6 @@
 # Banking Catalog Coverage
 
-Last updated: March 25, 2026
+Last updated: May 11, 2026
 
 ## Scope
 
@@ -65,7 +65,7 @@ The planner also keeps only the strongest eligible offer per bank when building 
 - Huntington Unlimited Business Checking and Unlimited Plus Business Checking.
 - Axos Basic Business Checking and the Axos Business Bundle.
 - Truist Simple and Dynamic Business Checking.
-- BMO Digital, Simple, Premium, and Elite Business Checking.
+- BMO Business Checking, consolidated from the Digital, Simple, Premium, and Elite variants that share one public promo.
 
 ## Not added yet
 
@@ -81,5 +81,5 @@ These are the main remaining gaps after this pass:
 This pass prioritizes catalog coverage and business segmentation.
 
 - Some business offers use public promo pages plus product-fee pages to model estimated fees.
-- A few banks expose one promotion across several eligible accounts; those are represented as separate directory offers but the planner now dedupes by bank to avoid impossible same-bank stacking.
+- A few banks expose one promotion across several eligible accounts. Highly duplicated variants are consolidated in the directory when the live promo terms are materially the same, and the planner still dedupes by bank to avoid impossible same-bank stacking.
 - The banking pipeline is still a curated snapshot, not a live official-bank feed.

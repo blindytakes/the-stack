@@ -6,6 +6,10 @@ import {
 import { db } from '@/lib/db';
 import type { BankingBonusListItem, BankingBonusRecord } from '@/lib/banking/schema';
 import {
+  consolidateBankingBonusSlugs,
+  consolidateBankingBonusVariants,
+  isConsolidatedBankingBonusSlug,
+  isSupersededBankingBonusSlug,
   sortByBonusAmountDesc,
   toBankingBonusListItem
 } from '@/lib/banking/source-shared';
@@ -69,7 +73,9 @@ export async function getActiveDbBankingBonuses(now = new Date()): Promise<Banki
     orderBy: [{ bankName: 'asc' }, { offerName: 'asc' }]
   });
 
-  return sortByBonusAmountDesc(rows.map(toBankingRecordFromDb).map(toBankingBonusListItem));
+  return sortByBonusAmountDesc(
+    consolidateBankingBonusVariants(rows.map(toBankingRecordFromDb).map(toBankingBonusListItem))
+  );
 }
 
 export async function getActiveDbBusinessBankingBonuses(
@@ -84,13 +90,19 @@ export async function getActiveDbBusinessBankingBonuses(
     orderBy: [{ bankName: 'asc' }, { offerName: 'asc' }]
   });
 
-  return sortByBonusAmountDesc(rows.map(toBankingRecordFromDb).map(toBankingBonusListItem));
+  return sortByBonusAmountDesc(
+    consolidateBankingBonusVariants(rows.map(toBankingRecordFromDb).map(toBankingBonusListItem))
+  );
 }
 
 export async function getDbBankingBonusBySlug(
   slug: string,
   now = new Date()
 ): Promise<BankingBonusListItem | null> {
+  if (isSupersededBankingBonusSlug(slug)) {
+    return null;
+  }
+
   const row = await db.bankingBonus.findFirst({
     where: {
       slug,
@@ -99,7 +111,19 @@ export async function getDbBankingBonusBySlug(
     }
   });
 
-  return row ? toBankingBonusListItem(toBankingRecordFromDb(row)) : null;
+  if (row) {
+    return toBankingBonusListItem(toBankingRecordFromDb(row));
+  }
+
+  if (!isConsolidatedBankingBonusSlug(slug)) {
+    return null;
+  }
+
+  const consolidatedOffer = (await getActiveDbBankingBonuses(now)).find(
+    (offer) => offer.slug === slug
+  );
+
+  return consolidatedOffer ?? null;
 }
 
 export async function getActiveDbBankingBonusSlugs(now = new Date()): Promise<string[]> {
@@ -111,5 +135,5 @@ export async function getActiveDbBankingBonusSlugs(now = new Date()): Promise<st
     select: { slug: true }
   });
 
-  return rows.map((row) => row.slug);
+  return consolidateBankingBonusSlugs(rows.map((row) => row.slug));
 }

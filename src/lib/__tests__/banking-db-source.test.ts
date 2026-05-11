@@ -120,6 +120,62 @@ describe('banking db source', () => {
     });
   });
 
+  it('consolidates legacy BMO business checking rows from the DB into one visible offer', async () => {
+    const now = new Date('2026-05-11T00:00:00.000Z');
+    findManyMock.mockResolvedValue([
+      createDbBankingBonusRow({
+        id: 'bmo_1',
+        slug: 'bmo-digital-business-checking-1000',
+        bankName: 'BMO',
+        offerName: 'Digital Business Checking Bonus',
+        customerType: BankingCustomerType.BUSINESS,
+        bonusAmount: new Prisma.Decimal(1500),
+        estimatedFees: new Prisma.Decimal(10),
+        directDepositRequired: false,
+        directDepositMinimumAmount: null,
+        minimumOpeningDeposit: new Prisma.Decimal(100000),
+        holdingPeriodDays: 90,
+        requiredActions: ['Open a new BMO Digital Business Checking account'],
+        offerUrl: 'https://www.bmo.com/en-us/main/business-banking/bank-accounts/bb-checking-offer/',
+        expiresAt: new Date('2026-08-31T23:59:59.999-04:00'),
+        lastVerified: new Date('2026-05-10T00:00:00.000Z')
+      }),
+      createDbBankingBonusRow({
+        id: 'bmo_2',
+        slug: 'bmo-elite-business-checking-1000',
+        bankName: 'BMO',
+        offerName: 'Elite Business Checking Bonus',
+        customerType: BankingCustomerType.BUSINESS,
+        bonusAmount: new Prisma.Decimal(1500),
+        estimatedFees: new Prisma.Decimal(25),
+        directDepositRequired: false,
+        directDepositMinimumAmount: null,
+        minimumOpeningDeposit: new Prisma.Decimal(100000),
+        holdingPeriodDays: 90,
+        requiredActions: ['Open a new BMO Elite Business Checking account'],
+        offerUrl: 'https://www.bmo.com/en-us/main/business-banking/bank-accounts/bb-checking-offer/',
+        expiresAt: new Date('2026-08-31T23:59:59.999-04:00'),
+        lastVerified: new Date('2026-05-10T00:00:00.000Z')
+      })
+    ]);
+
+    const offers = await getActiveDbBankingBonuses(now);
+    const bmoOffers = offers.filter((offer) => offer.bankName === 'BMO');
+
+    expect(bmoOffers).toHaveLength(1);
+    expect(bmoOffers[0]).toMatchObject({
+      slug: 'bmo-business-checking-1500',
+      offerName: 'Business Checking Bonus',
+      bonusAmount: 1500,
+      estimatedFees: 10,
+      estimatedNetValue: 1490,
+      minimumOpeningDeposit: 100000,
+      requiredActions: expect.arrayContaining([
+        'Eligible accounts include Digital, Simple, Premium, and Elite Business Checking.'
+      ])
+    });
+  });
+
   it('loads a single DB bonus by slug and preserves optional fields correctly', async () => {
     const now = new Date('2026-04-10T00:00:00.000Z');
     findFirstMock.mockResolvedValue(
@@ -185,5 +241,61 @@ describe('banking db source', () => {
       select: { slug: true }
     });
     expect(slugs).toEqual(['offer-a', 'offer-b']);
+  });
+
+  it('consolidates legacy BMO business checking slugs from the DB', async () => {
+    const now = new Date('2026-05-11T00:00:00.000Z');
+    findManyMock.mockResolvedValue([
+      { slug: 'bmo-digital-business-checking-1000' },
+      { slug: 'bmo-simple-business-checking-1000' },
+      { slug: 'other-offer' }
+    ]);
+
+    const slugs = await getActiveDbBankingBonusSlugs(now);
+
+    expect(slugs).toEqual(['other-offer', 'bmo-business-checking-1500']);
+  });
+
+  it('can resolve the consolidated BMO business checking detail from legacy DB rows', async () => {
+    const now = new Date('2026-05-11T00:00:00.000Z');
+    findFirstMock.mockResolvedValue(null);
+    findManyMock.mockResolvedValue([
+      createDbBankingBonusRow({
+        id: 'bmo_1',
+        slug: 'bmo-simple-business-checking-1000',
+        bankName: 'BMO',
+        offerName: 'Simple Business Checking Bonus',
+        customerType: BankingCustomerType.BUSINESS,
+        bonusAmount: new Prisma.Decimal(1500),
+        estimatedFees: new Prisma.Decimal(10),
+        directDepositRequired: false,
+        directDepositMinimumAmount: null,
+        minimumOpeningDeposit: new Prisma.Decimal(100000),
+        holdingPeriodDays: 90,
+        requiredActions: ['Open a new BMO Simple Business Checking account'],
+        offerUrl: 'https://www.bmo.com/en-us/main/business-banking/bank-accounts/bb-checking-offer/',
+        expiresAt: new Date('2026-08-31T23:59:59.999-04:00'),
+        lastVerified: new Date('2026-05-10T00:00:00.000Z')
+      })
+    ]);
+
+    const offer = await getDbBankingBonusBySlug('bmo-business-checking-1500', now);
+
+    expect(offer?.slug).toBe('bmo-business-checking-1500');
+    expect(offer?.offerName).toBe('Business Checking Bonus');
+    expect(findFirstMock).toHaveBeenCalledWith({
+      where: {
+        slug: 'bmo-business-checking-1500',
+        isActive: true,
+        OR: [{ expiresAt: null }, { expiresAt: { gte: now } }]
+      }
+    });
+    expect(findManyMock).toHaveBeenCalledWith({
+      where: {
+        isActive: true,
+        OR: [{ expiresAt: null }, { expiresAt: { gte: now } }]
+      },
+      orderBy: [{ bankName: 'asc' }, { offerName: 'asc' }]
+    });
   });
 });

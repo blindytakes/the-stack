@@ -49,10 +49,7 @@ describe('banking offer audit coverage', () => {
     ['wells-fargo-initiate-business-checking-400', 400, undefined, '2026-07-07'],
     ['wells-fargo-navigate-business-checking-400', 400, undefined, '2026-07-07'],
     ['wells-fargo-optimize-business-checking-400', 400, undefined, '2026-07-07'],
-    ['bmo-digital-business-checking-1000', 1500, undefined, '2026-08-31'],
-    ['bmo-simple-business-checking-1000', 1500, undefined, '2026-08-31'],
-    ['bmo-premium-business-checking-1000', 1500, undefined, '2026-08-31'],
-    ['bmo-elite-business-checking-1000', 1500, undefined, '2026-08-31']
+    ['bmo-business-checking-1500', 1500, undefined, '2026-08-31']
   ])(
     'keeps the audited banking offer populated for %s',
     (slug, bonusAmount, directDepositMinimumAmount, expiresOn) => {
@@ -69,4 +66,20 @@ describe('banking offer audit coverage', () => {
       }
     }
   );
+
+  it('keeps BMO business checking as one active consolidated promo', () => {
+    const activeBmoBusinessOffers = loadAllBankingBonuses().filter(
+      (bonus) =>
+        bonus.bankName === 'BMO' &&
+        bonus.customerType === 'business' &&
+        bonus.isActive !== false
+    );
+
+    expect(activeBmoBusinessOffers.map((bonus) => bonus.slug)).toEqual([
+      'bmo-business-checking-1500'
+    ]);
+    expect(activeBmoBusinessOffers[0].requiredActions).toContain(
+      'Eligible accounts include Digital, Simple, Premium, and Elite Business Checking.'
+    );
+  });
 });

@@ -245,12 +245,6 @@ const jsonLd = {
 };
 
 const MAX_HERO_OFFERS = 12;
-const HOME_CAROUSEL_EXCLUDED_BANKING_SLUGS = new Set([
-  'bmo-digital-business-checking-1000',
-  'bmo-simple-business-checking-1000',
-  'bmo-premium-business-checking-1000',
-  'bmo-elite-business-checking-1000'
-]);
 
 export const dynamic = 'force-dynamic';
 
@@ -345,14 +339,13 @@ async function getHeroOffers(): Promise<HeroOffer[]> {
     // Banking unavailable — continue with cards only
   }
 
-  const eligibleOffers = offers.filter(
-    (offer) =>
-      offer.type !== 'bank' || !HOME_CAROUSEL_EXCLUDED_BANKING_SLUGS.has(offer.slug)
-  );
-
   // Sort by bonus value descending, then interleave card/bank
-  const sortedCards = eligibleOffers.filter(o => o.type === 'card').sort((a, b) => b.bonusValue - a.bonusValue);
-  const sortedBanks = eligibleOffers.filter(o => o.type === 'bank').sort((a, b) => b.bonusValue - a.bonusValue);
+  const sortedCards = offers
+    .filter((offer) => offer.type === 'card')
+    .sort((a, b) => b.bonusValue - a.bonusValue);
+  const sortedBanks = offers
+    .filter((offer) => offer.type === 'bank')
+    .sort((a, b) => b.bonusValue - a.bonusValue);
   const interleaved: HeroOffer[] = [];
   const maxLen = Math.max(sortedCards.length, sortedBanks.length);
   for (let i = 0; i < maxLen; i++) {
