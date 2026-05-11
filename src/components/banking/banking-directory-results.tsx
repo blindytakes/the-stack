@@ -10,6 +10,7 @@ type BankingDirectoryResultsProps = {
   allOffers: BankingBonusListItem[];
   offers: BankingBonusListItem[];
   activeFilterCount: number;
+  planSourcePath?: string;
   onClearFilters: () => void;
 };
 
@@ -17,6 +18,7 @@ export function BankingDirectoryResults({
   allOffers,
   offers,
   activeFilterCount,
+  planSourcePath,
   onClearFilters
 }: BankingDirectoryResultsProps) {
   const router = useRouter();
@@ -24,6 +26,9 @@ export function BankingDirectoryResults({
   const searchParams = useSearchParams();
   const modalSlug = searchParams.get('bank');
   const modalOffer = modalSlug ? allOffers.find((offer) => offer.slug === modalSlug) ?? null : null;
+  const modalSourcePath = modalSlug
+    ? `${pathname}?${searchParams.toString()}`
+    : planSourcePath;
 
   const openModal = useCallback(
     (slug: string) => {
@@ -78,7 +83,7 @@ export function BankingDirectoryResults({
           </div>
         )}
 
-        <BankingOffersGrid offers={offers} onOpenDetail={openModal} />
+        <BankingOffersGrid offers={offers} onOpenDetail={openModal} planSourcePath={planSourcePath} />
       </section>
     );
 
@@ -86,7 +91,12 @@ export function BankingDirectoryResults({
     <>
       {content}
       {modalOffer && (
-        <BankingDetailModal offer={modalOffer} onClose={closeModal} source="banking_directory" />
+        <BankingDetailModal
+          offer={modalOffer}
+          onClose={closeModal}
+          source="banking_directory"
+          sourcePath={modalSourcePath}
+        />
       )}
     </>
   );

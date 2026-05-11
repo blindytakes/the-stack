@@ -10,7 +10,15 @@ import {
   formatBankingCustomerType,
   formatBankingCurrency,
   getBankingOfferAvailabilityLabel,
+  getBankingOfferBestFit,
   getBankingOfferChecklist,
+  getBankingOfferExecutionSummary,
+  getBankingOfferGotchas,
+  getBankingOfferPrimaryConstraint,
+  getBankingOfferPrimaryRequirement,
+  getBankingOfferRequirements,
+  getBankingOfferThinkTwiceIf,
+  getBankingOfferWhyInteresting,
   type BankingBonusListItem
 } from '@/lib/banking-bonuses';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
@@ -21,6 +29,7 @@ type BankingDetailModalProps = {
   offer: BankingBonusListItem;
   onClose: () => void;
   source?: string;
+  sourcePath?: string;
 };
 
 function formatApyDate(value?: string) {
@@ -67,7 +76,8 @@ function summarizeDetail(value: string) {
 export function BankingDetailModal({
   offer,
   onClose,
-  source = 'banking_directory'
+  source = 'banking_directory',
+  sourcePath
 }: BankingDetailModalProps) {
   const imagePresentation = getBankingImagePresentation(offer.bankName);
   const showApy = Boolean(offer.apyDisplay) && offer.bankName.trim().toLowerCase() !== 'chase';
@@ -79,6 +89,15 @@ export function BankingDetailModal({
   const isExpired = Boolean(offer.expiresAt && new Date(offer.expiresAt).getTime() < Date.now());
   const outboundOfferUrl = offer.affiliateUrl ?? offer.offerUrl;
   const statCards = getBankingDecisionMetrics(offer);
+  const requirements = getBankingOfferRequirements(offer);
+  const whyInteresting = getBankingOfferWhyInteresting(offer);
+  const primaryRequirement = getBankingOfferPrimaryRequirement(offer);
+  const primaryConstraint = getBankingOfferPrimaryConstraint(offer);
+  const executionSummary = getBankingOfferExecutionSummary(offer);
+  const bestFit = getBankingOfferBestFit(offer);
+  const thinkTwice = getBankingOfferThinkTwiceIf(offer);
+  const gotchas = getBankingOfferGotchas(offer);
+  const detailSourcePath = sourcePath ?? `/banking?bank=${offer.slug}`;
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -122,7 +141,7 @@ export function BankingDetailModal({
 
         <TrackFunnelEventOnView
           event="banking_detail_view"
-          properties={{ source, bank_slug: offer.slug, path: `/banking?bank=${offer.slug}` }}
+          properties={{ source, bank_slug: offer.slug, path: detailSourcePath }}
         />
 
         <div className="p-5 md:p-6">
@@ -150,17 +169,11 @@ export function BankingDetailModal({
                     lane: 'banking',
                     slug: offer.slug,
                     audience: offer.customerType === 'business' ? 'business' : undefined,
-                    sourcePath: `/banking?bank=${offer.slug}`
+                    sourcePath: detailSourcePath
                   })}
                   className="inline-flex w-full items-center justify-center rounded-full bg-brand-teal px-5 py-3 text-base font-semibold text-black transition hover:opacity-90"
                 >
                   Add to my bonus plan
-                </Link>
-                <Link
-                  href={`/banking/${offer.slug}`}
-                  className="inline-flex w-full items-center justify-center rounded-full border border-white/10 px-5 py-3 text-sm font-semibold text-text-secondary transition hover:border-white/30 hover:text-text-primary"
-                >
-                  Open full page
                 </Link>
                 {outboundOfferUrl && !isExpired && (
                   <AffiliateLink
@@ -228,6 +241,8 @@ export function BankingDetailModal({
                   </span>
                 </div>
 
+                <p className="mt-3 text-sm leading-6 text-text-secondary">{whyInteresting}</p>
+
                 <div className="mt-4 grid gap-2.5 sm:grid-cols-2 xl:grid-cols-5">
                   {statCards.map((stat) => (
                     <div
@@ -249,6 +264,42 @@ export function BankingDetailModal({
                         {stat.value}
                       </p>
                       <p className="mt-1 text-[11px] leading-4 text-text-muted">{stat.detail}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {requirements.length > 0 ? (
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {requirements.slice(0, 6).map((requirement) => (
+                      <span
+                        key={requirement}
+                        className="rounded-full border border-white/10 bg-black/15 px-2.5 py-1 text-[11px] leading-4 text-text-secondary"
+                      >
+                        {requirement}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </section>
+
+              <section className="mt-4 rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4">
+                <p className="text-xs uppercase tracking-[0.22em] text-text-muted">
+                  Execution summary
+                </p>
+                <div className="mt-3 grid gap-3 md:grid-cols-3">
+                  {[
+                    ['Primary requirement', primaryRequirement],
+                    ['Primary constraint', primaryConstraint],
+                    ['Execution model', executionSummary]
+                  ].map(([label, value]) => (
+                    <div
+                      key={label}
+                      className="rounded-[1rem] border border-white/8 bg-black/15 p-3.5"
+                    >
+                      <p className="text-[10px] uppercase tracking-[0.18em] text-text-muted">
+                        {label}
+                      </p>
+                      <p className="mt-2 text-xs leading-5 text-text-primary">{value}</p>
                     </div>
                   ))}
                 </div>
@@ -297,6 +348,50 @@ export function BankingDetailModal({
                     </ol>
                 </div>
               </section>
+
+              <div className="mt-4 grid gap-3 lg:grid-cols-3">
+                {[
+                  {
+                    eyebrow: 'Good fit if',
+                    title: 'Who should do this',
+                    items: bestFit,
+                    toneClass: 'text-emerald-400',
+                    dotClass: 'bg-emerald-400'
+                  },
+                  {
+                    eyebrow: 'Think twice if',
+                    title: 'Where it gets annoying',
+                    items: thinkTwice,
+                    toneClass: 'text-red-400',
+                    dotClass: 'bg-red-400'
+                  },
+                  {
+                    eyebrow: 'Watch for',
+                    title: 'Failure points',
+                    items: gotchas,
+                    toneClass: 'text-brand-gold',
+                    dotClass: 'bg-brand-gold'
+                  }
+                ].map((section) => (
+                  <section
+                    key={section.eyebrow}
+                    className="rounded-[1.35rem] border border-white/10 bg-bg-elevated/60 p-4"
+                  >
+                    <p className={`text-[10px] uppercase tracking-[0.22em] ${section.toneClass}`}>
+                      {section.eyebrow}
+                    </p>
+                    <h3 className="mt-2 text-base font-semibold text-text-primary">{section.title}</h3>
+                    <ul className="mt-3 space-y-2">
+                      {section.items.map((item) => (
+                        <li key={item} className="flex items-start gap-2 text-xs leading-5 text-text-secondary">
+                          <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${section.dotClass}`} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ))}
+              </div>
             </div>
           </div>
         </div>

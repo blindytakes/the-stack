@@ -7,9 +7,10 @@ import type { BankingBonusListItem } from '@/lib/banking-bonuses';
 type BankingOffersGridProps = {
   offers: BankingBonusListItem[];
   onOpenDetail: (slug: string) => void;
+  planSourcePath?: string;
 };
 
-export function BankingOffersGrid({ offers, onOpenDetail }: BankingOffersGridProps) {
+export function BankingOffersGrid({ offers, onOpenDetail, planSourcePath }: BankingOffersGridProps) {
   const { gridRef, isVisible, isMeasured, canAnimateEntrance, firstRowIndexes, prefersReducedMotion } =
     useFirstGridRowReveal(offers.length);
 
@@ -32,7 +33,7 @@ export function BankingOffersGrid({ offers, onOpenDetail }: BankingOffersGridPro
               transitionDelay: `${shouldReveal && isVisible ? 180 + Math.min(index, 15) * 50 : 0}ms`
             }}
           >
-            <BankingOfferCard offer={offer} onOpenDetail={onOpenDetail} />
+            <BankingOfferCard offer={offer} onOpenDetail={onOpenDetail} planSourcePath={planSourcePath} />
           </div>
         );
       })}

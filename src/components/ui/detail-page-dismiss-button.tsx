@@ -6,17 +6,19 @@ type DetailPageDismissButtonProps = {
   fallbackHref: string;
   ariaLabel?: string;
   className?: string;
+  preferFallback?: boolean;
 };
 
 export function DetailPageDismissButton({
   fallbackHref,
   ariaLabel = 'Close details',
-  className = ''
+  className = '',
+  preferFallback = false
 }: DetailPageDismissButtonProps) {
   const router = useRouter();
 
   function handleClick() {
-    if (window.history.length > 1) {
+    if (!preferFallback && window.history.length > 1) {
       router.back();
       return;
     }

@@ -16,11 +16,15 @@ import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 type CardsDirectoryResultsProps = {
   cards: CardRecord[];
   selectedCompare: string[];
+  detailReturnPath?: string;
+  planSourcePath?: string;
 };
 
 export function CardsDirectoryResults({
   cards,
-  selectedCompare
+  selectedCompare,
+  detailReturnPath,
+  planSourcePath
 }: CardsDirectoryResultsProps) {
   const REVEAL_BASE_DELAY_MS = 80;
   const REVEAL_STAGGER_MS = 40;
@@ -55,6 +59,12 @@ export function CardsDirectoryResults({
   function formatBestCategoryLabel(category: CardRecord['topCategories'][number]) {
     if (category === 'all') return 'General spend';
     return formatSpendCategoryLabel(category);
+  }
+
+  function buildCardDetailHref(slug: string) {
+    if (!detailReturnPath) return `/cards/${slug}`;
+
+    return `/cards/${slug}?${new URLSearchParams({ returnTo: detailReturnPath }).toString()}`;
   }
 
   if (cards.length === 0) {
@@ -145,7 +155,7 @@ export function CardsDirectoryResults({
 
               <div className="relative z-10 mt-3 min-h-[2.5rem] px-2">
                 <Link
-                  href={`/cards/${card.slug}`}
+                  href={buildCardDetailHref(card.slug)}
                   className="block w-full text-center text-sm font-semibold leading-snug text-text-primary transition hover:text-brand-teal"
                 >
                   {card.name}
@@ -199,7 +209,7 @@ export function CardsDirectoryResults({
 
                 <div className="mt-4 flex gap-2 border-t border-white/5 pt-4">
                   <Link
-                    href={`/cards/${card.slug}`}
+                    href={buildCardDetailHref(card.slug)}
                     className="inline-flex flex-1 items-center justify-center rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-text-secondary transition hover:border-brand-teal/40 hover:text-brand-teal"
                   >
                     Details
@@ -208,7 +218,8 @@ export function CardsDirectoryResults({
                     href={buildSelectedOfferIntentHref({
                       lane: 'cards',
                       slug: card.slug,
-                      audience: card.cardType === 'business' ? 'business' : undefined
+                      audience: card.cardType === 'business' ? 'business' : undefined,
+                      sourcePath: planSourcePath
                     })}
                     className="inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs font-semibold text-black transition hover:opacity-90"
                   >

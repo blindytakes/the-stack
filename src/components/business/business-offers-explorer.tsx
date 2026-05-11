@@ -46,6 +46,8 @@ function getBusinessBrowseView(value: string | null): BusinessBrowseView {
 
 const businessCardsPageCardType: CardTypeFilterValue = 'business';
 const businessBankingPageCustomerType: CustomerTypeFilterValue = 'business';
+const businessCardsReturnPath = '/business?view=cards';
+const businessBankingReturnPath = '/business?view=banking';
 const defaultBusinessCardsDirectoryFilters: CardsDirectoryFilters = {
   ...defaultCardsDirectoryFilters,
   cardType: businessCardsPageCardType
@@ -260,6 +262,8 @@ export function BusinessOffersExplorer({
           <CardsDirectoryResults
             cards={cardsState.filteredSortedCards}
             selectedCompare={cardsState.selectedCompare}
+            detailReturnPath={businessCardsReturnPath}
+            planSourcePath={businessCardsReturnPath}
           />
         </>
       ) : (
@@ -279,7 +283,7 @@ export function BusinessOffersExplorer({
             state={bankingState.state}
             sortBy={bankingState.sortBy}
             eyebrowLabel="Business Banking"
-            title="Find the right business bank bonus for your plan."
+            title="Find the right bonus for your business."
             description="Browse business checking and savings bonuses with the same filter treatment and offer cards used in the main banking directory."
             preFilterContent={browseViewToggle}
             showCustomerTypeFilter={false}
@@ -298,6 +302,7 @@ export function BusinessOffersExplorer({
             allOffers={businessOffers}
             offers={bankingState.filteredSortedOffers}
             activeFilterCount={bankingState.activeFilterCount}
+            planSourcePath={businessBankingReturnPath}
             onClearFilters={bankingState.clearFilters}
           />
         </>

@@ -18,12 +18,14 @@ type BankingOfferCardProps = {
   offer: BankingBonusListItem;
   variant?: 'directory' | 'compact';
   onOpenDetail?: (slug: string) => void;
+  planSourcePath?: string;
 };
 
 export function BankingOfferCard({
   offer,
   variant = 'directory',
-  onOpenDetail
+  onOpenDetail,
+  planSourcePath
 }: BankingOfferCardProps) {
   const isCompact = variant === 'compact';
   const imagePresentation = getBankingImagePresentation(offer.bankName);
@@ -178,7 +180,7 @@ export function BankingOfferCard({
                 lane: 'banking',
                 slug: offer.slug,
                 audience: offer.customerType === 'business' ? 'business' : undefined,
-                sourcePath: '/banking'
+                sourcePath: planSourcePath ?? '/banking'
               })}
               className="inline-flex flex-1 items-center justify-center rounded-xl bg-brand-teal px-3 py-2 text-center text-xs font-semibold text-black transition hover:opacity-90"
             >

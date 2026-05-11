@@ -38,6 +38,7 @@ import { buildSelectedOfferIntentHref } from '@/lib/selected-offer-intent';
 type BankingDetailPageProps = {
   offer: BankingBonusListItem;
   offers: BankingBonusListItem[];
+  returnHref?: string | null;
 };
 
 type RelatedOffer = {
@@ -146,7 +147,7 @@ function buildRelatedOffers(current: BankingBonusListItem, offers: BankingBonusL
     .slice(0, 3);
 }
 
-export function BankingDetailPage({ offer, offers }: BankingDetailPageProps) {
+export function BankingDetailPage({ offer, offers, returnHref }: BankingDetailPageProps) {
   const imagePresentation = getBankingImagePresentation(offer.bankName);
   const checklistSteps = getBankingOfferChecklist(offer);
   const availabilityLabel = getBankingOfferAvailabilityLabel(offer);
@@ -170,7 +171,9 @@ export function BankingDetailPage({ offer, offers }: BankingDetailPageProps) {
   const requiredFundingAmount = getBankingRequiredFundingAmount(offer);
   const directDepositMinimum = getBankingRequiredDirectDepositAmount(offer);
   const activityRequirement = extractActivityRequirement(offer);
-  const sourcePath = `/banking/${offer.slug}`;
+  const fallbackHref = returnHref ?? (offer.customerType === 'business' ? '/business?view=banking' : '/banking');
+  const backLabel = fallbackHref.startsWith('/business') ? 'Back to business offers' : 'Back to banking';
+  const sourcePath = returnHref ?? `/banking/${offer.slug}`;
   const outboundOfferUrl = offer.affiliateUrl ?? offer.offerUrl;
 
   return (
@@ -187,16 +190,17 @@ export function BankingDetailPage({ offer, offers }: BankingDetailPageProps) {
 
         <div className="relative">
           <DetailPageDismissButton
-            fallbackHref="/banking"
+            fallbackHref={fallbackHref}
             ariaLabel="Close banking details"
             className="absolute right-0 top-0 z-10"
+            preferFallback={Boolean(returnHref) || offer.customerType === 'business'}
           />
 
           <Link
-            href="/banking"
+            href={fallbackHref}
             className="inline-flex items-center text-sm font-medium text-text-muted transition hover:text-text-primary"
           >
-            Back to banking
+            {backLabel}
           </Link>
 
           <div className="mt-6 grid gap-8 lg:grid-cols-[230px_minmax(0,1fr)] lg:items-start">
