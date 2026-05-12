@@ -419,146 +419,6 @@ function getRecommendationGuidance(
   };
 }
 
-function ProgramArtPanel({
-  activeProgramId,
-  open,
-  onToggle,
-  onSelect
-}: {
-  activeProgramId: PointsProgramId;
-  open: boolean;
-  onToggle: () => void;
-  onSelect: (programId: PointsProgramId) => void;
-}) {
-  const activeProfile = pointsProgramProfiles.find((item) => item.id === activeProgramId);
-  const activeVisual = programVisuals[activeProgramId];
-  const mainArtScale = Math.min((activeVisual.artScale ?? 1) * 1.06, 1.12);
-
-  if (!activeProfile) return null;
-
-  const modeledFloorCpp = Math.min(...activeProfile.choices.map((choice) => choice.minCpp));
-  const modeledCeilingCpp = Math.max(...activeProfile.choices.map((choice) => choice.maxCpp));
-
-  return (
-    <div className="relative flex h-full min-w-0 flex-col overflow-visible rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-5">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
-      <div className="pointer-events-none absolute -right-10 top-8 h-28 w-28 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.18),transparent_70%)] blur-[46px]" />
-
-      <div className="relative flex flex-col items-center overflow-hidden rounded-[1.2rem] bg-[radial-gradient(circle_at_50%_38%,rgb(var(--points-accent-rgb)/0.14),transparent_58%),linear-gradient(180deg,rgba(255,255,255,0.035),rgba(0,0,0,0.08))] p-4 md:p-5">
-        <div className="relative z-30 flex w-full items-start justify-between gap-4">
-          <div className="min-w-0">
-            <p className={`text-[10px] font-semibold uppercase tracking-[0.22em] ${activeVisual.accentClassName}`}>
-              Selected program
-            </p>
-            <p className="mt-2 text-[1.15rem] font-semibold leading-tight text-text-primary sm:truncate">
-              {activeProfile.title}
-            </p>
-          </div>
-
-          <button
-            type="button"
-            aria-haspopup="listbox"
-            aria-label={
-              open
-                ? 'Close card browser'
-                : `Browse cards, currently ${activeProfile.title}`
-            }
-            onClick={onToggle}
-            aria-expanded={open}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[rgb(var(--points-accent-rgb)/0.26)] bg-[rgb(var(--points-accent-rgb)/0.1)] text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur transition hover:border-[rgb(var(--points-accent-rgb)/0.5)] hover:bg-[rgb(var(--points-accent-rgb)/0.16)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--points-accent-rgb)/0.5)] sm:h-auto sm:w-auto sm:px-3.5 sm:py-2 sm:text-[10px] sm:font-semibold sm:uppercase sm:tracking-[0.15em]"
-          >
-            <span className="text-base leading-none sm:hidden" aria-hidden="true">
-              {open ? 'x' : '...'}
-            </span>
-            <span className="hidden sm:inline">{open ? 'Close' : 'Browse cards'}</span>
-          </button>
-        </div>
-
-        {open ? (
-          <div
-            role="listbox"
-            aria-label="Points program"
-            className="absolute left-4 right-4 top-[7.5rem] z-40 grid max-h-[min(26rem,calc(100vh-8rem))] gap-2 overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)] sm:left-auto sm:top-[4.8rem] sm:w-[min(22rem,calc(100%-2rem))] md:right-5"
-          >
-            {pointsProgramProfiles.map((profile) => {
-              const optionVisual = programVisuals[profile.id];
-              const active = profile.id === activeProgramId;
-
-              return (
-                <button
-                  key={profile.id}
-                  type="button"
-                  role="option"
-                  aria-selected={active}
-                  onClick={() => onSelect(profile.id)}
-                  className={`flex items-center gap-3 rounded-[1.05rem] border p-3 text-left transition ${
-                    active ? activeSurfaceClassName : inactiveSurfaceClassName
-                  }`}
-                >
-                  <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-[0.85rem] border border-white/10 bg-black/15">
-                    <EntityImage
-                      src={optionVisual.artUrl}
-                      alt={profile.title}
-                      label={profile.title}
-                      className="aspect-[1.62/1] w-full max-w-[4.8rem] overflow-visible rounded-none border-0 bg-transparent"
-                      imgClassName="bg-transparent p-0"
-                      fallbackClassName="bg-black/10"
-                      fit="contain"
-                      position={optionVisual.artPosition}
-                      scale={optionVisual.artScale ?? 1}
-                    />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold leading-tight text-text-primary">
-                      {profile.title}
-                    </p>
-                    <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
-                      {optionVisual.laneLabel}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
-
-        <div className="pointer-events-none absolute inset-x-12 bottom-8 h-14 rounded-full bg-black/35 blur-2xl" />
-        <div className="pointer-events-none absolute inset-x-12 bottom-8 h-12 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.16),transparent_70%)] blur-[32px]" />
-        <button
-          type="button"
-          aria-haspopup="listbox"
-          aria-expanded={open}
-          aria-label={`Change card, currently ${activeProfile.title}`}
-          onClick={onToggle}
-          className="group relative mt-6 flex w-full items-center justify-center rounded-[1.05rem] border border-[rgb(var(--points-accent-rgb)/0.18)] bg-black/18 p-3 shadow-[0_14px_32px_rgba(0,0,0,0.16)] transition hover:border-[rgb(var(--points-accent-rgb)/0.42)] hover:bg-black/24 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--points-accent-rgb)/0.5)]"
-        >
-          <EntityImage
-            src={activeVisual.artUrl}
-            alt={activeProfile.title}
-            label={activeProfile.title}
-            className="relative aspect-[1.62/1] w-full max-w-[26rem] rounded-[0.8rem] border-0 bg-transparent"
-            imgClassName="bg-transparent p-0 drop-shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition-transform duration-200 group-hover:scale-[1.02]"
-            fallbackClassName="bg-black/10"
-            fit="contain"
-            position={activeVisual.artPosition}
-            scale={mainArtScale}
-          />
-        </button>
-        <div className="relative z-10 mt-4 flex w-full flex-wrap justify-center gap-2">
-          <span
-            className={`rounded-full border border-[rgb(var(--points-accent-rgb)/0.28)] bg-[rgb(var(--points-accent-rgb)/0.09)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${activeVisual.accentClassName}`}
-          >
-            {activeVisual.laneLabel}
-          </span>
-          <span className="rounded-full border border-white/8 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
-            {modeledFloorCpp.toFixed(1)}–{modeledCeilingCpp.toFixed(1)} cpp modeled
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function ChoicePill({
   active,
   label,
@@ -893,130 +753,78 @@ function ResultHighlightCard({
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)]" />
       <div className="pointer-events-none absolute -right-8 top-0 h-32 w-40 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.14),transparent_72%)] blur-[52px]" />
 
-      <div className="relative grid gap-5 xl:grid-cols-[minmax(0,1fr)_16rem]">
-        <div>
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <p className={`text-[10px] font-semibold uppercase tracking-[0.26em] ${accentClassName}`}>
-                Best move right now
-              </p>
-              <h3 className={`mt-3 font-heading text-[clamp(2.3rem,4vw,3.4rem)] leading-[0.92] tracking-[-0.04em] ${accentClassName}`}>
-                {recommendation.shortLabel}
-              </h3>
-            </div>
-
-            <div className="rounded-[1.3rem] border border-[rgb(var(--points-accent-rgb)/0.32)] bg-[rgb(var(--points-accent-rgb)/0.08)] px-4 py-3 shadow-[0_18px_42px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.06)] lg:min-w-[13rem]">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Estimated value</p>
-              <p className={`mt-2 font-heading text-[2.6rem] leading-none tracking-[-0.04em] ${accentClassName} drop-shadow-[0_2px_18px_rgb(var(--points-accent-rgb)/0.25)]`}>
-                {formatCurrency(recommendation.estimatedValue)}
-              </p>
-              <p className="mt-2 text-xs leading-5 text-text-secondary">
-                Usually around {recommendation.likelyCpp.toFixed(1)} cents per point.
-              </p>
-            </div>
+      <div className="relative">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div>
+            <p className={`text-[10px] font-semibold uppercase tracking-[0.26em] ${accentClassName}`}>
+              Best move right now
+            </p>
+            <h3 className={`mt-3 font-heading text-[clamp(2.3rem,4vw,3.4rem)] leading-[0.92] tracking-[-0.04em] ${accentClassName}`}>
+              {recommendation.shortLabel}
+            </h3>
           </div>
 
-          <p className="mt-4 max-w-2xl text-[1rem] leading-7 text-text-primary">{recommendation.fitSummary}</p>
-
-          <div className="mt-4 flex flex-wrap gap-2">
-            <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] ${activeChipClassName}`}>
-              {formatCppRange(recommendation.minCpp, recommendation.maxCpp)}
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
-              Effort: {getEffortLabel(recommendation.effort)}
-            </span>
-            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
-              Timing: {getTimeHorizonLabel(recommendation.timeToValue)}
-            </span>
+          <div className="rounded-[1.3rem] border border-[rgb(var(--points-accent-rgb)/0.32)] bg-[rgb(var(--points-accent-rgb)/0.08)] px-4 py-3 shadow-[0_18px_42px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.06)] lg:min-w-[13rem]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Estimated value</p>
+            <p className={`mt-2 font-heading text-[2.6rem] leading-none tracking-[-0.04em] ${accentClassName} drop-shadow-[0_2px_18px_rgb(var(--points-accent-rgb)/0.25)]`}>
+              {formatCurrency(recommendation.estimatedValue)}
+            </p>
+            <p className="mt-2 text-xs leading-5 text-text-secondary">
+              Usually around {recommendation.likelyCpp.toFixed(1)} cents per point.
+            </p>
           </div>
-
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-text-secondary">{recommendation.summary}</p>
-
-          <ScoreBreakdown recommendation={recommendation} accentClassName={accentClassName} />
-
-          <div className="mt-5 grid gap-3 md:grid-cols-3">
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Why it fits</p>
-              <p className="mt-2 text-sm leading-6 text-text-primary">{recommendation.bestFor}</p>
-            </div>
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Example</p>
-              <p className="mt-2 text-sm leading-6 text-text-primary">{guidance.example}</p>
-            </div>
-            <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Do next</p>
-              <p className="mt-2 text-sm leading-6 text-text-primary">{guidance.nextStep}</p>
-            </div>
-          </div>
-
-          <p className="mt-4 text-sm leading-6 text-text-secondary">
-            <span className="font-semibold text-text-primary">Watch out:</span> {recommendation.watchOut}
-          </p>
         </div>
 
-        <div className="rounded-[1.45rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Modeled range</p>
-          <p className="mt-3 text-lg font-semibold text-text-primary">
-            {formatCurrency(recommendation.minimumValue)} to {formatCurrency(recommendation.maximumValue)}
-          </p>
-          <p className="mt-2 text-sm leading-6 text-text-secondary">
-            That is the range this recommendation can reasonably land in under your current assumptions.
-          </p>
+        <p className="mt-4 max-w-2xl text-[1rem] leading-7 text-text-primary">{recommendation.fitSummary}</p>
 
-          <div className="mt-5 rounded-[1.2rem] border border-white/10 bg-white/[0.04] px-4 py-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Best use case</p>
-            <p className={`mt-2 text-sm font-semibold ${accentClassName}`}>{recommendation.recommendationLabel}</p>
-          </div>
-
-          <p className="mt-4 text-xs leading-5 text-text-muted">
-            Modeled values only. This does not check live award space, transfer bonuses, or portal inventory.
-          </p>
-        </div>
-      </div>
-    </motion.article>
-  );
-}
-
-function ResultOptionCard({
-  recommendation,
-  accentClassName
-}: {
-  recommendation: RankedPointsRecommendation;
-  accentClassName: string;
-}) {
-  return (
-    <motion.article
-      layout
-      initial={{ opacity: 0, y: 18 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.32, ease: 'easeOut' }}
-      className="rounded-[1.6rem] border border-white/10 bg-[linear-gradient(180deg,rgba(14,19,30,0.96),rgba(10,14,24,0.96))] p-5"
-    >
-      <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${accentClassName}`}>
-        {recommendation.recommendationLabel}
-      </p>
-      <div className="mt-3 flex items-start justify-between gap-4">
-        <h4 className="font-heading text-[2rem] leading-[0.94] tracking-[-0.03em] text-text-primary">
-          {recommendation.shortLabel}
-        </h4>
-        <div className="text-right">
-          <p className={`text-lg font-semibold ${accentClassName}`}>
-            {formatCurrency(recommendation.estimatedValue)}
-          </p>
-          <p className="mt-1 text-xs uppercase tracking-[0.18em] text-text-muted">
+        <div className="mt-4 flex flex-wrap gap-2">
+          <span className={`rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] ${activeChipClassName}`}>
             {formatCppRange(recommendation.minCpp, recommendation.maxCpp)}
+          </span>
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
+            Effort: {getEffortLabel(recommendation.effort)}
+          </span>
+          <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
+            Timing: {getTimeHorizonLabel(recommendation.timeToValue)}
+          </span>
+        </div>
+
+        <p className="mt-4 max-w-2xl text-sm leading-6 text-text-secondary">{recommendation.summary}</p>
+
+        <ScoreBreakdown recommendation={recommendation} accentClassName={accentClassName} />
+
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Why it fits</p>
+            <p className="mt-2 text-sm leading-6 text-text-primary">{recommendation.bestFor}</p>
+          </div>
+          <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Example</p>
+            <p className="mt-2 text-sm leading-6 text-text-primary">{guidance.example}</p>
+          </div>
+          <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.04] p-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Do next</p>
+            <p className="mt-2 text-sm leading-6 text-text-primary">{guidance.nextStep}</p>
+          </div>
+        </div>
+
+        <p className="mt-4 text-sm leading-6 text-text-secondary">
+          <span className="font-semibold text-text-primary">Watch out:</span> {recommendation.watchOut}
+        </p>
+
+        <div className="mt-6 flex flex-col gap-2 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-baseline gap-3">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
+              Modeled range
+            </span>
+            <span className="text-base font-semibold text-text-primary">
+              {formatCurrency(recommendation.minimumValue)}–{formatCurrency(recommendation.maximumValue)}
+            </span>
+          </div>
+          <p className="text-xs leading-5 text-text-muted sm:max-w-md sm:text-right">
+            Modeled values only — does not check live award space, transfer bonuses, or portal inventory.
           </p>
         </div>
-      </div>
-      <p className="mt-3 text-sm leading-6 text-text-primary">{recommendation.fitSummary}</p>
-      <p className="mt-3 text-sm leading-6 text-text-secondary">{recommendation.summary}</p>
-      <div className="mt-4 flex flex-wrap gap-2">
-        <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
-          {getEffortLabel(recommendation.effort)}
-        </span>
-        <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
-          {getTimeHorizonLabel(recommendation.timeToValue)}
-        </span>
       </div>
     </motion.article>
   );
@@ -1029,7 +837,28 @@ export function PointsAdvisor() {
   const [tripInput, setTripInput] = useState<TripRedemptionFormInput>(defaultTripRedemptionInput);
   const [hasAppliedSearchParams, setHasAppliedSearchParams] = useState(false);
   const [programPickerOpen, setProgramPickerOpen] = useState(false);
+  const programPickerRef = useRef<HTMLDivElement>(null);
   const lastTrackedRecommendationRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!programPickerOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (!programPickerRef.current?.contains(event.target as Node)) {
+        setProgramPickerOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setProgramPickerOpen(false);
+    };
+
+    document.addEventListener('mousedown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [programPickerOpen]);
 
   useEffect(() => {
     const queryProgram = searchParams.get('program');
@@ -1092,8 +921,11 @@ export function PointsAdvisor() {
   const result = buildPointsAdvisorResult(input);
   const visual = programVisuals[result.profile.id];
   const accentStyle = getAccentStyle(visual);
+  const programFloorCpp = Math.min(...result.profile.choices.map((choice) => choice.minCpp));
+  const programCeilingCpp = Math.max(...result.profile.choices.map((choice) => choice.maxCpp));
+  const estimatedValueFloor = (input.pointsBalance * programFloorCpp) / 100;
+  const estimatedValueCeiling = (input.pointsBalance * programCeilingCpp) / 100;
   const topRecommendation = result.topRecommendations[0];
-  const alternativeRecommendations = result.topRecommendations.slice(1, 3);
   const easiestAlternativeOption =
     [...result.allRecommendations]
       .filter(
@@ -1223,49 +1055,139 @@ export function PointsAdvisor() {
       <div className="pointer-events-none absolute left-[-7rem] top-10 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.08),transparent_70%)] blur-[56px]" />
       <div className="pointer-events-none absolute right-[-10rem] top-40 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.06),transparent_72%)] blur-3xl" />
 
-      <header className="relative mx-auto max-w-4xl px-2 text-center md:px-4">
-        <h1 className="font-heading text-[clamp(2.6rem,6vw,4.4rem)] leading-[0.96] text-text-primary">
-          What are your points worth?
-        </h1>
-        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg md:leading-8">
-          Enter your balance and pick your card. We&apos;ll show the best way to redeem.
-        </p>
-      </header>
-
-      <section className={`${panelClassName} p-4 md:p-6`}>
+      <section className={`${panelClassName} p-6 md:p-12`}>
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.24),transparent)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 mx-auto h-64 max-w-3xl bg-[radial-gradient(circle_at_50%_0%,rgb(var(--points-accent-rgb)/0.12),transparent_70%)]" />
 
-        <div className="relative grid gap-6 xl:grid-cols-2 xl:items-stretch">
-          <label className="group relative flex min-w-0 cursor-text flex-col justify-center rounded-[1.35rem] border border-[rgb(var(--points-accent-rgb)/0.32)] bg-[rgb(var(--points-accent-rgb)/0.07)] px-6 py-10 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_24px_60px_rgba(0,0,0,0.18)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] hover:border-[rgb(var(--points-accent-rgb)/0.6)] hover:bg-[rgb(var(--points-accent-rgb)/0.12)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_30px_70px_rgba(0,0,0,0.28),0_0_0_4px_rgb(var(--points-accent-rgb)/0.08),0_0_42px_rgb(var(--points-accent-rgb)/0.22)] focus-within:border-[rgb(var(--points-accent-rgb)/0.7)] focus-within:bg-[rgb(var(--points-accent-rgb)/0.14)] md:px-8 md:py-12">
-            <span className={`text-sm font-semibold uppercase tracking-[0.28em] ${visual.accentClassName}`}>
-              Points balance
-            </span>
-            <span className="relative mt-4 inline-block w-full">
-              <input
-                type="text"
-                inputMode="numeric"
-                value={input.pointsBalance === 0 ? '' : formatPoints(input.pointsBalance)}
-                onChange={handlePointsChange}
-                placeholder="100,000"
-                aria-label="Points balance"
-                className="peer w-full bg-transparent text-center font-heading text-[clamp(3.6rem,9vw,7rem)] leading-[0.9] tracking-[-0.04em] text-text-primary placeholder:text-text-muted focus:outline-none"
-              />
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute -bottom-1 left-1/2 h-[2px] w-24 -translate-x-1/2 rounded-full bg-[rgb(var(--points-accent-rgb)/0.45)] transition-all duration-200 group-hover:w-32 group-hover:bg-[rgb(var(--points-accent-rgb)/0.7)] peer-focus:w-40 peer-focus:bg-[rgb(var(--points-accent-rgb))]"
-              />
-            </span>
-            <span className="mt-6 block text-[11px] font-semibold uppercase tracking-[0.24em] text-text-muted">
-              Click to edit
-            </span>
-          </label>
+        <div className="relative mx-auto max-w-3xl text-center">
+          <h1 className="font-heading text-[clamp(1.8rem,3vw,2.6rem)] leading-[1.1] tracking-[-0.02em] text-balance text-text-primary">
+            Stack your points into real value.
+          </h1>
 
-          <ProgramArtPanel
-            activeProgramId={input.programId}
-            open={programPickerOpen}
-            onToggle={() => setProgramPickerOpen((current) => !current)}
-            onSelect={updateProgram}
-          />
+          <div className="mt-10 flex flex-wrap items-end justify-center gap-x-10 gap-y-6">
+            <div className="flex flex-col items-center">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">
+                Balance
+              </span>
+              <label htmlFor="points-balance-input" className="group relative mt-2 cursor-text">
+                <input
+                  id="points-balance-input"
+                  type="text"
+                  inputMode="numeric"
+                  value={input.pointsBalance === 0 ? '' : formatPoints(input.pointsBalance)}
+                  onChange={handlePointsChange}
+                  placeholder="100,000"
+                  aria-label="Points balance"
+                  className="peer w-[6.5ch] bg-transparent text-center font-heading text-[clamp(2.6rem,4.2vw,3.6rem)] font-semibold leading-[1] tracking-[-0.02em] text-text-primary placeholder:text-text-muted focus:outline-none"
+                />
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -bottom-1 left-0 right-0 h-[1.5px] rounded-full bg-[rgb(var(--points-accent-rgb)/0.35)] transition-all duration-200 group-hover:bg-[rgb(var(--points-accent-rgb)/0.7)] peer-focus:bg-[rgb(var(--points-accent-rgb))]"
+                />
+              </label>
+            </div>
+
+            <div className="flex flex-col items-center" ref={programPickerRef}>
+              <span className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">
+                Program
+              </span>
+              <div className="relative mt-2">
+                <button
+                  type="button"
+                  aria-haspopup="listbox"
+                  aria-expanded={programPickerOpen}
+                  aria-label={
+                    programPickerOpen
+                      ? 'Close program selector'
+                      : `Choose rewards program, currently ${result.profile.title}`
+                  }
+                  onClick={() => setProgramPickerOpen((current) => !current)}
+                  className="group inline-flex items-center gap-4 rounded-full border border-[rgb(var(--points-accent-rgb)/0.32)] bg-[rgb(var(--points-accent-rgb)/0.08)] py-3 pl-3 pr-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition hover:border-[rgb(var(--points-accent-rgb)/0.55)] hover:bg-[rgb(var(--points-accent-rgb)/0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--points-accent-rgb)/0.5)]"
+                >
+                  <span className="flex h-14 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[0.7rem] border border-white/10 bg-black/30">
+                    <EntityImage
+                      src={visual.artUrl}
+                      alt={result.profile.title}
+                      label={result.profile.title}
+                      className="aspect-[1.62/1] w-full max-w-[4.8rem] overflow-visible rounded-none border-0 bg-transparent"
+                      imgClassName="bg-transparent p-0"
+                      fallbackClassName="bg-black/10"
+                      fit="contain"
+                      position={visual.artPosition}
+                      scale={visual.artScale ?? 1}
+                    />
+                  </span>
+                  <span className="font-heading text-[clamp(1.4rem,2vw,1.9rem)] font-semibold leading-tight text-text-primary">
+                    {result.profile.title}
+                  </span>
+                  <span aria-hidden="true" className="text-lg leading-none text-text-secondary transition group-hover:text-text-primary">
+                    ▾
+                  </span>
+                </button>
+                {programPickerOpen ? (
+                  <div
+                    role="listbox"
+                    aria-label="Points program"
+                    className="absolute left-1/2 top-full z-40 mt-3 grid max-h-[26rem] w-[min(22rem,calc(100vw-2rem))] -translate-x-1/2 gap-2 overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)]"
+                  >
+                    {pointsProgramProfiles.map((profile) => {
+                      const optionVisual = programVisuals[profile.id];
+                      const active = profile.id === input.programId;
+
+                      return (
+                        <button
+                          key={profile.id}
+                          type="button"
+                          role="option"
+                          aria-selected={active}
+                          onClick={() => {
+                            updateProgram(profile.id);
+                            setProgramPickerOpen(false);
+                          }}
+                          className={`flex items-center gap-3 rounded-[1.05rem] border p-3 text-left transition ${
+                            active ? activeSurfaceClassName : inactiveSurfaceClassName
+                          }`}
+                        >
+                          <div className="flex h-14 w-20 shrink-0 items-center justify-center rounded-[0.85rem] border border-white/10 bg-black/15">
+                            <EntityImage
+                              src={optionVisual.artUrl}
+                              alt={profile.title}
+                              label={profile.title}
+                              className="aspect-[1.62/1] w-full max-w-[4.8rem] overflow-visible rounded-none border-0 bg-transparent"
+                              imgClassName="bg-transparent p-0"
+                              fallbackClassName="bg-black/10"
+                              fit="contain"
+                              position={optionVisual.artPosition}
+                              scale={optionVisual.artScale ?? 1}
+                            />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold leading-tight text-text-primary">
+                              {profile.title}
+                            </p>
+                            <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted">
+                              {optionVisual.laneLabel}
+                            </p>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 flex flex-col items-center">
+            <span className="text-[11px] font-semibold uppercase tracking-[0.28em] text-text-muted">
+              are worth
+            </span>
+            <p className="mt-3 font-heading text-[clamp(2.6rem,7vw,5.5rem)] leading-[0.92] tracking-[-0.04em] text-text-primary">
+              {input.pointsBalance > 0
+                ? `${formatCurrency(estimatedValueFloor)}–${formatCurrency(estimatedValueCeiling)}`
+                : 'Enter a balance'}
+            </p>
+          </div>
         </div>
       </section>
 
@@ -1274,24 +1196,50 @@ export function PointsAdvisor() {
         <div className="pointer-events-none absolute left-[-2rem] top-20 h-32 w-32 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.08),transparent_70%)] blur-[46px]" />
 
         <div className="relative">
-          <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h2 className="font-heading text-[clamp(2.2rem,4vw,3rem)] leading-[0.94] tracking-[-0.04em] text-text-primary">
-                Best move now
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-text-secondary">
-                For {formatPoints(result.input.pointsBalance)} {result.profile.currencyName.toLowerCase()} · {assumptionSummary.toLowerCase()}
-              </p>
+          <p className={`text-[11px] font-semibold uppercase tracking-[0.28em] ${visual.accentClassName}`}>
+            Recommended for you
+          </p>
+
+          {topRecommendation && topRecommendationGuidance ? (
+            <div className="mt-3">
+              <ResultHighlightCard
+                recommendation={topRecommendation}
+                accentClassName={visual.accentClassName}
+                guidance={topRecommendationGuidance}
+              />
+            </div>
+          ) : null}
+
+          <div className="mt-6">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">
+              Other ways to use these points
+            </p>
+            <div className="mt-3 grid gap-4 md:grid-cols-2">
+              <InsightCard
+                label="Easy option"
+                title={easiestAlternativeOption.shortLabel}
+                value={formatCurrency(easiestAlternativeOption.estimatedValue)}
+                note={easiestAlternativeOption.bestFor}
+                accentClassName={visual.accentClassName}
+              />
+              <InsightCard
+                label="Highest upside"
+                title={highestUpsideAlternative.shortLabel}
+                value={`${formatCurrency(highestUpsideAlternative.minimumValue)} to ${formatCurrency(highestUpsideAlternative.maximumValue)}`}
+                note={highestUpsideAlternative.bestFor}
+                accentClassName={visual.accentClassName}
+              />
             </div>
           </div>
 
-          <div className="mt-5 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4">
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
-              <p className="text-sm font-semibold text-text-primary">Refine assumptions</p>
-              <p className="text-xs leading-5 text-text-muted">
-                Adjust these when the recommendation does not match the trip you are pricing.
-              </p>
-            </div>
+          <details className="mt-6 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4">
+            <summary className="cursor-pointer list-none">
+              <span className="text-sm font-semibold text-text-primary">Doesn&apos;t fit your situation?</span>
+              <span className="ml-2 text-xs text-text-muted">Adjust assumptions</span>
+            </summary>
+            <p className="mt-3 max-w-2xl text-xs leading-5 text-text-muted">
+              Currently modeling: {assumptionSummary.toLowerCase()}.
+            </p>
             <div className="mt-4 grid gap-5 lg:grid-cols-3">
               <FilterGroup
                 label="Goal"
@@ -1312,53 +1260,9 @@ export function PointsAdvisor() {
                 onSelect={updateEffortTolerance}
               />
             </div>
-          </div>
+          </details>
 
-          {topRecommendation && topRecommendationGuidance ? (
-            <div className="mt-5">
-              <ResultHighlightCard
-                recommendation={topRecommendation}
-                accentClassName={visual.accentClassName}
-                guidance={topRecommendationGuidance}
-              />
-            </div>
-          ) : null}
-
-          <div className="mt-5 grid gap-4 md:grid-cols-2">
-            <InsightCard
-              label="Easy option"
-              title={easiestAlternativeOption.shortLabel}
-              value={formatCurrency(easiestAlternativeOption.estimatedValue)}
-              note={easiestAlternativeOption.bestFor}
-              accentClassName={visual.accentClassName}
-            />
-            <InsightCard
-              label="Highest upside"
-              title={highestUpsideAlternative.shortLabel}
-              value={`${formatCurrency(highestUpsideAlternative.minimumValue)} to ${formatCurrency(highestUpsideAlternative.maximumValue)}`}
-              note={highestUpsideAlternative.bestFor}
-              accentClassName={visual.accentClassName}
-            />
-          </div>
-
-          {alternativeRecommendations.length ? (
-            <div className="mt-6">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-text-muted">
-                Other solid options
-              </p>
-              <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                {alternativeRecommendations.map((recommendation) => (
-                  <ResultOptionCard
-                    key={`${result.profile.id}-${recommendation.id}-${recommendation.rank}`}
-                    recommendation={recommendation}
-                    accentClassName={visual.accentClassName}
-                  />
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          <details className="mt-6 rounded-[1.55rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.015))] p-4">
+          <details className="mt-4 rounded-[1.55rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(255,255,255,0.015))] p-4">
             <summary className="cursor-pointer list-none text-sm font-semibold text-text-primary">
               See full ranking
             </summary>
@@ -1396,13 +1300,39 @@ export function PointsAdvisor() {
         </div>
       </section>
 
-      <TripRedemptionCalculator
-        input={tripInput}
-        onChange={updateTripInput}
-        result={tripResult}
-        baselineCpp={result.easiestGoodOption.likelyCpp}
-        accentClassName={visual.accentClassName}
-      />
+      <details className="group">
+        <summary className="cursor-pointer list-none rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-5 transition hover:border-white/20 hover:bg-white/[0.05]">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${visual.accentClassName}`}>
+                Have a specific trip in mind?
+              </p>
+              <p className="mt-2 text-base font-semibold text-text-primary">
+                Check a specific redemption
+              </p>
+              <p className="mt-1 text-xs leading-5 text-text-muted">
+                Enter a cash price and award cost to calculate the exact cents per point after taxes,
+                transfer ratios, and bonuses.
+              </p>
+            </div>
+            <span
+              aria-hidden="true"
+              className="text-lg text-text-muted transition group-open:rotate-180"
+            >
+              ▾
+            </span>
+          </div>
+        </summary>
+        <div className="mt-4">
+          <TripRedemptionCalculator
+            input={tripInput}
+            onChange={updateTripInput}
+            result={tripResult}
+            baselineCpp={result.easiestGoodOption.likelyCpp}
+            accentClassName={visual.accentClassName}
+          />
+        </div>
+      </details>
 
       <SourceDisclosure
         sources={result.profile.sources}
