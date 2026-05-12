@@ -249,7 +249,7 @@ export function BusinessOffersExplorer({
             issuerOptions={cardsState.issuerOptions}
             eyebrowLabel="Business Cards"
             title="Find the right bonus for your business."
-            description=""
+            description="Compare business credit card welcome offers by bonus value, annual fee, rewards category, and spend requirement."
             preFilterContent={browseViewToggle}
             onIssuerChange={cardsState.setIssuer}
             onSpendCategoryChange={cardsState.setSpendCategory}
@@ -284,7 +284,7 @@ export function BusinessOffersExplorer({
             sortBy={bankingState.sortBy}
             eyebrowLabel="Business Banking"
             title="Find the right bonus for your business."
-            description="Browse business checking and savings bonuses with the same filter treatment and offer cards used in the main banking directory."
+            description="Compare business checking and savings bonuses by payout, cash requirement, direct deposit rules, and state eligibility."
             preFilterContent={browseViewToggle}
             showCustomerTypeFilter={false}
             onCustomerTypeChange={() => {}}
