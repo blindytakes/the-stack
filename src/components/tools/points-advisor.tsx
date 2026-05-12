@@ -80,7 +80,6 @@ type ProgramVisual = {
   accentClassName: string;
   accentBarClassName: string;
   laneLabel: string;
-  selectorSummary: string;
   artUrl: string;
   artScale?: number;
   artPosition?: string;
@@ -92,7 +91,6 @@ const programVisuals: Record<PointsProgramId, ProgramVisual> = {
     accentClassName: 'text-[#5ae0ff]',
     accentBarClassName: 'bg-[#5ae0ff]',
     laneLabel: 'Travel-first',
-    selectorSummary: 'Best when you want a premium travel currency with both floor value and real transfer upside.',
     artUrl:
       'https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/sapphire_reserve_card_Halo.png',
     artScale: 1.08,
@@ -104,7 +102,6 @@ const programVisuals: Record<PointsProgramId, ProgramVisual> = {
     accentClassName: 'text-[#5ae0ff]',
     accentBarClassName: 'bg-[#5ae0ff]',
     laneLabel: 'Lower-fee',
-    selectorSummary: 'Best when you want Chase transfer partners and lower-fee travel flexibility.',
     artUrl:
       'https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/sapphire_preferred_card.png',
     artScale: 1.08,
@@ -115,7 +112,6 @@ const programVisuals: Record<PointsProgramId, ProgramVisual> = {
     accentClassName: 'text-[#d6e5ff]',
     accentBarClassName: 'bg-[#d6e5ff]',
     laneLabel: 'High-touch',
-    selectorSummary: 'Best when you are willing to avoid weak cash redemptions and wait for better transfer value.',
     artUrl:
       'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/platinum-card.png',
     artScale: 1.03
@@ -125,7 +121,6 @@ const programVisuals: Record<PointsProgramId, ProgramVisual> = {
     accentClassName: 'text-[#ff4b3a]',
     accentBarClassName: 'bg-[#ff4b3a]',
     laneLabel: 'Low-lift',
-    selectorSummary: 'Best when you want a simple travel floor first and transfer upside only when it is clearly worth it.',
     artUrl: 'https://ecm.capitalone.com/WCM/card/products/venture-x-card-art.png',
     artScale: 1.04
   },
@@ -134,7 +129,6 @@ const programVisuals: Record<PointsProgramId, ProgramVisual> = {
     accentClassName: 'text-[#ff4b3a]',
     accentBarClassName: 'bg-[#ff4b3a]',
     laneLabel: 'Simple miles',
-    selectorSummary: 'Best when you want a 1 cent travel floor with optional partner upside.',
     artUrl: 'https://ecm.capitalone.com/WCM/card/products/venture-card-art.png',
     artScale: 1.04
   },
@@ -144,7 +138,6 @@ const programVisuals: Record<PointsProgramId, ProgramVisual> = {
     accentClassName: 'text-[#40aaff]',
     accentBarClassName: 'bg-[#40aaff]',
     laneLabel: 'Transferable',
-    selectorSummary: 'Best when you want a 1 cent floor and targeted transfer upside.',
     artUrl: '/card-logos/citi.svg',
     artScale: 0.82
   }
@@ -485,7 +478,7 @@ function ProgramArtPanel({
           <div
             role="listbox"
             aria-label="Points program"
-            className="absolute left-4 right-4 top-[7.5rem] z-40 grid max-h-[min(26rem,calc(100vh-8rem))] gap-2 overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)] sm:left-auto sm:top-[4.8rem] sm:w-[min(31rem,calc(100%-2rem))] sm:grid-cols-2 md:right-5"
+            className="absolute left-4 right-4 top-[7.5rem] z-40 grid max-h-[min(26rem,calc(100vh-8rem))] gap-2 overflow-y-auto rounded-[1.3rem] border border-white/10 bg-[linear-gradient(180deg,rgba(16,22,35,0.99),rgba(8,12,20,0.995))] p-3 shadow-[0_28px_80px_rgba(0,0,0,0.44)] sm:left-auto sm:top-[4.8rem] sm:w-[min(22rem,calc(100%-2rem))] md:right-5"
           >
             {pointsProgramProfiles.map((profile) => {
               const optionVisual = programVisuals[profile.id];
@@ -531,67 +524,37 @@ function ProgramArtPanel({
 
         <div className="pointer-events-none absolute inset-x-12 bottom-8 h-14 rounded-full bg-black/35 blur-2xl" />
         <div className="pointer-events-none absolute inset-x-12 bottom-8 h-12 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.16),transparent_70%)] blur-[32px]" />
-        <div className="relative mt-10 flex w-full items-center justify-center rounded-[1.05rem] border border-[rgb(var(--points-accent-rgb)/0.18)] bg-black/18 p-4 shadow-[0_18px_42px_rgba(0,0,0,0.18)]">
+        <button
+          type="button"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-label={`Change card, currently ${activeProfile.title}`}
+          onClick={onToggle}
+          className="group relative mt-6 flex w-full items-center justify-center rounded-[1.05rem] border border-[rgb(var(--points-accent-rgb)/0.18)] bg-black/18 p-3 shadow-[0_14px_32px_rgba(0,0,0,0.16)] transition hover:border-[rgb(var(--points-accent-rgb)/0.42)] hover:bg-black/24 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgb(var(--points-accent-rgb)/0.5)]"
+        >
           <EntityImage
             src={activeVisual.artUrl}
             alt={activeProfile.title}
             label={activeProfile.title}
-            className="relative aspect-[1.62/1] w-full max-w-[32rem] rounded-[0.8rem] border-0 bg-transparent"
-            imgClassName="bg-transparent p-0 drop-shadow-[0_18px_34px_rgba(0,0,0,0.42)]"
+            className="relative aspect-[1.62/1] w-full max-w-[26rem] rounded-[0.8rem] border-0 bg-transparent"
+            imgClassName="bg-transparent p-0 drop-shadow-[0_10px_22px_rgba(0,0,0,0.32)] transition-transform duration-200 group-hover:scale-[1.02]"
             fallbackClassName="bg-black/10"
             fit="contain"
             position={activeVisual.artPosition}
             scale={mainArtScale}
           />
-        </div>
-        <RedemptionEquation />
-        <div className="relative z-10 mt-3 flex w-full flex-wrap justify-center gap-2">
-          <span className="rounded-full border border-white/10 bg-black/16 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-text-secondary">
-            {activeProfile.currencyName}
-          </span>
+        </button>
+        <div className="relative z-10 mt-4 flex w-full flex-wrap justify-center gap-2">
           <span
             className={`rounded-full border border-[rgb(var(--points-accent-rgb)/0.28)] bg-[rgb(var(--points-accent-rgb)/0.09)] px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] ${activeVisual.accentClassName}`}
           >
             {activeVisual.laneLabel}
           </span>
+          <span className="rounded-full border border-white/8 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-text-muted">
+            {modeledFloorCpp.toFixed(1)}–{modeledCeilingCpp.toFixed(1)} cpp modeled
+          </span>
         </div>
-        <div className="relative z-10 mt-4 grid w-full gap-2 border-t border-white/8 pt-4 sm:grid-cols-3">
-          <div className="rounded-[0.85rem] border border-white/10 bg-black/16 px-3 py-3 text-center">
-            <p className="text-base font-semibold leading-none text-text-primary">{modeledFloorCpp.toFixed(1)} cpp</p>
-            <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-text-muted">floor</p>
-          </div>
-          <div className="rounded-[0.85rem] border border-[rgb(var(--points-accent-rgb)/0.28)] bg-[rgb(var(--points-accent-rgb)/0.08)] px-3 py-3 text-center">
-            <p className={`text-base font-semibold leading-none ${activeVisual.accentClassName}`}>
-              {modeledCeilingCpp.toFixed(1)} cpp
-            </p>
-            <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-text-muted">upside</p>
-          </div>
-          <div className="rounded-[0.85rem] border border-white/10 bg-black/16 px-3 py-3 text-center">
-            <p className="text-base font-semibold leading-none text-text-primary">{activeProfile.choices.length}</p>
-            <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-text-muted">paths</p>
-          </div>
-        </div>
-        <p className="relative z-10 mt-3 max-w-md text-center text-xs leading-5 text-text-secondary">
-          {activeVisual.selectorSummary}
-        </p>
       </div>
-    </div>
-  );
-}
-
-function RedemptionEquation() {
-  return (
-    <div
-      aria-label="Program plus balance plus goal equals best move"
-      className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-muted"
-    >
-      <span>Program</span>
-      <span className="text-[rgb(var(--points-accent-rgb))]">+</span>
-      <span>Balance</span>
-      <span className="text-[rgb(var(--points-accent-rgb))]">+</span>
-      <span>Goal</span>
-      <span className="text-text-secondary">=</span>
-      <span className="text-text-primary">Best move</span>
     </div>
   );
 }
@@ -937,14 +900,14 @@ function ResultHighlightCard({
               <p className={`text-[10px] font-semibold uppercase tracking-[0.26em] ${accentClassName}`}>
                 Best move right now
               </p>
-              <h3 className="mt-3 font-heading text-[clamp(2.3rem,4vw,3.4rem)] leading-[0.92] tracking-[-0.04em] text-text-primary">
+              <h3 className={`mt-3 font-heading text-[clamp(2.3rem,4vw,3.4rem)] leading-[0.92] tracking-[-0.04em] ${accentClassName}`}>
                 {recommendation.shortLabel}
               </h3>
             </div>
 
-            <div className="rounded-[1.3rem] border border-white/10 bg-white/[0.04] px-4 py-3 lg:min-w-[13rem]">
+            <div className="rounded-[1.3rem] border border-[rgb(var(--points-accent-rgb)/0.32)] bg-[rgb(var(--points-accent-rgb)/0.08)] px-4 py-3 shadow-[0_18px_42px_rgba(0,0,0,0.22),inset_0_1px_0_rgba(255,255,255,0.06)] lg:min-w-[13rem]">
               <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">Estimated value</p>
-              <p className={`mt-2 font-heading text-[2.2rem] leading-none tracking-[-0.04em] ${accentClassName}`}>
+              <p className={`mt-2 font-heading text-[2.6rem] leading-none tracking-[-0.04em] ${accentClassName} drop-shadow-[0_2px_18px_rgb(var(--points-accent-rgb)/0.25)]`}>
                 {formatCurrency(recommendation.estimatedValue)}
               </p>
               <p className="mt-2 text-xs leading-5 text-text-secondary">
@@ -1260,77 +1223,42 @@ export function PointsAdvisor() {
       <div className="pointer-events-none absolute left-[-7rem] top-10 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgb(var(--points-accent-rgb)/0.08),transparent_70%)] blur-[56px]" />
       <div className="pointer-events-none absolute right-[-10rem] top-40 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.06),transparent_72%)] blur-3xl" />
 
+      <header className="relative mx-auto max-w-4xl px-2 text-center md:px-4">
+        <h1 className="font-heading text-[clamp(2.6rem,6vw,4.4rem)] leading-[0.96] text-text-primary">
+          What are your points worth?
+        </h1>
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-text-secondary md:text-lg md:leading-8">
+          Enter your balance and pick your card. We&apos;ll show the best way to redeem.
+        </p>
+      </header>
+
       <section className={`${panelClassName} p-4 md:p-6`}>
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.24),transparent)]" />
 
-        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,0.96fr)_minmax(28rem,0.88fr)] xl:items-start">
-          <div className="relative flex h-full min-w-0 flex-col rounded-[1.35rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.055),rgba(255,255,255,0.025))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] md:p-5">
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent)]" />
-            <p className={`text-[11px] font-semibold uppercase tracking-[0.24em] ${visual.accentClassName}`}>
-              Points Redemption Tool
-            </p>
-            <h1 className="mt-3 max-w-[54rem] font-heading text-[2.35rem] leading-[0.96] text-text-primary md:text-[3.45rem]">
-              Points Redemption Calculator
-            </h1>
-            <p className="mt-3 max-w-[47rem] text-sm leading-6 text-text-secondary md:text-base md:leading-7">
-              Compare easy exits, transfer plays, and trip-specific redemption math before you spend flexible points.
-            </p>
-
-            <div className="mt-4 overflow-hidden rounded-[1.2rem] border border-[rgb(var(--points-accent-rgb)/0.3)] bg-[rgb(var(--points-accent-rgb)/0.08)] p-2.5 shadow-[0_16px_42px_rgba(0,0,0,0.18),inset_0_1px_0_rgba(255,255,255,0.04)]">
-              <div className="px-2 pt-2">
-                <p className={`text-[10px] font-semibold uppercase tracking-[0.2em] ${visual.accentClassName}`}>
-                  Redemption model
-                </p>
-              </div>
-
-              <div className="mt-3 grid gap-2">
-                <label className="block rounded-[0.9rem] border border-white/10 bg-black/16 px-4 py-4 text-center">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.22em] text-text-muted">
-                    Points balance
-                  </span>
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={input.pointsBalance === 0 ? '' : formatPoints(input.pointsBalance)}
-                    onChange={handlePointsChange}
-                    placeholder="100,000"
-                    aria-label="Points balance"
-                    className="mt-2 w-full bg-transparent text-center font-heading text-[clamp(2.15rem,4.7vw,3.15rem)] leading-none tracking-[-0.04em] text-text-primary placeholder:text-text-muted focus:outline-none"
-                  />
-                  <span className="mt-2 block text-[10px] font-semibold uppercase tracking-[0.28em] text-text-muted">
-                    Points
-                  </span>
-                </label>
-
-                <div className="grid gap-2 sm:grid-cols-2">
-                  <div className="rounded-[0.9rem] border border-white/10 bg-black/16 px-4 py-4 text-center">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">Best move</p>
-                    <p className="mt-2 text-[clamp(1.5rem,4.5vw,1.9rem)] font-semibold leading-tight text-text-primary">
-                      {topRecommendation?.shortLabel ?? 'Run advisor'}
-                    </p>
-                    <p className={`mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] ${visual.accentClassName}`}>
-                      {topRecommendation
-                        ? `${topRecommendation.likelyCpp.toFixed(1)} cpp modeled`
-                        : 'Recommendation pending'}
-                    </p>
-                  </div>
-                  <div className="rounded-[0.9rem] border border-white/10 bg-black/16 px-4 py-4 text-center">
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-text-muted">
-                      Estimated value
-                    </p>
-                    <p className="mt-2 text-[clamp(1.5rem,4.5vw,1.9rem)] font-semibold leading-tight text-text-primary">
-                      {topRecommendation ? formatCurrency(topRecommendation.estimatedValue) : '$0'}
-                    </p>
-                    <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-text-secondary">
-                      {topRecommendation
-                        ? formatCppRange(topRecommendation.minCpp, topRecommendation.maxCpp)
-                        : 'Enter points'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div className="relative grid gap-6 xl:grid-cols-2 xl:items-stretch">
+          <label className="group relative flex min-w-0 cursor-text flex-col justify-center rounded-[1.35rem] border border-[rgb(var(--points-accent-rgb)/0.32)] bg-[rgb(var(--points-accent-rgb)/0.07)] px-6 py-10 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_24px_60px_rgba(0,0,0,0.18)] transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.01] hover:border-[rgb(var(--points-accent-rgb)/0.6)] hover:bg-[rgb(var(--points-accent-rgb)/0.12)] hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_30px_70px_rgba(0,0,0,0.28),0_0_0_4px_rgb(var(--points-accent-rgb)/0.08),0_0_42px_rgb(var(--points-accent-rgb)/0.22)] focus-within:border-[rgb(var(--points-accent-rgb)/0.7)] focus-within:bg-[rgb(var(--points-accent-rgb)/0.14)] md:px-8 md:py-12">
+            <span className={`text-sm font-semibold uppercase tracking-[0.28em] ${visual.accentClassName}`}>
+              Points balance
+            </span>
+            <span className="relative mt-4 inline-block w-full">
+              <input
+                type="text"
+                inputMode="numeric"
+                value={input.pointsBalance === 0 ? '' : formatPoints(input.pointsBalance)}
+                onChange={handlePointsChange}
+                placeholder="100,000"
+                aria-label="Points balance"
+                className="peer w-full bg-transparent text-center font-heading text-[clamp(3.6rem,9vw,7rem)] leading-[0.9] tracking-[-0.04em] text-text-primary placeholder:text-text-muted focus:outline-none"
+              />
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-1 left-1/2 h-[2px] w-24 -translate-x-1/2 rounded-full bg-[rgb(var(--points-accent-rgb)/0.45)] transition-all duration-200 group-hover:w-32 group-hover:bg-[rgb(var(--points-accent-rgb)/0.7)] peer-focus:w-40 peer-focus:bg-[rgb(var(--points-accent-rgb))]"
+              />
+            </span>
+            <span className="mt-6 block text-[11px] font-semibold uppercase tracking-[0.24em] text-text-muted">
+              Click to edit
+            </span>
+          </label>
 
           <ProgramArtPanel
             activeProgramId={input.programId}
@@ -1348,33 +1276,14 @@ export function PointsAdvisor() {
         <div className="relative">
           <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className={`text-[10px] font-semibold uppercase tracking-[0.24em] ${visual.accentClassName}`}>
-                Current recommendation
-              </p>
-              <h2 className="mt-3 max-w-3xl font-heading text-[clamp(2.2rem,4vw,3rem)] leading-[0.94] tracking-[-0.04em] text-text-primary">
+              <h2 className="font-heading text-[clamp(2.2rem,4vw,3rem)] leading-[0.94] tracking-[-0.04em] text-text-primary">
                 Best move now
               </h2>
               <p className="mt-2 text-sm leading-6 text-text-secondary">
-                For {formatPoints(result.input.pointsBalance)} {result.profile.currencyName.toLowerCase()}
-              </p>
-            </div>
-            <div className="flex flex-col items-start gap-2 md:items-end">
-              <p className={`text-sm font-semibold ${visual.accentClassName}`}>Current assumptions</p>
-              <p className="max-w-sm text-sm leading-6 text-text-secondary md:text-right">
-                {assumptionSummary}
+                For {formatPoints(result.input.pointsBalance)} {result.profile.currencyName.toLowerCase()} · {assumptionSummary.toLowerCase()}
               </p>
             </div>
           </div>
-
-          {topRecommendation && topRecommendationGuidance ? (
-            <div className="mt-5">
-              <ResultHighlightCard
-                recommendation={topRecommendation}
-                accentClassName={visual.accentClassName}
-                guidance={topRecommendationGuidance}
-              />
-            </div>
-          ) : null}
 
           <div className="mt-5 rounded-[1.4rem] border border-white/10 bg-white/[0.03] p-4">
             <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
@@ -1404,6 +1313,16 @@ export function PointsAdvisor() {
               />
             </div>
           </div>
+
+          {topRecommendation && topRecommendationGuidance ? (
+            <div className="mt-5">
+              <ResultHighlightCard
+                recommendation={topRecommendation}
+                accentClassName={visual.accentClassName}
+                guidance={topRecommendationGuidance}
+              />
+            </div>
+          ) : null}
 
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <InsightCard
