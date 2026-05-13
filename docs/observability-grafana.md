@@ -1,10 +1,10 @@
 # Grafana Observability
 
-The app already registers OpenTelemetry through `instrumentation.ts` and exports API metrics, business-event counters, web vitals, structured API logs, and traces through Vercel's Next.js OTEL integration.
+The app already registers OpenTelemetry through `src/instrumentation.ts` and exports API metrics, business-event counters, web vitals, structured API logs, and traces through Vercel's Next.js OTEL integration.
 
 ## Current Coverage
 
-- `instrumentation.ts` registers service name `the-stack` and enables OTLP log and metric exporters when OTLP endpoint and headers are configured.
+- `src/instrumentation.ts` registers service name `the-stack` and enables OTLP log and metric exporters when OTLP endpoint and headers are configured.
 - `src/lib/api-route.ts` wraps API routes with latency histograms, error counters, and JSON log records.
 - `src/lib/metrics.ts` defines app metrics for API latency/errors, newsletter syncs, affiliate clicks, and web vitals.
 - `src/components/analytics/web-vitals.tsx` sends LCP, CLS, INP, and TTFB beacons to `/api/vitals`.
@@ -22,7 +22,7 @@ OTEL_EXPORTER_OTLP_ENDPOINT=https://<your-grafana-otlp-endpoint>/otlp
 OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <base64-instance-id-and-token>
 ```
 
-4. Redeploy the app so Next.js runs `instrumentation.ts` with the OTLP env present.
+4. Redeploy the app so Next.js runs `src/instrumentation.ts` with the OTLP env present.
 5. Hit `/api/health` with the configured health token and confirm:
 
 ```json
@@ -82,7 +82,7 @@ curl -i http://localhost:3000/api/vitals \
   --data '{"name":"LCP","value":1234,"path":"/","device":"desktop"}'
 ```
 
-Then check Grafana Explore for `thestack_api_duration_milliseconds_count` in the metrics data source and `{service_name="the-stack"}` in the logs data source. If logs only appear under `job`, switch the dashboard's `Log Service Label` variable to `job`.
+Then check Grafana Explore for `thestack_api_duration_milliseconds_count` in the metrics data source and `{service_name="the-stack"}` in the logs data source. If metrics or logs only appear under `job`, switch the dashboard's matching service-label variable to `job`.
 
 ## Expected Grafana Metric Names
 
