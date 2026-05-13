@@ -35,6 +35,7 @@ import {
   getSelectedOfferIntentStatus,
   type SelectedOfferIntentStatus
 } from '@/lib/selected-offer-intent';
+import type { PlannerContext } from '@/lib/planner/schemas';
 import { getCardImageDisplay } from '@/lib/card-image-presentation';
 import { getBankingImagePresentation } from '@/lib/banking-image-presentation';
 import { resolveBankingBrandImageUrl } from '@/lib/banking-brand-assets';
@@ -180,6 +181,108 @@ function monthlySpendText(item: PlannerRecommendation): string | null {
   return `$${monthly.toLocaleString()}/mo`;
 }
 
+function monthlySpendRangeText(value: PlannerContext['monthlySpend']): string {
+  if (value === 'lt_2500') return 'under $2,500/mo';
+  if (value === 'from_2500_to_5000') return '$2,500-$5,000/mo';
+  return '$5,000+/mo';
+}
+
+function availableCashRangeText(context: PlannerContext): string | null {
+  if (context.mode !== 'full') return null;
+  if (context.availableCash === 'none') return '$0 cash set aside';
+  if (context.availableCash === 'up_to_2500') return 'up to $2,500 cash set aside';
+  if (context.availableCash === 'from_2501_to_9999') return '$2,501-$9,999 cash set aside';
+  return '$10,000+ cash set aside';
+}
+
+function issuerRuleReason(item: PlannerRecommendation, context: PlannerContext): string {
+  if (item.lane !== 'cards') {
+    return 'It passed the bank filters for your state, existing banks, deposit capacity, and direct-deposit access.';
+  }
+
+  if (item.provider === 'Chase') {
+    if (context.chase524Status === 'under_5_24') {
+      return 'Your 5/24 answer keeps this Chase offer eligible.';
+    }
+    if (context.chase524Status === 'not_sure') {
+      return 'Your profile did not mark you at or over 5/24, so this Chase offer stayed eligible; confirm before applying.';
+    }
+  }
+
+  if (item.provider === 'American Express') {
+    return 'It passed your Amex lifetime-rule answers, so this bonus stayed in the eligible pool.';
+  }
+
+  return 'It passed your issuer-rule screen, including Chase 5/24 and Amex lifetime-rule answers.';
+}
+
+function buildOrderReasons({
+  item,
+  entry,
+  stepNumber,
+  plannerContext,
+  nextSameLane,
+  nextOverall
+}: {
+  item: PlannerRecommendation;
+  entry: TimelineEntry | undefined;
+  stepNumber: number;
+  plannerContext: PlannerContext;
+  nextSameLane?: { item: PlannerRecommendation; entry?: TimelineEntry };
+  nextOverall?: { item: PlannerRecommendation; entry?: TimelineEntry };
+}): string[] {
+  const reasons: string[] = [];
+
+  if (stepNumber === 1) {
+    reasons.push('We put this first because it is the highest-ranked move that can start now under your current constraints.');
+  } else if (entry) {
+    reasons.push(`We placed this at step ${stepNumber} because its ${formatShortDate(entry.startDate)} start date fits after the earlier scheduled work.`);
+  } else {
+    reasons.push(`We placed this at step ${stepNumber} because it made the final plan, but it still needs manual scheduling.`);
+  }
+
+  if (item.kind === 'card_bonus') {
+    const monthly = monthlySpendText(item);
+    if (monthly) {
+      reasons.push(`Your ${monthlySpendRangeText(plannerContext.monthlySpend)} spend range supports the ${monthly} pace for this bonus.`);
+    }
+    reasons.push(issuerRuleReason(item, plannerContext));
+  } else {
+    const cashRange = availableCashRangeText(plannerContext);
+    const requiredDeposit = item.scheduleConstraints.requiredDeposit;
+    if (requiredDeposit && cashRange) {
+      reasons.push(`We screened the ${formatValue(requiredDeposit)} deposit requirement against your ${cashRange} answer.`);
+    }
+    if (item.scheduleConstraints.requiresDirectDeposit) {
+      reasons.push('Your direct-deposit answer keeps this bank bonus eligible and limits direct-deposit offers from stacking on top of each other.');
+    } else {
+      reasons.push('No direct-deposit slot is needed, so this can fit around card spend windows more easily.');
+    }
+  }
+
+  if (entry) {
+    const nextTimedMove = nextSameLane?.entry ? nextSameLane : nextOverall?.entry ? nextOverall : undefined;
+
+    if (nextTimedMove?.entry) {
+      if (entry.completeDate <= nextTimedMove.entry.startDate) {
+        reasons.push(
+          `Its ${formatShortDate(entry.completeDate)} deadline clears before ${nextTimedMove.item.title} starts on ${formatShortDate(nextTimedMove.entry.startDate)}.`
+        );
+      } else {
+        reasons.push(
+          `It can overlap with ${nextTimedMove.item.title} because the scheduler found the active windows fit your spend, cash, and direct-deposit limits.`
+        );
+      }
+    } else {
+      reasons.push(
+        `Its ${formatShortDate(entry.completeDate)} deadline fits inside the planning window, with the bonus expected around ${formatShortDate(entry.payoutDate)}.`
+      );
+    }
+  }
+
+  return reasons.slice(0, 4);
+}
+
 type TimelineGeometry = {
   earliest: Date;
   latest: Date;
@@ -277,14 +380,20 @@ function PlanScheduleRow({
   stepNumber,
   geometry,
   desktopGridClass,
-  isSelectedOffer = false
+  plannerContext,
+  isSelectedOffer = false,
+  nextSameLane,
+  nextOverall
 }: {
   item: PlannerRecommendation;
   entry: TimelineEntry | undefined;
   stepNumber: number;
   geometry: TimelineGeometry | null;
   desktopGridClass: string;
+  plannerContext: PlannerContext;
   isSelectedOffer?: boolean;
+  nextSameLane?: { item: PlannerRecommendation; entry?: TimelineEntry };
+  nextOverall?: { item: PlannerRecommendation; entry?: TimelineEntry };
 }) {
   const isFirstStep = stepNumber === 1;
   const [expanded, setExpanded] = useState(false);
@@ -312,18 +421,30 @@ function PlanScheduleRow({
     ? `${formatShortDate(entry.startDate)} – ${formatShortDate(entry.completeDate)}`
     : 'Not scheduled';
   const detailsButtonClass = `inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-colors hover:border-brand-teal/28 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal/60 ${detailsPillClass}`;
+  const mobileArtworkClass =
+    item.lane === 'cards'
+      ? 'h-[4rem] w-[6.1rem] shrink-0 rounded-[1rem] border border-brand-gold/16 bg-white/[0.025] shadow-[inset_0_1px_0_rgba(242,205,110,0.06)]'
+      : 'h-[3.7rem] w-[6.2rem] shrink-0 rounded-[1rem] border border-brand-teal/16 bg-white/[0.025] shadow-[inset_0_1px_0_rgba(45,212,191,0.06)]';
+  const orderReasons = buildOrderReasons({
+    item,
+    entry,
+    stepNumber,
+    plannerContext,
+    nextSameLane,
+    nextOverall
+  });
 
   return (
     <div
-      className={`overflow-hidden rounded-[1.5rem] border transition-colors hover:bg-white/[0.04] ${
+      className={`overflow-hidden rounded-[1.15rem] border transition-colors hover:bg-white/[0.04] sm:rounded-[1.5rem] ${
         isFirstStep
           ? 'border-brand-teal/22 bg-[linear-gradient(180deg,rgba(45,212,191,0.075),rgba(255,255,255,0.04))]'
           : 'border-white/[0.07] bg-white/[0.026]'
       }`}
     >
-      <div className="px-4 py-4 sm:px-5 lg:px-5">
+      <div className="px-3 py-3 sm:px-5 sm:py-4 lg:px-5">
         <div className="lg:hidden">
-          <div className="flex items-start gap-4">
+          <div className="flex items-start gap-3">
             <div className="mt-1 flex w-9 shrink-0 flex-col items-center">
               <span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold ${stepBg}`}>
                 {stepNumber}
@@ -333,15 +454,15 @@ function PlanScheduleRow({
               </span>
             </div>
 
-            <RecommendationArtwork
-              item={item}
-              className={artworkClass}
-            />
-
             <div className="min-w-0 flex-1">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="truncate text-[17px] font-semibold leading-6 text-text-primary" title={item.title}>
+              <div className="flex min-w-0 flex-col gap-3 min-[420px]:flex-row min-[420px]:items-start">
+                <RecommendationArtwork
+                  item={item}
+                  className={mobileArtworkClass}
+                />
+
+                <div className="min-w-0 flex-1">
+                  <p className="text-[15px] font-semibold leading-5 text-text-primary" title={item.title}>
                     {item.title}
                   </p>
                   <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -358,28 +479,30 @@ function PlanScheduleRow({
                     ) : null}
                   </div>
                 </div>
+              </div>
 
-                <div className="flex shrink-0 flex-col items-end gap-2">
-                  <div className="text-right">
-                    <p className="text-[2.1rem] font-semibold leading-none text-text-primary">{formatValue(netValue)}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setExpanded((prev) => !prev)}
-                    aria-expanded={expanded}
-                    aria-controls={detailsId}
-                    aria-label={detailsButtonLabel}
-                    className={detailsButtonClass}
-                  >
-                    {detailsLabel}
-                    <span
-                      className={`text-xs transition-transform ${expanded ? 'rotate-180' : ''}`}
-                      aria-hidden
-                    >
-                      ▾
-                    </span>
-                  </button>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-text-muted">Net value</p>
+                  <p className="mt-1 text-[2rem] font-semibold leading-none text-text-primary">{formatValue(netValue)}</p>
                 </div>
+
+                <button
+                  type="button"
+                  onClick={() => setExpanded((prev) => !prev)}
+                  aria-expanded={expanded}
+                  aria-controls={detailsId}
+                  aria-label={detailsButtonLabel}
+                  className={detailsButtonClass}
+                >
+                  {detailsLabel}
+                  <span
+                    className={`text-xs transition-transform ${expanded ? 'rotate-180' : ''}`}
+                    aria-hidden
+                  >
+                    ▾
+                  </span>
+                </button>
               </div>
 
               <div className="mt-4 rounded-[1.25rem] border border-white/[0.07] bg-white/[0.03] px-3.5 py-3.5">
@@ -459,7 +582,7 @@ function PlanScheduleRow({
       </div>
 
       {expanded ? (
-        <div id={detailsId} className="border-t border-white/[0.06] px-5 pb-6 pt-5 sm:px-6">
+        <div id={detailsId} className="border-t border-white/[0.06] px-4 pb-6 pt-5 sm:px-6">
           <div className="flex flex-wrap items-baseline gap-x-6 gap-y-2">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-text-muted">
@@ -498,6 +621,18 @@ function PlanScheduleRow({
               <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Next action</p>
               <p className="mt-2 text-base leading-7 text-text-secondary">{whatToDoText(item)}</p>
             </div>
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-white/[0.07] bg-white/[0.028] px-4 py-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-text-muted">Why this order</p>
+            <ul className="mt-3 space-y-2.5">
+              {orderReasons.map((reason) => (
+                <li key={reason} className="flex gap-2.5 text-sm leading-6 text-text-secondary">
+                  <span className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${actionDotClass}`} aria-hidden />
+                  <span>{reason}</span>
+                </li>
+              ))}
+            </ul>
           </div>
 
           {entry ? (
@@ -548,10 +683,12 @@ function PlanScheduleRow({
 function PlanScheduleBoard({
   recommendations,
   entriesById,
+  plannerContext,
   selectedRecommendationId
 }: {
   recommendations: PlannerRecommendation[];
   entriesById: Map<string, TimelineEntry>;
+  plannerContext: PlannerContext;
   selectedRecommendationId?: string | null;
 }) {
   const visibleRecommendations = recommendations;
@@ -567,7 +704,7 @@ function PlanScheduleBoard({
     'lg:grid-cols-[40px_124px_minmax(0,1.05fr)_minmax(220px,1.4fr)_minmax(110px,auto)_auto] xl:grid-cols-[40px_124px_minmax(0,1.1fr)_minmax(300px,1.55fr)_minmax(118px,auto)_auto]';
 
   return (
-    <div className="overflow-hidden rounded-[1.8rem] border border-white/[0.09] bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+    <div className="overflow-hidden rounded-[1.35rem] border border-white/[0.09] bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.03))] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] sm:rounded-[1.8rem]">
       {geometry ? (
         <div className={`hidden lg:grid ${desktopGridClass} items-end gap-x-3 px-10 pb-2 pt-5`}>
           <p className="col-span-3 text-[11px] font-medium uppercase tracking-[0.2em] text-text-muted">
@@ -596,22 +733,40 @@ function PlanScheduleBoard({
         </div>
       )}
 
-      <div className="space-y-3 px-3 pb-3 pt-3 sm:px-4 sm:pb-4 lg:px-5 lg:pb-5">
+      <div className="space-y-3 px-2 pb-2 pt-3 sm:px-4 sm:pb-4 lg:px-5 lg:pb-5">
         <p className="px-1 text-[11px] font-medium uppercase tracking-[0.2em] text-text-muted lg:hidden">
           Your Planned Moves
         </p>
-        {visibleRecommendations.map((item, index) => (
-          <div key={item.id}>
-            <PlanScheduleRow
-              item={item}
-              entry={entriesById.get(item.id)}
-              stepNumber={index + 1}
-              geometry={geometry}
-              desktopGridClass={desktopGridClass}
-              isSelectedOffer={selectedRecommendationId === item.id}
-            />
-          </div>
-        ))}
+        {visibleRecommendations.map((item, index) => {
+          const nextSameLaneItem = visibleRecommendations
+            .slice(index + 1)
+            .find((candidate) => candidate.lane === item.lane);
+          const nextOverallItem = visibleRecommendations[index + 1];
+
+          return (
+            <div key={item.id}>
+              <PlanScheduleRow
+                item={item}
+                entry={entriesById.get(item.id)}
+                stepNumber={index + 1}
+                geometry={geometry}
+                desktopGridClass={desktopGridClass}
+                plannerContext={plannerContext}
+                isSelectedOffer={selectedRecommendationId === item.id}
+                nextSameLane={
+                  nextSameLaneItem
+                    ? { item: nextSameLaneItem, entry: entriesById.get(nextSameLaneItem.id) }
+                    : undefined
+                }
+                nextOverall={
+                  nextOverallItem
+                    ? { item: nextOverallItem, entry: entriesById.get(nextOverallItem.id) }
+                    : undefined
+                }
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -833,6 +988,84 @@ function SelectedOfferSummary({ selectedOfferStatus }: { selectedOfferStatus: Se
   );
 }
 
+function PlanOrderExplainer({
+  plannerContext,
+  cardsOnlyMode
+}: {
+  plannerContext: PlannerContext;
+  cardsOnlyMode: boolean;
+}) {
+  const [mobileExpanded, setMobileExpanded] = useState(false);
+  const spendRange = monthlySpendRangeText(plannerContext.monthlySpend);
+  const bankConstraintText =
+    plannerContext.mode === 'full'
+      ? 'Bank bonuses can overlap when your direct-deposit, cash, state, and existing-bank answers allow it.'
+      : 'Bank bonuses are out of scope here, so every planned move is a card-spend window.';
+  const issuerRuleText =
+    plannerContext.chase524Status === 'under_5_24'
+      ? 'Chase cards stay eligible because your 5/24 answer is under the limit.'
+      : plannerContext.chase524Status === 'at_or_over_5_24'
+        ? 'Chase 5/24-sensitive cards are filtered out before scheduling.'
+        : 'Chase-sensitive cards stay visible only when your 5/24 answer does not rule them out.';
+  const overlapLabel = cardsOnlyMode ? 'Deadlines' : 'Overlap';
+  const overlapText = cardsOnlyMode
+    ? 'Deadlines are spaced so the next card does not start before the current spend window is handled.'
+    : bankConstraintText;
+  const detailsId = 'plan-order-explainer-details';
+  const explainerCards = [
+    {
+      label: 'Spend fit',
+      text: `Card offers are sequenced so each active spend window fits your ${spendRange} capacity.`
+    },
+    {
+      label: 'Issuer rules',
+      text: issuerRuleText
+    },
+    {
+      label: overlapLabel,
+      text: overlapText
+    }
+  ];
+
+  return (
+    <div className="mb-4">
+      <div className="rounded-2xl border border-white/[0.07] bg-white/[0.028] px-4 py-4 lg:hidden">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-teal">Why this order</p>
+            <p className="mt-2 text-sm leading-6 text-text-secondary">
+              Ranked by spend fit, issuer rules, and {cardsOnlyMode ? 'deadline spacing' : 'safe overlap'}.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setMobileExpanded((prev) => !prev)}
+            aria-expanded={mobileExpanded}
+            aria-controls={detailsId}
+            className="inline-flex shrink-0 items-center gap-1 rounded-full border border-white/[0.1] px-3 py-1.5 text-[11px] font-semibold text-text-secondary transition hover:border-brand-teal/28 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal/60"
+          >
+            {mobileExpanded ? 'Hide logic' : 'Show logic'}
+            <span className={`text-xs transition-transform ${mobileExpanded ? 'rotate-180' : ''}`} aria-hidden>
+              ▾
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div id={detailsId} className={`${mobileExpanded ? 'grid' : 'hidden'} mt-3 gap-3 lg:mt-0 lg:grid lg:grid-cols-3`}>
+        {explainerCards.map((card) => (
+          <article key={card.label} className="rounded-2xl border border-white/[0.07] bg-white/[0.028] px-4 py-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand-teal">{card.label}</p>
+            <p className="mt-2 text-sm leading-6 text-text-secondary">
+              {card.text}
+            </p>
+          </article>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 /* ─────────────────────────────────────────────────────────
  * Main plan summary — the 3-section layout
  * ───────────────────────────────────────────────────────── */
@@ -959,7 +1192,7 @@ function PlanSummary({
 
       {/* ── ① Hero ── */}
       <section
-        className="relative mt-2 overflow-hidden rounded-[2rem] border border-white/[0.08] bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.08),transparent_26%),radial-gradient(circle_at_top_right,rgba(242,205,110,0.08),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-6 py-6 md:px-8"
+        className="relative mt-2 overflow-hidden rounded-[1.5rem] border border-white/[0.08] bg-[radial-gradient(circle_at_top_left,rgba(45,212,191,0.08),transparent_26%),radial-gradient(circle_at_top_right,rgba(242,205,110,0.08),transparent_22%),linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] px-4 py-5 sm:rounded-[2rem] sm:px-6 sm:py-6 md:px-8"
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.04),transparent)]" />
 
@@ -995,9 +1228,14 @@ function PlanSummary({
         </div>
 
         <div className="relative mt-6 border-t border-white/[0.06] pt-5">
+          <PlanOrderExplainer
+            plannerContext={payload.plannerContext}
+            cardsOnlyMode={cardsOnlyMode}
+          />
           <PlanScheduleBoard
             recommendations={featuredRecommendations}
             entriesById={featuredEntriesById}
+            plannerContext={payload.plannerContext}
             selectedRecommendationId={
               selectedOfferStatus?.status === 'included' ? selectedOfferStatus.recommendationId : null
             }
@@ -1121,7 +1359,7 @@ export function PlanResultsView() {
   }
 
   return (
-    <div className="rounded-3xl border border-white/10 bg-bg-elevated p-6 md:p-10">
+    <div className="rounded-3xl border border-white/10 bg-bg-elevated p-3 sm:p-6 md:p-10">
       {state.status === 'recovered' && (
         <p className="text-base text-brand-gold">
           Recovered your latest saved plan from this browser.
