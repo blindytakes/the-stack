@@ -160,6 +160,13 @@
       "sourcePageUrl": "https://creditcards.wellsfargo.com/autograph-visa-credit-card/",
       "sourceImageUrl": "https://creditcards.wellsfargo.com/W-Card-MarketPlace/v3-10-26/images/Products/Autograph/Autograph-No-Fee-Card-RGB_d.png",
       "applyUrl": "https://creditcards.wellsfargo.com/autograph-visa-credit-card/"
+    },
+    {
+      "entityType": "card",
+      "slug": "wells-fargo-autograph-journey",
+      "sourcePageUrl": "https://creditcards.wellsfargo.com/autograph-journey-visa-credit-card/",
+      "sourceImageUrl": "https://creditcards.wellsfargo.com/W-Card-MarketPlace/v4-29-26/images/Products/AutographJourney/WF_Autograph_Journey_Card_d.png",
+      "applyUrl": "https://creditcards.wellsfargo.com/autograph-journey-visa-credit-card/"
     }
   ]
 }

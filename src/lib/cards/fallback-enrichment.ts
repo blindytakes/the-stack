@@ -38,6 +38,8 @@ const AMEX_GREEN_CARD_ART_URL =
   'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/green-card.png';
 const CHASE_UNITED_QUEST_CARD_ART_URL =
   'https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/united_quest_card_tilted.png';
+const WELLS_FARGO_AUTOGRAPH_JOURNEY_CARD_ART_URL =
+  'https://creditcards.wellsfargo.com/W-Card-MarketPlace/v4-29-26/images/Products/AutographJourney/WF_Autograph_Journey_Card_d.png';
 const LEGACY_WELLS_FARGO_LOGO_URL =
   'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png';
 
@@ -68,7 +70,8 @@ const cardBrandImageUrlBySlug: Record<string, string> = {
   'barclays-jetblue-card': '/card-logos/jetblue.svg',
   'barclays-jetblue-plus': '/card-logos/jetblue.svg',
   'barclays-wyndham-earner-plus': '/bank-logos/barclays.svg',
-  'chase-united-quest': CHASE_UNITED_QUEST_CARD_ART_URL
+  'chase-united-quest': CHASE_UNITED_QUEST_CARD_ART_URL,
+  'wells-fargo-autograph-journey': WELLS_FARGO_AUTOGRAPH_JOURNEY_CARD_ART_URL
 };
 
 function normalizeKey(value: string) {
@@ -105,6 +108,17 @@ function getCardImageAssetTypeForUrl(
   }
 
   return 'card_art';
+}
+
+function isIssuerFallbackImageUrl(imageUrl: string, issuer: string, curatedCardImageUrl?: string) {
+  const normalizedImageUrl = imageUrl.trim().toLowerCase();
+  const normalizedCuratedCardImageUrl = curatedCardImageUrl?.trim().toLowerCase();
+
+  return (
+    (normalizedCuratedCardImageUrl != null &&
+      normalizedImageUrl === normalizedCuratedCardImageUrl) ||
+    getCardImageAssetTypeForUrl(imageUrl, issuer) === 'brand_logo'
+  );
 }
 
 function benefit(
@@ -831,11 +845,9 @@ export function resolveCardImage(
     }
 
     const normalizedImageUrl = imageUrl.trim();
-    const normalizedCuratedCardImageUrl = curatedCardImageUrl?.trim().toLowerCase();
     if (
       isLowValueCardImageUrl(normalizedImageUrl) ||
-      (normalizedCuratedCardImageUrl != null &&
-        normalizedImageUrl.toLowerCase() === normalizedCuratedCardImageUrl)
+      isIssuerFallbackImageUrl(normalizedImageUrl, issuer, curatedCardImageUrl)
     ) {
       return {
         imageUrl: curatedSlugImageUrl,

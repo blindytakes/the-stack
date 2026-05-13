@@ -37,6 +37,15 @@ describe('resolvePersistedCardImageUrl', () => {
         name: 'Discover it Cash Back'
       })
     ).toBe('/card-logos/discover.svg');
+    expect(
+      resolvePersistedCardImageUrl({
+        slug: 'wells-fargo-autograph-journey',
+        issuer: 'Wells Fargo',
+        name: 'Wells Fargo Autograph Journey Card'
+      })
+    ).toBe(
+      'https://creditcards.wellsfargo.com/W-Card-MarketPlace/v4-29-26/images/Products/AutographJourney/WF_Autograph_Journey_Card_d.png'
+    );
   });
 
   it('stores slug-specific issuer logos for known unresolved cards', () => {

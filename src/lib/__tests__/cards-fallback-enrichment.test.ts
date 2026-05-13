@@ -10,6 +10,8 @@ const AMEX_GREEN_CARD_ART_URL =
   'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/green-card.png';
 const CHASE_UNITED_QUEST_CARD_ART_URL =
   'https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/united_quest_card_tilted.png';
+const WELLS_FARGO_AUTOGRAPH_JOURNEY_CARD_ART_URL =
+  'https://creditcards.wellsfargo.com/W-Card-MarketPlace/v4-29-26/images/Products/AutographJourney/WF_Autograph_Journey_Card_d.png';
 
 describe('resolveCardBrandImageUrl', () => {
   it('uses curated local issuer assets for previously weak fallback issuers', () => {
@@ -79,6 +81,9 @@ describe('resolveCardBrandImageUrl', () => {
     expect(resolveCardBrandImageUrl('chase-united-quest', 'Chase')).toBe(
       CHASE_UNITED_QUEST_CARD_ART_URL
     );
+    expect(resolveCardBrandImageUrl('wells-fargo-autograph-journey', 'Wells Fargo')).toBe(
+      WELLS_FARGO_AUTOGRAPH_JOURNEY_CARD_ART_URL
+    );
   });
 
   it('replaces Chase header/footer logo URLs with the curated card logo', () => {
@@ -144,6 +149,10 @@ describe('resolveCardImage', () => {
       imageUrl: '/card-logos/discover.svg',
       imageAssetType: 'card_art'
     });
+    expect(resolveCardImage('wells-fargo-autograph-journey', 'Wells Fargo')).toMatchObject({
+      imageUrl: WELLS_FARGO_AUTOGRAPH_JOURNEY_CARD_ART_URL,
+      imageAssetType: 'card_art'
+    });
   });
 
   it('classifies issuer logo fallbacks as brand logos', () => {
@@ -161,7 +170,7 @@ describe('resolveCardImage', () => {
     });
   });
 
-  it('classifies explicit issuer logo URLs as brand logos', () => {
+  it('replaces explicit issuer logo URLs with slug-specific card art', () => {
     expect(
       resolveCardImage(
         'wells-fargo-autograph-journey',
@@ -170,8 +179,8 @@ describe('resolveCardImage', () => {
         'Wells Fargo Autograph Journey Card'
       )
     ).toMatchObject({
-      imageUrl: 'https://www17.wellsfargomedia.com/assets/images/rwd/wf_logo_220x23.png',
-      imageAssetType: 'brand_logo'
+      imageUrl: WELLS_FARGO_AUTOGRAPH_JOURNEY_CARD_ART_URL,
+      imageAssetType: 'card_art'
     });
   });
 
