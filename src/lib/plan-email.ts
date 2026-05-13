@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import {
   formatDateKeyedShortDate,
-  getUpcomingDateKeyedItems,
+  getDateKeyedDayValue,
   toLocalDateKey
 } from '@/lib/plan-date-utils';
 
@@ -64,6 +64,7 @@ export type SendPlanEmailRequest = z.infer<typeof sendPlanEmailRequestSchema>;
 
 const SITE_URL = 'https://thestackhq.com';
 const SITE_ICON_URL = `${SITE_URL}/icon.png`;
+const PLAN_TIMELINE_MONTH_COUNT = 6;
 
 type PlanEmailRenderOptions = {
   savedPlanUrl?: string;
@@ -93,24 +94,144 @@ function recommendationWarningFlags(recommendation: PlanEmailRecommendation) {
   return warnings;
 }
 
-function getUpcomingTimelineMilestones(
+function recommendationDetailFlags(recommendation: PlanEmailRecommendation) {
+  const flags: string[] = [];
+
+  if ((recommendation.valueBreakdown?.annualFee ?? 0) > 0) {
+    flags.push(`Annual fee: ${formatValue(recommendation.valueBreakdown?.annualFee ?? 0)}`);
+  }
+  if ((recommendation.scheduleConstraints.requiredDeposit ?? 0) > 0) {
+    flags.push(`Deposit: ${formatValue(recommendation.scheduleConstraints.requiredDeposit ?? 0)}`);
+  }
+  if (recommendation.scheduleConstraints.requiresDirectDeposit) {
+    flags.push('Direct deposit needed');
+  }
+  if (recommendation.effort === 'high') {
+    flags.push('High effort');
+  }
+
+  return flags;
+}
+
+function sortMilestonesByDate(milestones: PlanEmailMilestone[]) {
+  return [...milestones].sort((left, right) => {
+    const leftDay = getDateKeyedDayValue(left);
+    const rightDay = getDateKeyedDayValue(right);
+    if (leftDay !== rightDay) return leftDay - rightDay;
+    return left.date.getTime() - right.date.getTime();
+  });
+}
+
+function normalizePlanText(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function isMilestoneForRecommendation(
+  milestone: PlanEmailMilestone,
+  recommendation: PlanEmailRecommendation
+) {
+  const milestoneTitle = normalizePlanText(milestone.title);
+  const recommendationTitle = normalizePlanText(recommendation.title);
+  const recommendationWithProvider = normalizePlanText(
+    `${recommendation.provider} ${recommendation.title}`
+  );
+
+  return (
+    milestoneTitle === recommendationTitle ||
+    milestoneTitle === recommendationWithProvider ||
+    milestoneTitle.includes(recommendationTitle) ||
+    recommendationTitle.includes(milestoneTitle)
+  );
+}
+
+function getRecommendationMilestones(
   milestones: PlanEmailMilestone[],
+  recommendation: PlanEmailRecommendation
+) {
+  return sortMilestonesByDate(
+    milestones.filter((milestone) => isMilestoneForRecommendation(milestone, recommendation))
+  );
+}
+
+function formatTimelineSummary(milestones: PlanEmailMilestone[]) {
+  if (milestones.length === 0) return 'Timeline dates not scheduled yet';
+  if (milestones.length === 1) {
+    const milestone = milestones[0];
+    return `${formatDateKeyedShortDate(milestone)} ${milestone.label}`;
+  }
+
+  const firstMilestone = milestones[0];
+  const lastMilestone = milestones[milestones.length - 1];
+  return `${formatDateKeyedShortDate(firstMilestone)} - ${formatDateKeyedShortDate(
+    lastMilestone
+  )}`;
+}
+
+function monthKeyFromDate(date: Date) {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+}
+
+function monthKeyFromDateKeyed(value: { date: Date; dateKey?: string }) {
+  if (value.dateKey) return value.dateKey.slice(0, 7);
+  return monthKeyFromDate(value.date);
+}
+
+function addMonthsToMonthKey(monthKey: string, months: number) {
+  const [year, month] = monthKey.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1 + months, 1, 12, 0, 0));
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+function formatMonthKeyLabel(monthKey: string) {
+  const [year, month] = monthKey.split('-').map(Number);
+  return new Intl.DateTimeFormat('en-US', {
+    month: 'short',
+    timeZone: 'UTC'
+  }).format(new Date(Date.UTC(year, month - 1, 1, 12, 0, 0)));
+}
+
+function buildTimelineMonthKeys(
   referenceDate: Date,
   referenceDateKey?: string,
-  daysAhead = 45,
-  limit = 5
+  milestones: PlanEmailMilestone[] = []
 ) {
-  return getUpcomingDateKeyedItems(milestones, referenceDate, {
-    referenceDateKey,
-    daysAhead,
-    limit
-  });
+  const sortedMilestones = sortMilestonesByDate(milestones);
+  const referenceMonthKey = sortedMilestones[0]
+    ? monthKeyFromDateKeyed(sortedMilestones[0])
+    : referenceDateKey
+      ? referenceDateKey.slice(0, 7)
+      : monthKeyFromDate(referenceDate);
+
+  return Array.from({ length: PLAN_TIMELINE_MONTH_COUNT }, (_, index) =>
+    addMonthsToMonthKey(referenceMonthKey, index)
+  );
+}
+
+function shortMilestoneLabel(label: string) {
+  if (/bonus/i.test(label)) return 'Bonus';
+  if (/complete/i.test(label)) return 'Complete';
+  if (/apply|open/i.test(label)) return 'Apply/open';
+  return label;
+}
+
+function milestoneChipStyles(label: string) {
+  if (/bonus/i.test(label)) {
+    return 'background:#123c35;color:#99f6e4;border:1px solid #1d6255;';
+  }
+  if (/complete/i.test(label)) {
+    return 'background:#172554;color:#bfdbfe;border:1px solid #1d4ed8;';
+  }
+  return 'background:#3b2f12;color:#fde68a;border:1px solid #92400e;';
+}
+
+function formatEffortLabel(effort: PlanEmailRecommendation['effort']) {
+  return `${effort[0].toUpperCase()}${effort.slice(1)}`;
 }
 
 export function buildPlanEmailSubject(totalValue: number, cardsOnlyMode: boolean) {
   return cardsOnlyMode
-    ? `My The Stack card plan (${formatValue(totalValue)})`
-    : `My The Stack bonus plan (${formatValue(totalValue)})`;
+    ? `The Stack card plan (${formatValue(totalValue)})`
+    : `The Stack bonus plan (${formatValue(totalValue)})`;
 }
 
 export function buildSavedPlanUrl(planId: string) {
@@ -125,18 +246,36 @@ export function buildPlanEmailBody(
   input: PlanEmailContent,
   options: PlanEmailRenderOptions = {}
 ) {
-  const upcomingMilestones = getUpcomingTimelineMilestones(
-    input.milestones,
-    input.referenceDate,
-    options.referenceDateKey
-  );
-  const moveLines = input.recommendations.slice(0, 5).map((recommendation, index) => {
+  const displayedRecommendations = input.recommendations.slice(0, 5);
+  const moveLines = displayedRecommendations.flatMap((recommendation, index) => {
     const warnings = recommendationWarningFlags(recommendation);
-    const warningSuffix = warnings[0] ? `; ${warnings[0]}` : '';
+    const warningSuffix = warnings.length > 0 ? `; ${warnings.join('; ')}` : '';
+    const milestones = getRecommendationMilestones(input.milestones, recommendation);
+    const requirementLines =
+      recommendation.keyRequirements?.slice(0, 2).map((requirement) => `   - ${requirement}`) ??
+      [];
 
-    return `${index + 1}. ${recommendation.provider} - ${recommendation.title} (${formatValue(
-      recommendation.estimatedNetValue
-    )} est${warningSuffix})`;
+    return [
+      `${index + 1}. ${recommendation.provider} - ${recommendation.title} (${formatValue(
+        recommendation.estimatedNetValue
+      )} est; ${formatEffortLabel(recommendation.effort)} effort${warningSuffix})`,
+      ...requirementLines,
+      `   Timeline: ${formatTimelineSummary(milestones)}`
+    ];
+  });
+  const timelineLines = displayedRecommendations.flatMap((recommendation) => {
+    const milestones = getRecommendationMilestones(input.milestones, recommendation);
+
+    if (milestones.length === 0) {
+      return [`- ${recommendation.title}: No scheduled timeline dates yet.`];
+    }
+
+    return milestones.map(
+      (milestone) =>
+        `- ${recommendation.title}: ${formatDateKeyedShortDate(milestone)} - ${
+          milestone.label
+        }`
+    );
   });
 
   return [
@@ -144,16 +283,11 @@ export function buildPlanEmailBody(
     '',
     `6-month estimate: ${formatValue(input.totalValue)}`,
     '',
-    'Next actions:',
-    ...(upcomingMilestones.length > 0
-      ? upcomingMilestones.map(
-          (milestone) =>
-            `- ${formatDateKeyedShortDate(milestone)}: ${milestone.label} - ${milestone.title}`
-        )
-      : ['- No scheduled actions yet.']),
-    '',
-    'Planned moves:',
+    'Recommended offers:',
     ...(moveLines.length > 0 ? moveLines : ['No recommendations yet.']),
+    '',
+    'Plan timeline:',
+    ...(timelineLines.length > 0 ? timelineLines : ['No scheduled timeline dates yet.']),
     '',
     'Reminder:',
     'Download the .ics calendar from the plan page if I want these dates in my calendar.',
@@ -191,33 +325,35 @@ export function buildPlanEmailHtml(
   input: PlanEmailContent,
   options: PlanEmailRenderOptions = {}
 ) {
-  const upcomingMilestones = getUpcomingTimelineMilestones(
-    input.milestones,
-    input.referenceDate,
-    options.referenceDateKey
-  );
   const primaryUrl = options.savedPlanUrl ?? SITE_URL;
+  const displayedRecommendations = input.recommendations.slice(0, 5);
+  const displayedTimelineMilestones = displayedRecommendations.flatMap((recommendation) =>
+    getRecommendationMilestones(input.milestones, recommendation)
+  );
+  const timelineMonthKeys = buildTimelineMonthKeys(
+    input.referenceDate,
+    options.referenceDateKey,
+    displayedTimelineMilestones
+  );
   const moveCount = input.recommendations.length;
   const cardCount = input.recommendations.filter((item) => item.lane !== 'banking').length;
   const bankCount = input.recommendations.filter((item) => item.lane === 'banking').length;
   const statCards = [
     { label: 'Estimate', value: formatValue(input.totalValue) },
-    { label: 'Moves', value: String(moveCount) },
-    { label: 'Next actions', value: String(upcomingMilestones.length) }
+    { label: 'Offers', value: String(moveCount) },
+    { label: 'Timeline dates', value: String(displayedTimelineMilestones.length) }
   ];
   const summaryPills = [
-    `${moveCount} move${moveCount === 1 ? '' : 's'}`,
+    `${moveCount} offer${moveCount === 1 ? '' : 's'}`,
     cardCount > 0 ? `${cardCount} card bonus${cardCount === 1 ? '' : 'es'}` : null,
     bankCount > 0 ? `${bankCount} bank bonus${bankCount === 1 ? '' : 'es'}` : null
   ].filter((value): value is string => Boolean(value));
 
-  const moveCards = input.recommendations.slice(0, 5).map((recommendation, index) => {
-    const warnings = recommendationWarningFlags(recommendation);
+  const moveCards = displayedRecommendations.map((recommendation, index) => {
+    const detailFlags = recommendationDetailFlags(recommendation);
     const detailUrl = toAbsoluteUrl(recommendation.detailPath);
-    const noteParts = [
-      recommendation.keyRequirements?.[0],
-      warnings[0]
-    ].filter((value): value is string => Boolean(value));
+    const milestones = getRecommendationMilestones(input.milestones, recommendation);
+    const requirements = recommendation.keyRequirements?.slice(0, 2) ?? [];
 
     return `
       <tr>
@@ -231,19 +367,64 @@ export function buildPlanEmailHtml(
                   )}">${escapeHtml(laneLabel(recommendation.lane))}</span>
                 </div>
                 <div style="font-size:13px;color:#94a3b8;letter-spacing:0.01em;">
-                  Move ${index + 1} · ${escapeHtml(recommendation.provider)}
+                  Offer ${index + 1} · ${escapeHtml(recommendation.provider)}
                 </div>
                 <div style="margin-top:6px;font-size:20px;line-height:1.35;font-weight:700;color:#f8fafc;">
                   ${escapeHtml(recommendation.title)}
                 </div>
-                <div style="margin-top:10px;font-size:16px;font-weight:700;color:#5eead4;">
-                  ${escapeHtml(formatValue(recommendation.estimatedNetValue))} estimated value
-                </div>
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:14px;border-collapse:separate;">
+                  <tr>
+                    <td width="33.33%" style="padding-right:8px;">
+                      <div style="padding:10px 11px;border-radius:14px;background:#0f172a;border:1px solid #1e293b;">
+                        <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8ea8be;">Estimated net</div>
+                        <div style="margin-top:6px;font-size:16px;font-weight:800;color:#5eead4;">${escapeHtml(
+                          formatValue(recommendation.estimatedNetValue)
+                        )}</div>
+                      </div>
+                    </td>
+                    <td width="33.33%" style="padding-right:8px;">
+                      <div style="padding:10px 11px;border-radius:14px;background:#0f172a;border:1px solid #1e293b;">
+                        <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8ea8be;">Effort</div>
+                        <div style="margin-top:6px;font-size:16px;font-weight:800;color:#f8fafc;">${escapeHtml(
+                          formatEffortLabel(recommendation.effort)
+                        )}</div>
+                      </div>
+                    </td>
+                    <td width="33.33%">
+                      <div style="padding:10px 11px;border-radius:14px;background:#0f172a;border:1px solid #1e293b;">
+                        <div style="font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#8ea8be;">Timeline</div>
+                        <div style="margin-top:6px;font-size:13px;line-height:1.25;font-weight:800;color:#f8fafc;">${escapeHtml(
+                          formatTimelineSummary(milestones)
+                        )}</div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
                 ${
-                  noteParts[0]
-                    ? `<div style="margin-top:10px;font-size:14px;line-height:1.6;color:#cbd5e1;">${escapeHtml(
-                        noteParts[0]
-                      )}</div>`
+                  requirements.length > 0
+                    ? `<div style="margin-top:14px;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#94a3b8;">Requirements</div>
+                      ${requirements
+                        .map(
+                          (requirement) =>
+                            `<div style="margin-top:7px;font-size:14px;line-height:1.55;color:#cbd5e1;">• ${escapeHtml(
+                              requirement
+                            )}</div>`
+                        )
+                        .join('')}`
+                    : ''
+                }
+                ${
+                  detailFlags.length > 0
+                    ? `<div style="margin-top:12px;">
+                        ${detailFlags
+                          .map(
+                            (flag) =>
+                              `<span style="display:inline-block;margin:0 6px 6px 0;padding:6px 9px;border-radius:999px;border:1px solid #334155;background:#0f172a;color:#cbd5e1;font-size:12px;font-weight:700;">${escapeHtml(
+                                flag
+                              )}</span>`
+                          )
+                          .join('')}
+                      </div>`
                     : ''
                 }
                 ${
@@ -261,37 +442,58 @@ export function buildPlanEmailHtml(
     `;
   });
 
-  const milestoneRows =
-    upcomingMilestones.length > 0
-      ? upcomingMilestones
-          .map(
-            (milestone) => `
+  const timelineRows =
+    displayedRecommendations.length > 0
+      ? displayedRecommendations
+          .map((recommendation) => {
+            const milestones = getRecommendationMilestones(input.milestones, recommendation);
+
+            return `
               <tr>
-                <td style="padding:0 0 12px 0;">
-                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;background:#0f172a;border:1px solid #1e293b;border-radius:16px;">
-                    <tr>
-                      <td style="padding:14px 16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-                        <div style="font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#5eead4;">
-                          ${escapeHtml(formatDateKeyedShortDate(milestone))}
-                        </div>
-                        <div style="margin-top:6px;font-size:15px;font-weight:700;color:#f8fafc;">
-                          ${escapeHtml(milestone.label)}
-                        </div>
-                        <div style="margin-top:4px;font-size:14px;line-height:1.5;color:#cbd5e1;">
-                          ${escapeHtml(milestone.title)}
-                        </div>
-                      </td>
-                    </tr>
-                  </table>
+                <td width="158" valign="top" style="padding:12px 10px;border-top:1px solid #1e293b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+                  <div style="font-size:12px;font-weight:800;color:#f8fafc;line-height:1.35;">${escapeHtml(
+                    recommendation.title
+                  )}</div>
+                  <div style="margin-top:4px;font-size:11px;color:#94a3b8;">${escapeHtml(
+                    recommendation.provider
+                  )}</div>
                 </td>
+                ${timelineMonthKeys
+                  .map((monthKey) => {
+                    const monthMilestones = milestones.filter(
+                      (milestone) => monthKeyFromDateKeyed(milestone) === monthKey
+                    );
+
+                    return `
+                      <td width="80" valign="top" style="padding:12px 5px;border-top:1px solid #1e293b;border-left:1px solid #132033;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+                        ${
+                          monthMilestones.length > 0
+                            ? monthMilestones
+                                .map(
+                                  (milestone) =>
+                                    `<div style="margin-bottom:6px;padding:6px 7px;border-radius:10px;font-size:10px;line-height:1.25;font-weight:800;${milestoneChipStyles(
+                                      milestone.label
+                                    )}">
+                                      ${escapeHtml(formatDateKeyedShortDate(milestone))}
+                                      <br />
+                                      ${escapeHtml(shortMilestoneLabel(milestone.label))}
+                                    </div>`
+                                )
+                                .join('')
+                            : '<div style="height:22px;border-bottom:1px solid #1e293b;">&nbsp;</div>'
+                        }
+                      </td>
+                    `;
+                  })
+                  .join('')}
               </tr>
-            `
-          )
+            `;
+          })
           .join('')
       : `
           <tr>
-            <td style="padding:16px 18px;border:1px solid #1e293b;border-radius:16px;background:#0f172a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;color:#cbd5e1;">
-              No scheduled actions yet.
+            <td colspan="${timelineMonthKeys.length + 1}" style="padding:16px 18px;border-top:1px solid #1e293b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;line-height:1.6;color:#cbd5e1;">
+              No scheduled timeline dates yet.
             </td>
           </tr>
         `;
@@ -335,7 +537,7 @@ export function buildPlanEmailHtml(
                             ${escapeHtml(formatValue(input.totalValue))}
                           </div>
                           <div style="margin-top:12px;font-size:16px;line-height:1.7;color:#cbd5e1;">
-                            Your saved plan with next actions, top moves, and a full web version ready to reopen.
+                            Your saved plan with recommended offers, key requirements, and a six-month timeline.
                           </div>
                           <div style="margin-top:16px;">
                             ${summaryPills
@@ -388,22 +590,42 @@ export function buildPlanEmailHtml(
                 </tr>
                 <tr>
                   <td style="padding:24px 0 10px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-                    <div style="font-size:22px;font-weight:800;color:#f8fafc;">Next actions</div>
+                    <div style="font-size:22px;font-weight:800;color:#f8fafc;">Recommended offers</div>
                     <div style="margin-top:6px;font-size:14px;line-height:1.6;color:#94a3b8;">
-                      The first dates to keep in front of you.
-                    </div>
-                  </td>
-                </tr>
-                ${milestoneRows}
-                <tr>
-                  <td style="padding:18px 0 10px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-                    <div style="font-size:22px;font-weight:800;color:#f8fafc;">Top moves</div>
-                    <div style="margin-top:6px;font-size:14px;line-height:1.6;color:#94a3b8;">
-                      The highest-priority recommendations from your current plan.
+                      The offers your plan ranks highest right now, with the main requirements and timing attached.
                     </div>
                   </td>
                 </tr>
                 ${moveCards.join('')}
+                <tr>
+                  <td style="padding:18px 0 10px 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+                    <div style="font-size:22px;font-weight:800;color:#f8fafc;">Plan timeline</div>
+                    <div style="margin-top:6px;font-size:14px;line-height:1.6;color:#94a3b8;">
+                      A compact month-by-month view of when to apply, complete requirements, and expect bonuses.
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:0 0 12px 0;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#0f172a;border:1px solid #1e293b;border-radius:18px;overflow:hidden;">
+                      <tr>
+                        <td width="158" style="padding:11px 10px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#8ea8be;">
+                          Offer
+                        </td>
+                        ${timelineMonthKeys
+                          .map(
+                            (monthKey) => `
+                              <td width="80" style="padding:11px 5px;border-left:1px solid #132033;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:10px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:#8ea8be;">
+                                ${escapeHtml(formatMonthKeyLabel(monthKey))}
+                              </td>
+                            `
+                          )
+                          .join('')}
+                      </tr>
+                      ${timelineRows}
+                    </table>
+                  </td>
+                </tr>
                 <tr>
                   <td style="padding:12px 0 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
                     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;background:#0f172a;border:1px solid #1e293b;border-radius:18px;">
