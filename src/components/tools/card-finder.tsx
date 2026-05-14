@@ -99,10 +99,7 @@ export function CardFinderTool({
     typeof currentAnswer === 'string' ? currentAnswer : undefined;
   const shouldAutoAdvance =
     currentStep.type === 'options' &&
-    (
-      !('optional' in currentStep && currentStep.optional === true) ||
-      currentStep.id === 'availableCash'
-    );
+    !('optional' in currentStep && currentStep.optional === true);
 
   return (
     <section className="rounded-[2rem] border border-white/10 bg-bg-elevated p-7 md:p-12 lg:p-14">

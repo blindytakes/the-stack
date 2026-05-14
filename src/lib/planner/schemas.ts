@@ -3,6 +3,7 @@ import { spendingCategoryValues } from '@/lib/cards';
 import {
   availableCashValues,
   chase524StatusValues,
+  directDepositCapacityValues,
   plannerAudienceValues,
   recentCardOpenings24MonthsValues
 } from '@/lib/planner/types';
@@ -34,9 +35,10 @@ const audienceSchema = z.enum(plannerAudienceValues).default('consumer');
 export const fullPlannerAnswersSchema = z.object({
   audience: audienceSchema,
   monthlySpend: monthlySpendSchema,
+  recentCardOpenings24Months: z.enum(recentCardOpenings24MonthsValues).optional(),
+  directDepositCapacity: z.enum(directDepositCapacityValues).optional(),
   state: stateSchema,
   ownedCardSlugs: slugArraySchema,
-  availableCash: z.enum(availableCashValues).optional(),
   ownedBankNames: bankNameArraySchema
 });
 
@@ -66,8 +68,9 @@ const plannerContextBaseSchema = z.object({
 export const fullPlannerContextSchema = plannerContextBaseSchema.extend({
   mode: z.literal('full'),
   directDeposit: z.enum(['yes', 'no']),
+  directDepositCapacity: z.enum(directDepositCapacityValues).default('from_1001_to_2500'),
   state: stateSchema,
-  availableCash: z.enum(availableCashValues),
+  availableCash: z.enum(availableCashValues).default('from_2501_to_9999'),
   ownedBankNames: bankNameArraySchema
 });
 

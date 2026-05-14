@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { normalizePlannerContext } from '@/lib/planner/normalize-context';
 
 describe('normalizePlannerContext', () => {
-  it('normalizes full planner answers without fabricating issuer-specific eligibility', () => {
+  it('normalizes full planner answers without fabricating missing issuer-specific eligibility', () => {
     const context = normalizePlannerContext({
       mode: 'full',
       answers: {
@@ -19,6 +19,7 @@ describe('normalizePlannerContext', () => {
       audience: 'consumer',
       monthlySpend: 'from_2500_to_5000',
       directDeposit: 'yes',
+      directDepositCapacity: 'from_1001_to_2500',
       state: 'NY',
       ownedCardSlugs: ['chase-sapphire-preferred'],
       availableCash: 'from_2501_to_9999',
@@ -26,6 +27,22 @@ describe('normalizePlannerContext', () => {
       amexLifetimeBlockedSlugs: [],
       chase524Status: 'not_sure'
     });
+  });
+
+  it('derives Chase 5/24 status for full planner answers when recent openings are provided', () => {
+    const context = normalizePlannerContext({
+      mode: 'full',
+      answers: {
+        audience: 'consumer',
+        monthlySpend: 'from_2500_to_5000',
+        recentCardOpenings24Months: 'five_or_more',
+        state: 'ny',
+        ownedCardSlugs: [],
+        ownedBankNames: []
+      }
+    });
+
+    expect(context.chase524Status).toBe('at_or_over_5_24');
   });
 
   it('assumes direct deposit availability for full planner answers', () => {
@@ -47,14 +64,14 @@ describe('normalizePlannerContext', () => {
     expect(context.directDeposit).toBe('yes');
   });
 
-  it('treats zero available cash as no direct deposit availability', () => {
+  it('treats no direct deposit capacity as no direct deposit availability', () => {
     const context = normalizePlannerContext({
       mode: 'full',
       answers: {
         audience: 'consumer',
         monthlySpend: 'from_2500_to_5000',
         state: 'ny',
-        availableCash: 'none',
+        directDepositCapacity: 'none',
         ownedCardSlugs: [],
         ownedBankNames: []
       }
@@ -64,7 +81,8 @@ describe('normalizePlannerContext', () => {
       throw new Error('Expected a full planner context');
     }
 
-    expect(context.availableCash).toBe('none');
+    expect(context.directDepositCapacity).toBe('none');
+    expect(context.availableCash).toBe('from_2501_to_9999');
     expect(context.directDeposit).toBe('no');
   });
 

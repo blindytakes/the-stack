@@ -51,9 +51,10 @@ export const exclusionActions: Record<PlannerExclusionReason, string> = {
   amex_lifetime_rule: 'Amex bonuses are usually once per lifetime per card, so prior Amex holdings can block those offers.',
   chase_5_24: 'Chase cards are hidden when you mark yourself at or above 5/24.',
   direct_deposit_required: 'Routing qualifying direct deposit unlocks most checking bonuses.',
+  insufficient_direct_deposit: 'This bank requires more qualifying direct deposit than your selected monthly routing capacity.',
   state_restricted: 'Switch your home state only if it is inaccurate, because some bank offers are region-limited.',
   existing_bank: 'Banks you already use are excluded because most bonuses are for new customers only.',
-  insufficient_cash: 'This offer requires a larger opening deposit than your available cash tier allows.'
+  insufficient_cash: 'This offer requires a larger opening deposit than the planner currently includes by default.'
 };
 
 export const scheduleIssueActions: Record<PlanScheduleIssueReason, string> = {

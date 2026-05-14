@@ -187,12 +187,12 @@ function monthlySpendRangeText(value: PlannerContext['monthlySpend']): string {
   return '$5,000+/mo';
 }
 
-function availableCashRangeText(context: PlannerContext): string | null {
+function directDepositCapacityText(context: PlannerContext): string | null {
   if (context.mode !== 'full') return null;
-  if (context.availableCash === 'none') return '$0 cash set aside';
-  if (context.availableCash === 'up_to_2500') return 'up to $2,500 cash set aside';
-  if (context.availableCash === 'from_2501_to_9999') return '$2,501-$9,999 cash set aside';
-  return '$10,000+ cash set aside';
+  if (context.directDepositCapacity === 'none') return 'no qualifying direct deposit';
+  if (context.directDepositCapacity === 'up_to_1000') return 'up to $1,000/mo in qualifying direct deposit';
+  if (context.directDepositCapacity === 'from_1001_to_2500') return '$1,001-$2,500/mo in qualifying direct deposit';
+  return '$2,500+/mo in qualifying direct deposit';
 }
 
 function issuerRuleReason(item: PlannerRecommendation, context: PlannerContext): string {
@@ -248,13 +248,17 @@ function buildOrderReasons({
     }
     reasons.push(issuerRuleReason(item, plannerContext));
   } else {
-    const cashRange = availableCashRangeText(plannerContext);
     const requiredDeposit = item.scheduleConstraints.requiredDeposit;
-    if (requiredDeposit && cashRange) {
-      reasons.push(`We screened the ${formatValue(requiredDeposit)} deposit requirement against your ${cashRange} answer.`);
+    if (requiredDeposit) {
+      reasons.push(`We checked the ${formatValue(requiredDeposit)} opening or funding requirement before scheduling this bank bonus.`);
     }
     if (item.scheduleConstraints.requiresDirectDeposit) {
-      reasons.push('Your direct-deposit answer keeps this bank bonus eligible and limits direct-deposit offers from stacking on top of each other.');
+      const directDepositCapacity = directDepositCapacityText(plannerContext);
+      reasons.push(
+        directDepositCapacity
+          ? `Your ${directDepositCapacity} answer keeps this bank bonus eligible and limits direct-deposit offers from stacking on top of each other.`
+          : 'Your direct-deposit answer keeps this bank bonus eligible and limits direct-deposit offers from stacking on top of each other.'
+      );
     } else {
       reasons.push('No direct-deposit slot is needed, so this can fit around card spend windows more easily.');
     }

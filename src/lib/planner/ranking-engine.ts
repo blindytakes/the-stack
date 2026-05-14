@@ -1,10 +1,8 @@
 import type { CardRecord } from '@/lib/cards';
-import { isCardBlockedByIssuerRules } from '@/lib/issuer-rules';
 import type { PlannerContext } from '@/lib/planner/schemas';
 import type { Chase524Status, RecentCardOpenings24Months } from '@/lib/planner/types';
 import {
   estimateCardOpenValue,
-  meetsCreditTier,
   scoreCardFit
 } from '@/lib/scoring-policy';
 
@@ -53,10 +51,7 @@ function rankCards(
   const eligible = cards.filter(
     (card) =>
       audienceMatchesCardType(card) &&
-      (!options.useCreditProfile ||
-        (input.credit !== undefined && meetsCreditTier(card.creditTierMin, input.credit))) &&
-      !ownedCardSlugSet.has(card.slug) &&
-      !isCardBlockedByIssuerRules(card, input)
+      !ownedCardSlugSet.has(card.slug)
   );
 
   return eligible

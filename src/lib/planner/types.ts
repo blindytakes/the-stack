@@ -6,6 +6,14 @@ export const availableCashValues = [
 ] as const;
 export type AvailableCash = (typeof availableCashValues)[number];
 
+export const directDepositCapacityValues = [
+  'none',
+  'up_to_1000',
+  'from_1001_to_2500',
+  'at_least_2500'
+] as const;
+export type DirectDepositCapacity = (typeof directDepositCapacityValues)[number];
+
 export const plannerAudienceValues = ['consumer', 'business'] as const;
 export type PlannerAudience = (typeof plannerAudienceValues)[number];
 

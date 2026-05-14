@@ -17,12 +17,16 @@ This document defines the active planner contract and execution flow.
 - Intake fields:
   - `audience`
   - `monthlySpend`
-  - `directDeposit`
+  - `recentCardOpenings24Months`
+  - `directDepositCapacity`
   - `state`
   - `ownedCardSlugs`
-  - `availableCash`
   - `ownedBankNames`
-- Override-only fields:
+- Derived fields:
+  - `directDeposit`
+  - `chase524Status`
+  - `availableCash`
+- Override-supported fields:
   - `amexLifetimeBlockedSlugs`
   - `chase524Status`
 - Card ranking behavior:
@@ -41,7 +45,7 @@ This document defines the active planner contract and execution flow.
   - `ownedCardSlugs`
 - Derived fields:
   - `chase524Status`
-- Override-only fields:
+- Override-supported fields:
   - `amexLifetimeBlockedSlugs`
   - `chase524Status`
 - Card ranking behavior:
@@ -51,8 +55,8 @@ This document defines the active planner contract and execution flow.
 ## Normalization rules
 
 - Unknown eligibility stays unknown.
-- Full planner inputs do not fabricate issuer-specific eligibility.
-- Cards-only inputs derive `chase524Status` from `recentCardOpenings24Months`.
+- Full planner inputs do not fabricate missing issuer-specific eligibility.
+- Full and cards-only inputs derive `chase524Status` from `recentCardOpenings24Months` when provided.
 - Overrides win over derived values.
 - Unsupported answer shapes are rejected at schema boundaries.
 

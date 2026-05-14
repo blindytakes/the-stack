@@ -11,9 +11,10 @@ import {
 } from '@/lib/planner/schemas';
 
 const defaultAvailableCash = 'from_2501_to_9999' as const;
+const defaultDirectDepositCapacity = 'from_1001_to_2500' as const;
 
-function getDirectDepositAvailability(availableCash: string | undefined) {
-  return availableCash === 'none' ? 'no' : 'yes';
+function getDirectDepositAvailability(directDepositCapacity: string | undefined) {
+  return directDepositCapacity === 'none' ? 'no' : 'yes';
 }
 
 type NormalizePlannerContextInput = {
@@ -31,13 +32,16 @@ export function normalizePlannerContext(input: NormalizePlannerContextInput): Pl
       mode: input.mode,
       audience: answers.audience,
       monthlySpend: answers.monthlySpend,
-      directDeposit: getDirectDepositAvailability(answers.availableCash),
+      directDeposit: getDirectDepositAvailability(answers.directDepositCapacity),
+      directDepositCapacity: answers.directDepositCapacity ?? defaultDirectDepositCapacity,
       state: answers.state,
       ownedCardSlugs: answers.ownedCardSlugs,
-      availableCash: answers.availableCash ?? defaultAvailableCash,
+      availableCash: defaultAvailableCash,
       ownedBankNames: answers.ownedBankNames,
       amexLifetimeBlockedSlugs: overrides.amexLifetimeBlockedSlugs,
-      chase524Status: overrides.chase524Status ?? 'not_sure'
+      chase524Status:
+        overrides.chase524Status ??
+        getChase524StatusFromRecentCardOpenings(answers.recentCardOpenings24Months)
     });
   } else {
     const answers = cardsOnlyPlannerAnswersSchema.parse(input.answers);

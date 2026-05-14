@@ -2,7 +2,7 @@ import type { CardImageAssetType, CardRecord } from '@/lib/cards';
 import type { SelectedOfferIntent } from '@/lib/plan-contract';
 import type { RankedCardResult } from '@/lib/planner/ranking-engine';
 import type { FullPlannerContext, PlannerContext } from '@/lib/planner/schemas';
-import type { AvailableCash } from '@/lib/planner/types';
+import type { AvailableCash, DirectDepositCapacity } from '@/lib/planner/types';
 import {
   getBankingOfferRequirements,
   type BankingBonusListItem,
@@ -40,6 +40,7 @@ export type PlannerExclusionReason =
   | 'amex_lifetime_rule'
   | 'chase_5_24'
   | 'direct_deposit_required'
+  | 'insufficient_direct_deposit'
   | 'state_restricted'
   | 'existing_bank'
   | 'insufficient_cash';
@@ -107,6 +108,12 @@ const availableCashCeiling: Record<AvailableCash, number> = {
   from_2501_to_9999: 9999,
   at_least_10000: 25000
 };
+const directDepositCapacityCeiling: Record<DirectDepositCapacity, number> = {
+  none: 0,
+  up_to_1000: 1000,
+  from_1001_to_2500: 2500,
+  at_least_2500: Number.POSITIVE_INFINITY
+};
 // Typical priority scores from scoreCardOpenPriority / scoreBankingPriority
 // land in the low hundreds to low thousands. 250 000 guarantees the selected
 // offer wins any value-based lane competition when it is otherwise eligible.
@@ -143,8 +150,15 @@ function getBankingExclusionReasons(
 ): PlannerExclusionReason[] {
   const reasons: PlannerExclusionReason[] = [];
 
-  if (input.directDeposit === 'no' && offer.directDeposit.required) {
-    reasons.push('direct_deposit_required');
+  if (offer.directDeposit.required) {
+    if (input.directDepositCapacity === 'none') {
+      reasons.push('direct_deposit_required');
+    } else if (
+      typeof offer.directDeposit.minimumAmount === 'number' &&
+      offer.directDeposit.minimumAmount > directDepositCapacityCeiling[input.directDepositCapacity]
+    ) {
+      reasons.push('insufficient_direct_deposit');
+    }
   }
 
   if (

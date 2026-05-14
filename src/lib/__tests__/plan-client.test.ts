@@ -33,7 +33,7 @@ const baseRequest = {
     audience: 'consumer' as const,
     monthlySpend: 'from_2500_to_5000' as const,
     state: 'NY',
-    availableCash: 'from_2501_to_9999' as const,
+    directDepositCapacity: 'from_1001_to_2500' as const,
     ownedCardSlugs: [],
     ownedBankNames: []
   }
@@ -91,6 +91,7 @@ describe('plan-client', () => {
       audience: 'consumer',
       monthlySpend: 'from_2500_to_5000',
       directDeposit: 'yes',
+      directDepositCapacity: 'from_1001_to_2500',
       state: 'NY',
       ownedCardSlugs: [],
       availableCash: 'from_2501_to_9999',

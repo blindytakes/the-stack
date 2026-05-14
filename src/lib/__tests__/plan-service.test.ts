@@ -215,9 +215,8 @@ describe('plan-service', () => {
       answers: {
         audience: 'consumer',
         monthlySpend: 'from_2500_to_5000',
-        directDeposit: 'yes',
+        directDepositCapacity: 'from_1001_to_2500',
         state: 'NY',
-        availableCash: 'from_2501_to_9999',
         ownedCardSlugs: [],
         ownedBankNames: []
       }
@@ -236,6 +235,7 @@ describe('plan-service', () => {
         audience: 'consumer',
         monthlySpend: 'from_2500_to_5000',
         directDeposit: 'yes',
+        directDepositCapacity: 'from_1001_to_2500',
         state: 'NY',
         availableCash: 'from_2501_to_9999',
         ownedBankNames: []

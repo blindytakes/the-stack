@@ -19,6 +19,7 @@ function makeFullInput(overrides: Partial<FullPlannerContext> = {}): FullPlanner
     audience: 'consumer',
     monthlySpend: 'from_2500_to_5000',
     directDeposit: 'yes',
+    directDepositCapacity: 'from_1001_to_2500',
     state: 'NY',
     ownedCardSlugs: [],
     availableCash: 'from_2501_to_9999',
@@ -187,7 +188,7 @@ describe('buildPlanRecommendations', () => {
     const bundle = buildPlanRecommendations(
       cards,
       bankingBonuses,
-      makeFullInput({ directDeposit: 'no' }),
+      makeFullInput({ directDeposit: 'no', directDepositCapacity: 'none' }),
       { maxBanking: 5 }
     );
 
@@ -195,6 +196,28 @@ describe('buildPlanRecommendations', () => {
     expect(
       bundle.exclusions.some((item) => item.reasons.includes('direct_deposit_required'))
     ).toBe(true);
+  });
+
+  it('excludes banking offers above the selected direct deposit capacity', () => {
+    const bundle = buildPlanRecommendations(
+      [],
+      [
+        createBankingListItem({
+          slug: 'large-dd-offer',
+          directDeposit: { required: true, minimumAmount: 5000 }
+        })
+      ],
+      makeFullInput({ directDepositCapacity: 'up_to_1000' }),
+      { maxBanking: 1 }
+    );
+
+    expect(bundle.recommendations).toHaveLength(0);
+    expect(bundle.exclusions).toContainEqual(
+      expect.objectContaining({
+        id: 'bank:large-dd-offer',
+        reasons: ['insufficient_direct_deposit']
+      })
+    );
   });
 
   it('keeps only business banking offers when the planner audience is business', () => {
@@ -491,6 +514,53 @@ describe('buildPlanRecommendations', () => {
 
     expect(bundle.recommendations).toHaveLength(0);
     expect(bundle.exclusions.some((item) => item.reasons.includes('chase_5_24'))).toBe(true);
+  });
+
+  it('reports a selected Chase offer as excluded when blocked by 5/24', () => {
+    const cards: RankedCardResult[] = [
+      {
+        slug: 'chase-sapphire-preferred',
+        name: 'Chase Sapphire Preferred Card',
+        issuer: 'Chase',
+        imageAssetType: 'text_fallback',
+        cardType: 'personal',
+        rewardType: 'points',
+        topCategories: ['travel'],
+        annualFee: 95,
+        creditTierMin: 'good',
+        headline: 'Chase Sapphire Preferred',
+        score: 9,
+        bestSignUpBonusValue: 750,
+        bestSignUpBonusSpendRequired: 4000,
+        bestSignUpBonusSpendPeriodDays: 90,
+        totalBenefitsValue: 0,
+        plannerBenefitsValue: 0
+      }
+    ];
+
+    const bundle = buildPlanRecommendations(
+      cards,
+      [],
+      makeCardsOnlyInput({ chase524Status: 'at_or_over_5_24' }),
+      {
+        selectedOfferIntent: {
+          lane: 'cards',
+          slug: 'chase-sapphire-preferred',
+          title: 'Chase Sapphire Preferred Card',
+          provider: 'Chase',
+          detailPath: '/cards/chase-sapphire-preferred',
+          sourcePath: '/cards/chase-sapphire-preferred'
+        }
+      }
+    );
+
+    expect(bundle.recommendations).toHaveLength(0);
+    expect(bundle.exclusions).toContainEqual(
+      expect.objectContaining({
+        id: 'card:chase-sapphire-preferred',
+        reasons: ['chase_5_24']
+      })
+    );
   });
 
   it('excludes banking offers when the user already banks there', async () => {

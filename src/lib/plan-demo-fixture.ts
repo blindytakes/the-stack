@@ -356,6 +356,7 @@ export function getDemoPlanPayload(options: {
           audience: 'consumer',
           monthlySpend: 'from_2500_to_5000',
           directDeposit: 'yes',
+          directDepositCapacity: 'from_1001_to_2500',
           state: 'NY',
           ownedCardSlugs: [
             'chase-freedom-unlimited',

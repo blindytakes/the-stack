@@ -5,11 +5,11 @@ Status: Draft for implementation
 
 ## 1) Product Promise
 
-The Stack helps users make more money from bank and credit sign-up bonuses with a clear 12-month action plan.
+The Stack helps users make more money from bank and credit sign-up bonuses with a clear 6-month action plan.
 
 North-star equation:
 
-`12-Month Bonus Value = Credit Card Bonuses + Banking Bonuses`
+`6-Month Bonus Value = Credit Card Bonuses + Banking Bonuses`
 
 This equation should appear across homepage messaging, planner framing, and plan results.
 
@@ -38,7 +38,7 @@ Use a guided multi-page flow, not one long page and not two disconnected product
 | Route | Purpose | Primary CTA |
 |---|---|---|
 | `/` | Value proposition and entry to planner | Build My Bonus Plan |
-| `/tools/card-finder` | Guided intake for 12-month planning | See My Plan |
+| `/tools/card-finder` | Guided intake for 6-month planning | See My Plan |
 | `/plan/results` | Unified output with card + banking lanes | Start Do-Now Step |
 | `/cards` | Discover and filter card bonus opportunities | Compare Card Offers |
 | `/banking` | Discover and filter banking bonus opportunities | Compare Bank Offers |
@@ -64,7 +64,7 @@ Use a guided multi-page flow, not one long page and not two disconnected product
 
 1. User lands on homepage.
 2. User clicks `Build My Bonus Plan`.
-3. User completes planner intake (3-5 short steps).
+3. User completes planner intake (5-6 short steps).
 4. User sees one combined projected value and two lanes (cards and banking).
 5. User executes `Do Now` steps first, then `Do Next`.
 6. User joins newsletter and optionally signals consultation interest.
@@ -73,7 +73,7 @@ Use a guided multi-page flow, not one long page and not two disconnected product
 
 1. User lands on `/cards` or `/banking`.
 2. User explores opportunities and reads one offer detail.
-3. User is prompted to build a full 12-month plan.
+3. User is prompted to build a full 6-month plan.
 4. User enters guided flow.
 
 ### C) Return flow (existing user)
@@ -86,11 +86,12 @@ Use a guided multi-page flow, not one long page and not two disconnected product
 
 Target completion time: under 3 minutes.
 
-1. Profile basics (credit range, goals)
-2. Cash-flow constraints (ability to float required spend/deposits)
-3. Banking constraints (direct deposit ability, state availability)
-4. Timeline and effort tolerance
-5. Output confirmation
+1. Monthly card-spend capacity
+2. Recent card openings for Chase 5/24 screening
+3. State availability
+4. Existing card and bank relationships
+5. Direct-deposit capacity
+6. Output confirmation
 
 State-availability decision in v1:
 
@@ -102,7 +103,7 @@ State-availability decision in v1:
 
 Top-level:
 
-1. Combined projected 12-month value
+1. Combined projected 6-month value
 2. Split value by lane (cards vs banking)
 
 Execution layer:

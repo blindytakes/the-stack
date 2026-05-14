@@ -42,7 +42,7 @@ type FinderQuestionId =
   | 'monthlySpend'
   | 'recentCardOpenings24Months'
   | 'state'
-  | 'availableCash'
+  | 'directDepositCapacity'
   | 'spend'
   | 'credit';
 type FinderStepOption = { label: string; value: string };

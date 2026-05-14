@@ -72,24 +72,23 @@ function buildOwnedCardsStep(audience: PlannerAudience): FinderQuestionStep {
   };
 }
 
-function buildAvailableCashStep(audience: PlannerAudience): FinderQuestionStep {
+function buildDirectDepositCapacityStep(audience: PlannerAudience): FinderQuestionStep {
   return {
-    id: 'availableCash',
+    id: 'directDepositCapacity',
     type: 'options',
     title:
       audience === 'business'
-        ? 'How much cash can your business set aside for bank bonuses?'
-        : 'How much cash can you set aside for bank bonuses?',
+        ? 'How much qualifying direct deposit can your business route monthly?'
+        : 'How much qualifying direct deposit can you route monthly?',
     description:
       audience === 'business'
-        ? 'Optional. Some business bank bonuses require a minimum opening deposit. Skip this and we will use a middle-range assumption.'
-        : 'Optional. Some bank bonuses require a minimum opening deposit. Skip this and we will use a middle-range assumption.',
-    optional: true,
+        ? 'This keeps business checking bonuses realistic because many offers require payroll or other qualifying deposits.'
+        : 'This keeps checking bonuses realistic because many offers require payroll or other qualifying deposits.',
     options: [
-      { label: '$0', value: 'none' },
-      { label: 'Up to $2,500', value: 'up_to_2500' },
-      { label: '$2,501 – $9,999', value: 'from_2501_to_9999' },
-      { label: '$10,000+', value: 'at_least_10000' }
+      { label: 'None', value: 'none' },
+      { label: 'Up to $1,000/mo', value: 'up_to_1000' },
+      { label: '$1,001-$2,500/mo', value: 'from_1001_to_2500' },
+      { label: '$2,500+/mo', value: 'at_least_2500' }
     ]
   };
 }
@@ -120,7 +119,7 @@ export function buildCardFinderSteps(options: {
     ...(includeChase524Step ? [buildRecentCardOpeningsStep(audience)] : []),
     buildStateStep(audience),
     buildOwnedCardsStep(audience),
-    buildAvailableCashStep(audience),
+    buildDirectDepositCapacityStep(audience),
     buildOwnedBanksStep(audience)
   ];
 }

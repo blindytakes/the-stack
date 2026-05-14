@@ -68,6 +68,7 @@ export const plannerExclusionReasonSchema = z.enum([
   'amex_lifetime_rule',
   'chase_5_24',
   'direct_deposit_required',
+  'insufficient_direct_deposit',
   'state_restricted',
   'existing_bank',
   'insufficient_cash'

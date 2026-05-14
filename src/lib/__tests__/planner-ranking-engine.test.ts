@@ -35,6 +35,7 @@ function makeFullPlannerInput(
     audience: 'consumer',
     monthlySpend: 'from_2500_to_5000',
     directDeposit: 'yes',
+    directDepositCapacity: 'from_1001_to_2500',
     state: 'NY',
     ownedCardSlugs: [],
     availableCash: 'from_2501_to_9999',
@@ -120,7 +121,7 @@ describe('rankPlannerResults', () => {
     expect(results.some((card) => card.slug === 'cashback-dining')).toBe(false);
   });
 
-  it('excludes Amex cards blocked by lifetime history', () => {
+  it('keeps Amex cards blocked by lifetime history so recommendations can explain the exclusion', () => {
     const results = rankPlannerResults(
       [
         makeCard({
@@ -142,11 +143,11 @@ describe('rankPlannerResults', () => {
       })
     );
 
-    expect(results.some((card) => card.slug === 'amex-gold-card')).toBe(false);
+    expect(results.some((card) => card.slug === 'amex-gold-card')).toBe(true);
     expect(results.some((card) => card.slug === 'chase-sapphire-preferred')).toBe(true);
   });
 
-  it('excludes Chase cards when the user is at or over 5/24', () => {
+  it('keeps Chase cards when the user is at or over 5/24 so recommendations can explain the exclusion', () => {
     const results = rankPlannerResults(
       [
         makeCard({
@@ -169,17 +170,17 @@ describe('rankPlannerResults', () => {
       })
     );
 
-    expect(results.some((card) => card.slug === 'chase-sapphire-preferred')).toBe(false);
+    expect(results.some((card) => card.slug === 'chase-sapphire-preferred')).toBe(true);
     expect(results.some((card) => card.slug === 'citi-strata-premier-card')).toBe(true);
   });
 
-  it('filters by credit tier eligibility in cards-only mode', () => {
+  it('keeps credit-tier mismatches in cards-only mode so recommendations can explain the exclusion', () => {
     const results = rankPlannerResults(
       cards,
       makeCardsOnlyPlannerInput({ credit: 'fair' })
     );
 
-    expect(results.every((card) => ['fair', 'building'].includes(card.creditTierMin))).toBe(true);
+    expect(results.some((card) => card.creditTierMin === 'excellent')).toBe(true);
   });
 
   it('ignores hidden credit defaults in full mode', () => {

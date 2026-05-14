@@ -187,9 +187,9 @@ const sampleReviews = [
   {
     name: 'Ashley P.',
     quote:
-      'I was overwhelmed by card lists. The Stack gave me a clear order, and I ended up earning just over $6,300 in my first 12 months.',
+      'I was overwhelmed by card lists. The Stack gave me a clear order, and I ended up earning just over $6,300 with a simple six-month sequence.',
     resultAmount: '$6,300+',
-    resultDetail: 'earned in the first year'
+    resultDetail: 'planned with a six-month sequence'
   },
   {
     name: 'Marcus T.',
