@@ -489,13 +489,17 @@
           "category": "utilities",
           "rate": 5,
           "rateType": "cashback",
-          "notes": "Representative 5% category; eligible 5% categories are cardholder-selected each quarter."
+          "capAmount": 2000,
+          "capPeriod": "quarter",
+          "notes": "Representative 5% category; eligible 5% categories are cardholder-selected each quarter and share a $2,000 combined quarterly cap."
         },
         {
           "category": "streaming",
           "rate": 5,
           "rateType": "cashback",
-          "notes": "Representative 5% category; eligible 5% categories are cardholder-selected each quarter."
+          "capAmount": 2000,
+          "capPeriod": "quarter",
+          "notes": "Representative 5% category; eligible 5% categories are cardholder-selected each quarter and share a $2,000 combined quarterly cap."
         },
         {
           "category": "all",
@@ -847,6 +851,8 @@
           "category": "all",
           "rate": 2,
           "rateType": "points",
+          "capAmount": 50000,
+          "capPeriod": "year",
           "notes": "2x Membership Rewards points on the first tranche of eligible yearly spend, then 1x after the cap."
         }
       ],

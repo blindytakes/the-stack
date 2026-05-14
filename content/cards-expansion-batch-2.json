@@ -317,8 +317,8 @@
       "lastVerified": "2026-03-25T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 2, "rateType": "points", "notes": "2X points on Southwest purchases." },
-        { "category": "gas", "rate": 2, "rateType": "points", "notes": "2X points on the first $5,000 in combined gas and grocery purchases each year." },
-        { "category": "groceries", "rate": 2, "rateType": "points", "notes": "2X points on the first $5,000 in combined gas and grocery purchases each year." }
+        { "category": "gas", "rate": 2, "rateType": "points", "capAmount": 5000, "capPeriod": "year", "notes": "2X points on the first $5,000 in combined gas and grocery purchases each year." },
+        { "category": "groceries", "rate": 2, "rateType": "points", "capAmount": 5000, "capPeriod": "year", "notes": "2X points on the first $5,000 in combined gas and grocery purchases each year." }
       ],
       "signUpBonuses": [
         {
@@ -350,8 +350,8 @@
       "lastVerified": "2026-03-25T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 3, "rateType": "points", "notes": "3X points on Southwest purchases." },
-        { "category": "groceries", "rate": 2, "rateType": "points", "notes": "2X points on the first $8,000 in combined grocery and restaurant spend each year." },
-        { "category": "dining", "rate": 2, "rateType": "points", "notes": "2X points on the first $8,000 in combined grocery and restaurant spend each year." }
+        { "category": "groceries", "rate": 2, "rateType": "points", "capAmount": 8000, "capPeriod": "year", "notes": "2X points on the first $8,000 in combined grocery and restaurant spend each year." },
+        { "category": "dining", "rate": 2, "rateType": "points", "capAmount": 8000, "capPeriod": "year", "notes": "2X points on the first $8,000 in combined grocery and restaurant spend each year." }
       ],
       "signUpBonuses": [
         {
@@ -605,7 +605,7 @@
       "lastVerified": "2026-05-11T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 5, "rateType": "points", "notes": "5X Membership Rewards points on flights and prepaid hotels booked through AmexTravel.com." },
-        { "category": "other", "rate": 2, "rateType": "points", "notes": "2X points on eligible key business-category purchases and eligible purchases of $5,000 or more, up to the yearly cap." },
+        { "category": "other", "rate": 2, "rateType": "points", "capAmount": 2000000, "capPeriod": "year", "notes": "2X points on eligible key business-category purchases and eligible purchases of $5,000 or more, up to the yearly cap." },
         { "category": "all", "rate": 1, "rateType": "points" }
       ],
       "signUpBonuses": [
@@ -639,7 +639,7 @@
       "isActive": true,
       "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
-        { "category": "all", "rate": 2, "rateType": "cashback", "notes": "2% cash back on the first $50,000 in eligible purchases each calendar year, then 1%." }
+        { "category": "all", "rate": 2, "rateType": "cashback", "capAmount": 50000, "capPeriod": "year", "notes": "2% cash back on the first $50,000 in eligible purchases each calendar year, then 1%." }
       ],
       "signUpBonuses": [
         {
@@ -706,7 +706,7 @@
       "lastVerified": "2026-05-11T00:00:00.000Z",
       "rewards": [
         { "category": "travel", "rate": 12, "rateType": "points", "notes": "12X Hilton Honors points on eligible Hilton purchases." },
-        { "category": "all", "rate": 5, "rateType": "points", "notes": "5X points on other eligible purchases on the first $100,000 per year, then 3X thereafter." }
+        { "category": "all", "rate": 5, "rateType": "points", "capAmount": 100000, "capPeriod": "year", "notes": "5X points on other eligible purchases on the first $100,000 per year, then 3X thereafter." }
       ],
       "signUpBonuses": [
         {
@@ -773,7 +773,7 @@
       "lastVerified": "2026-05-10T00:00:00.000Z",
       "rewards": [
         { "category": "all", "rate": 2, "rateType": "points" },
-        { "category": "other", "rate": 2.5, "rateType": "points", "notes": "2.5X points on up to $5,000 in combined mobile wallet and virtual card purchases each quarter." },
+        { "category": "other", "rate": 2.5, "rateType": "points", "capAmount": 5000, "capPeriod": "quarter", "notes": "2.5X points on up to $5,000 in combined mobile wallet and virtual card purchases each quarter." },
         { "category": "travel", "rate": 6, "rateType": "points", "notes": "6X points on prepaid hotels and car rentals booked directly in the Travel Center." }
       ],
       "signUpBonuses": [

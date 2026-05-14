@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { CardRecord } from '../cards/schema';
-import { getCardBonusRoi, getCardDecisionMetrics } from '../cards/presentation-metrics';
+import {
+  getCardBonusRoi,
+  getCardDecisionMetrics,
+  isOffsettingCreditBenefit
+} from '../cards/presentation-metrics';
 
 function createCard(overrides: Partial<CardRecord> = {}): CardRecord {
   return {
@@ -64,5 +68,16 @@ describe('card presentation metrics', () => {
       value: '15%',
       detail: 'Welcome bonus on required spend'
     });
+  });
+
+  it('classifies Uber Cash as an offsetting credit when it has an estimated value', () => {
+    expect(
+      isOffsettingCreditBenefit({
+        category: 'OTHER',
+        name: '$200 Uber Cash',
+        description: 'Get $15 in Uber Cash each month plus a $20 bonus in December.',
+        estimatedValue: 200
+      })
+    ).toBe(true);
   });
 });

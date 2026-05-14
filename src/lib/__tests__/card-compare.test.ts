@@ -108,6 +108,38 @@ describe('card-compare', () => {
     expect(comparison.overallWinner).toBe('a');
   });
 
+  it('uses the global CPP assumption for point and mile welcome offers', () => {
+    const card = createCard({
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [{ category: 'all', rate: 0, rateType: 'points' }],
+      signUpBonuses: [
+        {
+          bonusValue: 500,
+          bonusType: 'points',
+          bonusPoints: 50000,
+          spendRequired: 4000,
+          spendPeriodDays: 90,
+          isCurrentOffer: true
+        }
+      ]
+    });
+
+    const summary = buildCardComparisonCardSummary(card, {
+      monthlySpend: {
+        dining: 0,
+        groceries: 0,
+        travel: 0,
+        gas: 0,
+        general: 0
+      },
+      pointValueCents: 1.5
+    });
+
+    expect(summary.welcomeOfferValue).toBe(750);
+    expect(summary.firstYearValue).toBe(750);
+  });
+
   it('uses line-item benefit valuations for credits and optional perks', () => {
     const cardA = createCard({
       rewardType: 'cashback',
@@ -245,6 +277,79 @@ describe('card-compare', () => {
     expect(comparison.a.annualRewardsValue).toBe(360);
     expect(comparison.b.annualRewardsValue).toBe(240);
     expect(comparison.a.categoryBreakdown.find((item) => item.category === 'groceries')?.rewardLabel).toContain('then');
+  });
+
+  it('applies caps to flat all-spend rewards before falling back to 1x or 1%', () => {
+    const cappedFlatCard = createCard({
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [
+        {
+          category: 'all',
+          rate: 2,
+          rateType: 'cashback',
+          capAmount: 1000,
+          capPeriod: 'year',
+          notes: '2% cash back on the first $1,000 per year, then 1%.'
+        }
+      ],
+      signUpBonuses: []
+    });
+
+    const summary = buildCardComparisonCardSummary(cappedFlatCard, {
+      monthlySpend: {
+        dining: 0,
+        groceries: 0,
+        travel: 0,
+        gas: 0,
+        general: 2000
+      }
+    });
+
+    expect(summary.annualRewardsValue).toBe(250);
+    expect(summary.categoryBreakdown.find((item) => item.category === 'general')?.rewardLabel).toContain('then');
+  });
+
+  it('shares combined caps across matching capped reward categories', () => {
+    const combinedCapCard = createCard({
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [
+        {
+          category: 'groceries',
+          rate: 5,
+          rateType: 'cashback',
+          capAmount: 6000,
+          capPeriod: 'year',
+          notes: '5% cash back on the first $6,000 in combined gas and grocery purchases each year.'
+        },
+        {
+          category: 'gas',
+          rate: 5,
+          rateType: 'cashback',
+          capAmount: 6000,
+          capPeriod: 'year',
+          notes: '5% cash back on gas in the first $6,000 of combined gas and grocery purchases each year.'
+        },
+        { category: 'all', rate: 1, rateType: 'cashback' }
+      ],
+      signUpBonuses: []
+    });
+
+    const summary = buildCardComparisonCardSummary(combinedCapCard, {
+      monthlySpend: {
+        dining: 0,
+        groceries: 500,
+        travel: 0,
+        gas: 500,
+        general: 0
+      }
+    });
+
+    expect(summary.annualRewardsValue).toBe(360);
+    expect(summary.categoryBreakdown.find((item) => item.category === 'gas')?.rewardLabel).toContain('then');
   });
 
   it('does not apply portal-only travel multipliers to generic travel spend', () => {

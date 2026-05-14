@@ -190,6 +190,7 @@
           "category": "OTHER",
           "name": "$120 Uber One Credit",
           "description": "Up to $120 in statement credits each calendar year after purchase of an eligible auto-renewing Uber One membership in the U.S.",
+          "estimatedValue": 120,
           "activationMethod": "Pay for an eligible auto-renewing Uber One membership with the Platinum Card.",
           "finePrint": "Available on eligible U.S. memberships."
         },
@@ -213,6 +214,7 @@
           "category": "TRAVEL_CREDITS",
           "name": "$600 Hotel Credit",
           "description": "Up to $300 back semi-annually on prepaid Fine Hotels + Resorts or The Hotel Collection bookings through Amex Travel.",
+          "estimatedValue": 600,
           "activationMethod": "Book eligible prepaid stays through Amex Travel and pay with the Platinum Card.",
           "finePrint": "The Hotel Collection requires a two-night minimum stay."
         },
@@ -243,6 +245,7 @@
           "category": "OTHER",
           "name": "$200 Oura Ring Credit",
           "description": "Up to $200 back in statement credits each calendar year on eligible Oura Ring purchases through ouraring.com.",
+          "estimatedValue": 200,
           "activationMethod": "Enroll and use the Platinum Card for eligible purchases through ouraring.com.",
           "finePrint": "Enrollment required."
         },
@@ -273,6 +276,7 @@
           "category": "OTHER",
           "name": "$300 Equinox Credit",
           "description": "Up to $300 in statement credits each calendar year on an eligible Equinox club membership or Equinox+ digital subscription.",
+          "estimatedValue": 300,
           "activationMethod": "Enroll and use the Platinum Card for eligible Equinox charges.",
           "finePrint": "Enrollment required."
         },
@@ -288,6 +292,7 @@
           "category": "OTHER",
           "name": "$300 lululemon Credit",
           "description": "Up to $75 in statement credits each quarter for eligible U.S. lululemon store purchases.",
+          "estimatedValue": 300,
           "activationMethod": "Enroll and use the Platinum Card for eligible lululemon purchases.",
           "finePrint": "Enrollment required. Quarterly cap applies."
         }

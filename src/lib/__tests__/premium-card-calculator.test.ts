@@ -49,6 +49,12 @@ describe('premium card calculator', () => {
     expect(
       profile.credits.find((credit) => credit.id === 'digital-entertainment-credit')?.note
     ).toBe('$300 annual value, issued as up to $25 per month');
+    expect(profile.credits.find((credit) => credit.id === 'oura-credit')?.note).toBe(
+      'Up to $200 per calendar year at Ouraring.com'
+    );
+    expect(profile.credits.find((credit) => credit.id === 'equinox-credit')?.note).toBe(
+      'Up to $300 per calendar year on an eligible Equinox membership or digital subscription'
+    );
     expect(profile.benefits.find((benefit) => benefit.id === 'priority-pass')?.description).toBe(
       'Membership for participating non-Amex lounges worldwide.'
     );
@@ -167,12 +173,31 @@ describe('premium card calculator', () => {
 
     const result = calculatePremiumCardScenario(profile, scenario);
 
-    expect(result.spendPoints).toBe(32000);
+    expect(result.spendPoints).toBe(33500);
     expect(result.annualBonusPointsYear1).toBe(0);
     expect(result.annualBonusPointsYear2).toBe(0);
     expect(result.recurringCreditsValue).toBe(330);
     expect(result.benefitsValue).toBe(120);
-    expect(result.totalPointsYear1).toBe(92000);
+    expect(result.totalPointsYear1).toBe(93500);
+  });
+
+  it('applies premium-card category caps before falling back to base earning', () => {
+    const gold = premiumCardProfileById['amex-gold'];
+    const goldScenario = buildInitialPremiumCardScenario(gold);
+    goldScenario.spend['restaurants-worldwide'] = 60000;
+    goldScenario.spend['us-supermarkets'] = 30000;
+
+    const goldResult = calculatePremiumCardScenario(gold, goldScenario);
+
+    expect(goldResult.spendPoints).toBe(315000);
+
+    const platinum = premiumCardProfileById['amex-platinum'];
+    const platinumScenario = buildInitialPremiumCardScenario(platinum);
+    platinumScenario.spend['flights_direct_or_amex_travel'] = 600000;
+
+    const platinumResult = calculatePremiumCardScenario(platinum, platinumScenario);
+
+    expect(platinumResult.spendPoints).toBe(2600000);
   });
 
   it('calculates Amex Green using travel, transit, and CLEAR inputs', () => {

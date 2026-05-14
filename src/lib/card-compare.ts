@@ -1,4 +1,4 @@
-import type { CardDetail, RewardDetail } from '@/lib/cards';
+import type { CardDetail, RewardDetail, SignUpBonusDetail } from '@/lib/cards';
 import { isOffsettingCreditBenefit } from '@/lib/cards/presentation-metrics';
 
 export const cardComparisonSpendCategories = [
@@ -266,10 +266,53 @@ function annualizeCapAmount(
 
   const period = reward.capPeriod?.toLowerCase() ?? '';
   if (period.includes('month')) return reward.capAmount * 12;
+  if (period.includes('billing')) return reward.capAmount * 12;
   if (period.includes('quarter')) return reward.capAmount * 4;
   if (period.includes('week')) return reward.capAmount * 52;
 
   return reward.capAmount;
+}
+
+function buildRewardCapUsageKey(card: CardDetail, reward: RewardDetail): string {
+  const notes = reward.notes?.toLowerCase() ?? '';
+  const categoryKey = notes.includes('combined') ? 'combined' : reward.category;
+
+  return [
+    card.slug,
+    categoryKey,
+    reward.rate,
+    reward.rateType,
+    reward.capAmount ?? 'uncapped',
+    reward.capPeriod ?? 'annual'
+  ].join(':');
+}
+
+function splitSpendByRewardCap(
+  card: CardDetail,
+  reward: RewardDetail,
+  annualSpend: number,
+  capUsage: Map<string, number>
+) {
+  const capAmount = annualizeCapAmount(reward);
+  if (capAmount == null) {
+    return {
+      spendAtBonusRate: annualSpend,
+      spendAtBaseRate: 0
+    };
+  }
+
+  const capKey = buildRewardCapUsageKey(card, reward);
+  const usedCap = capUsage.get(capKey) ?? 0;
+  const remainingCap = Math.max(0, capAmount - usedCap);
+  const spendAtBonusRate = Math.min(annualSpend, remainingCap);
+  const spendAtBaseRate = Math.max(0, annualSpend - spendAtBonusRate);
+
+  capUsage.set(capKey, usedCap + spendAtBonusRate);
+
+  return {
+    spendAtBonusRate,
+    spendAtBaseRate
+  };
 }
 
 function getFallbackReward(card: CardDetail): RewardDetail {
@@ -281,21 +324,47 @@ function getFallbackReward(card: CardDetail): RewardDetail {
   };
 }
 
-function getWelcomeOfferValue(card: CardDetail) {
-  const currentBonuses = card.signUpBonuses.filter(
-    (bonus) => bonus.isCurrentOffer !== false
-  );
-  const candidates = currentBonuses.length > 0 ? currentBonuses : card.signUpBonuses;
-  const bestBonus = [...candidates].sort((a, b) => b.bonusValue - a.bonusValue)[0];
-  return bestBonus?.bonusValue ?? card.bestSignUpBonusValue ?? 0;
+function getCalculatedSignUpBonusValue(
+  bonus: SignUpBonusDetail,
+  pointValueCents: number
+) {
+  const bonusType = bonus.bonusType.toLowerCase();
+  const hasPointLikeBonus =
+    bonusType.includes('point') || bonusType.includes('mile');
+
+  if (
+    hasPointLikeBonus &&
+    typeof bonus.bonusPoints === 'number' &&
+    Number.isFinite(bonus.bonusPoints)
+  ) {
+    return roundCurrency((bonus.bonusPoints * pointValueCents) / 100);
+  }
+
+  return bonus.bonusValue;
 }
 
-function getBonusSpendRequirement(card: CardDetail) {
+function pickBestSignUpBonus(card: CardDetail, pointValueCents: number) {
   const currentBonuses = card.signUpBonuses.filter(
     (bonus) => bonus.isCurrentOffer !== false
   );
   const candidates = currentBonuses.length > 0 ? currentBonuses : card.signUpBonuses;
-  const bestBonus = [...candidates].sort((a, b) => b.bonusValue - a.bonusValue)[0];
+
+  return [...candidates].sort(
+    (a, b) =>
+      getCalculatedSignUpBonusValue(b, pointValueCents) -
+      getCalculatedSignUpBonusValue(a, pointValueCents)
+  )[0];
+}
+
+function getWelcomeOfferValue(card: CardDetail, pointValueCents: number) {
+  const bestBonus = pickBestSignUpBonus(card, pointValueCents);
+  return bestBonus
+    ? getCalculatedSignUpBonusValue(bestBonus, pointValueCents)
+    : card.bestSignUpBonusValue ?? 0;
+}
+
+function getBonusSpendRequirement(card: CardDetail, pointValueCents: number) {
+  const bestBonus = pickBestSignUpBonus(card, pointValueCents);
   if (bestBonus) {
     return {
       spendRequired: bestBonus.spendRequired,
@@ -319,7 +388,8 @@ function getBonusSpendRequirement(card: CardDetail) {
 function summarizeRewardForCategory(
   card: CardDetail,
   category: CardComparisonSpendCategory,
-  assumptions: CardComparisonAssumptions
+  assumptions: CardComparisonAssumptions,
+  capUsage: Map<string, number>
 ): CardComparisonCategoryBreakdown {
   const annualSpend = assumptions.monthlySpend[category] * 12;
   const rewardCategory = spendCategoryToRewardCategory[category];
@@ -352,23 +422,36 @@ function summarizeRewardForCategory(
   }
 
   if (!exactReward || rewardCategory === 'all') {
-    const annualValue = annualSpend * rewardValuePerDollar(fallbackOrBase, assumptions.pointValueCents);
+    const { spendAtBonusRate, spendAtBaseRate } = splitSpendByRewardCap(
+      card,
+      fallbackOrBase,
+      annualSpend,
+      capUsage
+    );
+    const rewardValue = rewardValuePerDollar(fallbackOrBase, assumptions.pointValueCents);
+    const fallbackValue = rewardValuePerDollar(fallbackReward, assumptions.pointValueCents);
+    const annualValue = spendAtBonusRate * rewardValue + spendAtBaseRate * fallbackValue;
+
     return {
       category,
       annualSpend,
       annualValue: roundCurrency(annualValue),
       effectiveReturnPercent: roundCurrency((annualValue / annualSpend) * 100),
-      rewardLabel: formatRewardLabel(baseReward)
+      rewardLabel:
+        spendAtBaseRate > 0
+          ? `${formatRewardLabel(fallbackOrBase)} then ${formatRewardLabel(fallbackReward)}`
+          : formatRewardLabel(fallbackOrBase)
     };
   }
 
-  const capAmount = annualizeCapAmount(exactReward);
   const exactValuePerDollar = rewardValuePerDollar(exactReward, assumptions.pointValueCents);
   const baseValuePerDollar = rewardValuePerDollar(fallbackOrBase, assumptions.pointValueCents);
-
-  const spendAtBonusRate =
-    typeof capAmount === 'number' ? Math.min(annualSpend, capAmount) : annualSpend;
-  const spendAtBaseRate = Math.max(0, annualSpend - spendAtBonusRate);
+  const { spendAtBonusRate, spendAtBaseRate } = splitSpendByRewardCap(
+    card,
+    exactReward,
+    annualSpend,
+    capUsage
+  );
   const annualValue =
     spendAtBonusRate * exactValuePerDollar + spendAtBaseRate * baseValuePerDollar;
 
@@ -379,7 +462,7 @@ function summarizeRewardForCategory(
     effectiveReturnPercent: roundCurrency((annualValue / annualSpend) * 100),
     rewardLabel:
       spendAtBaseRate > 0
-        ? `${formatRewardLabel(exactReward)} then ${formatRewardLabel(baseReward)}`
+        ? `${formatRewardLabel(exactReward)} then ${formatRewardLabel(fallbackOrBase)}`
         : formatRewardLabel(exactReward)
   };
 }
@@ -539,8 +622,9 @@ function summarizeCard(
   card: CardDetail,
   assumptions: CardComparisonAssumptions
 ): CardComparisonCardSummary {
+  const capUsage = new Map<string, number>();
   const categoryBreakdown = cardComparisonSpendCategories.map((category) =>
-    summarizeRewardForCategory(card, category, assumptions)
+    summarizeRewardForCategory(card, category, assumptions, capUsage)
   );
   const annualSpendTotal = categoryBreakdown.reduce(
     (sum, item) => sum + item.annualSpend,
@@ -563,7 +647,9 @@ function summarizeCard(
   const usedBenefitsValue = roundCurrency(
     usedCreditsValue + usedPerksValue
   );
-  const welcomeOfferValue = roundCurrency(getWelcomeOfferValue(card));
+  const welcomeOfferValue = roundCurrency(
+    getWelcomeOfferValue(card, assumptions.pointValueCents)
+  );
   const firstYearValue = roundCurrency(
     annualRewardsValue + usedBenefitsValue + welcomeOfferValue - card.annualFee
   );
@@ -574,7 +660,10 @@ function summarizeCard(
     (sum, value) => sum + value,
     0
   );
-  const bonusSpendRequirement = getBonusSpendRequirement(card);
+  const bonusSpendRequirement = getBonusSpendRequirement(
+    card,
+    assumptions.pointValueCents
+  );
   const bonusMonths = bonusSpendRequirement
     ? Math.max(1, Math.round(bonusSpendRequirement.spendPeriodDays / 30))
     : null;

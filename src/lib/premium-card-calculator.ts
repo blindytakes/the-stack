@@ -20,6 +20,9 @@ export type PremiumCardValueInput = {
 export type PremiumCardSpendCategory = PremiumCardValueInput & {
   emoji: string;
   multiplier: number;
+  capAmount?: number;
+  capPeriod?: string;
+  baseMultiplierAfterCap?: number;
 };
 
 export type PremiumCardRedemptionOption = {
@@ -127,6 +130,19 @@ function pointsToDollars(points: number, centsPerPoint: number) {
   return Math.round((points * centsPerPoint) / 100);
 }
 
+function annualizePremiumSpendCap(category: PremiumCardSpendCategory): number | null {
+  if (typeof category.capAmount !== 'number' || category.capAmount <= 0) {
+    return null;
+  }
+
+  const period = category.capPeriod?.toLowerCase() ?? '';
+  if (period.includes('month') || period.includes('billing')) return category.capAmount * 12;
+  if (period.includes('quarter')) return category.capAmount * 4;
+  if (period.includes('week')) return category.capAmount * 52;
+
+  return category.capAmount;
+}
+
 export const premiumCardProfiles = [
   {
     id: 'amex-platinum',
@@ -152,9 +168,12 @@ export const premiumCardProfiles = [
       {
         id: 'flights_direct_or_amex_travel',
         label: 'Flights booked directly with airlines or Amex Travel',
-        note: '5x points',
+        note: '5x points on up to $500,000 per calendar year, then 1x',
         emoji: '✈️',
         multiplier: 5,
+        capAmount: 500000,
+        capPeriod: 'year',
+        baseMultiplierAfterCap: 1,
         defaultValue: 0
       },
       {
@@ -201,6 +220,18 @@ export const premiumCardProfiles = [
         id: 'lululemon-credit',
         label: 'lululemon credit',
         note: '$300 annual value, issued as up to $75 per quarter',
+        defaultValue: 0
+      },
+      {
+        id: 'oura-credit',
+        label: 'Oura Ring credit',
+        note: 'Up to $200 per calendar year at Ouraring.com',
+        defaultValue: 0
+      },
+      {
+        id: 'equinox-credit',
+        label: 'Equinox credit',
+        note: 'Up to $300 per calendar year on an eligible Equinox membership or digital subscription',
         defaultValue: 0
       },
       {
@@ -815,17 +846,23 @@ export const premiumCardProfiles = [
       {
         id: 'restaurants-worldwide',
         label: 'Restaurants worldwide, plus takeout and delivery in the U.S.',
-        note: '4x points',
+        note: '4x points on up to $50,000 per calendar year, then 1x',
         emoji: '🍽️',
         multiplier: 4,
+        capAmount: 50000,
+        capPeriod: 'year',
+        baseMultiplierAfterCap: 1,
         defaultValue: 0
       },
       {
         id: 'us-supermarkets',
         label: 'U.S. supermarkets',
-        note: '4x points',
+        note: '4x points on up to $25,000 per calendar year, then 1x',
         emoji: '🛒',
         multiplier: 4,
+        capAmount: 25000,
+        capPeriod: 'year',
+        baseMultiplierAfterCap: 1,
         defaultValue: 0
       },
       {
@@ -838,9 +875,17 @@ export const premiumCardProfiles = [
       },
       {
         id: 'amex-travel-prepaid-hotels-and-travel',
-        label: 'Prepaid hotels and eligible travel purchases through Amex Travel',
-        note: '2x points',
+        label: 'Prepaid hotels booked through Amex Travel',
+        note: '5x points',
         emoji: '🏨',
+        multiplier: 5,
+        defaultValue: 0
+      },
+      {
+        id: 'amex-travel-car-rentals-and-cruises',
+        label: 'Prepaid car rentals and cruises booked through Amex Travel',
+        note: '2x points',
+        emoji: '🚗',
         multiplier: 2,
         defaultValue: 0
       },
@@ -1274,6 +1319,11 @@ export function calculatePremiumCardScenario(
 ): PremiumCardCalculation {
   const spendBreakdown = profile.spendCategories.map((category) => {
     const spend = clampMoney(scenario.spend[category.id] ?? 0);
+    const capAmount = annualizePremiumSpendCap(category);
+    const spendAtBonusRate = capAmount == null ? spend : Math.min(spend, capAmount);
+    const spendAtBaseRate = Math.max(0, spend - spendAtBonusRate);
+    const baseMultiplier = category.baseMultiplierAfterCap ?? 1;
+
     return {
       id: category.id,
       label: category.label,
@@ -1281,7 +1331,9 @@ export function calculatePremiumCardScenario(
       emoji: category.emoji,
       multiplier: category.multiplier,
       spend,
-      pointsEarned: Math.round(spend * category.multiplier)
+      pointsEarned: Math.round(
+        spendAtBonusRate * category.multiplier + spendAtBaseRate * baseMultiplier
+      )
     };
   });
 
