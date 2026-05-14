@@ -29,4 +29,33 @@ describe('American Express card seed offers', () => {
       cardsBySlug.get('amex-gold-card')?.signUpBonuses?.[0]?.displayDescription
     ).toContain('Welcome offers vary.');
   });
+
+  it('models Membership Rewards cards as points products with current Amex travel earn rows', () => {
+    const cards = loadCards('cards-foundation.json');
+    const cardsBySlug = new Map(cards.map((card) => [card.slug, card]));
+    const gold = cardsBySlug.get('amex-gold-card');
+    const platinum = cardsBySlug.get('amex-platinum-card');
+
+    expect(gold?.rewardType).toBe('points');
+    expect(gold?.topCategories).toEqual(['dining', 'groceries', 'travel']);
+    expect(gold?.rewards).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          category: 'travel',
+          rate: 5,
+          rateType: 'points',
+          notes: expect.stringContaining('prepaid hotels')
+        }),
+        expect.objectContaining({
+          category: 'travel',
+          rate: 2,
+          rateType: 'points',
+          notes: expect.stringContaining('car rentals and cruises')
+        })
+      ])
+    );
+
+    expect(platinum?.rewardType).toBe('points');
+    expect(platinum?.topCategories).toEqual(['travel']);
+  });
 });

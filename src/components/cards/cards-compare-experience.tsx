@@ -640,8 +640,8 @@ function BenefitValuationSection({
       <div className="max-w-3xl">
         <p className="text-sm font-semibold text-text-secondary">Credits &amp; benefits</p>
         <p className="mt-1 text-xs leading-5 text-text-muted">
-          Count the credits and perks you actually expect to use. Credit rows start at listed annual value;
-          edit them down for merchant, timing, or travel friction.
+          Count the credits and perks you actually expect to use. Credit rows start with conservative
+          default values; edit them for your own merchant, timing, or travel friction.
         </p>
       </div>
 

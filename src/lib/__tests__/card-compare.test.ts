@@ -241,6 +241,66 @@ describe('card-compare', () => {
     expect(customComparison.a.usedCreditsValue).toBe(180);
   });
 
+  it('uses conservative default values for restrictive merchant credits', () => {
+    const cardA = createCard({
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [{ category: 'all', rate: 0, rateType: 'cashback' }],
+      signUpBonuses: [],
+      benefits: [
+        {
+          category: 'other',
+          name: '$300 Equinox Credit',
+          description: 'Eligible Equinox membership or digital subscription credit.',
+          estimatedValue: 300
+        },
+        {
+          category: 'other',
+          name: '$300 lululemon Credit',
+          description: 'Quarterly eligible U.S. lululemon store credit.',
+          estimatedValue: 300
+        },
+        {
+          category: 'other',
+          name: '$200 Uber Cash',
+          description: 'Monthly Uber Cash credit.',
+          estimatedValue: 200
+        }
+      ]
+    });
+    const cardB = createCard({
+      slug: 'card-b',
+      name: 'Card B',
+      rewardType: 'cashback',
+      annualFee: 0,
+      bestSignUpBonusValue: 0,
+      rewards: [{ category: 'all', rate: 0, rateType: 'cashback' }],
+      signUpBonuses: []
+    });
+
+    const comparison = buildCardComparison(cardA, cardB, {
+      monthlySpend: {
+        dining: 0,
+        groceries: 0,
+        travel: 0,
+        gas: 0,
+        general: 0
+      }
+    });
+
+    expect(comparison.a.usedCreditsValue).toBe(310);
+    expect(
+      comparison.a.benefitBreakdown.find((benefit) => benefit.name === '$300 Equinox Credit')
+    ).toMatchObject({ included: false, defaultAnnualValue: 0 });
+    expect(
+      comparison.a.benefitBreakdown.find((benefit) => benefit.name === '$300 lululemon Credit')
+    ).toMatchObject({ included: true, defaultAnnualValue: 150 });
+    expect(
+      comparison.a.benefitBreakdown.find((benefit) => benefit.name === '$200 Uber Cash')
+    ).toMatchObject({ included: true, defaultAnnualValue: 160 });
+  });
+
   it('handles capped category rewards by falling back to the base earn rate after the cap', () => {
     const cappedCard = createCard({
       rewardType: 'cashback',

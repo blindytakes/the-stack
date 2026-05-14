@@ -37,6 +37,15 @@ function currentBonusFor(card: CardSeedRecord | undefined) {
 }
 
 describe('card offer audit coverage', () => {
+  it('keeps card rewardType aligned with seeded reward rows', () => {
+    const mismatches = loadAllCards()
+      .filter((card) => (card.rewards ?? []).length > 0)
+      .filter((card) => (card.rewards ?? []).every((reward) => reward.rateType !== card.rewardType))
+      .map((card) => card.slug);
+
+    expect(mismatches).toEqual([]);
+  });
+
   it('has no unexpected active card records missing a current welcome offer', () => {
     const missingUnexpected = loadAllCards()
       .filter((card) => card.isActive !== false)

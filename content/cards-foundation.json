@@ -234,9 +234,11 @@
       "name": "American Express Gold Card",
       "issuer": "American Express",
       "cardType": "personal",
-      "rewardType": "cashback",
+      "rewardType": "points",
       "topCategories": [
-        "all"
+        "dining",
+        "groceries",
+        "travel"
       ],
       "annualFee": 325,
       "creditTierMin": "good",
@@ -279,6 +281,18 @@
           "rate": 3,
           "rateType": "points",
           "notes": "3X Membership Rewards points on flights booked directly with airlines or on AmexTravel.com."
+        },
+        {
+          "category": "travel",
+          "rate": 5,
+          "rateType": "points",
+          "notes": "5X Membership Rewards points on prepaid hotels booked through AmexTravel.com or the Amex Travel App."
+        },
+        {
+          "category": "travel",
+          "rate": 2,
+          "rateType": "points",
+          "notes": "2X Membership Rewards points on prepaid car rentals and cruises booked through AmexTravel.com."
         },
         {
           "category": "all",
@@ -387,9 +401,9 @@
       "name": "The Platinum Card from American Express",
       "issuer": "American Express",
       "cardType": "personal",
-      "rewardType": "cashback",
+      "rewardType": "points",
       "topCategories": [
-        "all"
+        "travel"
       ],
       "annualFee": 895,
       "creditTierMin": "excellent",

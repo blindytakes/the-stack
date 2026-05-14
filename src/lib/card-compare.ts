@@ -579,6 +579,34 @@ function getFallbackOffsettingCreditsBenefit(card: CardDetail) {
   ];
 }
 
+function getDefaultCreditAnnualValue(
+  benefit: Pick<CardComparisonBenefitBreakdown, 'category' | 'name' | 'description'>,
+  estimatedValue: number
+) {
+  const searchableText =
+    `${benefit.category} ${benefit.name} ${benefit.description}`.toLowerCase();
+
+  if (/oura|equinox/i.test(searchableText)) return 0;
+
+  const merchantCreditMultipliers: Array<[RegExp, number]> = [
+    [/airline fee credit/i, 0.6],
+    [/hotel credit/i, 0.6],
+    [/resy/i, 0.65],
+    [/digital entertainment/i, 0.75],
+    [/\bdunkin/i, 0.8],
+    [/uber cash/i, 0.8],
+    [/uber one/i, 0.5],
+    [/saks/i, 0.5],
+    [/walmart\+/i, 0.5],
+    [/lululemon/i, 0.5]
+  ];
+  const multiplier = merchantCreditMultipliers.find(([pattern]) =>
+    pattern.test(searchableText)
+  )?.[1];
+
+  return roundCurrency(estimatedValue * (multiplier ?? 1));
+}
+
 function buildBenefitBreakdown(
   card: CardDetail,
   assumptions: CardComparisonAssumptions
@@ -593,9 +621,13 @@ function buildBenefitBreakdown(
       typeof benefit.estimatedValue === 'number' && Number.isFinite(benefit.estimatedValue)
         ? benefit.estimatedValue
         : null;
-    const defaultIncluded = isCredit && estimatedValue != null && estimatedValue > 0;
     const defaultAnnualValue =
-      estimatedValue == null ? 0 : roundCurrency(estimatedValue);
+      estimatedValue == null
+        ? 0
+        : isCredit
+          ? getDefaultCreditAnnualValue(benefit, estimatedValue)
+          : roundCurrency(estimatedValue);
+    const defaultIncluded = isCredit && defaultAnnualValue > 0;
     const valuation = assumptions.benefitValuations[key];
     const included = valuation?.included ?? defaultIncluded;
     const hasCustomValue = typeof valuation?.annualValue === 'number';
