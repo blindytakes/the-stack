@@ -587,13 +587,18 @@ function getDefaultCreditAnnualValue(
     `${benefit.category} ${benefit.name} ${benefit.description}`.toLowerCase();
 
   if (/oura|equinox/i.test(searchableText)) return 0;
+  if (/spend threshold|\$150,000 spend|150,000 spend/i.test(searchableText)) return 0;
 
   const merchantCreditMultipliers: Array<[RegExp, number]> = [
     [/airline fee credit/i, 0.6],
     [/hotel credit/i, 0.6],
+    [/the edit|hotel collection|select chase travel hotels|lifestyle collection|premier collection/i, 0.6],
     [/resy/i, 0.65],
     [/digital entertainment/i, 0.75],
+    [/stubhub|viagogo/i, 0.75],
     [/\bdunkin/i, 0.8],
+    [/doordash/i, 0.8],
+    [/lyft/i, 0.8],
     [/uber cash/i, 0.8],
     [/uber one/i, 0.5],
     [/saks/i, 0.5],

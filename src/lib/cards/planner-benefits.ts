@@ -16,6 +16,15 @@ const plannerBenefitCategorySet = new Set<string>([
 const plannerBenefitNameAllowlist = [
   /anniversary bonus miles/i,
   /hotel credit/i,
+  /the edit/i,
+  /hotel collection/i,
+  /select chase travel hotels/i,
+  /lifestyle collection/i,
+  /premier collection/i,
+  /doordash/i,
+  /stubhub/i,
+  /viagogo/i,
+  /lyft/i,
   /uber cash/i,
   /resy/i,
   /\bdunkin/i
@@ -43,8 +52,12 @@ const plannerBenefitCategoryMultipliers: Record<string, number> = {
 const plannerBenefitNameMultipliers: Array<[RegExp, number]> = [
   [/airline fee credit/i, 0.6],
   [/hotel credit/i, 0.6],
+  [/the edit|hotel collection|select chase travel hotels|lifestyle collection|premier collection/i, 0.6],
   [/resy/i, 0.65],
+  [/stubhub|viagogo/i, 0.75],
   [/\bdunkin/i, 0.8],
+  [/doordash/i, 0.8],
+  [/lyft/i, 0.8],
   [/uber cash/i, 0.8],
   [/anniversary bonus miles/i, 0.9]
 ];

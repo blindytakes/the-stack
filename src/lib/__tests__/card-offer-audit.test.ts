@@ -1,6 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import {
+  cardBenefitsImportDatasetSchema,
+  type CardBenefitImportRecord
+} from '../card-benefit-import-schema';
 import { cardsSeedDatasetSchema, type CardSeedRecord } from '../card-seed-schema';
 
 const cardSeedFiles = [
@@ -32,8 +36,39 @@ function loadAllCards() {
   return cardSeedFiles.flatMap((fileName) => loadCards(fileName));
 }
 
+function loadCardBenefitImports(): CardBenefitImportRecord[] {
+  const raw = JSON.parse(
+    fs.readFileSync(path.join(process.cwd(), 'content', 'card-benefits.json'), 'utf8')
+  ) as { cards: unknown };
+
+  return cardBenefitsImportDatasetSchema.parse(raw.cards);
+}
+
 function currentBonusFor(card: CardSeedRecord | undefined) {
   return card?.signUpBonuses?.find((bonus) => bonus.isCurrentOffer !== false);
+}
+
+const expectedPremiumBenefitValues = [
+  ['amex-gold-card', 'The Hotel Collection Benefit', 100],
+  ['capital-one-spark-cash-plus', '$150 Annual Fee Refund After $150,000 Spend', 150],
+  ['capital-one-venture-rewards', '$50 Lifestyle Collection Experience Credit', 50],
+  ['capital-one-venture-x', 'Premier Collection and Lifestyle Collection Benefits', 100],
+  ['chase-sapphire-reserve', '$500 Credit for Stays with The Edit', 500],
+  ['chase-sapphire-reserve', '$250 Credit for Select Chase Travel Hotels', 250],
+  ['chase-sapphire-reserve', '$300 in DoorDash Promos', 300],
+  ['chase-sapphire-reserve', '$300 in StubHub Credits', 300],
+  ['chase-sapphire-reserve', '$120 in Lyft Credits', 120]
+] as const;
+
+function benefitValueFrom(
+  records: Array<Pick<CardSeedRecord, 'slug' | 'benefits'>>,
+  slug: string,
+  name: string
+) {
+  return records
+    .find((card) => card.slug === slug)
+    ?.benefits?.find((benefit) => benefit.name === name)
+    ?.estimatedValue;
 }
 
 describe('card offer audit coverage', () => {
@@ -91,6 +126,22 @@ describe('card offer audit coverage', () => {
       if (bonusPoints !== undefined) expected.bonusPoints = bonusPoints;
 
       expect(currentBonusFor(cardsBySlug.get(slug as string))).toMatchObject(expected);
+    }
+  );
+
+  it.each(expectedPremiumBenefitValues)(
+    'keeps the audited premium benefit value populated for %s / %s',
+    (slug, benefitName, estimatedValue) => {
+      expect(benefitValueFrom(loadAllCards(), slug, benefitName)).toBe(estimatedValue);
+    }
+  );
+
+  it.each(expectedPremiumBenefitValues)(
+    'keeps the standalone benefit import value in sync for %s / %s',
+    (slug, benefitName, estimatedValue) => {
+      expect(benefitValueFrom(loadCardBenefitImports(), slug, benefitName)).toBe(
+        estimatedValue
+      );
     }
   );
 });

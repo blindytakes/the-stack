@@ -266,6 +266,36 @@ describe('card-compare', () => {
           name: '$200 Uber Cash',
           description: 'Monthly Uber Cash credit.',
           estimatedValue: 200
+        },
+        {
+          category: 'travel credits',
+          name: '$500 Credit for Stays with The Edit',
+          description: 'Semi-annual prepaid hotel credits through The Edit.',
+          estimatedValue: 500
+        },
+        {
+          category: 'other',
+          name: '$300 in DoorDash Promos',
+          description: 'Monthly DoorDash promotional benefit.',
+          estimatedValue: 300
+        },
+        {
+          category: 'other',
+          name: '$300 in StubHub Credits',
+          description: 'Semi-annual StubHub statement credits.',
+          estimatedValue: 300
+        },
+        {
+          category: 'other',
+          name: '$120 in Lyft Credits',
+          description: 'Monthly Lyft statement credits.',
+          estimatedValue: 120
+        },
+        {
+          category: 'other',
+          name: '$150 Annual Fee Refund After $150,000 Spend',
+          description: 'Statement credit after meeting the annual spend threshold.',
+          estimatedValue: 150
         }
       ]
     });
@@ -289,7 +319,7 @@ describe('card-compare', () => {
       }
     });
 
-    expect(comparison.a.usedCreditsValue).toBe(310);
+    expect(comparison.a.usedCreditsValue).toBe(1171);
     expect(
       comparison.a.benefitBreakdown.find((benefit) => benefit.name === '$300 Equinox Credit')
     ).toMatchObject({ included: false, defaultAnnualValue: 0 });
@@ -299,6 +329,23 @@ describe('card-compare', () => {
     expect(
       comparison.a.benefitBreakdown.find((benefit) => benefit.name === '$200 Uber Cash')
     ).toMatchObject({ included: true, defaultAnnualValue: 160 });
+    expect(
+      comparison.a.benefitBreakdown.find((benefit) => benefit.name === '$500 Credit for Stays with The Edit')
+    ).toMatchObject({ included: true, defaultAnnualValue: 300 });
+    expect(
+      comparison.a.benefitBreakdown.find((benefit) => benefit.name === '$300 in DoorDash Promos')
+    ).toMatchObject({ included: true, defaultAnnualValue: 240 });
+    expect(
+      comparison.a.benefitBreakdown.find((benefit) => benefit.name === '$300 in StubHub Credits')
+    ).toMatchObject({ included: true, defaultAnnualValue: 225 });
+    expect(
+      comparison.a.benefitBreakdown.find((benefit) => benefit.name === '$120 in Lyft Credits')
+    ).toMatchObject({ included: true, defaultAnnualValue: 96 });
+    expect(
+      comparison.a.benefitBreakdown.find(
+        (benefit) => benefit.name === '$150 Annual Fee Refund After $150,000 Spend'
+      )
+    ).toMatchObject({ included: false, defaultAnnualValue: 0 });
   });
 
   it('handles capped category rewards by falling back to the base earn rate after the cap', () => {

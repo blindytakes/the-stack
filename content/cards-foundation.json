@@ -349,6 +349,7 @@
           "category": "TRAVEL_CREDITS",
           "name": "The Hotel Collection Benefit",
           "description": "Eligible bookings through Amex Travel include a property credit toward eligible charges at participating hotels.",
+          "estimatedValue": 100,
           "activationMethod": "Book an eligible stay through Amex Travel using the Gold Card.",
           "finePrint": "Two-night minimum stay required. Eligible charges vary by property."
         },
@@ -898,10 +899,11 @@
       "benefits": [
         {
           "category": "OTHER",
-          "name": "$150 Annual Travel Credit After $150,000 Spend",
-          "description": "An annual travel credit is available after meeting the stated annual spend threshold on the account.",
-          "activationMethod": "Meet the qualifying annual spend threshold and redeem through the eligible travel flow.",
-          "finePrint": "This benefit is contingent on meeting the issuer's spend requirement."
+          "name": "$150 Annual Fee Refund After $150,000 Spend",
+          "description": "Receive a $150 statement credit after meeting the stated annual spend threshold on the account.",
+          "estimatedValue": 150,
+          "activationMethod": "Meet the qualifying annual spend threshold with the account open and in good standing.",
+          "finePrint": "This benefit is contingent on meeting the issuer's spend requirement and posts after the account anniversary."
         },
         {
           "category": "OTHER",
@@ -995,6 +997,7 @@
           "category": "OTHER",
           "name": "$50 Lifestyle Collection Experience Credit",
           "description": "Eligible Lifestyle Collection hotel stays can include a $50 experience credit.",
+          "estimatedValue": 50,
           "activationMethod": "Book a qualifying stay through Capital One Travel and pay with the card.",
           "finePrint": "Eligible properties and booking rules apply."
         },
@@ -1138,6 +1141,7 @@
           "category": "TRAVEL_CREDITS",
           "name": "Premier Collection and Lifestyle Collection Benefits",
           "description": "Eligible hotel bookings can include experience credits and space-available property perks.",
+          "estimatedValue": 100,
           "activationMethod": "Book qualifying hotels through Capital One Travel and pay with the card.",
           "finePrint": "Eligible properties and booking rules apply."
         },
@@ -1969,6 +1973,7 @@
           "category": "TRAVEL_CREDITS",
           "name": "$500 Credit for Stays with The Edit",
           "description": "Up to $250 per prepaid booking, up to $500 annually, for eligible stays booked through The Edit by Chase Travel.",
+          "estimatedValue": 500,
           "activationMethod": "Book eligible prepaid stays through The Edit by Chase Travel and pay with the card.",
           "finePrint": "Two-night minimum required. Purchases that qualify do not earn points."
         },
@@ -1976,6 +1981,7 @@
           "category": "TRAVEL_CREDITS",
           "name": "$250 Credit for Select Chase Travel Hotels",
           "description": "Up to $250 in statement credits through December 31, 2026 on eligible prepaid Chase Travel hotel bookings at select hotel groups.",
+          "estimatedValue": 250,
           "activationMethod": "Book eligible prepaid stays through Chase Travel and pay with the card.",
           "finePrint": "Two-night minimum required. Benefit is limited to qualifying hotel groups and expires December 31, 2026."
         },
@@ -2021,6 +2027,7 @@
           "category": "OTHER",
           "name": "$300 in DoorDash Promos",
           "description": "Eligible cardholders can receive a DoorDash promotional benefit during the active program window.",
+          "estimatedValue": 300,
           "activationMethod": "Use the eligible card with DoorDash during the promotion period.",
           "finePrint": "Promotional windows and merchant terms apply."
         },
@@ -2028,6 +2035,7 @@
           "category": "OTHER",
           "name": "$300 in StubHub Credits",
           "description": "Eligible StubHub purchases can qualify for statement credits during the active program window.",
+          "estimatedValue": 300,
           "activationMethod": "Use the card for eligible StubHub purchases during the promotion period.",
           "finePrint": "Activation, merchant, and promotional terms apply."
         },
@@ -2035,6 +2043,7 @@
           "category": "OTHER",
           "name": "$120 in Lyft Credits",
           "description": "Eligible Lyft purchases can receive statement credits during the active program window.",
+          "estimatedValue": 120,
           "activationMethod": "Use the card for eligible Lyft purchases during the promotion period.",
           "finePrint": "Activation, merchant, and promotional terms apply."
         },

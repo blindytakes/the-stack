@@ -80,7 +80,9 @@ export function isOffsettingCreditBenefit(
 
   return (
     creditLikeBenefitCategories.has(normalizedCategory) ||
-    /credit|statement|global entry|tsa precheck|precheck|clear|uber cash/i.test(searchableText)
+    /credit|statement|global entry|tsa precheck|precheck|clear|uber cash|doordash.*promo|promo.*doordash/i.test(
+      searchableText
+    )
   );
 }
 

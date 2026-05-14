@@ -80,4 +80,15 @@ describe('card presentation metrics', () => {
       })
     ).toBe(true);
   });
+
+  it('classifies DoorDash promos as offsetting credits when they have an estimated value', () => {
+    expect(
+      isOffsettingCreditBenefit({
+        category: 'OTHER',
+        name: '$300 in DoorDash Promos',
+        description: 'Eligible cardholders can receive a DoorDash promotional benefit.',
+        estimatedValue: 300
+      })
+    ).toBe(true);
+  });
 });
