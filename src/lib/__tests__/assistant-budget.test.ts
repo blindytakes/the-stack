@@ -26,10 +26,10 @@ describe('assistant budget guard', () => {
     vi.restoreAllMocks();
   });
 
-  it('defaults to a $50 monthly cap with a conservative per-message reserve', () => {
+  it('defaults to a $5 monthly cap with a conservative per-message reserve', () => {
     vi.unstubAllEnvs();
 
-    expect(getAiAssistantMonthlyBudgetCents()).toBe(5_000);
+    expect(getAiAssistantMonthlyBudgetCents()).toBe(500);
     expect(getAiAssistantBudgetReserveCents()).toBe(5);
   });
 

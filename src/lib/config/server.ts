@@ -56,7 +56,7 @@ export function getAiAssistantModel(): string {
   return readTrimmed(process.env.AI_ASSISTANT_MODEL) ?? 'openai/gpt-5.4-mini';
 }
 
-const DEFAULT_AI_ASSISTANT_MONTHLY_BUDGET_CENTS = 5_000;
+const DEFAULT_AI_ASSISTANT_MONTHLY_BUDGET_CENTS = 500;
 const DEFAULT_AI_ASSISTANT_BUDGET_RESERVE_CENTS = 5;
 
 function parseNonNegativeInteger(value: string | null): number | null {
