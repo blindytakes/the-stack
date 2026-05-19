@@ -11,6 +11,44 @@ const starterPrompts = [
   'Which Stack tool should I use first?'
 ] as const;
 
+const GENERIC_ASSISTANT_ERROR = 'The assistant could not respond. Try again in a moment.';
+const ASSISTANT_ERROR_MESSAGES = new Set([
+  'Too many assistant messages. Please try again shortly.',
+  'Daily assistant limit reached for this connection. Please try again tomorrow.',
+  "The assistant has reached today's site-wide budget limit. Please try again tomorrow.",
+  'The assistant has reached its monthly budget limit. Please try again next month.',
+  'The assistant budget guard is not configured yet. Please try again later.',
+  'The assistant is temporarily unavailable. Please try again later.'
+]);
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function parseErrorMessage(rawMessage: string): string {
+  try {
+    const parsed = JSON.parse(rawMessage) as unknown;
+    if (isRecord(parsed) && typeof parsed.error === 'string') {
+      return parsed.error;
+    }
+  } catch {
+    // The AI SDK may also pass plain text stream errors through directly.
+  }
+
+  return rawMessage;
+}
+
+function getAssistantErrorMessage(error: Error | undefined): string | null {
+  if (!error) return null;
+
+  const parsed = parseErrorMessage(error.message.trim());
+  if (ASSISTANT_ERROR_MESSAGES.has(parsed)) {
+    return parsed;
+  }
+
+  return GENERIC_ASSISTANT_ERROR;
+}
+
 function getMessageText(message: UIMessage): string {
   return message.parts
     .map((part) => (part.type === 'text' ? part.text : ''))
@@ -55,6 +93,7 @@ export function AssistantLauncher() {
   const {
     messages,
     sendMessage,
+    setMessages,
     status,
     stop,
     error,
@@ -65,6 +104,8 @@ export function AssistantLauncher() {
   });
 
   const busy = status === 'submitted' || status === 'streaming';
+  const assistantErrorMessage = getAssistantErrorMessage(error);
+  const showNewChat = messages.length > 0 || Boolean(error) || input.trim().length > 0;
 
   useEffect(() => {
     if (!open) return;
@@ -88,6 +129,14 @@ export function AssistantLauncher() {
     await sendMessage({ text: trimmed });
   }
 
+  function startNewChat() {
+    if (busy) stop();
+    clearError();
+    setInput('');
+    setMessages([]);
+    window.setTimeout(() => inputRef.current?.focus(), 0);
+  }
+
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
       {open ? (
@@ -95,27 +144,49 @@ export function AssistantLauncher() {
           aria-label="The Stack assistant"
           className="w-[calc(100vw-2rem)] max-w-[24rem] overflow-hidden rounded-[1.35rem] border border-white/12 bg-[rgba(10,10,15,0.96)] shadow-[0_24px_80px_rgba(0,0,0,0.46)] backdrop-blur-xl"
         >
-          <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-            <div>
+          <div className="grid grid-cols-[4.875rem_minmax(0,1fr)_4.875rem] items-center border-b border-white/10 px-4 py-3">
+            <div aria-hidden="true" />
+            <div className="min-w-0 text-center">
               <h2 className="font-heading text-xl leading-none text-text-primary">Ask The Stack</h2>
               <p className="mt-1 text-xs text-text-muted">Cards, banking, points</p>
             </div>
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-lg text-text-secondary transition hover:border-white/25 hover:text-text-primary"
-              aria-label="Close assistant"
-            >
-              <svg viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4">
-                <path
-                  d="M5 5l10 10M15 5L5 15"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeLinecap="round"
-                  strokeWidth="1.8"
-                />
-              </svg>
-            </button>
+            <div className="flex justify-end gap-1.5">
+              {showNewChat ? (
+                <button
+                  type="button"
+                  onClick={startNewChat}
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-text-secondary transition hover:border-brand-teal/35 hover:text-text-primary"
+                  aria-label="Start new chat"
+                  title="New chat"
+                >
+                  <svg viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4">
+                    <path
+                      d="M10 4.5v11M4.5 10h11"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeWidth="1.8"
+                    />
+                  </svg>
+                </button>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 text-lg text-text-secondary transition hover:border-white/25 hover:text-text-primary"
+                aria-label="Close assistant"
+              >
+                <svg viewBox="0 0 20 20" aria-hidden="true" className="h-4 w-4">
+                  <path
+                    d="M5 5l10 10M15 5L5 15"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeWidth="1.8"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div
@@ -139,9 +210,9 @@ export function AssistantLauncher() {
               </div>
             ) : null}
 
-            {error ? (
+            {assistantErrorMessage ? (
               <div className="rounded-2xl border border-brand-coral/30 bg-brand-coral/10 p-3 text-sm leading-6 text-text-primary">
-                The assistant could not respond. Try again in a moment.
+                {assistantErrorMessage}
               </div>
             ) : null}
           </div>
@@ -217,25 +288,27 @@ export function AssistantLauncher() {
         </section>
       ) : null}
 
-      <button
-        type="button"
-        onClick={() => setOpen((current) => !current)}
-        className="flex h-14 items-center gap-2 rounded-full border border-brand-teal/30 bg-[rgba(10,10,15,0.92)] px-4 text-sm font-semibold text-text-primary shadow-[0_16px_48px_rgba(0,0,0,0.38)] backdrop-blur-xl transition hover:border-brand-teal/60 hover:bg-bg-elevated"
-        aria-expanded={open}
-        aria-label={open ? 'Hide The Stack assistant' : 'Open The Stack assistant'}
-      >
-        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-brand-teal/35 bg-bg-surface shadow-inner">
-          <Image
-            src="/icon.png"
-            alt=""
-            width={32}
-            height={32}
-            aria-hidden="true"
-            className="h-full w-full object-cover"
-          />
-        </span>
-        <span>Ask</span>
-      </button>
+      {!open ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex h-14 items-center gap-2 rounded-full border border-brand-teal/30 bg-[rgba(10,10,15,0.92)] px-4 text-sm font-semibold text-text-primary shadow-[0_16px_48px_rgba(0,0,0,0.38)] backdrop-blur-xl transition hover:border-brand-teal/60 hover:bg-bg-elevated"
+          aria-expanded={false}
+          aria-label="Open The Stack assistant"
+        >
+          <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-brand-teal/35 bg-bg-surface shadow-inner">
+            <Image
+              src="/icon.png"
+              alt=""
+              width={32}
+              height={32}
+              aria-hidden="true"
+              className="h-full w-full object-cover"
+            />
+          </span>
+          <span>Ask</span>
+        </button>
+      ) : null}
     </div>
   );
 }
