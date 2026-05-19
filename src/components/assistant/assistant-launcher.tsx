@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport, type UIMessage } from 'ai';
@@ -223,8 +224,15 @@ export function AssistantLauncher() {
         aria-expanded={open}
         aria-label={open ? 'Hide The Stack assistant' : 'Open The Stack assistant'}
       >
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-teal text-black">
-          ?
+        <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-brand-teal/35 bg-bg-surface shadow-inner">
+          <Image
+            src="/icon.png"
+            alt=""
+            width={32}
+            height={32}
+            aria-hidden="true"
+            className="h-full w-full object-cover"
+          />
         </span>
         <span>Ask</span>
       </button>
