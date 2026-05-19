@@ -26,6 +26,7 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@ai-sdk/react": "^3.0.187",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/exporter-logs-otlp-http": "^0.57.2",
     "@opentelemetry/exporter-metrics-otlp-http": "^0.57.2",
@@ -35,6 +36,7 @@
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.3",
     "@vercel/otel": "^1.13.0",
+    "ai": "^6.0.185",
     "framer-motion": "^11.0.0",
     "next": "^15.0.0",
     "posthog-js": "^1.356.1",

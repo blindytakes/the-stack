@@ -5,6 +5,8 @@ import { SiteFooter } from '@/components/layout/site-footer';
 import { SiteNav } from '@/components/layout/site-nav';
 import { WebVitalsReporter } from '@/components/analytics/web-vitals';
 import { PostHogProvider } from '@/components/analytics/posthog-provider';
+import { AssistantLauncher } from '@/components/assistant/assistant-launcher';
+import { isAiAssistantEnabled } from '@/lib/config/server';
 
 const dmSans = DM_Sans({
   subsets: ['latin'],
@@ -65,6 +67,8 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children
 }: Readonly<{ children: React.ReactNode }>) {
+  const showAssistant = isAiAssistantEnabled();
+
   return (
     <html lang="en" className={`${dmSans.variable} ${dmSerif.variable} dark`}>
       <body className="min-h-screen bg-bg text-text-primary">
@@ -75,6 +79,7 @@ export default function RootLayout({
             <main className="pb-24">{children}</main>
             <SiteFooter />
           </div>
+          {showAssistant ? <AssistantLauncher /> : null}
         </PostHogProvider>
       </body>
     </html>

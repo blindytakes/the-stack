@@ -84,5 +84,32 @@ export const apiRateLimits = {
     window: '1 m',
     algorithm: 'sliding',
     message: 'Too many tracker download requests. Please try again soon.'
+  },
+  assistantChat: {
+    namespace: 'assistant_chat',
+    limit: 5,
+    window: '1 m',
+    algorithm: 'sliding',
+    message: 'Too many assistant messages. Please try again shortly.',
+    failClosedOnRedisError: true,
+    redisErrorMessage: 'The assistant is temporarily unavailable. Please try again later.'
+  },
+  assistantDailyIp: {
+    namespace: 'assistant_daily_ip',
+    limit: 10,
+    window: '1 d',
+    algorithm: 'fixed',
+    message: 'Daily assistant limit reached for this connection. Please try again tomorrow.',
+    failClosedOnRedisError: true,
+    redisErrorMessage: 'The assistant is temporarily unavailable. Please try again later.'
+  },
+  assistantDailyGlobal: {
+    namespace: 'assistant_daily_global',
+    limit: 100,
+    window: '1 d',
+    algorithm: 'fixed',
+    message: "The assistant has reached today's site-wide budget limit. Please try again tomorrow.",
+    failClosedOnRedisError: true,
+    redisErrorMessage: 'The assistant is temporarily unavailable. Please try again later.'
   }
 } satisfies Record<string, RateLimitConfig>;

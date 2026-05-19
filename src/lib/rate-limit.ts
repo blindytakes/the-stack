@@ -10,7 +10,8 @@ import { isProductionEnv } from '@/lib/config/runtime';
  * Runtime behavior:
  * - Primary path: Upstash Redis (`@upstash/ratelimit`) for shared limits across instances.
  * - Local/dev path: in-memory counter fallback when Redis env vars are not present.
- * - Failure mode: degrade to in-memory limits if Redis is configured but temporarily unreachable.
+ * - Failure mode: degrade to in-memory limits unless a route explicitly requests
+ *   production fail-closed behavior for cost/security-sensitive endpoints.
  *
  * All endpoints pass a `namespace` so limits are isolated per API use-case.
  */
@@ -53,6 +54,8 @@ export type RateLimitConfig = {
   window: Duration;
   algorithm?: 'sliding' | 'fixed';
   message?: string;
+  failClosedOnRedisError?: boolean;
+  redisErrorMessage?: string;
 };
 
 // ---------------------------------------------------------------------------
@@ -156,11 +159,11 @@ function parseWindowMs(window: Duration): number {
 }
 
 function applyInMemoryLimit(
-  ip: string,
+  identifier: string,
   config: RateLimitConfig
 ): NextResponse | null {
   // This is a simple fixed-window counter used only as a non-shared fallback.
-  const key = `${config.namespace}:${ip}`;
+  const key = `${config.namespace}:${identifier}`;
   const windowMs = parseWindowMs(config.window);
   const now = Date.now();
   maintainMemStore(now);
@@ -189,6 +192,17 @@ function applyInMemoryLimit(
   return null;
 }
 
+function redisUnavailableResponse(config: RateLimitConfig): NextResponse {
+  return NextResponse.json(
+    {
+      error:
+        config.redisErrorMessage ??
+        'Service temporarily unavailable. Please try again later.'
+    },
+    { status: 503 }
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Public API
 // ---------------------------------------------------------------------------
@@ -204,12 +218,17 @@ export async function applyIpRateLimit(
   config: RateLimitConfig
 ): Promise<NextResponse | null> {
   // Every endpoint uses a shared IP extraction strategy before enforcing limits.
-  const ip = getClientIp(req);
+  return applyIdentifierRateLimit(getClientIp(req), config);
+}
 
+export async function applyIdentifierRateLimit(
+  identifier: string,
+  config: RateLimitConfig
+): Promise<NextResponse | null> {
   if (isUpstashConfigured()) {
     try {
       const limiter = getLimiter(config);
-      const result = await limiter.limit(ip);
+      const result = await limiter.limit(identifier);
 
       if (result.success) return null; // Allowed, route handler continues.
 
@@ -222,23 +241,36 @@ export async function applyIpRateLimit(
         { status: 429, headers: { 'Retry-After': String(retryAfter) } }
       );
     } catch (error) {
+      if (isProductionEnv() && config.failClosedOnRedisError) {
+        console.error('[rate-limit] Upstash error, failing closed', {
+          namespace: config.namespace,
+          error: error instanceof Error ? error.message : String(error)
+        });
+        return redisUnavailableResponse(config);
+      }
+
       // Prefer a local fallback over fail-open so abuse controls still apply.
       console.error('[rate-limit] Upstash error, falling back to in-memory limiter', {
         namespace: config.namespace,
         error: error instanceof Error ? error.message : String(error)
       });
-      return applyInMemoryLimit(ip, config);
+      return applyInMemoryLimit(identifier, config);
     }
   }
 
   if (isProductionEnv() && !_warnedMissingUpstashInProd) {
     _warnedMissingUpstashInProd = true;
+    const mode = config.failClosedOnRedisError
+      ? 'failing closed'
+      : 'falling back to per-process in-memory limits';
     console.warn(
-      '[rate-limit] Redis REST env vars not set (UPSTASH_REDIS_REST_* or KV_REST_API_*) in production — ' +
-        'falling back to per-process in-memory limits. ' +
-        'Rate limits will NOT be shared across Vercel instances.'
+      `[rate-limit] Redis REST env vars not set (UPSTASH_REDIS_REST_* or KV_REST_API_*) in production — ${mode}.`
     );
   }
 
-  return applyInMemoryLimit(ip, config);
+  if (isProductionEnv() && config.failClosedOnRedisError) {
+    return redisUnavailableResponse(config);
+  }
+
+  return applyInMemoryLimit(identifier, config);
 }

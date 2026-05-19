@@ -1,6 +1,6 @@
 import { describe, expect, it, vi, afterEach } from 'vitest';
 import { Redis } from '@upstash/redis';
-import { applyIpRateLimit, getClientIp } from '../rate-limit';
+import { applyIdentifierRateLimit, applyIpRateLimit, getClientIp } from '../rate-limit';
 
 /**
  * Rate-limit unit coverage.
@@ -83,6 +83,25 @@ describe('applyIpRateLimit (in-memory fallback)', () => {
     expect(crossNs).toBeNull();
   });
 
+  it('supports non-IP identifiers for site-wide assistant budgets', async () => {
+    const config = {
+      namespace: 'test-global-budget',
+      limit: 1,
+      window: '1 d' as const,
+      message: 'Daily budget reached'
+    };
+
+    const first = await applyIdentifierRateLimit('global', config);
+    const blocked = await applyIdentifierRateLimit('global', config);
+    const separateKey = await applyIdentifierRateLimit('other-global', config);
+
+    expect(first).toBeNull();
+    expect(blocked).not.toBeNull();
+    expect(blocked!.status).toBe(429);
+    await expect(blocked!.json()).resolves.toEqual({ error: 'Daily budget reached' });
+    expect(separateKey).toBeNull();
+  });
+
   it('falls back to in-memory limits when Upstash requests fail', async () => {
     vi.stubEnv('UPSTASH_REDIS_REST_URL', 'https://example.com');
     vi.stubEnv('UPSTASH_REDIS_REST_TOKEN', 'test-token');
@@ -105,6 +124,53 @@ describe('applyIpRateLimit (in-memory fallback)', () => {
     expect(first).toBeNull();
     expect(second).not.toBeNull();
     expect(second!.status).toBe(429);
+  });
+
+  it('fails closed in production when a strict Redis-backed limit cannot reach Upstash', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('UPSTASH_REDIS_REST_URL', 'https://example.com');
+    vi.stubEnv('UPSTASH_REDIS_REST_TOKEN', 'test-token');
+    vi.spyOn(Redis, 'fromEnv').mockImplementation(() => {
+      throw new Error('upstash down');
+    });
+
+    const req = new Request('http://localhost', {
+      headers: { 'x-forwarded-for': '10.0.0.6' }
+    });
+    const blocked = await applyIpRateLimit(req, {
+      namespace: 'test-upstash-fail-closed',
+      limit: 1,
+      window: '1 m',
+      failClosedOnRedisError: true,
+      redisErrorMessage: 'Strict limit unavailable'
+    });
+
+    expect(blocked).not.toBeNull();
+    expect(blocked!.status).toBe(503);
+    await expect(blocked!.json()).resolves.toEqual({
+      error: 'Strict limit unavailable'
+    });
+  });
+
+  it('fails closed in production when a strict Redis-backed limit is missing Redis env vars', async () => {
+    vi.stubEnv('NODE_ENV', 'production');
+
+    const req = new Request('http://localhost', {
+      headers: { 'x-forwarded-for': '10.0.0.7' }
+    });
+    const blocked = await applyIpRateLimit(req, {
+      namespace: 'test-upstash-missing-fail-closed',
+      limit: 1,
+      window: '1 m',
+      failClosedOnRedisError: true,
+      redisErrorMessage: 'Strict limit unavailable'
+    });
+
+    expect(blocked).not.toBeNull();
+    expect(blocked!.status).toBe(503);
+    await expect(blocked!.json()).resolves.toEqual({
+      error: 'Strict limit unavailable'
+    });
   });
 
   it('evicts oldest entries when in-memory fallback store exceeds max size', async () => {

@@ -52,6 +52,14 @@ Analytics:
 - `NEXT_PUBLIC_POSTHOG_KEY`
 - `NEXT_PUBLIC_POSTHOG_HOST`
 
+AI assistant:
+
+- `AI_ASSISTANT_ENABLED` (`true`/`false`; defaults to enabled outside production and disabled in production)
+- `AI_ASSISTANT_MODEL` (default `openai/gpt-5.4-mini`)
+- `AI_ASSISTANT_MONTHLY_BUDGET_CENTS` (default `5000`, meaning a $50/month reserved budget)
+- `AI_ASSISTANT_BUDGET_RESERVE_CENTS` (default `5`, reserved before each model call)
+- `AI_GATEWAY_API_KEY` or Vercel AI Gateway/OIDC credentials
+
 Supabase Storage import tooling:
 
 - `SUPABASE_URL`
@@ -79,6 +87,41 @@ Google Sheets safety checklist:
 - Remove real personal data, hidden tabs with private data, Apps Script, and external data connections.
 - Share the template as `Anyone with the link` -> `Viewer`, never `Editor`.
 - Test the download endpoint in an incognito browser before publishing.
+
+### AI assistant
+
+The floating assistant is feature-flagged and backed by `/api/assistant`. It uses the Vercel AI SDK through AI Gateway, applies the shared API rate limiter, does not persist chat history, and limits model context to approved Stack cards, banking offers, articles, and tools.
+
+Default launch limits:
+
+- 5 assistant messages per minute per IP.
+- 10 model-eligible assistant messages per day per IP.
+- 100 model-eligible assistant messages per day site-wide.
+- $50/month reserved assistant budget by default (`AI_ASSISTANT_MONTHLY_BUDGET_CENTS=5000`).
+- 5 cents reserved before each model call by default, so the $50 cap allows up to 1,000 model calls/month before the assistant stops.
+- Off-topic, fraud, and sensitive-identifier requests are blocked before model calls.
+- Model responses are capped to a short answer to control spend.
+- In production, Redis REST env vars are required for the monthly budget guard. Without Redis, the assistant refuses model calls instead of risking unshared counters.
+
+Local setup:
+
+```bash
+AI_ASSISTANT_ENABLED=true
+AI_ASSISTANT_MODEL=openai/gpt-5.4-mini
+AI_ASSISTANT_MONTHLY_BUDGET_CENTS=5000
+AI_ASSISTANT_BUDGET_RESERVE_CENTS=5
+AI_GATEWAY_API_KEY=your_gateway_key
+```
+
+Production checklist:
+
+- Enable `AI_ASSISTANT_ENABLED=true` only after AI Gateway credentials are configured.
+- Configure Upstash Redis (`UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, or the Vercel KV equivalents) before enabling production traffic.
+- If using Vercel AI Gateway credits as the outer spending stop, keep auto top-up disabled.
+- Keep the default low-cost model unless quality testing proves a larger model is necessary.
+- Monitor Gateway spend with the `feature:assistant` request tag.
+- Do not log raw assistant messages or collect sensitive identifiers.
+- Increase `AI_ASSISTANT_BUDGET_RESERVE_CENTS` before switching to a more expensive model.
 
 ### Database
 
