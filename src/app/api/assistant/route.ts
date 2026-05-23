@@ -10,6 +10,11 @@ import {
 import { applyAssistantBudgetLimits } from '@/lib/assistant/budget';
 import { buildAssistantContext } from '@/lib/assistant/context';
 import { sanitizeAssistantMessages, toUiMessages } from '@/lib/assistant/messages';
+import {
+  flushAssistantObservability,
+  getAssistantConversationId,
+  getAssistantStreamHooks
+} from '@/lib/assistant/observability';
 import { buildAssistantSystemPrompt } from '@/lib/assistant/prompt';
 import { checkAssistantSafety } from '@/lib/assistant/safety';
 import { staticAssistantResponse } from '@/lib/assistant/stream-response';
@@ -62,6 +67,9 @@ export const POST = createApiRoute({
         parts: [{ type: 'text', text: validation.lastUserText }]
       }
     ]);
+    const sigilHooks = getAssistantStreamHooks(
+      getAssistantConversationId(validation.messages)
+    );
     const result = streamText({
       model: getAiAssistantModel(),
       system: buildAssistantSystemPrompt(context.text),
@@ -71,6 +79,18 @@ export const POST = createApiRoute({
         gateway: {
           tags: ['feature:assistant', 'surface:site-chat']
         }
+      },
+      ...sigilHooks,
+      onError: async (event) => {
+        await sigilHooks.onError?.(event);
+        await flushAssistantObservability();
+      },
+      onAbort: async (event) => {
+        await sigilHooks.onAbort?.(event);
+        await flushAssistantObservability();
+      },
+      onFinish: async () => {
+        await flushAssistantObservability();
       }
     });
 

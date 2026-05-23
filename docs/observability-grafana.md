@@ -9,6 +9,7 @@ The app already registers OpenTelemetry through `src/instrumentation.ts` and exp
 - `src/lib/metrics.ts` defines app metrics for API latency/errors, newsletter syncs, affiliate clicks, and web vitals.
 - `src/components/analytics/web-vitals.tsx` sends LCP, CLS, INP, and TTFB beacons to `/api/vitals`.
 - `src/app/api/health/route.ts` exposes health status and reports whether the OTLP exporter env is configured.
+- `src/app/api/assistant/route.ts` instruments Vercel AI SDK `streamText` calls with Grafana AI Observability when Sigil env vars are configured.
 
 ## Grafana Cloud Setup
 
@@ -44,6 +45,46 @@ OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <base64-instance-id-and-token>
    - `Log Service Label`: `service_name`
 
 Metrics are exported every 60 seconds, so generate traffic and wait at least one export interval before treating an empty dashboard as a failure.
+
+## AI Observability Setup
+
+Grafana AI Observability is exposed as Sigil in SDKs and environment variables.
+
+1. In Grafana Cloud, go to **Observability > AI Observability** and enable the plugin.
+2. Open the AI Observability configuration page and copy:
+   - API URL -> `SIGIL_ENDPOINT`
+   - Instance ID -> `SIGIL_AUTH_TENANT_ID`
+3. In **Cloud access policy**, create a token with `sigil:write`. If using the same token for OTLP, also include `metrics:write`, `traces:write`, and `logs:write`.
+4. Set these production and preview env vars in Vercel:
+
+```bash
+SIGIL_ENDPOINT=https://<your-sigil-api-url>
+SIGIL_PROTOCOL=http
+SIGIL_AUTH_MODE=basic
+SIGIL_AUTH_TENANT_ID=<ai-observability-instance-id>
+SIGIL_AUTH_TOKEN=<glc-token-with-sigil-write>
+SIGIL_CONTENT_CAPTURE_MODE=metadata_only
+```
+
+5. Redeploy the app, open the assistant, and send a real prompt.
+6. In Grafana, open **Observability > AI Observability > Conversations**. The generation should appear within a few seconds.
+
+The app defaults to `metadata_only` capture for privacy and free-tier volume control. That preserves model, token, timing, trace, and error metadata without exporting raw user prompts or model responses. Use `SIGIL_CONTENT_CAPTURE_MODE=no_tool_content` or `full` only when you intentionally want conversation text captured in Grafana.
+
+The health endpoint reports Sigil configuration without exposing secrets:
+
+```json
+{
+  "observability": {
+    "sigilConfigured": true,
+    "sigilEndpointConfigured": true,
+    "sigilAuthTenantConfigured": true,
+    "sigilAuthTokenConfigured": true,
+    "sigilProtocolConfigured": true,
+    "sigilProtocol": "http"
+  }
+}
+```
 
 ## Local Smoke Test
 
@@ -100,6 +141,15 @@ Grafana Cloud stores OTLP metrics in Prometheus-compatible form. Dots become und
 | `thestack.web.ttfb` | `thestack_web_ttfb_milliseconds_bucket/count/sum` |
 | `thestack.web.cls` | `thestack_web_cls_bucket/count/sum` |
 
+Grafana AI Observability also emits GenAI metrics through OTLP when providers are configured:
+
+| AI Observability metric | Purpose |
+| --- | --- |
+| `gen_ai_client_operation_duration` | LLM operation latency |
+| `gen_ai_client_token_usage` | Input/output/total token usage |
+| `gen_ai_client_time_to_first_token` | Streaming time to first token |
+| `gen_ai_client_tool_calls_per_operation` | Tool call count per generation |
+
 The dashboard defaults metric and log queries to `service_name="the-stack"` because this Grafana Cloud stack exposes existing OTLP services under the `service_name` label in Explore. If imported dashboards are empty but Explore shows The Stack under `job`, switch the dashboard's `Metric Service Label` variable to `job`.
 
 ## First Alerts To Add
@@ -116,3 +166,4 @@ The dashboard defaults metric and log queries to `service_name="the-stack"` beca
 - Add DB query duration/error metrics around Prisma calls if database latency becomes a common incident source.
 - Add route-level conversion counters for plan creation, calculator email capture, and newsletter signups if Grafana should become the source of truth for funnel monitoring.
 - Add uptime checks in Grafana Synthetic Monitoring against `/api/health` using `Authorization: Bearer <HEALTH_CHECK_TOKEN>`.
+- Add explicit assistant block counters for safety, rate-limit, and monthly budget outcomes if those need to show in the same dashboard as model generations.

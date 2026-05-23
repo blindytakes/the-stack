@@ -1,7 +1,7 @@
 import { db } from '@/lib/db';
 import { getNewsletterProviderStatus } from '@/lib/newsletter/provider';
 import { isDatabaseUrlConfigured } from '@/lib/config/server';
-import { getOTelExporterEnvStatus } from '@/lib/observability-config';
+import { getOTelExporterEnvStatus, getSigilEnvStatus } from '@/lib/observability-config';
 
 export type HealthCheckResult = {
   status: 200 | 503;
@@ -15,19 +15,32 @@ export type HealthCheckResult = {
       otelHeadersConfigured: boolean;
       otelProtocolConfigured: boolean;
       otelProtocol: string | null;
+      sigilConfigured: boolean;
+      sigilEndpointConfigured: boolean;
+      sigilAuthTenantConfigured: boolean;
+      sigilAuthTokenConfigured: boolean;
+      sigilProtocolConfigured: boolean;
+      sigilProtocol: string | null;
     };
   };
 };
 
 function buildObservabilityStatus() {
   const otel = getOTelExporterEnvStatus();
+  const sigil = getSigilEnvStatus();
 
   return {
     otelExporterConfigured: otel.configured,
     otelEndpointConfigured: otel.endpointConfigured,
     otelHeadersConfigured: otel.headersConfigured,
     otelProtocolConfigured: otel.protocolConfigured,
-    otelProtocol: otel.protocol
+    otelProtocol: otel.protocol,
+    sigilConfigured: sigil.configured,
+    sigilEndpointConfigured: sigil.endpointConfigured,
+    sigilAuthTenantConfigured: sigil.authTenantConfigured,
+    sigilAuthTokenConfigured: sigil.authTokenConfigured,
+    sigilProtocolConfigured: sigil.protocolConfigured,
+    sigilProtocol: sigil.protocol
   };
 }
 

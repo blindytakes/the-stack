@@ -6,6 +6,15 @@ export type OTelExporterEnvStatus = {
   configured: boolean;
 };
 
+export type SigilEnvStatus = {
+  endpointConfigured: boolean;
+  authTenantConfigured: boolean;
+  authTokenConfigured: boolean;
+  protocol: string | null;
+  protocolConfigured: boolean;
+  configured: boolean;
+};
+
 export function getOTelExporterEnvStatus(): OTelExporterEnvStatus {
   const endpointConfigured = Boolean(
     process.env.OTEL_EXPORTER_OTLP_ENDPOINT ||
@@ -32,5 +41,21 @@ export function getOTelExporterEnvStatus(): OTelExporterEnvStatus {
     protocol,
     protocolConfigured: Boolean(protocol),
     configured: endpointConfigured && headersConfigured
+  };
+}
+
+export function getSigilEnvStatus(): SigilEnvStatus {
+  const endpointConfigured = Boolean(process.env.SIGIL_ENDPOINT?.trim());
+  const authTenantConfigured = Boolean(process.env.SIGIL_AUTH_TENANT_ID?.trim());
+  const authTokenConfigured = Boolean(process.env.SIGIL_AUTH_TOKEN?.trim());
+  const protocol = process.env.SIGIL_PROTOCOL?.trim() || null;
+
+  return {
+    endpointConfigured,
+    authTenantConfigured,
+    authTokenConfigured,
+    protocol,
+    protocolConfigured: Boolean(protocol),
+    configured: endpointConfigured && authTenantConfigured && authTokenConfigured
   };
 }
