@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { mapAssistantUsage } from '@/lib/assistant/observability';
 import { getSigilEnvStatus } from '../observability-config';
 
 describe('getSigilEnvStatus', () => {
@@ -32,6 +33,34 @@ describe('getSigilEnvStatus', () => {
       authTenantConfigured: true,
       authTokenConfigured: false,
       configured: false
+    });
+  });
+});
+
+describe('mapAssistantUsage', () => {
+  it('maps Vercel AI SDK token details to Sigil usage fields', () => {
+    expect(
+      mapAssistantUsage({
+        inputTokens: 100,
+        inputTokenDetails: {
+          noCacheTokens: 80,
+          cacheReadTokens: 15,
+          cacheWriteTokens: 5
+        },
+        outputTokens: 40,
+        outputTokenDetails: {
+          textTokens: 30,
+          reasoningTokens: 10
+        },
+        totalTokens: 140
+      })
+    ).toEqual({
+      inputTokens: 100,
+      outputTokens: 40,
+      totalTokens: 140,
+      cacheReadInputTokens: 15,
+      cacheWriteInputTokens: 5,
+      reasoningTokens: 10
     });
   });
 });

@@ -13,7 +13,7 @@ import { sanitizeAssistantMessages, toUiMessages } from '@/lib/assistant/message
 import {
   flushAssistantObservability,
   getAssistantConversationId,
-  getAssistantStreamHooks
+  startAssistantGeneration
 } from '@/lib/assistant/observability';
 import { buildAssistantSystemPrompt } from '@/lib/assistant/prompt';
 import { checkAssistantSafety } from '@/lib/assistant/safety';
@@ -67,11 +67,11 @@ export const POST = createApiRoute({
         parts: [{ type: 'text', text: validation.lastUserText }]
       }
     ]);
-    const sigilHooks = getAssistantStreamHooks(
-      getAssistantConversationId(validation.messages)
-    );
+    const conversationId = getAssistantConversationId(validation.messages);
+    const assistantModel = getAiAssistantModel();
+    const generation = startAssistantGeneration(conversationId, assistantModel);
     const result = streamText({
-      model: getAiAssistantModel(),
+      model: assistantModel,
       system: buildAssistantSystemPrompt(context.text),
       messages: await convertToModelMessages(messages),
       maxOutputTokens: 450,
@@ -80,16 +80,16 @@ export const POST = createApiRoute({
           tags: ['feature:assistant', 'surface:site-chat']
         }
       },
-      ...sigilHooks,
       onError: async (event) => {
-        await sigilHooks.onError?.(event);
+        generation?.fail(event.error);
         await flushAssistantObservability();
       },
-      onAbort: async (event) => {
-        await sigilHooks.onAbort?.(event);
+      onAbort: async () => {
+        generation?.fail(new Error('assistant stream aborted'));
         await flushAssistantObservability();
       },
-      onFinish: async () => {
+      onFinish: async (event) => {
+        generation?.finish(event);
         await flushAssistantObservability();
       }
     });
