@@ -15,6 +15,26 @@ export type SigilEnvStatus = {
   configured: boolean;
 };
 
+export type PyroscopeEnvStatus = {
+  enabled: boolean;
+  serverAddressConfigured: boolean;
+  authTokenConfigured: boolean;
+  basicAuthUserConfigured: boolean;
+  basicAuthPasswordConfigured: boolean;
+  authConfigured: boolean;
+  applicationName: string;
+  configured: boolean;
+};
+
+function readTrimmedEnv(name: string) {
+  return process.env[name]?.trim() || '';
+}
+
+function readBooleanEnv(name: string) {
+  const value = readTrimmedEnv(name).toLowerCase();
+  return value === '1' || value === 'true' || value === 'yes' || value === 'on';
+}
+
 export function getOTelExporterEnvStatus(): OTelExporterEnvStatus {
   const endpointConfigured = Boolean(
     process.env.OTEL_EXPORTER_OTLP_ENDPOINT ||
@@ -57,5 +77,28 @@ export function getSigilEnvStatus(): SigilEnvStatus {
     protocol,
     protocolConfigured: Boolean(protocol),
     configured: endpointConfigured && authTenantConfigured && authTokenConfigured
+  };
+}
+
+export function getPyroscopeEnvStatus(): PyroscopeEnvStatus {
+  const enabled = readBooleanEnv('PYROSCOPE_ENABLED');
+  const serverAddressConfigured = Boolean(
+    readTrimmedEnv('PYROSCOPE_SERVER_ADDRESS') || readTrimmedEnv('PYROSCOPE_ADHOC_SERVER_ADDRESS')
+  );
+  const authTokenConfigured = Boolean(readTrimmedEnv('PYROSCOPE_AUTH_TOKEN'));
+  const basicAuthUserConfigured = Boolean(readTrimmedEnv('PYROSCOPE_BASIC_AUTH_USER'));
+  const basicAuthPasswordConfigured = Boolean(readTrimmedEnv('PYROSCOPE_BASIC_AUTH_PASSWORD'));
+  const authConfigured = authTokenConfigured || (basicAuthUserConfigured && basicAuthPasswordConfigured);
+  const applicationName = readTrimmedEnv('PYROSCOPE_APPLICATION_NAME') || 'the-stack';
+
+  return {
+    enabled,
+    serverAddressConfigured,
+    authTokenConfigured,
+    basicAuthUserConfigured,
+    basicAuthPasswordConfigured,
+    authConfigured,
+    applicationName,
+    configured: enabled && serverAddressConfigured && authConfigured
   };
 }

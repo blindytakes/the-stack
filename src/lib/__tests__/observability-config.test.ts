@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mapAssistantUsage } from '@/lib/assistant/observability';
-import { getSigilEnvStatus } from '../observability-config';
+import { getPyroscopeEnvStatus, getSigilEnvStatus } from '../observability-config';
 
 describe('getSigilEnvStatus', () => {
   afterEach(() => {
@@ -33,6 +33,58 @@ describe('getSigilEnvStatus', () => {
       authTenantConfigured: true,
       authTokenConfigured: false,
       configured: false
+    });
+  });
+});
+
+describe('getPyroscopeEnvStatus', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it('requires explicit enablement before reporting Pyroscope configured', () => {
+    vi.stubEnv('PYROSCOPE_SERVER_ADDRESS', 'https://profiles.example.test');
+    vi.stubEnv('PYROSCOPE_BASIC_AUTH_USER', '12345');
+    vi.stubEnv('PYROSCOPE_BASIC_AUTH_PASSWORD', 'glc_test');
+
+    expect(getPyroscopeEnvStatus()).toMatchObject({
+      enabled: false,
+      serverAddressConfigured: true,
+      authConfigured: true,
+      applicationName: 'the-stack',
+      configured: false
+    });
+  });
+
+  it('reports Pyroscope configured with a server address and basic auth when enabled', () => {
+    vi.stubEnv('PYROSCOPE_ENABLED', 'true');
+    vi.stubEnv('PYROSCOPE_SERVER_ADDRESS', 'https://profiles.example.test');
+    vi.stubEnv('PYROSCOPE_BASIC_AUTH_USER', '12345');
+    vi.stubEnv('PYROSCOPE_BASIC_AUTH_PASSWORD', 'glc_test');
+    vi.stubEnv('PYROSCOPE_APPLICATION_NAME', 'the-stack-production');
+
+    expect(getPyroscopeEnvStatus()).toEqual({
+      enabled: true,
+      serverAddressConfigured: true,
+      authTokenConfigured: false,
+      basicAuthUserConfigured: true,
+      basicAuthPasswordConfigured: true,
+      authConfigured: true,
+      applicationName: 'the-stack-production',
+      configured: true
+    });
+  });
+
+  it('supports bearer token auth for Pyroscope', () => {
+    vi.stubEnv('PYROSCOPE_ENABLED', '1');
+    vi.stubEnv('PYROSCOPE_SERVER_ADDRESS', 'https://profiles.example.test');
+    vi.stubEnv('PYROSCOPE_AUTH_TOKEN', 'profile_token');
+
+    expect(getPyroscopeEnvStatus()).toMatchObject({
+      enabled: true,
+      authTokenConfigured: true,
+      authConfigured: true,
+      configured: true
     });
   });
 });

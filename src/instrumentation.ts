@@ -1,5 +1,6 @@
 import { registerOTel } from '@vercel/otel';
 import { getOTelExporterEnvStatus } from '@/lib/observability-config';
+import { registerPyroscopeProfiling } from '@/lib/profiling';
 
 export function register() {
   if (process.env.NEXT_RUNTIME !== 'nodejs') {
@@ -8,6 +9,7 @@ export function register() {
   }
 
   const otelEnv = getOTelExporterEnvStatus();
+  registerPyroscopeProfiling();
 
   if (!otelEnv.configured) {
     console.warn(

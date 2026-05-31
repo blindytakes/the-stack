@@ -1,7 +1,11 @@
 import { db } from '@/lib/db';
 import { getNewsletterProviderStatus } from '@/lib/newsletter/provider';
 import { isDatabaseUrlConfigured } from '@/lib/config/server';
-import { getOTelExporterEnvStatus, getSigilEnvStatus } from '@/lib/observability-config';
+import {
+  getOTelExporterEnvStatus,
+  getPyroscopeEnvStatus,
+  getSigilEnvStatus
+} from '@/lib/observability-config';
 
 export type HealthCheckResult = {
   status: 200 | 503;
@@ -21,6 +25,11 @@ export type HealthCheckResult = {
       sigilAuthTokenConfigured: boolean;
       sigilProtocolConfigured: boolean;
       sigilProtocol: string | null;
+      pyroscopeEnabled: boolean;
+      pyroscopeConfigured: boolean;
+      pyroscopeServerAddressConfigured: boolean;
+      pyroscopeAuthConfigured: boolean;
+      pyroscopeApplicationName: string;
     };
   };
 };
@@ -28,6 +37,7 @@ export type HealthCheckResult = {
 function buildObservabilityStatus() {
   const otel = getOTelExporterEnvStatus();
   const sigil = getSigilEnvStatus();
+  const pyroscope = getPyroscopeEnvStatus();
 
   return {
     otelExporterConfigured: otel.configured,
@@ -40,7 +50,12 @@ function buildObservabilityStatus() {
     sigilAuthTenantConfigured: sigil.authTenantConfigured,
     sigilAuthTokenConfigured: sigil.authTokenConfigured,
     sigilProtocolConfigured: sigil.protocolConfigured,
-    sigilProtocol: sigil.protocol
+    sigilProtocol: sigil.protocol,
+    pyroscopeEnabled: pyroscope.enabled,
+    pyroscopeConfigured: pyroscope.configured,
+    pyroscopeServerAddressConfigured: pyroscope.serverAddressConfigured,
+    pyroscopeAuthConfigured: pyroscope.authConfigured,
+    pyroscopeApplicationName: pyroscope.applicationName
   };
 }
 

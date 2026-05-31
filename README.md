@@ -262,6 +262,8 @@ See [docs/deliverability.md](docs/deliverability.md) for SPF/DKIM/DMARC and moni
 
 See [docs/observability-grafana.md](docs/observability-grafana.md) for Grafana Cloud OTLP setup and dashboard import instructions.
 
+Grafana Cloud Profiles / Pyroscope support is opt-in through `PYROSCOPE_ENABLED=true`; see the observability doc for the required Profiles endpoint and auth env vars.
+
 ## Scripts
 
 | Command | Description |

@@ -10,6 +10,7 @@ The app already registers OpenTelemetry through `src/instrumentation.ts` and exp
 - `src/components/analytics/web-vitals.tsx` sends LCP, CLS, INP, and TTFB beacons to `/api/vitals`.
 - `src/app/api/health/route.ts` exposes health status and reports whether the OTLP exporter env is configured.
 - `src/app/api/assistant/route.ts` instruments Vercel AI SDK `streamText` calls with Grafana AI Observability when Sigil env vars are configured.
+- `src/lib/profiling.ts` starts the Pyroscope Node.js profiler when `PYROSCOPE_ENABLED=true` and Grafana Cloud Profiles credentials are configured.
 
 ## Grafana Cloud Setup
 
@@ -82,6 +83,43 @@ The health endpoint reports Sigil configuration without exposing secrets:
     "sigilAuthTokenConfigured": true,
     "sigilProtocolConfigured": true,
     "sigilProtocol": "http"
+  }
+}
+```
+
+## Pyroscope Profiling Setup
+
+Profiling is disabled by default and only starts in the Node.js runtime when explicitly enabled. This avoids loading the native profiler in local/dev or edge paths unintentionally.
+
+1. In Grafana Cloud, open the stack details and locate the Profiles / Pyroscope configuration values.
+2. Set these production and preview env vars in Vercel:
+
+```bash
+PYROSCOPE_ENABLED=true
+PYROSCOPE_APPLICATION_NAME=the-stack
+PYROSCOPE_SERVER_ADDRESS=https://<your-grafana-profiles-url>
+PYROSCOPE_BASIC_AUTH_USER=<stack-user-id>
+PYROSCOPE_BASIC_AUTH_PASSWORD=<profiles-token-or-password>
+```
+
+If your Pyroscope endpoint supports bearer auth, you can set `PYROSCOPE_AUTH_TOKEN` instead of the basic auth user/password pair.
+
+3. Redeploy the app.
+4. Generate server-side traffic that executes API routes or dynamic server rendering.
+5. In Grafana, open **Profiles** or **Explore**, select the Pyroscope data source, and query the `the-stack` application.
+
+The Node SDK starts wall and heap profiling. The app also forces `wall.collectCpuTime=true` so CPU time is included in wall profiles. On Vercel this profiles Node.js function execution while a function instance is alive; static CDN hits, browser rendering, and edge-runtime code are outside this profile.
+
+The health endpoint reports Pyroscope status without exposing secrets:
+
+```json
+{
+  "observability": {
+    "pyroscopeEnabled": true,
+    "pyroscopeConfigured": true,
+    "pyroscopeServerAddressConfigured": true,
+    "pyroscopeAuthConfigured": true,
+    "pyroscopeApplicationName": "the-stack"
   }
 }
 ```
