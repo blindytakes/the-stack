@@ -37,7 +37,7 @@ function collectTags() {
   return tags;
 }
 
-export function registerPyroscopeProfiling() {
+export async function registerPyroscopeProfiling() {
   const pyroscopeEnv = getPyroscopeEnvStatus();
 
   if (!pyroscopeEnv.enabled) {
@@ -64,9 +64,7 @@ export function registerPyroscopeProfiling() {
   }
 
   try {
-    // Dynamic require keeps the native profiler out of edge/runtime paths and disabled local starts.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const Pyroscope = require('@pyroscope/nodejs') as PyroscopeModule;
+    const Pyroscope = (await import('@pyroscope/nodejs')) as PyroscopeModule;
 
     Pyroscope.init({
       appName: pyroscopeEnv.applicationName,

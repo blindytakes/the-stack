@@ -2,14 +2,14 @@ import { registerOTel } from '@vercel/otel';
 import { getOTelExporterEnvStatus } from '@/lib/observability-config';
 import { registerPyroscopeProfiling } from '@/lib/profiling';
 
-export function register() {
+export async function register() {
   if (process.env.NEXT_RUNTIME !== 'nodejs') {
     registerOTel({ serviceName: 'the-stack' });
     return;
   }
 
   const otelEnv = getOTelExporterEnvStatus();
-  registerPyroscopeProfiling();
+  await registerPyroscopeProfiling();
 
   if (!otelEnv.configured) {
     console.warn(
