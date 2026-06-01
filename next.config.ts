@@ -37,6 +37,14 @@ function buildContentSecurityPolicy() {
 }
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ['@pyroscope/nodejs', '@datadog/pprof', 'node-gyp-build'],
+  outputFileTracingIncludes: {
+    '/api/*': [
+      './node_modules/@datadog/pprof/prebuilds/**/*',
+      './node_modules/@datadog/pprof/out/**/*',
+      './node_modules/node-gyp-build/**/*'
+    ]
+  },
   async redirects() {
     return [
       {
