@@ -25,18 +25,59 @@ export type FunnelEventProperties = {
   recommendation?: string;
 };
 
+const FUNNEL_EVENT_ENDPOINT = '/api/funnel/events';
+
+function emitGrafanaFunnelEvent(event: FunnelEventName, properties: FunnelEventProperties) {
+  const payload = JSON.stringify({
+    event,
+    properties
+  });
+
+  try {
+    if ('sendBeacon' in navigator) {
+      const body = new Blob([payload], { type: 'application/json' });
+      navigator.sendBeacon(FUNNEL_EVENT_ENDPOINT, body);
+      return;
+    }
+
+    void fetch(FUNNEL_EVENT_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: payload,
+      keepalive: true
+    }).catch((error) => {
+      console.warn('[analytics] grafana funnel event failed', {
+        event,
+        error: error instanceof Error ? error.message : String(error)
+      });
+    });
+  } catch (error) {
+    console.warn('[analytics] grafana funnel event failed', {
+      event,
+      error: error instanceof Error ? error.message : String(error)
+    });
+  }
+}
+
 export function trackFunnelEvent(
   event: FunnelEventName,
   properties: FunnelEventProperties = {}
 ) {
   if (typeof window === 'undefined') return;
 
+  const eventProperties = {
+    path: window.location.pathname,
+    ...properties
+  };
+
+  emitGrafanaFunnelEvent(event, eventProperties);
+
   try {
-    if (!(posthog as { __loaded?: boolean }).__loaded) return;
-    posthog.capture(event, {
-      path: window.location.pathname,
-      ...properties
-    });
+    if ((posthog as { __loaded?: boolean }).__loaded) {
+      posthog.capture(event, eventProperties);
+    }
   } catch (error) {
     console.warn('[analytics] posthog capture failed', {
       event,

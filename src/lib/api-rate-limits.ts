@@ -29,6 +29,13 @@ export const apiRateLimits = {
     algorithm: 'fixed',
     message: 'Rate limit exceeded for vitals ingestion'
   },
+  funnelEvents: {
+    namespace: 'funnel_events',
+    limit: 120,
+    window: '1 m',
+    algorithm: 'fixed',
+    message: 'Rate limit exceeded for funnel events'
+  },
   cardsList: {
     namespace: 'cards_list',
     limit: 120,

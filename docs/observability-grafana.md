@@ -6,7 +6,8 @@ The app already registers OpenTelemetry through `src/instrumentation.ts` and exp
 
 - `src/instrumentation.ts` registers service name `the-stack` and enables OTLP log and metric exporters when OTLP endpoint and headers are configured.
 - `src/lib/api-route.ts` wraps API routes with latency histograms, error counters, and JSON log records.
-- `src/lib/metrics.ts` defines app metrics for API latency/errors, newsletter syncs, affiliate clicks, and web vitals.
+- `src/lib/metrics.ts` defines app metrics for API latency/errors, product funnel events, newsletter syncs, affiliate clicks, and web vitals.
+- `src/app/api/funnel/events/route.ts` accepts same-origin browser funnel beacons and exports low-cardinality product-event counters to Grafana.
 - `src/components/analytics/web-vitals.tsx` sends LCP, CLS, INP, and TTFB beacons to `/api/vitals`.
 - `src/app/api/health/route.ts` exposes health status and reports whether the OTLP exporter env is configured.
 - `src/app/api/assistant/route.ts` instruments Vercel AI SDK `streamText` calls with Grafana AI Observability when Sigil env vars are configured.
@@ -39,7 +40,12 @@ OTEL_EXPORTER_OTLP_HEADERS=Authorization=Basic <base64-instance-id-and-token>
 }
 ```
 
-6. Import `observability/grafana/the-stack-overview-dashboard.json` in Grafana via **Dashboards > New > Import**.
+6. Import the dashboard JSON files in `observability/grafana` via **Dashboards > New > Import**:
+   - `the-stack-overview-dashboard.json`
+   - `the-stack-product-funnel-dashboard.json`
+   - `the-stack-api-reliability-dashboard.json`
+   - `the-stack-web-vitals-dashboard.json`
+   - `the-stack-ai-assistant-dashboard.json`
 7. Select the stack's Prometheus/Mimir data source for metrics and Loki data source for logs.
 8. Keep the dashboard label variables at their Grafana Cloud OTLP defaults unless Explore shows different labels:
    - `Metric Service Label`: `service_name`
@@ -159,6 +165,10 @@ curl -i http://localhost:3000/api/vitals \
   -X POST \
   -H 'content-type: application/json' \
   --data '{"name":"LCP","value":1234,"path":"/","device":"desktop"}'
+curl -i http://localhost:3000/api/funnel/events \
+  -X POST \
+  -H 'content-type: application/json' \
+  --data '{"event":"tool_started","properties":{"path":"/tools/card-finder","source":"homepage","tool":"card-finder"}}'
 ```
 
 Then check Grafana Explore for `thestack_api_duration_milliseconds_count` in the metrics data source and `{service_name="the-stack"}` in the logs data source. If metrics or logs only appear under `job`, switch the dashboard's matching service-label variable to `job`.
@@ -171,6 +181,7 @@ Grafana Cloud stores OTLP metrics in Prometheus-compatible form. Dots become und
 | --- | --- |
 | `thestack.api.duration` | `thestack_api_duration_milliseconds_bucket/count/sum` |
 | `thestack.api.errors` | `thestack_api_errors_total` |
+| `thestack.funnel.events` | `thestack_funnel_events_total` |
 | `thestack.newsletter.sync.attempts` | `thestack_newsletter_sync_attempts_total` |
 | `thestack.newsletter.sync.results` | `thestack_newsletter_sync_results_total` |
 | `thestack.affiliate.clicks` | `thestack_affiliate_clicks_total` |

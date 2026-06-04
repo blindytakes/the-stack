@@ -5,6 +5,7 @@ type WebVitalName = 'LCP' | 'CLS' | 'INP' | 'TTFB';
 type AppMetrics = {
   apiDuration: Histogram;
   apiErrors: Counter;
+  funnelEvents: Counter;
   newsletterSyncAttempts: Counter;
   newsletterSyncResults: Counter;
   affiliateClicks: Counter;
@@ -26,6 +27,9 @@ function getAppMetrics() {
     }),
     apiErrors: meter.createCounter('thestack.api.errors', {
       description: 'API error count'
+    }),
+    funnelEvents: meter.createCounter('thestack.funnel.events', {
+      description: 'Low-cardinality product funnel events'
     }),
     newsletterSyncAttempts: meter.createCounter('thestack.newsletter.sync.attempts', {
       description: 'Newsletter provider sync attempts'
@@ -76,6 +80,21 @@ export function recordApiError(route: string, errorType: string) {
   getAppMetrics().apiErrors.add(1, {
     route,
     error_type: errorType
+  });
+}
+
+export function recordFunnelEvent(
+  event: string,
+  attributes: {
+    path: string;
+    source: string;
+    tool: string;
+    entity_type: string;
+  }
+) {
+  getAppMetrics().funnelEvents.add(1, {
+    event,
+    ...attributes
   });
 }
 

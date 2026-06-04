@@ -1,0 +1,384 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Real-user Web Vitals dashboard for The Stack route and device performance.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_lcp_milliseconds_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
+          "legendFormat": "LCP p75 {{path}} {{device}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Largest Contentful Paint P75",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_inp_milliseconds_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
+          "legendFormat": "INP p75 {{path}} {{device}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Interaction To Next Paint P75",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 3,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_cls_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
+          "legendFormat": "CLS p75 {{path}} {{device}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Cumulative Layout Shift P75",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.75, sum by (le, path, device) (rate(thestack_web_ttfb_milliseconds_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
+          "legendFormat": "TTFB p75 {{path}} {{device}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Time To First Byte P75",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (path, device) (rate(thestack_web_lcp_milliseconds_count{${metric_service_label}=~\"$service\"}[$__rate_interval]))",
+          "legendFormat": "{{path}} {{device}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Web Vital Sample Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.75, sum by (le, device) (rate(thestack_web_lcp_milliseconds_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
+          "legendFormat": "LCP {{device}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "histogram_quantile(0.75, sum by (le, device) (rate(thestack_web_inp_milliseconds_bucket{${metric_service_label}=~\"$service\"}[$__rate_interval])))",
+          "legendFormat": "INP {{device}}",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Device Performance Summary",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "tags": [
+    "the-stack",
+    "web-vitals",
+    "frontend",
+    "opentelemetry"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "label": "Prometheus",
+        "multi": false,
+        "name": "prometheus",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "the-stack",
+          "value": "the-stack"
+        },
+        "hide": 0,
+        "label": "Service",
+        "name": "service",
+        "options": [
+          {
+            "selected": true,
+            "text": "the-stack",
+            "value": "the-stack"
+          }
+        ],
+        "query": "the-stack",
+        "type": "constant"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "service_name",
+          "value": "service_name"
+        },
+        "hide": 0,
+        "label": "Metric Service Label",
+        "name": "metric_service_label",
+        "options": [
+          {
+            "selected": false,
+            "text": "job",
+            "value": "job"
+          },
+          {
+            "selected": true,
+            "text": "service_name",
+            "value": "service_name"
+          }
+        ],
+        "query": "job,service_name",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "The Stack Web Vitals",
+  "uid": "the-stack-web-vitals",
+  "version": 1,
+  "weekStart": ""
+}

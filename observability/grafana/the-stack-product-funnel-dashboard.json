@@ -1,0 +1,477 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "Product conversion and business-signal dashboard for The Stack funnel telemetry.",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(thestack_funnel_events_total{${metric_service_label}=~\"$service\",event=\"landing_view\"}[$__range]))",
+          "legendFormat": "Landing views",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(thestack_funnel_events_total{${metric_service_label}=~\"$service\",event=\"tool_started\"}[$__range]))",
+          "legendFormat": "Tool starts",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(thestack_funnel_events_total{${metric_service_label}=~\"$service\",event=\"quiz_completed\"}[$__range]))",
+          "legendFormat": "Quiz completions",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(thestack_funnel_events_total{${metric_service_label}=~\"$service\",event=\"plan_results_view\"}[$__range]))",
+          "legendFormat": "Plan result views",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Guided Funnel Totals",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(thestack_funnel_events_total{${metric_service_label}=~\"$service\",event=\"quiz_completed\"}[$__range])) / clamp_min(sum(increase(thestack_funnel_events_total{${metric_service_label}=~\"$service\",event=\"tool_started\"}[$__range])), 1)",
+          "legendFormat": "completion rate",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Tool Start To Quiz Completion",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 0
+      },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum(increase(thestack_funnel_events_total{${metric_service_label}=~\"$service\",event=~\"newsletter_subscribed|affiliate_click\"}[$__range]))",
+          "legendFormat": "outcomes",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "High-Intent Outcomes",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "eps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 4,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (event) (rate(thestack_funnel_events_total{${metric_service_label}=~\"$service\"}[$__rate_interval]))",
+          "legendFormat": "{{event}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Funnel Event Rate",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "eps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (tool) (rate(thestack_funnel_events_total{${metric_service_label}=~\"$service\",event=\"tool_started\"}[$__rate_interval]))",
+          "legendFormat": "{{tool}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Tool Starts By Tool",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "eps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (entity_type, event) (rate(thestack_funnel_events_total{${metric_service_label}=~\"$service\",event=~\"card_detail_view|banking_detail_view|affiliate_click\"}[$__rate_interval]))",
+          "legendFormat": "{{entity_type}} {{event}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Offer Detail And Outbound Engagement",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${prometheus}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "eps"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (provider, result) (rate(thestack_newsletter_sync_results_total{${metric_service_label}=~\"$service\"}[$__rate_interval]))",
+          "legendFormat": "newsletter {{provider}} {{result}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (source) (rate(thestack_affiliate_clicks_total{${metric_service_label}=~\"$service\"}[$__rate_interval]))",
+          "legendFormat": "affiliate {{source}}",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Server-Confirmed Business Events",
+      "type": "timeseries"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 39,
+  "tags": [
+    "the-stack",
+    "product",
+    "funnel",
+    "opentelemetry"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "hide": 0,
+        "includeAll": false,
+        "label": "Prometheus",
+        "multi": false,
+        "name": "prometheus",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "the-stack",
+          "value": "the-stack"
+        },
+        "hide": 0,
+        "label": "Service",
+        "name": "service",
+        "options": [
+          {
+            "selected": true,
+            "text": "the-stack",
+            "value": "the-stack"
+          }
+        ],
+        "query": "the-stack",
+        "type": "constant"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "service_name",
+          "value": "service_name"
+        },
+        "hide": 0,
+        "label": "Metric Service Label",
+        "name": "metric_service_label",
+        "options": [
+          {
+            "selected": false,
+            "text": "job",
+            "value": "job"
+          },
+          {
+            "selected": true,
+            "text": "service_name",
+            "value": "service_name"
+          }
+        ],
+        "query": "job,service_name",
+        "type": "custom"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-24h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "The Stack Product Funnel",
+  "uid": "the-stack-product-funnel",
+  "version": 1,
+  "weekStart": ""
+}
