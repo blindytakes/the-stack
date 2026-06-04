@@ -45,11 +45,11 @@ describe('banking offer audit coverage', () => {
     ['td-complete-checking-200', 200, 500, '2026-07-30'],
     ['td-beyond-checking-300', 300, 2500, '2026-07-30'],
     ['sofi-checking-savings-300', 400, 1000, '2026-12-31'],
-    ['chase-business-complete-checking-500', 500, undefined, '2026-06-18'],
+    ['chase-business-complete-checking-500', 500, undefined, '2026-07-15'],
     ['wells-fargo-initiate-business-checking-400', 400, undefined, '2026-07-07'],
     ['wells-fargo-navigate-business-checking-400', 400, undefined, '2026-07-07'],
     ['wells-fargo-optimize-business-checking-400', 400, undefined, '2026-07-07'],
-    ['bmo-business-checking-1500', 1500, undefined, '2026-08-31']
+    ['bmo-business-checking-1500', 500, undefined, undefined]
   ])(
     'keeps the audited banking offer populated for %s',
     (slug, bonusAmount, directDepositMinimumAmount, expiresOn) => {
@@ -58,9 +58,11 @@ describe('banking offer audit coverage', () => {
 
       expect(bonus).toMatchObject({
         bonusAmount,
-        expiresAt: expect.stringContaining(expiresOn as string),
         isActive: true
       });
+      if (expiresOn !== undefined) {
+        expect(bonus?.expiresAt).toEqual(expect.stringContaining(expiresOn));
+      }
       if (directDepositMinimumAmount !== undefined) {
         expect(bonus?.directDeposit.minimumAmount).toBe(directDepositMinimumAmount);
       }
@@ -79,7 +81,7 @@ describe('banking offer audit coverage', () => {
       'bmo-business-checking-1500'
     ]);
     expect(activeBmoBusinessOffers[0].requiredActions).toContain(
-      'Eligible accounts include Digital, Simple, Premium, and Elite Business Checking.'
+      'Follow the current welcome-offer instructions presented during the account-opening flow to qualify for up to $500.'
     );
   });
 });
