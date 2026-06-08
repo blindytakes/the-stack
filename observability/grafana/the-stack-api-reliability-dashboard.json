@@ -397,7 +397,8 @@
           },
           "expr": "{${log_service_label}=~\"$service\"} | json | type=~\"api_request|api_exception\" | status >= 400",
           "queryType": "range",
-          "refId": "A"
+          "refId": "A",
+          "editorMode": "code"
         }
       ],
       "title": "4xx/5xx API Logs",

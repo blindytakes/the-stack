@@ -390,6 +390,28 @@
           "legendFormat": "affiliate {{source}}",
           "range": true,
           "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (provider, attempt) (rate(thestack_newsletter_sync_attempts_total{${metric_service_label}=~\"$service\"}[$__rate_interval]))",
+          "legendFormat": "newsletter attempts {{provider}} attempt {{attempt}}",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (reason) (rate(thestack_personal_finance_tracker_download_fallbacks_total{${metric_service_label}=~\"$service\"}[$__rate_interval]))",
+          "legendFormat": "tracker fallback {{reason}}",
+          "range": true,
+          "refId": "D"
         }
       ],
       "title": "Server-Confirmed Business Events",

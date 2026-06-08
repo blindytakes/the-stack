@@ -450,6 +450,28 @@
           "legendFormat": "newsletter {{provider}} {{result}}",
           "range": true,
           "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (provider, attempt) (increase(thestack_newsletter_sync_attempts_total{${metric_service_label}=~\"$service\"}[$__range]))",
+          "legendFormat": "newsletter attempts {{provider}} attempt {{attempt}}",
+          "range": true,
+          "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${prometheus}"
+          },
+          "editorMode": "code",
+          "expr": "sum by (reason) (increase(thestack_personal_finance_tracker_download_fallbacks_total{${metric_service_label}=~\"$service\"}[$__range]))",
+          "legendFormat": "tracker fallback {{reason}}",
+          "range": true,
+          "refId": "D"
         }
       ],
       "title": "Business Events",

@@ -6,7 +6,7 @@ The app already registers OpenTelemetry through `src/instrumentation.ts` and exp
 
 - `src/instrumentation.ts` registers service name `the-stack` and enables OTLP log and metric exporters when OTLP endpoint and headers are configured.
 - `src/lib/api-route.ts` wraps API routes with latency histograms, error counters, and JSON log records.
-- `src/lib/metrics.ts` defines app metrics for API latency/errors, product funnel events, newsletter syncs, affiliate clicks, and web vitals.
+- `src/lib/metrics.ts` defines app metrics for API latency/errors, product funnel events, newsletter syncs, affiliate clicks, personal-finance tracker fallback downloads, and web vitals.
 - `src/app/api/funnel/events/route.ts` accepts same-origin browser funnel beacons and exports low-cardinality product-event counters to Grafana.
 - `src/components/analytics/web-vitals.tsx` sends LCP, CLS, INP, and TTFB beacons to `/api/vitals`.
 - `src/app/api/health/route.ts` exposes health status and reports whether the OTLP exporter env is configured.
@@ -160,6 +160,8 @@ If any of those values are `false`, the app can run but telemetry will not reach
 To generate test telemetry after OTLP env vars are set:
 
 ```bash
+npm run observability:simulate -- --base-url=http://localhost:3000 --iterations=12
+
 curl -i http://localhost:3000/api/cards
 curl -i http://localhost:3000/api/vitals \
   -X POST \
@@ -170,6 +172,14 @@ curl -i http://localhost:3000/api/funnel/events \
   -H 'content-type: application/json' \
   --data '{"event":"tool_started","properties":{"path":"/tools/card-finder","source":"homepage","tool":"card-finder"}}'
 ```
+
+For a deployed environment that already exports OTLP to Grafana Cloud, point the simulator at that deployment instead:
+
+```bash
+npm run observability:simulate -- --base-url=https://thestackhq.com --iterations=20
+```
+
+Use `--rate-limit-burst` only when you intentionally want to seed 429 samples for the rate-limit panels.
 
 Then check Grafana Explore for `thestack_api_duration_milliseconds_count` in the metrics data source and `{service_name="the-stack"}` in the logs data source. If metrics or logs only appear under `job`, switch the dashboard's matching service-label variable to `job`.
 
@@ -185,6 +195,7 @@ Grafana Cloud stores OTLP metrics in Prometheus-compatible form. Dots become und
 | `thestack.newsletter.sync.attempts` | `thestack_newsletter_sync_attempts_total` |
 | `thestack.newsletter.sync.results` | `thestack_newsletter_sync_results_total` |
 | `thestack.affiliate.clicks` | `thestack_affiliate_clicks_total` |
+| `thestack.personal_finance_tracker.download_fallbacks` | `thestack_personal_finance_tracker_download_fallbacks_total` |
 | `thestack.web.lcp` | `thestack_web_lcp_milliseconds_bucket/count/sum` |
 | `thestack.web.inp` | `thestack_web_inp_milliseconds_bucket/count/sum` |
 | `thestack.web.ttfb` | `thestack_web_ttfb_milliseconds_bucket/count/sum` |

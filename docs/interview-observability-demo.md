@@ -26,7 +26,7 @@ It helps users build a 6-month plan around credit card and banking signup bonuse
 
 3. Open `The Stack Product Funnel`.
 
-   Explain the product signals: landing views, tool starts, quiz completions, plan result views, offer detail views, newsletter subscriptions, and affiliate clicks. Call out that the Grafana labels intentionally avoid raw slugs and user identifiers to control cardinality and privacy risk.
+   Explain the product signals: landing views, tool starts, quiz completions, plan result views, offer detail views, newsletter subscriptions, affiliate clicks, newsletter sync attempts, and tracker-download fallbacks. Call out that the Grafana labels intentionally avoid raw slugs and user identifiers to control cardinality and privacy risk.
 
 4. Open `The Stack API Reliability`.
 
@@ -34,7 +34,7 @@ It helps users build a 6-month plan around credit card and banking signup bonuse
 
 5. Open `The Stack Web Vitals`.
 
-   Show LCP, INP, CLS, and TTFB by route and device. Tie it back to user trust: a finance decision product needs to feel fast and stable.
+   Show LCP, INP, CLS, and TTFB by route and device, including the threshold bands for good, needs-improvement, and poor experiences. Tie it back to user trust: a finance decision product needs to feel fast and stable.
 
 6. Open `The Stack AI Assistant`.
 
@@ -48,6 +48,7 @@ It helps users build a 6-month plan around credit card and banking signup bonuse
 - Funnel metrics are intentionally low-cardinality: `event`, normalized `path`, `source`, `tool`, and `entity_type`.
 - The health endpoint checks database availability and reports whether OTLP, Sigil, and Pyroscope are configured.
 - Rate limits are visible as HTTP 429s in the API reliability dashboard.
+- Server-confirmed newsletter attempts and tracker fallback downloads are visible separately from browser-only funnel events.
 
 ## Strong Interview Lines
 
@@ -62,7 +63,7 @@ It helps users build a 6-month plan around credit card and banking signup bonuse
 | Dashboard | Purpose | Primary Signals |
 | --- | --- | --- |
 | The Stack Overview | One-screen operations summary | API rate/errors/latency, business events, Web Vitals, API logs |
-| The Stack Product Funnel | Product conversion and high-intent actions | Landing views, tool starts, quiz completions, plan result views, detail views, newsletter, affiliate clicks |
+| The Stack Product Funnel | Product conversion and high-intent actions | Landing views, tool starts, quiz completions, plan result views, detail views, newsletter, affiliate clicks, newsletter sync attempts, tracker fallbacks |
 | The Stack API Reliability | Incident and SLO workflow | RED metrics, p95/p99 route latency, 429s, 4xx/5xx logs |
 | The Stack Web Vitals | Frontend user experience | LCP, INP, CLS, TTFB by route and device |
 | The Stack AI Assistant | AI feature operations | Assistant route reliability, rate limits, GenAI duration, token usage, time to first token |

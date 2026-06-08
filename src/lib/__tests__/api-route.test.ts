@@ -4,10 +4,11 @@ import { describe, expect, it, vi, beforeEach } from 'vitest';
 
 const applyIpRateLimitMock = vi.fn();
 const isValidOriginMock = vi.fn();
+const loggerEmitMock = vi.hoisted(() => vi.fn());
 
 vi.mock('@opentelemetry/api-logs', () => ({
   logs: {
-    getLogger: () => ({ emit: vi.fn() })
+    getLogger: () => ({ emit: loggerEmitMock })
   },
   SeverityNumber: { INFO: 9, WARN: 13, ERROR: 17 }
 }));
@@ -83,6 +84,30 @@ describe('instrumentedApi', () => {
 
     expect(recordApiError).toHaveBeenCalledWith('/test', 'Error');
     expect(recordApiDuration).toHaveBeenCalledWith('/test', 'POST', 500, expect.any(Number));
+  });
+
+  it('logs exception records with status and duration fields', async () => {
+    const handler = async (): Promise<Response> => {
+      throw new Error('kaboom');
+    };
+    await instrumentedApi('/test', 'POST', handler);
+
+    expect(loggerEmitMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        severityText: 'ERROR',
+        body: expect.any(String)
+      })
+    );
+    const [{ body }] = loggerEmitMock.mock.calls[0];
+    expect(JSON.parse(body)).toMatchObject({
+      type: 'api_exception',
+      route: '/test',
+      method: 'POST',
+      status: 500,
+      duration_ms: expect.any(Number),
+      error_name: 'Error',
+      error_message: 'kaboom'
+    });
   });
 
   it('records metrics on successful response', async () => {

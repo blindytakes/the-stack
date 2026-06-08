@@ -50,13 +50,16 @@ export async function instrumentedApi(
     await flushObservability();
     return result;
   } catch (error) {
+    const durationMs = performance.now() - start;
     recordApiError(route, error instanceof Error ? error.name : 'UnknownError');
-    recordApiDuration(route, method, 500, performance.now() - start);
+    recordApiDuration(route, method, 500, durationMs);
     logger.emit({
       body: JSON.stringify({
         type: 'api_exception',
         route,
         method,
+        status: 500,
+        duration_ms: Math.round(durationMs),
         error_name: error instanceof Error ? error.name : 'UnknownError',
         error_message: error instanceof Error ? error.message : String(error)
       }),
