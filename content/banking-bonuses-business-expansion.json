@@ -14,15 +14,15 @@
     "minimumOpeningDeposit": 10000,
     "holdingPeriodDays": 90,
     "requiredActions": [
-      "Open a new Chase Business Complete Checking account by July 15, 2026 through the offer page or in branch.",
+      "Open a new Chase Business Complete Checking account by October 15, 2026 through the offer page or in branch.",
       "Deposit at least $10,000 in new money within 30 days and maintain that balance for 60 days to earn the $500 tier.",
       "Complete at least 5 qualifying transactions within 90 days of offer enrollment."
     ],
-    "notes": "Chase's official business checking offer page advertised an up-to-$500 offer through July 15, 2026 when re-verified on June 4, 2026. The $500 tier currently requires $10,000 in new money; a lower $400 tier is available with a $2,000 deposit. Qualifying transactions include debit card purchases, Chase QuickDeposit, ACH credits, wire credits/debits, bill pay, and QuickAccept activity.",
+    "notes": "Chase's official business checking offer page still advertises an up-to-$500 offer and now shows an October 15, 2026 expiration when re-verified on July 7, 2026. The $500 tier currently requires $10,000 in new money; a lower $400 tier is available with a $2,000 deposit. Qualifying transactions include debit card purchases, Chase QuickDeposit, ACH credits, wire credits/debits, bill pay, and QuickAccept activity.",
     "offerUrl": "https://account.chase.com/business/business-checking-offer",
     "isActive": true,
-    "expiresAt": "2026-07-15T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "expiresAt": "2026-10-15T23:59:59.999-04:00",
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "us-bank-business-essentials-400",
@@ -43,11 +43,11 @@
       "Deposit at least $5,000 in new money within 30 days and maintain at least that balance through day 60.",
       "Complete 6 qualifying transactions within 60 days of opening."
     ],
-    "notes": "U.S. Bank's current Business Essentials disclosures show promo code Q2PRO26 and a bonus window through June 30, 2026. A $100 opening deposit is required to open the account, but the bonus threshold is $5,000.",
+    "notes": "U.S. Bank's current Business Essentials disclosures show promo code Q2PRO26 and a bonus window through June 30, 2026. A $100 opening deposit is required to open the account, but the bonus threshold is $5,000. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.usbank.com/business-banking/banking-products/business-bank-accounts/business-checking-account/business-essentials.html",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "us-bank-platinum-business-checking-1200",
@@ -68,11 +68,11 @@
       "Deposit at least $25,000 in new money within 30 days and maintain at least that balance through day 60.",
       "Complete 6 qualifying transactions within 60 days of opening."
     ],
-    "notes": "U.S. Bank's current Business Essentials disclosures show promo code Q2PRO26 and a bonus window through June 30, 2026. Platinum Business Checking currently carries a $30 monthly maintenance fee that can be waived with the same $25,000 average balance required for the bonus.",
+    "notes": "U.S. Bank's current Business Essentials disclosures show promo code Q2PRO26 and a bonus window through June 30, 2026. Platinum Business Checking currently carries a $30 monthly maintenance fee that can be waived with the same $25,000 average balance required for the bonus. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.usbank.com/business-banking/banking-products/business-bank-accounts/business-checking-account/platinum-business-checking-account-package.html",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "wells-fargo-initiate-business-checking-400",
@@ -92,11 +92,11 @@
       "Open a new eligible Wells Fargo Initiate Business Checking account with the bonus code by July 7, 2026.",
       "Deposit at least $2,500 by day 30 and maintain a minimum daily collected balance of $2,500 through day 60."
     ],
-    "notes": "Wells Fargo's official business checking bonus page advertised the $400 offer through July 7, 2026 when re-verified on May 10, 2026. The page auto-applies the code for online Initiate applications and says the bonus posts within 30 days after the 60-day qualification period ends.",
+    "notes": "Wells Fargo's official business checking bonus page still advertises the $400 offer for Initiate Business Checking through July 7, 2026 when re-verified on July 7, 2026. The page auto-applies the code for online Initiate applications and says the bonus posts within 30 days after the 60-day qualification period ends.",
     "offerUrl": "https://accountoffers.wellsfargo.com/businesscheckinga/",
     "isActive": true,
     "expiresAt": "2026-07-07T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "wells-fargo-navigate-business-checking-400",
@@ -116,11 +116,11 @@
       "Open a new eligible Wells Fargo Navigate Business Checking account with the bonus code by July 7, 2026.",
       "Deposit at least $2,500 by day 30 and maintain a minimum daily collected balance of $2,500 through day 60."
     ],
-    "notes": "Wells Fargo's official business checking bonus page advertised the $400 offer through July 7, 2026 when re-verified on May 10, 2026. Navigate currently carries a $25 monthly service fee when waiver requirements are not met.",
+    "notes": "Wells Fargo's official business checking bonus page only described Initiate Business Checking when re-verified on July 7, 2026 and no longer showed a distinct public Navigate Business Checking bonus. Deactivated in the catalog on July 7, 2026 pending a new public Navigate-specific offer.",
     "offerUrl": "https://accountoffers.wellsfargo.com/businesscheckinga/",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-07-07T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "wells-fargo-optimize-business-checking-400",
@@ -140,11 +140,11 @@
       "Open a new eligible Wells Fargo Optimize Business Checking account with the bonus code by July 7, 2026.",
       "Deposit at least $2,500 by day 30 and maintain a minimum daily collected balance of $2,500 through day 60."
     ],
-    "notes": "Wells Fargo's official business checking bonus page advertised the $400 offer through July 7, 2026 when re-verified on May 10, 2026. Optimize is the premium analyzed business account in Wells Fargo's lineup.",
+    "notes": "Wells Fargo's official business checking bonus page only described Initiate Business Checking when re-verified on July 7, 2026 and no longer showed a distinct public Optimize Business Checking bonus. Deactivated in the catalog on July 7, 2026 pending a new public Optimize-specific offer.",
     "offerUrl": "https://accountoffers.wellsfargo.com/businesscheckinga/",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-07-07T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "pnc-business-checking-400",
@@ -165,11 +165,11 @@
       "Maintain an average ledger balance of at least $2,000 for each of the first three statement cycles.",
       "Complete at least 10 qualifying transactions within the first three statement cycles."
     ],
-    "notes": "PNC's official business checking offer page advertised the $400 business checking tier through June 30, 2026 when re-verified on April 21, 2026. PNC says the offer is limited to businesses with annual revenue under $5 million. Qualifying transactions can include debit purchases, ACH, wires, Zelle, bill pay, remote deposit, merchant deposits, and checks.",
+    "notes": "PNC's official business checking offer page advertised the $400 business checking tier through June 30, 2026 when re-verified on April 21, 2026. PNC says the offer is limited to businesses with annual revenue under $5 million. Qualifying transactions can include debit purchases, ACH, wires, Zelle, bill pay, remote deposit, merchant deposits, and checks. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "pnc-business-checking-plus-400",
@@ -190,11 +190,11 @@
       "Maintain an average ledger balance of at least $2,000 for each of the first three statement cycles.",
       "Complete at least 10 qualifying transactions within the first three statement cycles."
     ],
-    "notes": "PNC's official business checking offer page advertised the $400 business checking tier through June 30, 2026 when re-verified on April 21, 2026. PNC says the offer is limited to businesses with annual revenue under $5 million. The Plus account currently carries a $22 monthly maintenance fee if waiver conditions are not met.",
+    "notes": "PNC's official business checking offer page advertised the $400 business checking tier through June 30, 2026 when re-verified on April 21, 2026. PNC says the offer is limited to businesses with annual revenue under $5 million. The Plus account currently carries a $22 monthly maintenance fee if waiver conditions are not met. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "pnc-treasury-enterprise-plan-1000",
@@ -214,11 +214,11 @@
       "Open a new PNC Treasury Enterprise Plan account by June 30, 2026.",
       "Maintain an average ledger balance of at least $30,000 for each of the first three statement cycles."
     ],
-    "notes": "PNC's official business checking offer page advertised the $1,000 commercial tier through June 30, 2026 when re-verified on April 21, 2026. PNC currently markets Treasury Enterprise Plan and Analysis Business Checking under the same $1,000 promotion. PNC says the offer is limited to businesses with annual revenue under $5 million.",
+    "notes": "PNC's official business checking offer page advertised the $1,000 commercial tier through June 30, 2026 when re-verified on April 21, 2026. PNC currently markets Treasury Enterprise Plan and Analysis Business Checking under the same $1,000 promotion. PNC says the offer is limited to businesses with annual revenue under $5 million. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "pnc-analysis-business-checking-1000",
@@ -238,11 +238,11 @@
       "Open a new PNC Analysis Business Checking account by June 30, 2026.",
       "Maintain an average ledger balance of at least $30,000 for each of the first three statement cycles."
     ],
-    "notes": "PNC's official business checking offer page advertised the $1,000 commercial tier through June 30, 2026 when re-verified on April 21, 2026. PNC currently lists Analysis Business Checking alongside Treasury Enterprise Plan in the same $1,000 promotion. The account also has activity-based analysis charges that can be offset by earnings credit.",
+    "notes": "PNC's official business checking offer page advertised the $1,000 commercial tier through June 30, 2026 when re-verified on April 21, 2026. PNC currently lists Analysis Business Checking alongside Treasury Enterprise Plan in the same $1,000 promotion. The account also has activity-based analysis charges that can be offset by earnings credit. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.pnc.com/en/small-business/banking/business-checking-overview/business-checking-offer.html",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "huntington-unlimited-business-checking-400",
@@ -264,11 +264,11 @@
       "Keep the account open for at least 90 days."
     ],
     "stateRestrictions": ["CO", "IL", "IN", "KY", "MI", "MN", "NC", "OH", "PA", "SC", "TX", "WV", "WI"],
-    "notes": "Huntington's official business promotions page advertised the $400 Unlimited Business Checking offer through June 16, 2026 when re-verified on May 10, 2026. The offer is limited to applicants in Huntington's listed footprint states.",
+    "notes": "Huntington's official business promotions page advertised the $400 Unlimited Business Checking offer through June 16, 2026 when re-verified on May 10, 2026. The offer is limited to applicants in Huntington's listed footprint states. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.huntington.com/business-banking-promotions-offers",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-16T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "huntington-unlimited-plus-business-checking-1000",
@@ -290,11 +290,11 @@
       "Keep the account open for at least 90 days."
     ],
     "stateRestrictions": ["CO", "IL", "IN", "KY", "MI", "MN", "NC", "OH", "PA", "SC", "TX", "WV", "WI"],
-    "notes": "Huntington's official business promotions page advertised the $1,000 Unlimited Plus Business Checking offer through June 16, 2026 when re-verified on May 10, 2026. The offer is limited to applicants in Huntington's listed footprint states.",
+    "notes": "Huntington's official business promotions page advertised the $1,000 Unlimited Plus Business Checking offer through June 16, 2026 when re-verified on May 10, 2026. The offer is limited to applicants in Huntington's listed footprint states. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.huntington.com/business-banking-promotions-offers",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-16T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "axos-basic-business-checking-200",
@@ -314,11 +314,11 @@
       "Open a new Axos Basic Business Checking account with promo code START200 by June 30, 2026.",
       "Maintain an average daily balance of at least $3,000 in four of the first five statement cycles to earn the full $200."
     ],
-    "notes": "Axos's official Basic Business Checking page advertised the $200 START200 offer through June 30, 2026 when re-verified on May 10, 2026. Axos says this offer is for newly formed businesses that are less than one calendar year old and have not previously held primary ownership of an Axos small business banking account.",
+    "notes": "Axos's official Basic Business Checking page advertised the $200 START200 offer through June 30, 2026 when re-verified on May 10, 2026. Axos says this offer is for newly formed businesses that are less than one calendar year old and have not previously held primary ownership of an Axos small business banking account. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.axosbank.com/business/business-checking-accounts/basic-business-checking",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "axos-business-bundle-600",
@@ -342,11 +342,11 @@
       "Deposit at least $1,000 into checking from an external source and make at least two debit card purchases of $50 or more each during each qualifying cycle.",
       "Maintain at least a $1,500 average daily balance in checking and a $50,000 average daily balance in savings during each qualifying cycle."
     ],
-    "notes": "Axos's official business bundle page advertised the SBB600 offer through June 30, 2026 when re-verified on May 10, 2026. Axos pays the bundle bonus in $100 increments across eligible statement cycles, with a maximum of $600.",
+    "notes": "Axos's official business bundle page advertised the SBB600 offer through June 30, 2026 when re-verified on May 10, 2026. Axos pays the bundle bonus in $100 increments across eligible statement cycles, with a maximum of $600. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.axosbank.com/business/axos-business-bundle",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "truist-simple-business-checking-400",
@@ -367,11 +367,11 @@
       "Make qualifying deposits totaling at least $2,000 within 30 days of account opening."
     ],
     "stateRestrictions": ["AL", "AR", "DC", "FL", "GA", "IN", "KY", "MD", "MS", "NC", "NJ", "OH", "PA", "SC", "TN", "TX", "VA", "WV"],
-    "notes": "Truist's official small business account page advertised the $400 Simple or Dynamic Business Checking offer through July 9, 2026 when re-verified on April 21, 2026. Truist says the promotion must be enrolled at opening through promo code SB26Q2CHECKING. Simple Business Checking has no monthly maintenance fee.",
+    "notes": "Truist's official small business account page still advertises the $400 Simple or Dynamic Business Checking offer through July 9, 2026 when re-verified on July 7, 2026. Truist says the promotion must be enrolled at opening through promo code SB26Q2CHECKING. Simple Business Checking has no monthly maintenance fee.",
     "offerUrl": "https://www.truist.com/open-account/small-business",
     "isActive": true,
     "expiresAt": "2026-07-09T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "truist-dynamic-business-checking-400",
@@ -392,11 +392,11 @@
       "Make qualifying deposits totaling at least $2,000 within 30 days of account opening."
     ],
     "stateRestrictions": ["AL", "AR", "DC", "FL", "GA", "IN", "KY", "MD", "MS", "NC", "NJ", "OH", "PA", "SC", "TN", "TX", "VA", "WV"],
-    "notes": "Truist's official small business account page advertised the $400 Simple or Dynamic Business Checking offer through July 9, 2026 when re-verified on April 21, 2026. Truist says the promotion must be enrolled at opening through promo code SB26Q2CHECKING. Dynamic Business Checking currently carries a $25 monthly maintenance fee if waiver requirements are not met.",
+    "notes": "Truist's official small business account page still advertises the $400 Simple or Dynamic Business Checking offer through July 9, 2026 when re-verified on July 7, 2026. Truist says the promotion must be enrolled at opening through promo code SB26Q2CHECKING. Dynamic Business Checking currently carries a $25 monthly maintenance fee if waiver requirements are not met.",
     "offerUrl": "https://www.truist.com/open-account/small-business",
     "isActive": true,
     "expiresAt": "2026-07-09T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "bmo-business-checking-1500",
@@ -414,10 +414,10 @@
       "Open a new eligible BMO business checking account through the official business checking page.",
       "Follow the current welcome-offer instructions presented during the account-opening flow to qualify for up to $500."
     ],
-    "notes": "BMO's official business checking page currently advertises a welcome offer of up to $500 with a new business checking account when re-verified on June 4, 2026. The previously checked-in up-to-$1,500 offer is no longer what the public page shows. Detailed tier thresholds and the current end date were not exposed in crawlable HTML, so this record was normalized to the currently visible up-to-$500 offer and should be manually re-checked in-browser before any finer-grained tiering is restored.",
+    "notes": "BMO's official business checking page no longer displayed any public welcome-offer or bonus language when re-verified on July 7, 2026. The previously normalized up-to-$500 record has been deactivated pending a new public business checking promotion.",
     "offerUrl": "https://www.bmo.com/en-us/main/business-banking/checking-accounts/",
-    "isActive": true,
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "isActive": false,
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "bmo-digital-business-checking-1000",

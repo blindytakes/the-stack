@@ -6,7 +6,10 @@
       "issuer": "Apple",
       "cardType": "personal",
       "rewardType": "cashback",
-      "topCategories": ["all", "other"],
+      "topCategories": [
+        "all",
+        "other"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "No-annual-fee cashback card built around Apple Pay and Daily Cash.",
@@ -15,7 +18,7 @@
       "foreignTxFee": 0,
       "applyUrl": "https://www.apple.com/apple-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "other",
@@ -37,7 +40,10 @@
       "issuer": "Robinhood",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["all", "travel"],
+      "topCategories": [
+        "all",
+        "travel"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "Flat-rate rewards card tied to a Robinhood Gold membership.",
@@ -46,7 +52,7 @@
       "foreignTxFee": 0,
       "applyUrl": "https://robinhood.com/creditcard/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "all",
@@ -68,7 +74,11 @@
       "issuer": "Bank of America",
       "cardType": "personal",
       "rewardType": "cashback",
-      "topCategories": ["online_shopping", "groceries", "all"],
+      "topCategories": [
+        "online_shopping",
+        "groceries",
+        "all"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "Flexible cashback card with a selectable 3% bonus category.",
@@ -78,7 +88,7 @@
       "imageUrl": "https://www.bankofamerica.com/content/images/ContextualSiteGraphics/CreditCardArt/en_US/Approved_PCM/8ckn_cshsigcm_v_250x158.png",
       "applyUrl": "https://www.bankofamerica.com/credit-cards/products/cash-back-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "online_shopping",
@@ -114,7 +124,9 @@
       "issuer": "Bank of America",
       "cardType": "personal",
       "rewardType": "cashback",
-      "topCategories": ["all"],
+      "topCategories": [
+        "all"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "Simple flat-rate cashback card with no annual fee.",
@@ -124,7 +136,7 @@
       "imageUrl": "https://www.bankofamerica.com/content/images/ContextualSiteGraphics/CreditCardArt/en_US/Approved_PCM/8cty_cshsigcm_v_250x157.png",
       "applyUrl": "https://www.bankofamerica.com/credit-cards/products/unlimited-cash-back-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "all",
@@ -149,7 +161,10 @@
       "issuer": "Bank of America",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "all"],
+      "topCategories": [
+        "travel",
+        "all"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "No-annual-fee travel card with flat-rate earning and no foreign transaction fees.",
@@ -159,7 +174,7 @@
       "imageUrl": "https://www.bankofamerica.com/content/images/ContextualSiteGraphics/CreditCardArt/en_US/Approved_PCM/8blm_trvsigcm_v_250x158.png",
       "applyUrl": "https://www.bankofamerica.com/credit-cards/products/travel-rewards-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "all",
@@ -185,7 +200,11 @@
       "issuer": "Bank of America",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "dining", "all"],
+      "topCategories": [
+        "travel",
+        "dining",
+        "all"
+      ],
       "annualFee": 95,
       "creditTierMin": "good",
       "headline": "Mid-tier travel card with flexible points and no foreign transaction fees.",
@@ -195,7 +214,7 @@
       "imageUrl": "https://www.bankofamerica.com/content/images/ContextualSiteGraphics/CreditCardArt/en_US/Approved_PCM/8CAL_prmsigcm_v_250_158.png",
       "applyUrl": "https://www.bankofamerica.com/credit-cards/products/premium-rewards-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -231,7 +250,11 @@
       "issuer": "Bank of America",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "dining", "all"],
+      "topCategories": [
+        "travel",
+        "dining",
+        "all"
+      ],
       "annualFee": 550,
       "creditTierMin": "excellent",
       "headline": "Premium Visa Infinite travel card for heavy-spend Preferred Rewards households.",
@@ -241,7 +264,7 @@
       "imageUrl": "https://www.bankofamerica.com/content/images/ContextualSiteGraphics/CreditCardArt/en_US/Approved_PCM/8cud_premrewelite_v_250x158.png",
       "applyUrl": "https://www.bankofamerica.com/credit-cards/products/premium-rewards-elite-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -277,7 +300,10 @@
       "issuer": "Bank of America",
       "cardType": "personal",
       "rewardType": "miles",
-      "topCategories": ["travel", "all"],
+      "topCategories": [
+        "travel",
+        "all"
+      ],
       "annualFee": 95,
       "creditTierMin": "good",
       "headline": "Alaska-focused airline card with companion-fare upside for frequent flyers.",
@@ -287,7 +313,7 @@
       "imageUrl": "https://www.bankofamerica.com/content/images/ContextualSiteGraphics/CreditCardArt/en_US/Approved_PCM/1bbt_sigcm_v_atmos_ascent_250.png",
       "applyUrl": "https://www.bankofamerica.com/credit-cards/products/alaska-airlines-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-05-10T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -320,7 +346,13 @@
       "issuer": "U.S. Bank",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["dining", "groceries", "gas", "streaming", "all"],
+      "topCategories": [
+        "dining",
+        "groceries",
+        "gas",
+        "streaming",
+        "all"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "No-fee dining card with solid everyday bonus categories.",
@@ -330,7 +362,7 @@
       "imageUrl": "https://www.usbank.com/content/dam/usbank/en/images/illustrations/card-art/credit-cards/altitude-go-visa-signature-credit-card.png",
       "applyUrl": "https://www.usbank.com/credit-cards/altitude-go-visa-signature-credit-card.html",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "dining",
@@ -376,7 +408,12 @@
       "issuer": "U.S. Bank",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "gas", "dining", "all"],
+      "topCategories": [
+        "travel",
+        "gas",
+        "dining",
+        "all"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "No-fee travel card with elevated earn on travel and road-trip spend.",
@@ -386,7 +423,7 @@
       "imageUrl": "https://www.usbank.com/content/dam/usbank/en/images/illustrations/card-art/credit-cards/photo-altitude-connect-consumer.png",
       "applyUrl": "https://www.usbank.com/credit-cards/altitude-connect-visa-signature-credit-card.html",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -427,7 +464,11 @@
       "issuer": "U.S. Bank",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "other", "all"],
+      "topCategories": [
+        "travel",
+        "other",
+        "all"
+      ],
       "annualFee": 400,
       "creditTierMin": "excellent",
       "headline": "Premium travel card centered on mobile-wallet earning and flexible travel redemptions.",
@@ -436,7 +477,7 @@
       "foreignTxFee": 0,
       "applyUrl": "https://www.usbank.com/credit-cards/benefits.html",
       "isActive": false,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "other",
@@ -473,7 +514,11 @@
       "issuer": "U.S. Bank",
       "cardType": "personal",
       "rewardType": "cashback",
-      "topCategories": ["utilities", "streaming", "all"],
+      "topCategories": [
+        "utilities",
+        "streaming",
+        "all"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "Category-driven cashback card with strong 5% picks if you stay organized.",
@@ -483,7 +528,7 @@
       "imageUrl": "https://www.usbank.com/content/dam/usbank/en/images/illustrations/card-art/credit-cards/photo-cash-plus-signature-lg.png",
       "applyUrl": "https://www.usbank.com/credit-cards/cash-plus-visa-signature-credit-card.html",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "utilities",
@@ -524,7 +569,11 @@
       "issuer": "U.S. Bank",
       "cardType": "personal",
       "rewardType": "cashback",
-      "topCategories": ["online_shopping", "gas", "all"],
+      "topCategories": [
+        "online_shopping",
+        "gas",
+        "all"
+      ],
       "annualFee": 95,
       "creditTierMin": "good",
       "headline": "High-earn retail cashback card if your spending matches the supported merchants.",
@@ -534,7 +583,7 @@
       "imageUrl": "https://www.usbank.com/content/dam/usbank/en/images/illustrations/card-art/credit-cards/photo-shopper-cash-rewards--no-glow-2x3.png",
       "applyUrl": "https://www.usbank.com/credit-cards/shopper-cash-rewards-visa-signature-credit-card.html",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "online_shopping",
@@ -570,7 +619,9 @@
       "issuer": "U.S. Bank",
       "cardType": "personal",
       "rewardType": "cashback",
-      "topCategories": ["all"],
+      "topCategories": [
+        "all"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "Flat-rate cashback card whose best upside depends on a broader U.S. Bank relationship.",
@@ -580,7 +631,7 @@
       "imageUrl": "https://www.usbank.com/content/dam/usbank/en/images/illustrations/card-art/credit-cards/photo-bank-smartly-card-art.png",
       "applyUrl": "https://www.usbank.com/credit-cards/bank-smartly-visa-signature-credit-card.html",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "all",
@@ -596,7 +647,10 @@
       "issuer": "Barclays",
       "cardType": "personal",
       "rewardType": "miles",
-      "topCategories": ["travel", "all"],
+      "topCategories": [
+        "travel",
+        "all"
+      ],
       "annualFee": 99,
       "creditTierMin": "good",
       "headline": "Airline miles card with a low-friction first-purchase welcome offer structure.",
@@ -604,7 +658,7 @@
       "network": "mastercard",
       "foreignTxFee": 0,
       "isActive": false,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -637,7 +691,12 @@
       "issuer": "Barclays",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["gas", "dining", "groceries", "all"],
+      "topCategories": [
+        "gas",
+        "dining",
+        "groceries",
+        "all"
+      ],
       "annualFee": 75,
       "creditTierMin": "good",
       "headline": "Hotel points card with unusually strong gas, dining, and grocery earn rates.",
@@ -646,7 +705,7 @@
       "foreignTxFee": 0,
       "applyUrl": "https://www.wyndhamrewardscreditcard.com/earner-plus-card/",
       "isActive": true,
-      "lastVerified": "2026-04-03T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "gas",
@@ -687,7 +746,12 @@
       "issuer": "Barclays",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "dining", "groceries", "all"],
+      "topCategories": [
+        "travel",
+        "dining",
+        "groceries",
+        "all"
+      ],
       "annualFee": 99,
       "creditTierMin": "good",
       "headline": "JetBlue loyalist card with better earning and a more meaningful points bonus than the no-fee version.",
@@ -696,7 +760,7 @@
       "foreignTxFee": 0,
       "applyUrl": "https://cards.barclaycardus.com/banking/cards/jetblue-plus-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -738,7 +802,12 @@
       "issuer": "Barclays",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "dining", "groceries", "all"],
+      "topCategories": [
+        "travel",
+        "dining",
+        "groceries",
+        "all"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "No-fee JetBlue points card with airline-centered earning.",
@@ -747,7 +816,7 @@
       "foreignTxFee": 3,
       "applyUrl": "https://cards.barclaycardus.com/banking/cards/jetblue-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -790,7 +859,11 @@
       "issuer": "American Express",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "dining", "all"],
+      "topCategories": [
+        "travel",
+        "dining",
+        "all"
+      ],
       "annualFee": 150,
       "creditTierMin": "good",
       "headline": "Mid-fee Membership Rewards card with broad travel and dining earning.",
@@ -799,7 +872,7 @@
       "foreignTxFee": 0,
       "applyUrl": "https://www.americanexpress.com/us/credit-cards/card/green/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -835,7 +908,9 @@
       "issuer": "American Express",
       "cardType": "business",
       "rewardType": "points",
-      "topCategories": ["all"],
+      "topCategories": [
+        "all"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "No-fee business Membership Rewards card with flat-rate earning.",
@@ -845,7 +920,7 @@
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/blue-business-plus.png",
       "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-blue-business-plus-credit-card-amex/",
       "isActive": true,
-      "lastVerified": "2026-04-06T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "all",
@@ -874,7 +949,11 @@
       "issuer": "American Express",
       "cardType": "business",
       "rewardType": "points",
-      "topCategories": ["other", "travel", "all"],
+      "topCategories": [
+        "other",
+        "travel",
+        "all"
+      ],
       "annualFee": 375,
       "creditTierMin": "good",
       "headline": "Business Membership Rewards card that adapts to your biggest spend categories.",
@@ -884,7 +963,7 @@
       "imageUrl": "https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/open/category/cardarts/business-gold.png",
       "applyUrl": "https://www.americanexpress.com/us/credit-cards/business/business-credit-cards/american-express-business-gold-card-amex/",
       "isActive": true,
-      "lastVerified": "2026-05-11T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "other",
@@ -923,7 +1002,11 @@
       "issuer": "Chase",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "dining", "all"],
+      "topCategories": [
+        "travel",
+        "dining",
+        "all"
+      ],
       "annualFee": 95,
       "creditTierMin": "good",
       "headline": "Hotel card with strong Hyatt value if you actually redeem within the program.",
@@ -933,7 +1016,7 @@
       "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/world_of_hyatt_card.png",
       "applyUrl": "https://creditcards.chase.com/travel-credit-cards/world-of-hyatt-credit-card",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -971,7 +1054,10 @@
       "issuer": "Chase",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "all"],
+      "topCategories": [
+        "travel",
+        "all"
+      ],
       "annualFee": 95,
       "creditTierMin": "good",
       "headline": "Mainstream Marriott card with a recurring annual free-night story.",
@@ -981,7 +1067,7 @@
       "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/marriott-bonvoy-boundless-card.png",
       "applyUrl": "https://creditcards.chase.com/travel-credit-cards/marriott-bonvoy/boundless",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -1013,7 +1099,11 @@
       "issuer": "Chase",
       "cardType": "personal",
       "rewardType": "miles",
-      "topCategories": ["travel", "dining", "all"],
+      "topCategories": [
+        "travel",
+        "dining",
+        "all"
+      ],
       "annualFee": 150,
       "creditTierMin": "good",
       "headline": "United miles card with better travel perks than a pure no-fee airline option.",
@@ -1023,7 +1113,7 @@
       "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/united_explorer_card_tilted.png",
       "applyUrl": "https://creditcards.chase.com/travel-credit-cards/united/united-explorer",
       "isActive": true,
-      "lastVerified": "2026-05-08T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -1061,7 +1151,13 @@
       "issuer": "Chase",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "dining", "gas", "groceries", "all"],
+      "topCategories": [
+        "travel",
+        "dining",
+        "gas",
+        "groceries",
+        "all"
+      ],
       "annualFee": 99,
       "creditTierMin": "good",
       "headline": "Hotel card with a strong ongoing earn structure and easy annual certificate story.",
@@ -1071,7 +1167,7 @@
       "imageUrl": "https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/ihg_premier_card.png",
       "applyUrl": "https://creditcards.chase.com/travel-credit-cards/ihg-rewards-club/premier",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -1118,7 +1214,11 @@
       "issuer": "Wells Fargo",
       "cardType": "personal",
       "rewardType": "points",
-      "topCategories": ["travel", "dining", "all"],
+      "topCategories": [
+        "travel",
+        "dining",
+        "all"
+      ],
       "annualFee": 95,
       "creditTierMin": "good",
       "headline": "Travel-oriented Wells Fargo points card with a real welcome offer and no foreign transaction fees.",
@@ -1128,7 +1228,7 @@
       "imageUrl": "https://creditcards.wellsfargo.com/W-Card-MarketPlace/v4-29-26/images/Products/AutographJourney/WF_Autograph_Journey_Card_d.png",
       "applyUrl": "https://creditcards.wellsfargo.com/autograph-journey-visa-credit-card/",
       "isActive": true,
-      "lastVerified": "2026-03-25T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "travel",
@@ -1165,7 +1265,9 @@
       "issuer": "Discover",
       "cardType": "personal",
       "rewardType": "miles",
-      "topCategories": ["all"],
+      "topCategories": [
+        "all"
+      ],
       "annualFee": 0,
       "creditTierMin": "good",
       "headline": "No-fee flat-rate travel-style card with Discover's first-year Miles match mechanic.",
@@ -1174,7 +1276,7 @@
       "foreignTxFee": 0,
       "applyUrl": "https://www.discover.com/credit-cards/travel/",
       "isActive": true,
-      "lastVerified": "2026-05-10T00:00:00.000Z",
+      "lastVerified": "2026-07-07T00:00:00.000Z",
       "rewards": [
         {
           "category": "all",

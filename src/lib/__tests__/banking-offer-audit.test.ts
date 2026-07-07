@@ -45,11 +45,8 @@ describe('banking offer audit coverage', () => {
     ['td-complete-checking-200', 200, 500, '2026-07-30'],
     ['td-beyond-checking-300', 300, 2500, '2026-07-30'],
     ['sofi-checking-savings-300', 400, 1000, '2026-12-31'],
-    ['chase-business-complete-checking-500', 500, undefined, '2026-07-15'],
+    ['chase-business-complete-checking-500', 500, undefined, '2026-10-15'],
     ['wells-fargo-initiate-business-checking-400', 400, undefined, '2026-07-07'],
-    ['wells-fargo-navigate-business-checking-400', 400, undefined, '2026-07-07'],
-    ['wells-fargo-optimize-business-checking-400', 400, undefined, '2026-07-07'],
-    ['bmo-business-checking-1500', 500, undefined, undefined]
   ])(
     'keeps the audited banking offer populated for %s',
     (slug, bonusAmount, directDepositMinimumAmount, expiresOn) => {
@@ -69,7 +66,19 @@ describe('banking offer audit coverage', () => {
     }
   );
 
-  it('keeps BMO business checking as one active consolidated promo', () => {
+  it('does not keep unsupported Wells Fargo or BMO business bonus records active', () => {
+    const bonusesBySlug = new Map(loadAllBankingBonuses().map((bonus) => [bonus.slug, bonus]));
+
+    expect(bonusesBySlug.get('wells-fargo-navigate-business-checking-400')?.isActive).toBe(
+      false
+    );
+    expect(bonusesBySlug.get('wells-fargo-optimize-business-checking-400')?.isActive).toBe(
+      false
+    );
+    expect(bonusesBySlug.get('bmo-business-checking-1500')?.isActive).toBe(false);
+  });
+
+  it('keeps no active BMO business bonus when no public offer is shown', () => {
     const activeBmoBusinessOffers = loadAllBankingBonuses().filter(
       (bonus) =>
         bonus.bankName === 'BMO' &&
@@ -77,11 +86,6 @@ describe('banking offer audit coverage', () => {
         bonus.isActive !== false
     );
 
-    expect(activeBmoBusinessOffers.map((bonus) => bonus.slug)).toEqual([
-      'bmo-business-checking-1500'
-    ]);
-    expect(activeBmoBusinessOffers[0].requiredActions).toContain(
-      'Follow the current welcome-offer instructions presented during the account-opening flow to qualify for up to $500.'
-    );
+    expect(activeBmoBusinessOffers.map((bonus) => bonus.slug)).toEqual([]);
   });
 });

@@ -80,11 +80,11 @@
       "Receive at least $1,000 in qualifying direct deposits within 90 days.",
       "Keep the account open and above $0 through bonus payout."
     ],
-    "notes": "Wells Fargo's official bonus page advertised the $325 Everyday Checking offer through July 14, 2026 when re-verified on April 21, 2026.",
+    "notes": "Wells Fargo's official bonus page still advertises the $325 Everyday Checking offer through July 14, 2026 when re-verified on July 7, 2026.",
     "offerUrl": "https://accountoffers.wellsfargo.com/checkingoffer/",
     "isActive": true,
     "expiresAt": "2026-07-14T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "bmo-smart-advantage-checking-400",
@@ -107,11 +107,11 @@
       "Receive qualifying direct deposits totaling at least $4,000 within 90 days.",
       "Keep the account in good standing through payout."
     ],
-    "notes": "BMO's official personal checking promo page advertised the $400 offer through September 8, 2026 when re-verified on May 10, 2026.",
+    "notes": "BMO's official personal checking promo page still advertises the $400 offer through September 8, 2026 when re-verified on July 7, 2026.",
     "offerUrl": "https://www.bmo.com/en-us/main/personal/checking-accounts/digital-offer/",
     "isActive": true,
     "expiresAt": "2026-09-08T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "capital-one-360-checking-250",
@@ -133,10 +133,10 @@
       "Open a new 360 Checking account using promo code CHECKING250.",
       "Receive at least two direct deposits of at least $500 each within 75 days of opening."
     ],
-    "notes": "Capital One's official offer page advertised the $250 offer with promo code CHECKING250 and no posted expiration date when re-verified on May 10, 2026.",
+    "notes": "Capital One's official offer page still advertises the $250 offer with promo code CHECKING250 and no posted expiration date when re-verified on July 7, 2026.",
     "offerUrl": "https://www.capitalone.com/bank/checking250/",
     "isActive": true,
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "chime-checking-350",
@@ -181,11 +181,11 @@
       "Receive direct deposits totaling at least $1,000 within 90 days of coupon enrollment.",
       "Keep the account open and unrestricted at payout."
     ],
-    "notes": "Chase's official Total Checking offer page currently advertises the $400 bonus through July 15, 2026.",
+    "notes": "Chase's official Total Checking offer page still advertises the $400 bonus through July 15, 2026 when re-verified on July 7, 2026.",
     "offerUrl": "https://account.chase.com/consumer/banking/seo",
     "isActive": true,
     "expiresAt": "2026-07-15T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "chase-secure-banking-125",
@@ -203,11 +203,11 @@
       "Open a new Chase Secure Banking account with an eligible coupon.",
       "Complete 10 qualifying transactions within 60 days of coupon enrollment (for example debit purchases, ACH credits, QuickDeposit, online bill pay, or Zelle)."
     ],
-    "notes": "Chase's official Secure Banking offer page advertised the $125 offer through July 15, 2026 when re-verified on May 10, 2026.",
+    "notes": "Chase's official Secure Banking offer page still advertises the $125 offer through July 15, 2026 when re-verified on July 7, 2026.",
     "offerUrl": "https://account.chase.com/consumer/banking/secure",
     "isActive": true,
     "expiresAt": "2026-07-15T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "etrade-premium-savings-2000",
@@ -337,11 +337,11 @@
       "Transfer at least $150,000 in eligible new money within 45 days.",
       "Maintain the qualifying new-money balance for at least 90 days after enrollment."
     ],
-    "notes": "Chase's official Private Client bonus page currently advertises the up-to-$3,000 offer through July 15, 2026 when re-verified on June 4, 2026.",
+    "notes": "Chase's official Private Client bonus page still advertises the up-to-$3,000 offer through July 15, 2026 when re-verified on July 7, 2026.",
     "offerUrl": "https://account.chase.com/consumer/banking/chase-private-client-checking-account",
     "isActive": true,
     "expiresAt": "2026-07-15T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "sofi-checking-savings-300",
@@ -365,11 +365,11 @@
       "Receive at least one eligible direct deposit.",
       "Accumulate at least $1,000 in eligible direct deposits during the first 25-day direct deposit bonus period for a $50 payout, or $5,000+ for the $400 top tier."
     ],
-    "notes": "SoFi's official checking offer page says the current direct-deposit promotion runs from May 15, 2026 through December 31, 2026 when re-verified on June 4, 2026. The slug is retained from the prior $300 offer amount.",
+    "notes": "SoFi's official checking offer page still shows the current direct-deposit promotion running from May 15, 2026 through December 31, 2026 when re-verified on July 7, 2026. The top tier remains $400 and the slug is retained from the prior $300 offer amount.",
     "offerUrl": "https://www.sofi.com/banking/checking-offer/",
     "isActive": true,
     "expiresAt": "2026-12-31T23:59:59.999-05:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "citi-regular-checking-325",
@@ -421,11 +421,11 @@
       "Deposit or transfer at least $100 monthly for the next 11 consecutive months.",
       "Maintain an average daily balance of at least $100 and end the 12-month period with at least $1,200 in the account."
     ],
-    "notes": "Alliant's official Ultimate Opportunity Savings terms still require new members to open by June 30, 2026 and complete the 12-month saving cadence when re-verified on June 4, 2026.",
+    "notes": "Alliant's official Ultimate Opportunity Savings terms still require new members to open by June 30, 2026 and complete the 12-month saving cadence when re-verified on June 4, 2026. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://promo.alliantcreditunion.org/ultimate-opportunity-savings",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "td-complete-checking-200",
@@ -447,11 +447,11 @@
       "Open a new TD Complete Checking account through the promotional page.",
       "Receive at least $500 in qualifying direct deposits within 60 days of account opening."
     ],
-    "notes": "TD's official checking and savings bonus page advertised the $200 Complete Checking offer through July 30, 2026 when re-verified on May 10, 2026.",
+    "notes": "TD's official checking and savings bonus page still advertises the $200 Complete Checking offer through July 30, 2026 when re-verified on July 7, 2026.",
     "offerUrl": "https://www.td.com/us/en/personal-banking/checking-and-saving-bonus",
     "isActive": true,
     "expiresAt": "2026-07-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "td-beyond-checking-300",
@@ -473,11 +473,11 @@
       "Open a new TD Beyond Checking account through the promotional page.",
       "Receive at least $2,500 in qualifying direct deposits within 60 days of account opening."
     ],
-    "notes": "TD's official checking and savings bonus page advertised the $300 Beyond Checking offer through July 30, 2026 when re-verified on May 10, 2026.",
+    "notes": "TD's official checking and savings bonus page still advertises the $300 Beyond Checking offer through July 30, 2026 when re-verified on July 7, 2026.",
     "offerUrl": "https://www.td.com/us/en/personal-banking/checking-and-saving-bonus",
     "isActive": true,
     "expiresAt": "2026-07-30T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "key-smart-checking-300",
@@ -558,11 +558,11 @@
       "Complete at least 20 qualifying debit card purchases within 120 days of account opening."
     ],
     "stateRestrictions": ["AL", "AR", "DC", "FL", "GA", "IN", "KY", "MD", "MS", "NC", "NJ", "OH", "PA", "SC", "TN", "TX", "VA", "WV"],
-    "notes": "Truist's official account-opening page currently advertises the Truist One Checking $400 online offer through July 9, 2026 with promo code DC400TR1Q226.",
+    "notes": "Truist's official account-opening page still advertises the Truist One Checking $400 online offer through July 9, 2026 with promo code DC400TR1Q226 when re-verified on July 7, 2026.",
     "offerUrl": "https://www.truist.com/open-account/banking-accounts",
     "isActive": true,
     "expiresAt": "2026-07-09T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "marcus-online-savings-1500",
@@ -628,11 +628,11 @@
       "WV",
       "WI"
     ],
-    "notes": "Huntington's official personal checking promotions page currently advertises the Perks Checking $400 offer through June 15, 2026.",
+    "notes": "Huntington's official personal checking promotions page currently advertises the Perks Checking $400 offer through June 15, 2026. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.huntington.com/checking-account-promotions-bonuses-offers",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-15T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   },
   {
     "slug": "huntington-platinum-perks-checking-600",
@@ -670,10 +670,10 @@
       "WV",
       "WI"
     ],
-    "notes": "Huntington's official personal checking promotions page currently advertises the Platinum Perks $600 offer through June 15, 2026.",
+    "notes": "Huntington's official personal checking promotions page currently advertises the Platinum Perks $600 offer through June 15, 2026. Deactivated in the catalog on July 7, 2026 after the published expiration date passed.",
     "offerUrl": "https://www.huntington.com/checking-account-promotions-bonuses-offers",
-    "isActive": true,
+    "isActive": false,
     "expiresAt": "2026-06-15T23:59:59.999-04:00",
-    "lastVerified": "2026-06-04T00:00:00.000Z"
+    "lastVerified": "2026-07-07T00:00:00.000Z"
   }
 ]
