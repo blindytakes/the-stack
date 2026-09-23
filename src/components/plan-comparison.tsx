@@ -20,7 +20,7 @@ interface GanttRow {
 }
 
 const CHASE_SAPPHIRE_PREFERRED_ART_URL =
-  'https://images.ctfassets.net/8qmz0ef3xzub/7iFzyweepMTrfGn2VrDdL5/6adcc35d50cef1e3087ced153d3b7bee/sapphire_preferred_card.png';
+  'https://creditcards.chase.com/content/dam/jpmc-marketplace/card-art/sapphire-preferredcard2026.png';
 const AMEX_GOLD_CARD_ART_URL =
   'https://icm.aexp-static.com/Internet/Acquisition/US_en/AppContent/OneSite/category/cardarts/gold-card.png';
 const GRID_COLUMNS_CLASS_NAME =
